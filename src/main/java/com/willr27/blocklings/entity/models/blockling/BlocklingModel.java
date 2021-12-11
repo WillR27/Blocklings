@@ -3,13 +3,14 @@ package com.willr27.blocklings.entity.models.blockling;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.entity.entities.blockling.action.actions.AttackAction;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.item.ToolType;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.entity.model.IHasArm;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.Pose;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.math.MathHelper;
@@ -33,8 +34,6 @@ public class BlocklingModel extends EntityModel<BlocklingEntity> implements IHas
     private final ModelRenderer leftArm;
     private final ModelRenderer rightEye;
     private final ModelRenderer leftEye;
-
-    private int[] attackAnimation = { 0, 18, 39, 62, 85, 70, 58, 47, 37, 28, 20, 14, 8, 3, 0 };
 
     public BlocklingModel()
     {
@@ -120,26 +119,29 @@ public class BlocklingModel extends EntityModel<BlocklingEntity> implements IHas
         float rightLegSwing = (MathHelper.cos(limbSwing + (float) Math.PI) * limbSwingAmount * 0.5f);
         float leftLegSwing = (MathHelper.cos(limbSwing + (float) Math.PI) * limbSwingAmount * 0.5f);
 
-        if (blockling.getEquipment().hasToolEquipped(Hand.MAIN_HAND, ToolType.WEAPON))
+        BlocklingHand attackingHand = blockling.getEquipment().findAttackingHand();
+
+        if (attackingHand == BlocklingHand.RIGHT || attackingHand == BlocklingHand.BOTH)
         {
             rightArmSwing -= weaponBonusRotX;
         }
 
-        if (blockling.getEquipment().hasToolEquipped(Hand.OFF_HAND, ToolType.WEAPON))
+        if (attackingHand == BlocklingHand.LEFT || attackingHand == BlocklingHand.BOTH)
         {
             leftArmSwing += weaponBonusRotX;
         }
 
-        if (blockling.getActions().attacking.isRunning(AttackAction.Hand.RIGHT))
+        if (blockling.getActions().attacking.isRunning(BlocklingHand.RIGHT))
         {
             float percent = blockling.getActions().attacking.percentThroughHandAction(-1) + (blockling.getActions().attacking.percentThroughHandAction() - blockling.getActions().attacking.percentThroughHandAction(-1)) * partialTicks;
-            rightArmSwing += (MathHelper.cos(percent * (float) Math.PI / 2.0f) * 1.5f);
-            Log.warn(blockling.getActions().attacking.percentThroughHandAction(-1) + ", " + blockling.getActions().attacking.percentThroughHandAction() + " " + partialTicks + " " + ageInTicks);
+            float attackSwing = (MathHelper.cos(percent * (float) Math.PI / 2.0f) * 1.5f);
+            rightArmSwing += blockling.getEquipment().getHandStack(Hand.MAIN_HAND).isEmpty() ? -attackSwing : attackSwing;
         }
-        else if (blockling.getActions().attacking.isRunning(AttackAction.Hand.LEFT))
+        else if (blockling.getActions().attacking.isRunning(BlocklingHand.LEFT))
         {
             float percent = blockling.getActions().attacking.percentThroughHandAction(-1) + (blockling.getActions().attacking.percentThroughHandAction() - blockling.getActions().attacking.percentThroughHandAction(-1)) * partialTicks;
-            leftArmSwing -= (MathHelper.cos(percent * (float) Math.PI / 2.0f) * 1.5f);
+            float attackSwing = (MathHelper.cos(percent * (float) Math.PI / 2.0f) * 1.5f);
+            leftArmSwing -= blockling.getEquipment().getHandStack(Hand.OFF_HAND).isEmpty() ? -attackSwing : attackSwing;
         }
         else if (blockling.getActions().mining.isRunning())
         {

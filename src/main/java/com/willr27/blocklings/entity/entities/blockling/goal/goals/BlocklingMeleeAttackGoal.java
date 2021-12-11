@@ -2,7 +2,7 @@ package com.willr27.blocklings.entity.entities.blockling.goal.goals;
 
 import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.entity.entities.blockling.action.actions.AttackAction;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.entity.entities.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.entity.entities.blockling.goal.BlocklingTasks;
 import com.willr27.blocklings.entity.entities.blockling.goal.goals.target.IHasTargetGoal;
@@ -113,7 +113,10 @@ public abstract class BlocklingMeleeAttackGoal extends BlocklingGoal implements 
 
         if (isInRange(target))
         {
-            if (blockling.getActions().attacking.tryStart(blockling.getActions().attacking.getRecentHand() == AttackAction.Hand.LEFT ? AttackAction.Hand.RIGHT : AttackAction.Hand.LEFT))
+            BlocklingHand attackingHand = blockling.getEquipment().findAttackingHand();
+            attackingHand = attackingHand == BlocklingHand.BOTH ? blockling.getActions().attacking.getRecentHand() == BlocklingHand.LEFT ? BlocklingHand.RIGHT : BlocklingHand.LEFT : attackingHand;
+
+            if (blockling.getActions().attacking.tryStart(attackingHand))
             {
                 blockling.doHurtTarget(target);
             }

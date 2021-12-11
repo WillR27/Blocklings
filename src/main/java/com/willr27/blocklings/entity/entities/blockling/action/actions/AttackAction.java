@@ -1,6 +1,7 @@
 package com.willr27.blocklings.entity.entities.blockling.action.actions;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.entity.entities.blockling.action.BlocklingActions;
 
 import java.util.function.Supplier;
@@ -10,7 +11,7 @@ public class AttackAction extends KnownTargetAction
     private final KnownTargetAction leftHandAction;
     private final KnownTargetAction rightHandAction;
 
-    private Hand recentHand = Hand.BOTH;
+    private BlocklingHand recentHand = BlocklingHand.BOTH;
 
     public AttackAction(BlocklingActions actions, BlocklingEntity blockling, String key, Supplier<Integer> targetTicksSupplier, Supplier<Integer> handTargetTicksSupplier)
     {
@@ -21,7 +22,7 @@ public class AttackAction extends KnownTargetAction
         rightHandAction = actions.createAction(blockling, key + "_right_hand", supplier);
     }
 
-    public boolean tryStart(Hand hand)
+    public boolean tryStart(BlocklingHand hand)
     {
         if (super.tryStart())
         {
@@ -35,15 +36,15 @@ public class AttackAction extends KnownTargetAction
         }
     }
 
-    public void start(Hand hand)
+    public void start(BlocklingHand hand)
     {
         super.start();
 
-        if (hand == Hand.LEFT || hand == Hand.BOTH)
+        if (hand == BlocklingHand.LEFT || hand == BlocklingHand.BOTH)
         {
             leftHandAction.start();
         }
-        else if (hand == Hand.RIGHT || hand == Hand.BOTH)
+        else if (hand == BlocklingHand.RIGHT || hand == BlocklingHand.BOTH)
         {
             rightHandAction.start();
         }
@@ -56,7 +57,7 @@ public class AttackAction extends KnownTargetAction
     {
         super.start();
 
-        start(Hand.BOTH);
+        start(BlocklingHand.BOTH);
     }
 
     @Override
@@ -66,15 +67,15 @@ public class AttackAction extends KnownTargetAction
 
         if (leftHandAction.isRunning() && rightHandAction.isRunning())
         {
-            recentHand = Hand.BOTH;
+            recentHand = BlocklingHand.BOTH;
         }
         else if (leftHandAction.isRunning())
         {
-            recentHand = Hand.LEFT;
+            recentHand = BlocklingHand.LEFT;
         }
         else if (rightHandAction.isRunning())
         {
-            recentHand = Hand.RIGHT;
+            recentHand = BlocklingHand.RIGHT;
         }
     }
 
@@ -87,9 +88,9 @@ public class AttackAction extends KnownTargetAction
         rightHandAction.stop();
     }
 
-    public boolean isRunning(Hand hand)
+    public boolean isRunning(BlocklingHand hand)
     {
-        if (hand == Hand.LEFT)
+        if (hand == BlocklingHand.LEFT)
         {
             return leftHandAction.isRunning();
         }
@@ -99,9 +100,9 @@ public class AttackAction extends KnownTargetAction
         }
     }
 
-    public boolean isFinished(Hand hand)
+    public boolean isFinished(BlocklingHand hand)
     {
-        if (hand == Hand.LEFT)
+        if (hand == BlocklingHand.LEFT)
         {
             return leftHandAction.isFinished();
         }
@@ -159,15 +160,9 @@ public class AttackAction extends KnownTargetAction
         }
     }
 
-    public Hand getRecentHand()
+    public BlocklingHand getRecentHand()
     {
         return recentHand;
     }
 
-    public enum Hand
-    {
-        LEFT,
-        RIGHT,
-        BOTH
-    }
 }

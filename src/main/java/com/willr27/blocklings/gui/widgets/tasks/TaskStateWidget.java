@@ -64,13 +64,16 @@ public class TaskStateWidget extends Widget
     {
         if (isPressed && isMouseOver(mouseX, mouseY))
         {
-            if (taskWidget.task.getGoal().getState() == BlocklingGoal.State.DISABLED)
+            if (taskWidget.task.isConfigured())
             {
-                taskWidget.task.getGoal().setState(BlocklingGoal.State.IDLE);
-            }
-            else
-            {
-                taskWidget.task.getGoal().setState(BlocklingGoal.State.DISABLED);
+                if (taskWidget.task.getGoal().getState() == BlocklingGoal.State.DISABLED)
+                {
+                    taskWidget.task.getGoal().setState(BlocklingGoal.State.IDLE);
+                }
+                else
+                {
+                    taskWidget.task.getGoal().setState(BlocklingGoal.State.DISABLED);
+                }
             }
         }
 

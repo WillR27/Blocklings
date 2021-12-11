@@ -3,7 +3,7 @@ package com.willr27.blocklings.gui.screens;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.entity.entities.blockling.attribute.Attribute;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.entity.entities.blockling.attribute.BlocklingAttributes;
+import com.willr27.blocklings.entity.entities.blockling.attribute.BlocklingStats;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.screens.guis.TabbedGui;
 import com.willr27.blocklings.gui.widgets.TextFieldWidget;
@@ -56,7 +56,7 @@ public class StatsScreen extends TabbedScreen
     private static final int WOODCUTTING_XP_BAR_Y = COMBAT_XP_BAR_Y + LEVEL_XP_GAP * 2;
     private static final int FARMING_XP_BAR_Y = COMBAT_XP_BAR_Y + LEVEL_XP_GAP * 3;
 
-    private BlocklingAttributes stats;
+    private BlocklingStats stats;
 
     private TexturedWidget healthIcon;
     private TexturedWidget armourIcon;
@@ -152,10 +152,10 @@ public class StatsScreen extends TabbedScreen
     {
         List<IReorderingProcessor> tooltip = new ArrayList<>();
 
-        if (combatXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().combatXp.createTranslation("required", blockling.getStats().combatXp.getInt(), BlocklingAttributes.getXpUntilNextLevel(blockling.getStats().combatLevel.getInt())), mouseX, mouseY);
-        else if (miningXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().miningXp.createTranslation("required", blockling.getStats().miningXp.getInt(), BlocklingAttributes.getXpUntilNextLevel(blockling.getStats().miningLevel.getInt())), mouseX, mouseY);
-        else if (woodcuttingXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().woodcuttingXp.createTranslation("required", blockling.getStats().woodcuttingXp.getInt(), BlocklingAttributes.getXpUntilNextLevel(blockling.getStats().woodcuttingLevel.getInt())), mouseX, mouseY);
-        else if (farmingXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().farmingXp.createTranslation("required", blockling.getStats().farmingXp.getInt(), BlocklingAttributes.getXpUntilNextLevel(blockling.getStats().farmingLevel.getInt())), mouseX, mouseY);
+        if (combatXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().combatXp.createTranslation("required", blockling.getStats().combatXp.getInt(), BlocklingStats.getXpUntilNextLevel(blockling.getStats().combatLevel.getInt())), mouseX, mouseY);
+        else if (miningXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().miningXp.createTranslation("required", blockling.getStats().miningXp.getInt(), BlocklingStats.getXpUntilNextLevel(blockling.getStats().miningLevel.getInt())), mouseX, mouseY);
+        else if (woodcuttingXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().woodcuttingXp.createTranslation("required", blockling.getStats().woodcuttingXp.getInt(), BlocklingStats.getXpUntilNextLevel(blockling.getStats().woodcuttingLevel.getInt())), mouseX, mouseY);
+        else if (farmingXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().farmingXp.createTranslation("required", blockling.getStats().farmingXp.getInt(), BlocklingStats.getXpUntilNextLevel(blockling.getStats().farmingLevel.getInt())), mouseX, mouseY);
 
         else if (combatIcon.isMouseOver(mouseX, mouseY))
         {

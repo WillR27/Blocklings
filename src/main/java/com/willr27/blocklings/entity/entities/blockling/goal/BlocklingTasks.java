@@ -141,6 +141,7 @@ public class BlocklingTasks
                 }
 
                 taskTag.put("whitelists", whitelistsTag);
+                taskTag.putInt("state", task.getGoal().getState().ordinal());
             }
 
             tasksTag.put(task.id.toString(), taskTag);
@@ -188,6 +189,8 @@ public class BlocklingTasks
                 {
                     whitelist.readFromNBT(whitelistsTag);
                 }
+
+                task.getGoal().setState(BlocklingGoal.State.values()[taskTag.getInt("state")], false);
             }
         }
 
@@ -218,6 +221,8 @@ public class BlocklingTasks
                 {
                     whitelist.encode(buf);
                 }
+
+                buf.writeEnum(task.getGoal().getState());
             }
         }
     }
@@ -239,7 +244,7 @@ public class BlocklingTasks
             createTask(getTaskType(taskTypeId), taskId, false);
 
             Task task = getTask(taskId);
-            task.setCustomName(PacketBufferUtils.readString(buf));
+            task.setCustomName(PacketBufferUtils.readString(buf), false);
 
             if (task.isConfigured())
             {
@@ -247,6 +252,8 @@ public class BlocklingTasks
                 {
                     whitelist.decode(buf);
                 }
+
+                task.getGoal().setState(buf.readEnum(BlocklingGoal.State.class), false);
             }
         }
     }

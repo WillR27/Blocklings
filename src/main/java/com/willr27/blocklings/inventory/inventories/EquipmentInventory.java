@@ -1,6 +1,7 @@
 package com.willr27.blocklings.inventory.inventories;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.item.ToolType;
 import com.willr27.blocklings.network.NetworkHandler;
 import com.willr27.blocklings.network.messages.EquipmentInventoryMessage;
@@ -44,6 +45,28 @@ public class EquipmentInventory extends AbstractInventory
     public ItemStack getHandStack(Hand hand)
     {
         return hand == Hand.MAIN_HAND ? getItem(TOOL_MAIN_HAND) : getItem(TOOL_OFF_HAND);
+    }
+
+    public BlocklingHand findAttackingHand()
+    {
+        if (hasToolEquipped(Hand.MAIN_HAND, ToolType.WEAPON) && !hasToolEquipped(Hand.OFF_HAND, ToolType.WEAPON))
+        {
+            return BlocklingHand.RIGHT;
+        }
+        else if (!hasToolEquipped(Hand.MAIN_HAND, ToolType.WEAPON) && hasToolEquipped(Hand.OFF_HAND, ToolType.WEAPON))
+        {
+            return BlocklingHand.LEFT;
+        }
+        else if (!getHandStack(Hand.MAIN_HAND).isEmpty() && getHandStack(Hand.OFF_HAND).isEmpty())
+        {
+            return BlocklingHand.RIGHT;
+        }
+        else if (getHandStack(Hand.MAIN_HAND).isEmpty() && !getHandStack(Hand.OFF_HAND).isEmpty())
+        {
+            return BlocklingHand.LEFT;
+        }
+
+        return BlocklingHand.BOTH;
     }
 
     public void detectAndSendChanges()

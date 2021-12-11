@@ -1,7 +1,7 @@
 package com.willr27.blocklings.skills;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.entity.entities.blockling.attribute.BlocklingAttributes;
+import com.willr27.blocklings.entity.entities.blockling.attribute.BlocklingStats;
 import com.willr27.blocklings.entity.entities.blockling.goal.BlocklingTasks;
 import com.willr27.blocklings.gui.widgets.SkillWidget;
 import com.willr27.blocklings.gui.GuiUtil;
@@ -39,7 +39,7 @@ public class BlocklingSkills
         private static final SkillGeneralInfo NOVICE_MINER_GENERAL = new SkillGeneralInfo(Skill.Type.AI, "mining.novice_miner");
         private static final SkillDefaultsInfo NOVICE_MINER_DEFAULTS = new SkillDefaultsInfo(Skill.State.UNLOCKED);
         private static final SkillRelationshipsInfo NOVICE_MINER_RELATIONSHIPS = new SkillRelationshipsInfo(new SkillInfo[] {  }, new SkillInfo[] {  });
-        private static final SkillRequirementsInfo NOVICE_MINER_REQUIREMENTS = new SkillRequirementsInfo(0, new HashMap<BlocklingAttributes.Level, Integer>() {{  }});
+        private static final SkillRequirementsInfo NOVICE_MINER_REQUIREMENTS = new SkillRequirementsInfo(0, new HashMap<BlocklingStats.Level, Integer>() {{  }});
         private static final SkillCallbackInfo NOVICE_MINER_CALLBACKS = new SkillCallbackInfo(skill -> { skill.group.blockling.getTasks().setIsUnlocked(BlocklingTasks.MINE, true); return true; });
         private static final SkillGuiInfo.AbilityGuiTexture NOVICE_MINER_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.MINING_ICONS, 0, 0);
         private static final SkillGuiInfo NOVICE_MINER_GUI = new SkillGuiInfo(0, 0, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, NOVICE_MINER_TEXTURE);
@@ -48,7 +48,7 @@ public class BlocklingSkills
         private static final SkillGeneralInfo MINING_WHITELIST_GENERAL = new SkillGeneralInfo(Skill.Type.OTHER, "mining.whitelist");
         private static final SkillDefaultsInfo MINING_WHITELIST_DEFAULTS = new SkillDefaultsInfo(Skill.State.LOCKED);
         private static final SkillRelationshipsInfo MINING_WHITELIST_RELATIONSHIPS = new SkillRelationshipsInfo(new SkillInfo[] { NOVICE_MINER }, new SkillInfo[] {  });
-        private static final SkillRequirementsInfo MINING_WHITELIST_REQUIREMENTS = new SkillRequirementsInfo(2, new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.MINING, 10); }});
+        private static final SkillRequirementsInfo MINING_WHITELIST_REQUIREMENTS = new SkillRequirementsInfo(2, new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.MINING, 10); }});
         private static final SkillCallbackInfo MINING_WHITELIST_CALLBACKS = new SkillCallbackInfo(skill -> true);
         private static final SkillGuiInfo.AbilityGuiTexture MINING_WHITELIST_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.MINING_ICONS, 2, 1);
         private static final SkillGuiInfo MINING_WHITELIST_GUI = new SkillGuiInfo(0, 70, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, MINING_WHITELIST_TEXTURE);
@@ -57,7 +57,7 @@ public class BlocklingSkills
         private static final SkillGeneralInfo FASTER_MINING_GENERAL = new SkillGeneralInfo(Skill.Type.STAT, "mining.efficiency");
         private static final SkillDefaultsInfo FASTER_MINING_DEFAULTS = new SkillDefaultsInfo(Skill.State.LOCKED);
         private static final SkillRelationshipsInfo FASTER_MINING_RELATIONSHIPS = new SkillRelationshipsInfo(new SkillInfo[] { NOVICE_MINER }, new SkillInfo[] {  });
-        private static final SkillRequirementsInfo FASTER_MINING_REQUIREMENTS = new SkillRequirementsInfo(1, new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.MINING, 5); }});
+        private static final SkillRequirementsInfo FASTER_MINING_REQUIREMENTS = new SkillRequirementsInfo(1, new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.MINING, 5); }});
         private static final SkillCallbackInfo FASTER_MINING_CALLBACKS = new SkillCallbackInfo(skill -> true);
         private static final SkillGuiInfo.AbilityGuiTexture FASTER_MINING_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.MINING_ICONS, 1, 0);
         private static final SkillGuiInfo FASTER_MINING_GUI = new SkillGuiInfo(70, 0, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xffd56d, FASTER_MINING_TEXTURE);

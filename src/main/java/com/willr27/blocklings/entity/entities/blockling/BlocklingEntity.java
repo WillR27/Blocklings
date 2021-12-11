@@ -1,7 +1,7 @@
 package com.willr27.blocklings.entity.entities.blockling;
 
 import com.willr27.blocklings.entity.entities.blockling.action.BlocklingActions;
-import com.willr27.blocklings.entity.entities.blockling.attribute.BlocklingAttributes;
+import com.willr27.blocklings.entity.entities.blockling.attribute.BlocklingStats;
 import com.willr27.blocklings.entity.entities.blockling.goal.BlocklingTasks;
 import com.willr27.blocklings.gui.GuiHandler;
 import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
@@ -27,6 +27,8 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.IServerWorld;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -40,7 +42,7 @@ import javax.annotation.Nullable;
 public class BlocklingEntity extends TameableEntity implements IEntityAdditionalSpawnData
 {
     private BlocklingType blocklingType = BlocklingType.GRASS;
-    private final BlocklingAttributes stats = new BlocklingAttributes(this);
+    private final BlocklingStats stats = new BlocklingStats(this);
     private final BlocklingTasks tasks = new BlocklingTasks(this);
     private final BlocklingSkills skills = new BlocklingSkills(this);
     private final BlocklingActions actions = new BlocklingActions(this);
@@ -67,6 +69,18 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     public static AttributeModifierMap.MutableAttribute createAttributes()
     {
         return MobEntity.createMobAttributes().add(Attributes.ATTACK_DAMAGE, 2.0D);
+    }
+
+    @Override
+    @Nullable
+    public ILivingEntityData finalizeSpawn(IServerWorld world, DifficultyInstance difficultyInstance, SpawnReason spawnReason, @Nullable ILivingEntityData entityData, @Nullable CompoundNBT tag)
+    {
+        if (spawnReason == SpawnReason.SPAWN_EGG && tag != null)
+        {
+            readBlocklingFromNBT((CompoundNBT) tag.get("blockling"));
+        }
+
+        return super.finalizeSpawn(world, difficultyInstance, spawnReason, entityData, tag);
     }
 
     @Override
@@ -152,6 +166,18 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         refreshDimensions();
 
         equipmentInv.detectAndSendChanges();
+    }
+
+    @Override
+    public boolean doHurtTarget(Entity target)
+    {
+        int invulnerableTime = target.invulnerableTime;
+
+        boolean hasHurt = super.doHurtTarget(target);
+
+        target.invulnerableTime = invulnerableTime;
+
+        return hasHurt;
     }
 
     @Override
@@ -362,7 +388,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         }
     }
 
-    public BlocklingAttributes getStats()
+    public BlocklingStats getStats()
     {
         return stats;
     }

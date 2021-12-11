@@ -44,7 +44,7 @@ public class KnownTargetAction extends Action
 
        if (isRunning())
        {
-           if (elapsedTicks() >= targetTicksSupplier.get())
+           if (elapsedTicks() > targetTicksSupplier.get())
            {
                stop();
 
@@ -60,21 +60,31 @@ public class KnownTargetAction extends Action
 
     public float percentThroughAction()
     {
-        return (float) elapsedTicks() / (float) targetTicksSupplier.get();
+        return percentThroughAction(0);
     }
 
     public float percentThroughActionSq()
     {
-        return (float) (elapsedTicks() * elapsedTicks()) / (float) (targetTicksSupplier.get() * targetTicksSupplier.get());
+        return percentThroughActionSq(0);
     }
 
     public float percentThroughAction(int tickOffset)
     {
+        if (elapsedTicks() + tickOffset < 0)
+        {
+            return 1.0f;
+        }
+
         return (float) (elapsedTicks() + tickOffset) / (float) targetTicksSupplier.get();
     }
 
     public float percentThroughActionSq(int tickOffset)
     {
+        if (elapsedTicks() + tickOffset < 0)
+        {
+            return 1.0f;
+        }
+
         return (float) ((elapsedTicks() + tickOffset) * (elapsedTicks() + tickOffset)) / (float) (targetTicksSupplier.get() * targetTicksSupplier.get());
     }
 }

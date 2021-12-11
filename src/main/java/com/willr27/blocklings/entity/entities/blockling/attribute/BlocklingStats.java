@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class BlocklingAttributes
+public class BlocklingStats
 {
     public final List<Attribute> attributes = new ArrayList<>();
     public final List<AttributeModifier> modifiers = new ArrayList<>();
@@ -74,12 +74,12 @@ public class BlocklingAttributes
     public final BlocklingEntity blockling;
     public final World world;
 
-    public BlocklingAttributes(BlocklingEntity blockling)
+    public BlocklingStats(BlocklingEntity blockling)
     {
         this.blockling = blockling;
         this.world = blockling.level;
 
-        combatInterval = createAttribute("combat_interval", 10.0f);
+        combatInterval = createAttribute("combat_interval", 5.0f);
         combatIntervalLevelModifier = createAttributeModifier(combatInterval, "combat_interval_level", 0.0f, AttributeModifier.Operation.ADD);
         combatIntervalToolModifier = createAttributeModifier(combatInterval, "combat_interval_tool", 0.75f, AttributeModifier.Operation.MULTIPLY_TOTAL);
         miningInterval = createAttribute("mining_interval", 10.0f);
@@ -149,9 +149,13 @@ public class BlocklingAttributes
         movementSpeedTypeModifier = createAttributeModifier(movementSpeed, "movement_speed_type", 0.0f, AttributeModifier.Operation.ADD);
 
         combatInterval.addModifier(combatIntervalLevelModifier);
+        combatInterval.addModifier(combatIntervalToolModifier);
         miningInterval.addModifier(miningIntervalLevelModifier);
+        miningInterval.addModifier(miningIntervalToolModifier);
         woodcuttingInterval.addModifier(woodcuttingIntervalLevelModifier);
+        woodcuttingInterval.addModifier(woodcuttingIntervalToolModifier);
         farmingInterval.addModifier(farmingIntervalLevelModifier);
+        farmingInterval.addModifier(farmingIntervalToolModifier);
 
         maxHealth.addModifier(maxHealthCombatLevelModifier);
         damage.addModifier(damageCombatLevelModifier);
