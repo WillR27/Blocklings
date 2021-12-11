@@ -13,6 +13,7 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class BlocklingAttributes
 {
@@ -70,15 +71,13 @@ public class BlocklingAttributes
     public final Attribute movementSpeed;
     public final AttributeModifier movementSpeedTypeModifier;
 
-    private BlocklingEntity blockling;
-    private World world;
-    private EntityDataManager dataManager;
+    public final BlocklingEntity blockling;
+    public final World world;
 
     public BlocklingAttributes(BlocklingEntity blockling)
     {
         this.blockling = blockling;
         this.world = blockling.level;
-        this.dataManager = blockling.getEntityData();
 
         combatInterval = createAttribute("combat_interval", 10.0f);
         combatIntervalLevelModifier = createAttributeModifier(combatInterval, "combat_interval_level", 0.0f, AttributeModifier.Operation.ADD);
@@ -100,53 +99,53 @@ public class BlocklingAttributes
         farmingIntervalFasterFarmingEnhancedAbilityModifier = createAttributeModifier(farmingInterval, "farming_interval_faster_farming_enhanced_skill", 0.9f, AttributeModifier.Operation.MULTIPLY_TOTAL);
 
         combatLevel = createAttribute("combat_level", 10);
-        combatLevel.setOnCalculate(() -> { combatIntervalLevelModifier.setValue(calcBreakSpeedFromLevel((int) combatLevel.getFloat())); updateCombatLevelBonuses(); });
+        combatLevel.setOnCalculate(() -> { combatIntervalLevelModifier.setValue(calcBreakSpeedFromLevel((int) combatLevel.getFloat()), false); updateCombatLevelBonuses(false); });
         levels.add(combatLevel);
         miningLevel = createAttribute("mining_level", 10);
-        miningLevel.setOnCalculate(() -> { miningIntervalLevelModifier.setValue(calcBreakSpeedFromLevel((int) miningLevel.getFloat())); });
+        miningLevel.setOnCalculate(() -> { miningIntervalLevelModifier.setValue(calcBreakSpeedFromLevel((int) miningLevel.getFloat()), false); });
         levels.add(miningLevel);
         woodcuttingLevel = createAttribute("woodcutting_level", 10);
-        woodcuttingLevel.setOnCalculate(() -> { woodcuttingIntervalLevelModifier.setValue(calcBreakSpeedFromLevel((int) woodcuttingLevel.getFloat())); });
+        woodcuttingLevel.setOnCalculate(() -> { woodcuttingIntervalLevelModifier.setValue(calcBreakSpeedFromLevel((int) woodcuttingLevel.getFloat()), false); });
         levels.add(woodcuttingLevel);
         farmingLevel = createAttribute("farming_level", 10);
-        farmingLevel.setOnCalculate(() -> { farmingIntervalLevelModifier.setValue(calcBreakSpeedFromLevel((int) farmingLevel.getFloat())); });
+        farmingLevel.setOnCalculate(() -> { farmingIntervalLevelModifier.setValue(calcBreakSpeedFromLevel((int) farmingLevel.getFloat()), false); });
         levels.add(farmingLevel);
 
         combatXp = createAttribute("combat_xp", getXpUntilNextLevel(combatLevel.getInt()));
-        combatXp.setOnCalculate(() -> { checkForLevelUp(); });
+        combatXp.setOnCalculate(() -> { checkForLevelUp(false); });
         miningXp = createAttribute("mining_xp", getXpUntilNextLevel(miningLevel.getInt()));
-        miningXp.setOnCalculate(() -> { checkForLevelUp(); });
+        miningXp.setOnCalculate(() -> { checkForLevelUp(false); });
         woodcuttingXp = createAttribute("woodcutting_xp", getXpUntilNextLevel(woodcuttingLevel.getInt()));
-        woodcuttingXp.setOnCalculate(() -> { checkForLevelUp(); });
+        woodcuttingXp.setOnCalculate(() -> { checkForLevelUp(false); });
         farmingXp = createAttribute("farming_xp", getXpUntilNextLevel(farmingLevel.getInt()));
-        farmingXp.setOnCalculate(() -> { checkForLevelUp(); });
+        farmingXp.setOnCalculate(() -> { checkForLevelUp(false); });
 
         skillPoints = createAttribute("skill_points", 50.0f);
 
         miningRange = createAttribute("mining_range", 2.5f);
         miningRangeSq = createAttribute("mining_range_sq", miningRange.getFloat() * miningRange.getFloat());
-        miningRange.setOnCalculate(() -> { miningRangeSq.setBaseValue(miningRange.getFloat() * miningRange.getFloat()); });
+        miningRange.setOnCalculate(() -> { miningRangeSq.setBaseValue(miningRange.getFloat() * miningRange.getFloat(), false); });
         woodcuttingRange = createAttribute("woodcutting_range", 2.5f);
         woodcuttingRangeSq = createAttribute("woodcutting_range_sq", woodcuttingRange.getFloat() * woodcuttingRange.getFloat());
-        woodcuttingRange.setOnCalculate(() -> { woodcuttingRangeSq.setBaseValue(woodcuttingRange.getFloat() * woodcuttingRange.getFloat()); });
+        woodcuttingRange.setOnCalculate(() -> { woodcuttingRangeSq.setBaseValue(woodcuttingRange.getFloat() * woodcuttingRange.getFloat(), false); });
         farmingRange = createAttribute("farming_range", 2.5f);
         farmingRangeSq = createAttribute("farming_range_sq", farmingRange.getFloat() * farmingRange.getFloat());
-        farmingRange.setOnCalculate(() -> { farmingRangeSq.setBaseValue(farmingRange.getFloat() * farmingRange.getFloat()); });
+        farmingRange.setOnCalculate(() -> { farmingRangeSq.setBaseValue(farmingRange.getFloat() * farmingRange.getFloat(), false); });
 
         maxHealth = createAttribute("max_health", 10.0f);
-        maxHealth.setOnCalculate(() -> { blockling.getAttribute(Attributes.MAX_HEALTH).setBaseValue(maxHealth.getFloat()); updateHealth(); });
+        maxHealth.setOnCalculate(() -> { Objects.requireNonNull(blockling.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(maxHealth.getFloat()); updateHealth(); });
         maxHealthCombatLevelModifier = createAttributeModifier(maxHealth, "max_health_combat_level", 0.0f, AttributeModifier.Operation.ADD);
         maxHealthTypeModifier  = createAttributeModifier(maxHealth, "max_health_type", 0.0f, AttributeModifier.Operation.ADD);
         damage = createAttribute("damage", 1.0f);
-        damage.setOnCalculate(() -> { blockling.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(damage.getFloat()); });
+        damage.setOnCalculate(() -> { Objects.requireNonNull(blockling.getAttribute(Attributes.ATTACK_DAMAGE)).setBaseValue(damage.getFloat()); });
         damageCombatLevelModifier = createAttributeModifier(damage, "damage_combat_level", 0.0f, AttributeModifier.Operation.ADD);
         damageTypeModifier = createAttributeModifier(damage, "damage_type", 0.0f, AttributeModifier.Operation.ADD);
         armour = createAttribute("armour", 2.0f);
-        armour.setOnCalculate(() -> { blockling.getAttribute(Attributes.ARMOR).setBaseValue(armour.getFloat()); });
+        armour.setOnCalculate(() -> { Objects.requireNonNull(blockling.getAttribute(Attributes.ARMOR)).setBaseValue(armour.getFloat()); });
         armourCombatLevelModifier = createAttributeModifier(armour, "armour_combat_level", 0.0f, AttributeModifier.Operation.ADD);
         armourTypeModifier = createAttributeModifier(armour, "armour_type", 0.0f, AttributeModifier.Operation.ADD);
         movementSpeed = createAttribute("movement_speed", 0.3f);
-        movementSpeed.setOnCalculate(() -> { blockling.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(movementSpeed.getFloat()); });
+        movementSpeed.setOnCalculate(() -> { Objects.requireNonNull(blockling.getAttribute(Attributes.MOVEMENT_SPEED)).setBaseValue(movementSpeed.getFloat()); });
         movementSpeedTypeModifier = createAttributeModifier(movementSpeed, "movement_speed_type", 0.0f, AttributeModifier.Operation.ADD);
 
         combatInterval.addModifier(combatIntervalLevelModifier);
@@ -184,9 +183,8 @@ public class BlocklingAttributes
 
         blockling.setHealth(blockling.getMaxHealth());
 
-        // TODO: NEEDED? ^ V
-        updateCombatLevelBonuses();
-        updateTypeBonuses();
+        updateCombatLevelBonuses(false);
+        updateTypeBonuses(false);
     }
 
     public void writeToNBT(CompoundNBT c)
@@ -258,15 +256,15 @@ public class BlocklingAttributes
         return (int) (Math.exp(level / 25.0) * 40) - 30;
     }
 
-    public void checkForLevelUp()
+    public void checkForLevelUp(boolean sync)
     {
         int combatLevel = this.combatLevel.getInt();
         int combatXp = this.combatXp.getInt();
         int combatXpReq = getXpUntilNextLevel(combatLevel);
         if (combatXp >= combatXpReq)
         {
-            this.combatLevel.setBaseValue(combatLevel + 1);
-            this.combatXp.setBaseValue(combatXp - combatXpReq);
+            this.combatLevel.setBaseValue(combatLevel + 1, sync);
+            this.combatXp.setBaseValue(combatXp - combatXpReq, sync);
         }
 
         int miningLevel = this.miningLevel.getInt();
@@ -274,8 +272,8 @@ public class BlocklingAttributes
         int miningXpReq = getXpUntilNextLevel(miningLevel);
         if (miningXp >= miningXpReq)
         {
-            this.miningLevel.setBaseValue(miningLevel + 1);
-            this.miningXp.setBaseValue(miningXp - miningXpReq);
+            this.miningLevel.setBaseValue(miningLevel + 1, sync);
+            this.miningXp.setBaseValue(miningXp - miningXpReq, sync);
         }
 
         int woodcuttingLevel = this.woodcuttingLevel.getInt();
@@ -283,8 +281,8 @@ public class BlocklingAttributes
         int woodcuttingXpReq = getXpUntilNextLevel(woodcuttingLevel);
         if (woodcuttingXp >= woodcuttingXpReq)
         {
-            this.woodcuttingLevel.setBaseValue(woodcuttingLevel + 1);
-            this.woodcuttingXp.setBaseValue(woodcuttingXp - woodcuttingXpReq);
+            this.woodcuttingLevel.setBaseValue(woodcuttingLevel + 1, sync);
+            this.woodcuttingXp.setBaseValue(woodcuttingXp - woodcuttingXpReq, sync);
         }
 
         int farmingLevel = this.farmingLevel.getInt();
@@ -292,31 +290,29 @@ public class BlocklingAttributes
         int farmingXpReq = getXpUntilNextLevel(farmingLevel);
         if (farmingXp >= farmingXpReq)
         {
-            this.farmingLevel.setBaseValue(farmingLevel + 1);
-            this.farmingXp.setBaseValue(farmingXp - farmingXpReq);
+            this.farmingLevel.setBaseValue(farmingLevel + 1, sync);
+            this.farmingXp.setBaseValue(farmingXp - farmingXpReq, sync);
         }
     }
 
-    public void updateCombatLevelBonuses()
+    public void updateCombatLevelBonuses(boolean sync)
     {
-        maxHealthCombatLevelModifier.setValue(calcBonusHealthFromCombatLevel());
-        damageCombatLevelModifier.setValue(calcBonusDamageFromCombatLevel());
-        armourCombatLevelModifier.setValue(calcBonusArmorFromCombatLevel());
+        maxHealthCombatLevelModifier.setValue(calcBonusHealthFromCombatLevel(), sync);
+        damageCombatLevelModifier.setValue(calcBonusDamageFromCombatLevel(), sync);
+        armourCombatLevelModifier.setValue(calcBonusArmorFromCombatLevel(), sync);
     }
 
-    public void updateTypeBonuses()
+    public void updateTypeBonuses(boolean sync)
     {
         BlocklingType type = blockling.getBlocklingType();
-        maxHealthTypeModifier.setValue(type.getBonusHealth());
-        damageTypeModifier.setValue(type.getBonusDamage());
-        armourTypeModifier.setValue(type.getBonusArmour());
-        movementSpeedTypeModifier.setValue(type.getBonusSpeed());
+        maxHealthTypeModifier.setValue(type.getBonusHealth(), sync);
+        damageTypeModifier.setValue(type.getBonusDamage(), sync);
+        armourTypeModifier.setValue(type.getBonusArmour(), sync);
+        movementSpeedTypeModifier.setValue(type.getBonusSpeed(), sync);
     }
 
     public void updateItemBonuses()
     {
-//        if (blockling.equipmentInventory == null) return;
-
         ItemStack mainStack = blockling.getMainHandItem();
         ItemStack offStack = blockling.getOffhandItem();
         Item mainItem = mainStack.getItem();
@@ -393,7 +389,7 @@ public class BlocklingAttributes
     {
         for (Attribute attribute : attributes)
         {
-            if (attribute.key == name)
+            if (attribute.key.equals(name))
             {
                 return attribute;
             }
@@ -421,7 +417,7 @@ public class BlocklingAttributes
 
         public String getDisplayName()
         {
-            return name().substring(0, 1) + name().substring(1).toLowerCase();
+            return name().charAt(0) + name().substring(1).toLowerCase();
         }
     }
 }
