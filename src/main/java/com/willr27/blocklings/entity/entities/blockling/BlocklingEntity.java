@@ -33,6 +33,7 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.NetworkHooks;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BlocklingEntity extends TameableEntity implements IEntityAdditionalSpawnData
@@ -44,7 +45,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     private final BlocklingActions actions = new BlocklingActions(this);
     private BlocklingGuiInfo guiInfo = new BlocklingGuiInfo(this);
 
-    private EquipmentInventory equipmentInv = new EquipmentInventory(this);
+    private final EquipmentInventory equipmentInv = new EquipmentInventory(this);
 
     public BlocklingEntity(EntityType<? extends BlocklingEntity> type, World world)
     {
@@ -68,7 +69,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT c)
+    public void addAdditionalSaveData(@Nonnull CompoundNBT c)
     {
         super.addAdditionalSaveData(c);
 
@@ -90,11 +91,16 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT c)
+    public void readAdditionalSaveData(@Nonnull CompoundNBT c)
     {
         super.readAdditionalSaveData(c);
 
-        readBlocklingFromNBT((CompoundNBT) c.get("blockling"));
+        CompoundNBT blocklingTag = (CompoundNBT) c.get("blockling");
+
+        if (blocklingTag != null)
+        {
+            readBlocklingFromNBT(blocklingTag);
+        }
     }
 
     public void readBlocklingFromNBT(CompoundNBT c)
@@ -130,7 +136,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket()
+    public @Nonnull IPacket<?> getAddEntityPacket()
     {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
@@ -148,7 +154,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     }
 
     @Override
-    public ActionResultType mobInteract(PlayerEntity player, Hand hand)
+    public @Nonnull ActionResultType mobInteract(@Nonnull PlayerEntity player, @Nonnull Hand hand)
     {
         ActionResultType result = ActionResultType.PASS;
 
@@ -271,25 +277,25 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     }
 
     @Override
-    public ItemStack getMainHandItem()
+    public @Nonnull ItemStack getMainHandItem()
     {
         return getItemInHand(Hand.MAIN_HAND);
     }
 
     @Override
-    public ItemStack getOffhandItem()
+    public @Nonnull ItemStack getOffhandItem()
     {
         return getItemInHand(Hand.OFF_HAND);
     }
 
     @Override
-    public ItemStack getItemInHand(Hand hand)
+    public @Nonnull ItemStack getItemInHand(@Nonnull Hand hand)
     {
         return equipmentInv.getHandStack(hand);
     }
 
     @Override
-    public boolean checkSpawnRules(IWorld world, SpawnReason reason)
+    public boolean checkSpawnRules(@Nonnull IWorld world, @Nonnull SpawnReason reason)
     {
 //        return super.checkSpawnRules(world, reason);
 
@@ -297,7 +303,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     }
 
     @Override
-    public EntitySize getDimensions(Pose pose)
+    public @Nonnull EntitySize getDimensions(@Nonnull Pose pose)
     {
 //        if (id == 1)
 //        {
@@ -309,7 +315,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
     @Nullable
     @Override
-    public AgeableEntity getBreedOffspring(ServerWorld world, AgeableEntity entity)
+    public AgeableEntity getBreedOffspring(@Nonnull ServerWorld world, @Nonnull AgeableEntity entity)
     {
         return null;
     }
