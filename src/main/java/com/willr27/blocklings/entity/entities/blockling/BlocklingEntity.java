@@ -24,6 +24,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ActionResultType;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IWorld;
@@ -251,6 +252,22 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         Item item = stack.getItem();
 
         return ActionResultType.PASS;
+    }
+
+    @Override
+    protected void dropCustomDeathLoot(@Nonnull DamageSource source, int something, boolean something2)
+    {
+        super.dropCustomDeathLoot(source, something, something2);
+
+        for (int i = 0; i < equipmentInv.getContainerSize(); i++)
+        {
+            ItemStack stack = equipmentInv.getItem(i);
+
+            if (!stack.isEmpty())
+            {
+                spawnAtLocation(stack);
+            }
+        }
     }
 
     private void tryTame(ServerPlayerEntity player, ItemStack stack)
