@@ -2,6 +2,6 @@
     "parent": "item/generated",
     "textures": 
     {
-        "layer0": "blocklings:items/blockling"
+        "layer0": "blocklings:items/glowing_upgrade"
     }
 }

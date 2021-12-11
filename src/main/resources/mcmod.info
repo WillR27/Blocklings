@@ -1,0 +1,16 @@
+[
+{
+  "modid": "blocklings",
+  "name": "Blocklings Mod",
+  "description": "Adds tameable creatures that can fight, mine, chop and farm.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["WillR27"],
+  "credits": "This one goes out to my boi Joel.",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
