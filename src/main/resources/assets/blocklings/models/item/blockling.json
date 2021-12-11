@@ -1,0 +1,26 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "blocklings:item/blockling"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "blocklings:type": 0
+      },
+      "model": "blocklings:item/blockling"
+    },
+    {
+      "predicate": {
+        "blocklings:type": 1
+      },
+      "model": "blocklings:item/blockling_stone"
+    },
+    {
+      "predicate": {
+        "blocklings:type": 2
+      },
+      "model": "blocklings:item/blockling_diamond"
+    }
+  ]
+}
