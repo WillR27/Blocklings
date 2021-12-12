@@ -31,6 +31,7 @@ public class NetworkHandler
         HANDLER.registerMessage(id++, Attribute.BlocklingAttributeBaseValueMessage.class, Attribute.BlocklingAttributeBaseValueMessage::encode, Attribute.BlocklingAttributeBaseValueMessage::decode, Attribute.BlocklingAttributeBaseValueMessage::handle);
         HANDLER.registerMessage(id++, AttributeModifier.BlocklingAttributeModifierValueMessage.class, AttributeModifier.BlocklingAttributeModifierValueMessage::encode, AttributeModifier.BlocklingAttributeModifierValueMessage::decode, AttributeModifier.BlocklingAttributeModifierValueMessage::handle);
         HANDLER.registerMessage(id++, BlocklingGuiInfo.BlocklingGuiInfoMessage.class, BlocklingGuiInfo.BlocklingGuiInfoMessage::encode, BlocklingGuiInfo.BlocklingGuiInfoMessage::decode, BlocklingGuiInfo.BlocklingGuiInfoMessage::handle);
+        HANDLER.registerMessage(id++, BlocklingTargetMessage.class, BlocklingTargetMessage::encode, BlocklingTargetMessage::decode, BlocklingTargetMessage::handle);
         HANDLER.registerMessage(id++, BlocklingTypeMessage.class, BlocklingTypeMessage::encode, BlocklingTypeMessage::decode, BlocklingTypeMessage::handle);
         HANDLER.registerMessage(id++, EquipmentInventoryMessage.class, EquipmentInventoryMessage::encode, EquipmentInventoryMessage::decode, EquipmentInventoryMessage::handle);
         HANDLER.registerMessage(id++, GoalSetStateMessage.class, GoalSetStateMessage::encode, GoalSetStateMessage::decode, GoalSetStateMessage::handle);

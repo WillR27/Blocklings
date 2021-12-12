@@ -3,11 +3,9 @@ package com.willr27.blocklings.gui.containers;
 import com.willr27.blocklings.gui.containers.slots.ToolSlot;
 import com.willr27.blocklings.gui.containers.slots.UtilitySlot;
 import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
-import com.willr27.blocklings.inventory.inventories.PlayerContainerListener;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.IContainerListener;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 
@@ -16,18 +14,13 @@ public class EquipmentContainer extends Container
     private static final int PLAYER_INV_X = 8;
     private static final int PLAYER_INV_Y = 74;
 
-    protected EquipmentContainer(int id, PlayerInventory playerInv)
-    {
-        super(null, id);
-    }
-
     public EquipmentContainer(int id, PlayerEntity player, EquipmentInventory blocklingInv)
     {
-        this(id, player.inventory);
+        super(null, id);
 
         if (!player.level.isClientSide)
         {
-            addSlotListener(new PlayerContainerListener((ServerPlayerEntity) player));
+            addSlotListener((IContainerListener) player);
         }
 
         addSlot(new UtilitySlot(blocklingInv, EquipmentInventory.UTILITY_1, 12, -2));

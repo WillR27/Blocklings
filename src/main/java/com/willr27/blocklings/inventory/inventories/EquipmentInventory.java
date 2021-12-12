@@ -47,23 +47,35 @@ public class EquipmentInventory extends AbstractInventory
         return hand == Hand.MAIN_HAND ? getItem(TOOL_MAIN_HAND) : getItem(TOOL_OFF_HAND);
     }
 
+    public void setHandStack(Hand hand, ItemStack stack)
+    {
+        if (hand == Hand.MAIN_HAND)
+        {
+            setItem(TOOL_MAIN_HAND, stack);
+        }
+        else if (hand == Hand.OFF_HAND)
+        {
+            setItem(TOOL_OFF_HAND, stack);
+        }
+    }
+
     public BlocklingHand findAttackingHand()
     {
         if (hasToolEquipped(Hand.MAIN_HAND, ToolType.WEAPON) && !hasToolEquipped(Hand.OFF_HAND, ToolType.WEAPON))
         {
-            return BlocklingHand.RIGHT;
+            return BlocklingHand.MAIN;
         }
         else if (!hasToolEquipped(Hand.MAIN_HAND, ToolType.WEAPON) && hasToolEquipped(Hand.OFF_HAND, ToolType.WEAPON))
         {
-            return BlocklingHand.LEFT;
+            return BlocklingHand.OFF;
         }
         else if (!getHandStack(Hand.MAIN_HAND).isEmpty() && getHandStack(Hand.OFF_HAND).isEmpty())
         {
-            return BlocklingHand.RIGHT;
+            return BlocklingHand.MAIN;
         }
         else if (getHandStack(Hand.MAIN_HAND).isEmpty() && !getHandStack(Hand.OFF_HAND).isEmpty())
         {
-            return BlocklingHand.LEFT;
+            return BlocklingHand.OFF;
         }
 
         return BlocklingHand.BOTH;

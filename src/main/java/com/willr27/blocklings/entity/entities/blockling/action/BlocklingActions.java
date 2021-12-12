@@ -13,8 +13,8 @@ public class BlocklingActions
 {
     public final List<Action> actions = new ArrayList<>();
 
-    public final AttackAction attacking;
-    public final KnownTargetAction mining;
+    public final AttackAction attack;
+    public final KnownTargetAction mine;
 
     public final BlocklingEntity blockling;
 
@@ -22,8 +22,8 @@ public class BlocklingActions
     {
         this.blockling = blockling;
 
-        attacking = createAction(blockling, "attacking", () -> blockling.getStats().combatInterval.getInt(), () -> blockling.getStats().combatInterval.getInt());
-        mining = createAction(blockling, "mining", () -> blockling.getStats().miningInterval.getInt());
+        attack = createAction(blockling, "attacking", () -> blockling.getStats().combatInterval.getInt(), () -> blockling.getStats().combatInterval.getInt());
+        mine = createAction(blockling, "mining", () -> blockling.getStats().miningInterval.getInt());
     }
 
     public UnknownTargetAction createAction(BlocklingEntity blockling, String key)

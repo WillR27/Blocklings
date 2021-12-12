@@ -131,7 +131,7 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
         }
 
         blockling.getNavigation().stop();
-        blockling.getActions().mining.stop();
+        blockling.getActions().mine.stop();
 
         prevMoveDist = 0.0f;
     }
@@ -155,9 +155,9 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
 
         if (isInRange(targetGoal.getTargetPos()))
         {
-            blockling.getActions().mining.tryStart();
+            blockling.getActions().mine.tryStart();
 
-            if (blockling.getActions().mining.isFinished())
+            if (blockling.getActions().mine.isFinished())
             {
                 world.destroyBlock(targetGoal.getTargetPos(), false);
                 world.destroyBlockProgress(blockling.getId(), targetGoal.getTargetPos(), 0);
@@ -166,12 +166,12 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
             }
             else
             {
-                world.destroyBlockProgress(blockling.getId(), targetGoal.getTargetPos(), BlockUtil.calcBlockBreakProgress(blockling.getActions().mining.percentThroughAction()));
+                world.destroyBlockProgress(blockling.getId(), targetGoal.getTargetPos(), BlockUtil.calcBlockBreakProgress(blockling.getActions().mine.percentThroughAction()));
             }
         }
         else
         {
-            blockling.getActions().mining.stop();
+            blockling.getActions().mine.stop();
         }
     }
 

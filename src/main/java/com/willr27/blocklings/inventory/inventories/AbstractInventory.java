@@ -1,8 +1,6 @@
 package com.willr27.blocklings.inventory.inventories;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.skills.Skill;
-import com.willr27.blocklings.skills.SkillGroup;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;

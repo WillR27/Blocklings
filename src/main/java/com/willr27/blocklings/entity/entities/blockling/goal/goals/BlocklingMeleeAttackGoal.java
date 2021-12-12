@@ -114,9 +114,9 @@ public abstract class BlocklingMeleeAttackGoal extends BlocklingGoal implements 
         if (isInRange(target))
         {
             BlocklingHand attackingHand = blockling.getEquipment().findAttackingHand();
-            attackingHand = attackingHand == BlocklingHand.BOTH ? blockling.getActions().attacking.getRecentHand() == BlocklingHand.LEFT ? BlocklingHand.RIGHT : BlocklingHand.LEFT : attackingHand;
+            attackingHand = attackingHand == BlocklingHand.BOTH ? blockling.getActions().attack.getRecentHand() == BlocklingHand.OFF ? BlocklingHand.MAIN : BlocklingHand.OFF : attackingHand;
 
-            if (blockling.getActions().attacking.tryStart(attackingHand))
+            if (blockling.getActions().attack.tryStart(attackingHand))
             {
                 blockling.doHurtTarget(target);
             }

@@ -221,7 +221,7 @@ public class BlocklingStats
             attribute.setBaseValue(attributesNBT.getFloat(attribute.key), false);
         }
 
-        CompoundNBT modifiersNBT = (CompoundNBT) c.get("attributes");
+        CompoundNBT modifiersNBT = (CompoundNBT) c.get("modifiers");
 
         for (AttributeModifier modifier : modifiers)
         {
