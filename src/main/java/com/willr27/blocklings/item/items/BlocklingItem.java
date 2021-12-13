@@ -51,8 +51,13 @@ public class BlocklingItem extends Item
             }
 
             BlocklingEntity blockling = (BlocklingEntity) EntityTypes.BLOCKLING_ENTITY.get().spawn((ServerWorld) world, stack, context.getPlayer(), blockpos, SpawnReason.SPAWN_EGG, true, true);
+
             blockling.tame(context.getPlayer());
-            blockling.readBlocklingFromNBT((CompoundNBT) stack.getTag().get("blockling"));
+
+            if (stack.getTag() != null)
+            {
+                blockling.readBlocklingFromNBT((CompoundNBT) stack.getTag().get("blockling"));
+            }
 
             if (!context.getPlayer().abilities.instabuild)
             {

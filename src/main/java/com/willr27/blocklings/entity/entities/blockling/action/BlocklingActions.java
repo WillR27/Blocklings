@@ -22,8 +22,8 @@ public class BlocklingActions
     {
         this.blockling = blockling;
 
-        attack = createAction(blockling, "attacking", () -> blockling.getStats().combatInterval.getInt(), () -> blockling.getStats().combatInterval.getInt());
-        mine = createAction(blockling, "mining", () -> blockling.getStats().miningInterval.getInt());
+        attack = createAction(blockling, "attack", () -> blockling.getStats().combatInterval.getFloat(), () -> blockling.getStats().combatInterval.getFloat());
+        mine = new KnownTargetAction(blockling, "mine", () -> 1.0f);
     }
 
     public UnknownTargetAction createAction(BlocklingEntity blockling, String key)
@@ -34,7 +34,7 @@ public class BlocklingActions
         return action;
     }
 
-    public KnownTargetAction createAction(BlocklingEntity blockling, String key, Supplier<Integer> targetTicksSupplier)
+    public KnownTargetAction createAction(BlocklingEntity blockling, String key, Supplier<Float> targetTicksSupplier)
     {
         KnownTargetAction action = new KnownTargetAction(blockling, key, targetTicksSupplier);
         actions.add(action);
@@ -42,7 +42,7 @@ public class BlocklingActions
         return action;
     }
 
-    public AttackAction createAction(BlocklingEntity blockling, String key, Supplier<Integer> targetTicksSupplier, Supplier<Integer> handTargetTicksSupplier)
+    public AttackAction createAction(BlocklingEntity blockling, String key, Supplier<Float> targetTicksSupplier, Supplier<Float> handTargetTicksSupplier)
     {
         AttackAction action = new AttackAction(this, blockling, key, targetTicksSupplier, handTargetTicksSupplier);
         actions.add(action);

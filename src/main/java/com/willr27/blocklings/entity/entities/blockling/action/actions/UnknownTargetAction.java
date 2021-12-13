@@ -12,11 +12,11 @@ public class UnknownTargetAction extends Action
 
     public float percentThroughAction(int targetTicks)
     {
-        return (float) elapsedTicks() / (float) targetTicks;
+        return (float) count() / (float) targetTicks;
     }
 
     public float percentThroughActionSq(int targetTicks)
     {
-        return (float) (elapsedTicks() * elapsedTicks()) / (float) (targetTicks * targetTicks);
+        return (float) (count() * count()) / (float) (targetTicks * targetTicks);
     }
 }

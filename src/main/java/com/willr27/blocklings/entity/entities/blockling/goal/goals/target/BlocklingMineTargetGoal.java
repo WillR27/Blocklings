@@ -114,7 +114,7 @@ public class BlocklingMineTargetGoal extends BlocklingTargetGoal
 
         badBlockPositions.forEach((blockPos, time) ->
         {
-            if (time >= recalcBadInterval)
+            if (time >= recalcBadInterval || time >= badBlockPositions.size())
             {
                 freshBlockPositions.add(blockPos);
             }

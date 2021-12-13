@@ -123,6 +123,7 @@ public class BlocklingModel extends EntityModel<BlocklingEntity> implements IHas
 
         float weaponBonusRotX = 0.7f;
 
+        BlocklingHand hand = BlocklingHand.values()[blockling.getStats().hand.getInt()];
         BlocklingHand attackingHand = blockling.getEquipment().findAttackingHand();
 
         if (blockling.getTarget() != null)
@@ -154,12 +155,12 @@ public class BlocklingModel extends EntityModel<BlocklingEntity> implements IHas
         }
         else if (blockling.getActions().mine.isRunning())
         {
-            if (blockling.getEquipment().hasToolEquipped(Hand.MAIN_HAND, ToolType.PICKAXE))
+            if (hand == BlocklingHand.MAIN || hand == BlocklingHand.BOTH)
             {
                 rightArmSwing = (MathHelper.cos(ageInTicks + (float) Math.PI) * 1.0f);
             }
 
-            if (blockling.getEquipment().hasToolEquipped(Hand.OFF_HAND, ToolType.PICKAXE))
+            if (hand == BlocklingHand.OFF || hand == BlocklingHand.BOTH)
             {
                 leftArmSwing = (MathHelper.cos(ageInTicks + (float) Math.PI) * 1.0f);
             }

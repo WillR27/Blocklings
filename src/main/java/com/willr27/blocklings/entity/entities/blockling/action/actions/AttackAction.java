@@ -13,11 +13,11 @@ public class AttackAction extends KnownTargetAction
 
     private BlocklingHand recentHand = BlocklingHand.BOTH;
 
-    public AttackAction(BlocklingActions actions, BlocklingEntity blockling, String key, Supplier<Integer> targetTicksSupplier, Supplier<Integer> handTargetTicksSupplier)
+    public AttackAction(BlocklingActions actions, BlocklingEntity blockling, String key, Supplier<Float> targetTicksSupplier, Supplier<Float> handTargetTicksSupplier)
     {
         super(blockling, key, targetTicksSupplier);
 
-        Supplier<Integer> supplier = () -> handTargetTicksSupplier.get() < 10 ? handTargetTicksSupplier.get() : 10;
+        Supplier<Float> supplier = () -> handTargetTicksSupplier.get() < 10.0f ? handTargetTicksSupplier.get() : 10.0f;
         leftHandAction = actions.createAction(blockling, key + "_left_hand", supplier);
         rightHandAction = actions.createAction(blockling, key + "_right_hand", supplier);
     }

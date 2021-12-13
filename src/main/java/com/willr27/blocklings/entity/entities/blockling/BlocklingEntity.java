@@ -136,6 +136,11 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
     public void readBlocklingFromNBT(CompoundNBT c)
     {
+        if (c == null)
+        {
+            return;
+        }
+
         setBlocklingType(BlocklingType.TYPES.get(c.getInt("type")), false);
 
         equipmentInv.readFromNBT(c);

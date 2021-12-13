@@ -2,15 +2,19 @@ package com.willr27.blocklings.entity.entities.blockling.goal.goals;
 
 import com.willr27.blocklings.block.BlockUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.entity.entities.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.entity.entities.blockling.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.entity.entities.blockling.goal.BlocklingTasks;
 import com.willr27.blocklings.entity.entities.blockling.goal.goals.target.BlocklingMineTargetGoal;
 import com.willr27.blocklings.entity.entities.blockling.goal.goals.target.IHasTargetGoal;
 import com.willr27.blocklings.item.ToolType;
+import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.math.BlockPos;
 
@@ -65,6 +69,11 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
             return false;
         }
 
+        if (!blockling.getEquipment().canHarvestBlockWithEquippedTools(world.getBlockState(targetGoal.getTargetPos())))
+        {
+            return false;
+        }
+
         path = blockling.getNavigation().createPath(targetGoal.getTargetPos(), 0);
 
         if (path == null)
@@ -96,6 +105,11 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
             return false;
         }
 
+        if (!blockling.getEquipment().canHarvestBlockWithEquippedTools(world.getBlockState(targetGoal.getTargetPos())))
+        {
+            return false;
+        }
+
         if (path == null)
         {
             if (!isInRange(targetGoal.getTargetPos()))
@@ -122,12 +136,12 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
 
         if (targetGoal.hasTarget())
         {
-            world.destroyBlockProgress(blockling.getId(), targetGoal.getTargetPos(), 0);
+            world.destroyBlockProgress(blockling.getId(), targetGoal.getTargetPos(), -1);
         }
 
         if (targetGoal.hasPrevTarget())
         {
-            world.destroyBlockProgress(blockling.getId(), targetGoal.getPrevTargetPos(), 0);
+            world.destroyBlockProgress(blockling.getId(), targetGoal.getPrevTargetPos(), -1);
         }
 
         blockling.getNavigation().stop();
@@ -153,31 +167,68 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
             prevMoveDist = blockling.moveDist;
         }
 
+        blockling.getActions().mine.tick(0.0f);
+
         if (isInRange(targetGoal.getTargetPos()))
         {
-            blockling.getActions().mine.tryStart();
+            ItemStack mainStack = blockling.getMainHandItem();
+            ItemStack offStack = blockling.getOffhandItem();
 
-            if (blockling.getActions().mine.isFinished())
+            BlockPos targetBlockPos = targetGoal.getTargetPos();
+            BlockState targetBlockState = world.getBlockState(targetBlockPos);
+
+            boolean mainCanHarvest = ToolUtil.canToolHarvestBlock(mainStack, targetBlockState);
+            boolean offCanHarvest = ToolUtil.canToolHarvestBlock(offStack, targetBlockState);
+
+            if (mainCanHarvest || offCanHarvest)
             {
-                world.destroyBlock(targetGoal.getTargetPos(), false);
-                world.destroyBlockProgress(blockling.getId(), targetGoal.getTargetPos(), 0);
+                blockling.getActions().mine.tryStart();
 
-                forceRecalc();
+                if (blockling.getActions().mine.isRunning())
+                {
+                    float blocklingDestroySpeed = blockling.getStats().miningSpeed.getFloat();
+                    float mainDestroySpeed = mainCanHarvest ? ToolUtil.findToolMiningSpeed(mainStack) : 0.0f;
+                    float offDestroySpeed = offCanHarvest ? ToolUtil.findToolMiningSpeed(offStack) : 0.0f;
+
+                    float destroySpeed = blocklingDestroySpeed + mainDestroySpeed + offDestroySpeed;
+                    float blockStrength = world.getBlockState(targetGoal.getTargetPos()).getDestroySpeed(world, targetGoal.getTargetPos());
+
+                    blockling.getStats().hand.setBaseValue(BlocklingHand.fromBooleans(mainCanHarvest, offCanHarvest).ordinal());
+
+                    float progress = destroySpeed / blockStrength / 30.0f;
+                    blockling.getActions().mine.tick(progress);
+
+                    if (blockling.getActions().mine.isFinished())
+                    {
+                        blockling.getActions().mine.stop();
+
+                        world.destroyBlock(targetGoal.getTargetPos(), false);
+                        world.destroyBlockProgress(blockling.getId(), targetGoal.getTargetPos(), 0);
+
+                        forceRecalc();
+                    }
+                    else
+                    {
+                        world.destroyBlockProgress(blockling.getId(), targetGoal.getTargetPos(), BlockUtil.calcBlockBreakProgress(blockling.getActions().mine.count()));
+                    }
+                }
             }
             else
             {
-                world.destroyBlockProgress(blockling.getId(), targetGoal.getTargetPos(), BlockUtil.calcBlockBreakProgress(blockling.getActions().mine.percentThroughAction()));
+                world.destroyBlockProgress(blockling.getId(), targetGoal.getTargetPos(), -1);
+                blockling.getActions().mine.stop();
             }
         }
         else
         {
+            world.destroyBlockProgress(blockling.getId(), targetGoal.getTargetPos(), -1);
             blockling.getActions().mine.stop();
         }
     }
 
     private void tryCalculatePath()
     {
-        path = blockling.getNavigation().createPath(targetGoal.getTargetPos(), 0);
+        path = blockling.getNavigation().createPath(targetGoal.getTargetPos(), -1);
         blockling.getNavigation().moveTo(path, 1.0);
     }
 

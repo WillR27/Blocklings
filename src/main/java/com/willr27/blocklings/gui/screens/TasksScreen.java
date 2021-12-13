@@ -7,7 +7,6 @@ import com.willr27.blocklings.entity.entities.blockling.goal.Task;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.screens.guis.TabbedGui;
 import com.willr27.blocklings.gui.screens.guis.TaskConfigGui;
-import com.willr27.blocklings.gui.screens.guis.WhitelistGui2;
 import com.willr27.blocklings.gui.widgets.*;
 import com.willr27.blocklings.gui.widgets.tasks.TaskWidget;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
@@ -15,7 +14,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +25,6 @@ public class TasksScreen extends TabbedScreen
     private static final int TASK_GAP = 4;
 
     private TaskConfigGui taskConfigGui;
-    private WhitelistGui2 whitelistGui;
 
     private Widget tasksWidget = null;
     private List<TaskWidget> taskWidgets = new ArrayList<>();
@@ -60,11 +57,6 @@ public class TasksScreen extends TabbedScreen
         {
             taskConfigGui = new TaskConfigGui(taskConfigGui.task, font, this);
         }
-
-        if (whitelistGui != null)
-        {
-            whitelistGui = new WhitelistGui2(blockling, player, whitelistGui.goal, font, this, itemRenderer, width, height);
-        }
     }
 
     @Override
@@ -73,11 +65,7 @@ public class TasksScreen extends TabbedScreen
         GuiUtil.bindTexture(GuiUtil.TASKS);
         blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedGui.CONTENT_WIDTH, TabbedGui.CONTENT_HEIGHT);
 
-        if (whitelistGui != null)
-        {
-            whitelistGui.render(matrixStack, mouseX, mouseY, partialTicks);
-        }
-        else if (taskConfigGui != null)
+        if (taskConfigGui != null)
         {
             taskConfigGui.render(matrixStack, mouseX, mouseY, partialTicks);
         }
@@ -111,7 +99,7 @@ public class TasksScreen extends TabbedScreen
             taskConfigGui.renderTooltips(matrixStack, mouseX, mouseY);
         }
 
-        if (whitelistGui == null && taskConfigGui == null)
+        if (taskConfigGui == null)
         {
             font.drawShadow(matrixStack, new BlocklingsTranslationTextComponent("tab.tasks"), contentLeft + 8, contentTop + 5, 0xffffff);
 
@@ -233,14 +221,7 @@ public class TasksScreen extends TabbedScreen
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int state)
     {
-        if (whitelistGui != null)
-        {
-            if (whitelistGui.mouseClicked(mouseX, mouseY, state))
-            {
-                return true;
-            }
-        }
-        else if (taskConfigGui != null)
+        if (taskConfigGui != null)
         {
             if (taskConfigGui.mouseClicked(mouseX, mouseY, state))
             {
@@ -279,14 +260,7 @@ public class TasksScreen extends TabbedScreen
     {
         boolean ret  = false;
 
-        if (whitelistGui != null)
-        {
-            if (whitelistGui.mouseReleased(mouseX, mouseY, state))
-            {
-                ret = true;
-            }
-        }
-        else if (taskConfigGui != null)
+        if (taskConfigGui != null)
         {
             if (taskConfigGui.mouseReleased(mouseX, mouseY, state))
             {
@@ -315,14 +289,7 @@ public class TasksScreen extends TabbedScreen
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scroll)
     {
-        if (whitelistGui != null)
-        {
-            if (whitelistGui.mouseScrolled(mouseX, mouseY, scroll))
-            {
-                return true;
-            }
-        }
-        else if (taskConfigGui != null)
+        if (taskConfigGui != null)
         {
             if (taskConfigGui.mouseScrolled(mouseX, mouseY, scroll))
             {
@@ -346,31 +313,25 @@ public class TasksScreen extends TabbedScreen
     @Override
     public boolean keyPressed(int keyCode, int i, int j)
     {
-        if (whitelistGui != null)
-        {
-            if (keyCode == 256)
-            {
-                whitelistGui = null;
-
-                return true;
-            }
-            else if (whitelistGui.keyPressed(keyCode, i, j))
-            {
-                return true;
-            }
-        }
-        else if (taskConfigGui != null)
+        if (taskConfigGui != null)
         {
             if (taskConfigGui.keyPressed(keyCode, i, j))
             {
                 return true;
             }
-            else if (keyCode == GLFW.GLFW_KEY_ESCAPE)
+            else if (!taskConfigGui.nameField.isFocused() && GuiUtil.isCloseInventoryKey(keyCode))
             {
                 taskConfigGui = null;
 
                 return true;
             }
+        }
+
+        if ((taskConfigGui == null || !taskConfigGui.nameField.isFocused()) && GuiUtil.isCloseInventoryKey(keyCode))
+        {
+            onClose();
+
+            return true;
         }
 
         return super.keyPressed(keyCode, i, j);

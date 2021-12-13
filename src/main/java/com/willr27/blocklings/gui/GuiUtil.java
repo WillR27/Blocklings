@@ -21,6 +21,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.StringTextComponent;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -59,6 +60,11 @@ public class GuiUtil
     public static void bindTexture(ResourceLocation texture)
     {
         Minecraft.getInstance().getTextureManager().bind(texture);
+    }
+
+    public static boolean isCloseInventoryKey(int keyCode)
+    {
+        return keyCode == GLFW.GLFW_KEY_ESCAPE || keyCode == Minecraft.getInstance().options.keyInventory.getKey().getValue();
     }
 
     public static List<String> splitText(FontRenderer font, String text, int maxWidth)

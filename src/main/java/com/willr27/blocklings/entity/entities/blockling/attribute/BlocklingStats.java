@@ -1,14 +1,14 @@
 package com.willr27.blocklings.entity.entities.blockling.attribute;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingType;
 import com.willr27.blocklings.item.ToolType;
+import com.willr27.blocklings.item.ToolUtil;
 import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -21,24 +21,18 @@ public class BlocklingStats
     public final List<AttributeModifier> modifiers = new ArrayList<>();
     public final List<Attribute> levels = new ArrayList<>();
 
+    public final Attribute hand;
+
     public final Attribute combatInterval;
     public final AttributeModifier combatIntervalLevelModifier;
     public final AttributeModifier combatIntervalToolModifier;
-    public final Attribute miningInterval;
-    public final AttributeModifier miningIntervalLevelModifier;
-    public final AttributeModifier miningIntervalToolModifier;
-    public final AttributeModifier miningIntervalFasterMiningAbilityModifier;
-    public final AttributeModifier miningIntervalFasterMiningEnhancedAbilityModifier;
+    public final Attribute miningSpeed;
     public final Attribute woodcuttingInterval;
     public final AttributeModifier woodcuttingIntervalLevelModifier;
     public final AttributeModifier woodcuttingIntervalToolModifier;
-    public final AttributeModifier woodcuttingIntervalFasterChoppingAbilityModifier;
-    public final AttributeModifier woodcuttingIntervalFasterChoppingEnhancedAbilityModifier;
     public final Attribute farmingInterval;
     public final AttributeModifier farmingIntervalLevelModifier;
     public final AttributeModifier farmingIntervalToolModifier;
-    public final AttributeModifier farmingIntervalFasterFarmingAbilityModifier;
-    public final AttributeModifier farmingIntervalFasterFarmingEnhancedAbilityModifier;
 
     public final Attribute combatLevel;
     public final Attribute miningLevel;
@@ -79,30 +73,29 @@ public class BlocklingStats
         this.blockling = blockling;
         this.world = blockling.level;
 
+        hand = createAttribute("hand", BlocklingHand.NONE.ordinal());
+
         combatInterval = createAttribute("combat_interval", 5.0f);
         combatIntervalLevelModifier = createAttributeModifier(combatInterval, "combat_interval_level", 0.0f, AttributeModifier.Operation.ADD);
-        combatIntervalToolModifier = createAttributeModifier(combatInterval, "combat_interval_tool", 0.75f, AttributeModifier.Operation.MULTIPLY_TOTAL);
-        miningInterval = createAttribute("mining_interval", 10.0f);
-        miningIntervalLevelModifier = createAttributeModifier(miningInterval, "mining_interval_level", 0.0f, AttributeModifier.Operation.ADD);
-        miningIntervalToolModifier = createAttributeModifier(miningInterval, "mining_interval_tool", 0.75f, AttributeModifier.Operation.MULTIPLY_TOTAL);
-        miningIntervalFasterMiningAbilityModifier = createAttributeModifier(miningInterval, "mining_interval_faster_mining_skill", 0.9f, AttributeModifier.Operation.MULTIPLY_TOTAL);
-        miningIntervalFasterMiningEnhancedAbilityModifier = createAttributeModifier(miningInterval, "mining_interval_faster_mining_enhanced_skill", 0.9f, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        combatIntervalToolModifier = createAttributeModifier(combatInterval, "combat_interval_tool", 1.0f, AttributeModifier.Operation.MULTIPLY_TOTAL);
+
+        // Default mining speed for an item/hand is 1.0f
+        // A wooden pickaxe is 2.0f
+        // A diamond pickaxe is 8.0f
+        miningSpeed = createAttribute("mining_speed", 1.0f);
+
         woodcuttingInterval = createAttribute("woodcutting_interval", 10.0f);
         woodcuttingIntervalLevelModifier = createAttributeModifier(woodcuttingInterval, "woodcutting_interval_level", 0.0f, AttributeModifier.Operation.ADD);
-        woodcuttingIntervalToolModifier = createAttributeModifier(woodcuttingInterval, "woodcutting_interval_tool", 0.75f, AttributeModifier.Operation.MULTIPLY_TOTAL);
-        woodcuttingIntervalFasterChoppingAbilityModifier = createAttributeModifier(woodcuttingInterval, "woodcutting_interval_faster_chopping_skill", 0.9f, AttributeModifier.Operation.MULTIPLY_TOTAL);
-        woodcuttingIntervalFasterChoppingEnhancedAbilityModifier = createAttributeModifier(woodcuttingInterval, "woodcutting_interval_faster_chopping_enhanced_skill", 0.9f, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        woodcuttingIntervalToolModifier = createAttributeModifier(woodcuttingInterval, "woodcutting_interval_tool", 1.0f, AttributeModifier.Operation.MULTIPLY_TOTAL);
         farmingInterval = createAttribute("farming_interval", 10.0f);
         farmingIntervalLevelModifier = createAttributeModifier(farmingInterval, "farming_interval_level", 0.0f, AttributeModifier.Operation.ADD);
-        farmingIntervalToolModifier = createAttributeModifier(farmingInterval, "farming_interval_tool", 0.75f, AttributeModifier.Operation.MULTIPLY_TOTAL);
-        farmingIntervalFasterFarmingAbilityModifier = createAttributeModifier(farmingInterval, "farming_interval_faster_farming_skill", 0.9f, AttributeModifier.Operation.MULTIPLY_TOTAL);
-        farmingIntervalFasterFarmingEnhancedAbilityModifier = createAttributeModifier(farmingInterval, "farming_interval_faster_farming_enhanced_skill", 0.9f, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        farmingIntervalToolModifier = createAttributeModifier(farmingInterval, "farming_interval_tool", 1.0f, AttributeModifier.Operation.MULTIPLY_TOTAL);
 
         combatLevel = createAttribute("combat_level", 10);
         combatLevel.setOnCalculate(() -> { combatIntervalLevelModifier.setValue(calcBreakSpeedFromLevel((int) combatLevel.getFloat()), false); updateCombatLevelBonuses(false); });
         levels.add(combatLevel);
         miningLevel = createAttribute("mining_level", 10);
-        miningLevel.setOnCalculate(() -> { miningIntervalLevelModifier.setValue(calcBreakSpeedFromLevel((int) miningLevel.getFloat()), false); });
+        miningLevel.setOnCalculate(() -> miningSpeed.setBaseValue(calcBreakSpeedFromLevel(miningLevel.getInt()), false));
         levels.add(miningLevel);
         woodcuttingLevel = createAttribute("woodcutting_level", 10);
         woodcuttingLevel.setOnCalculate(() -> { woodcuttingIntervalLevelModifier.setValue(calcBreakSpeedFromLevel((int) woodcuttingLevel.getFloat()), false); });
@@ -147,19 +140,6 @@ public class BlocklingStats
         movementSpeed = createAttribute("movement_speed", 0.3f);
         movementSpeed.setOnCalculate(() -> { Objects.requireNonNull(blockling.getAttribute(Attributes.MOVEMENT_SPEED)).setBaseValue(movementSpeed.getFloat()); });
         movementSpeedTypeModifier = createAttributeModifier(movementSpeed, "movement_speed_type", 0.0f, AttributeModifier.Operation.ADD);
-
-        combatInterval.addModifier(combatIntervalLevelModifier);
-        combatInterval.addModifier(combatIntervalToolModifier);
-        miningInterval.addModifier(miningIntervalLevelModifier);
-        miningInterval.addModifier(miningIntervalToolModifier);
-        woodcuttingInterval.addModifier(woodcuttingIntervalLevelModifier);
-        woodcuttingInterval.addModifier(woodcuttingIntervalToolModifier);
-        farmingInterval.addModifier(farmingIntervalLevelModifier);
-        farmingInterval.addModifier(farmingIntervalToolModifier);
-
-        maxHealth.addModifier(maxHealthCombatLevelModifier);
-        damage.addModifier(damageCombatLevelModifier);
-        armour.addModifier(armourCombatLevelModifier);
     }
 
     public Attribute createAttribute(String name, float baseValue)
@@ -173,6 +153,7 @@ public class BlocklingStats
     public AttributeModifier createAttributeModifier(Attribute attribute, String name, float value, AttributeModifier.Operation operation)
     {
         AttributeModifier modifier = new AttributeModifier(attribute, name, value, operation);
+        attribute.addModifier(modifier);
         modifiers.add(modifier);
 
         return modifier;
@@ -187,8 +168,9 @@ public class BlocklingStats
 
         blockling.setHealth(blockling.getMaxHealth());
 
-        updateCombatLevelBonuses(false);
-        updateTypeBonuses(false);
+//        updateCombatLevelBonuses(false);
+//        updateTypeBonuses(false);
+//        updateToolModifiers(false);
     }
 
     public void writeToNBT(CompoundNBT c)
@@ -315,47 +297,19 @@ public class BlocklingStats
         movementSpeedTypeModifier.setValue(type.getBonusSpeed(), sync);
     }
 
-    public void updateItemBonuses()
+    public void updateToolModifiers(boolean sync)
     {
         ItemStack mainStack = blockling.getMainHandItem();
         ItemStack offStack = blockling.getOffhandItem();
-        Item mainItem = mainStack.getItem();
-        Item offItem = offStack.getItem();
-        ToolType mainType = ToolType.getToolType(mainItem);
-        ToolType offType = ToolType.getToolType(offItem);
 
-        // Remove all modifiers first
-        combatInterval.removeModifier(combatIntervalToolModifier);
-        miningInterval.removeModifier(miningIntervalToolModifier);
-        woodcuttingInterval.removeModifier(woodcuttingIntervalToolModifier);
-        farmingInterval.removeModifier(farmingIntervalToolModifier);
-
-        // Add appropriate modifier if conditions are met
-        boolean matching = mainType == offType;
-        if (matching)
-        {
-            if (mainType == ToolType.WEAPON || offType == ToolType.WEAPON)
-            {
-                combatInterval.addModifier(combatIntervalToolModifier);
-            }
-            else if (mainType == ToolType.PICKAXE || offType == ToolType.PICKAXE)
-            {
-                miningInterval.addModifier(miningIntervalToolModifier);
-            }
-            else if (mainType == ToolType.AXE || offType == ToolType.AXE)
-            {
-                woodcuttingInterval.addModifier(woodcuttingIntervalToolModifier);
-            }
-            else if (mainType == ToolType.HOE || offType == ToolType.HOE)
-            {
-                farmingInterval.addModifier(farmingIntervalToolModifier);
-            }
-        }
+        BlocklingHand pickaxeHand = blockling.getEquipment().findHandToolEquipped(ToolType.PICKAXE);
+        BlocklingHand axeHand = blockling.getEquipment().findHandToolEquipped(ToolType.AXE);
+        BlocklingHand hoeHand = blockling.getEquipment().findHandToolEquipped(ToolType.HOE);
     }
 
-    private int calcBreakSpeedFromLevel(int level)
+    private float calcBreakSpeedFromLevel(int level)
     {
-        return 50 -((int) (10 * Math.log(level)));
+        return level / 10.0f;
     }
 
     private float calcBonusHealthFromCombatLevel()

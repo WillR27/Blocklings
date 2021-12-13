@@ -3,22 +3,21 @@ package com.willr27.blocklings.entity.entities.blockling.action;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.attribute.Attribute;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
+import javax.annotation.Nonnull;
 
 public abstract class Action
 {
+    @Nonnull
     public final BlocklingEntity blockling;
 
-    protected final Attribute elapsedTicks;
+    @Nonnull
+    protected final Attribute count;
 
-    public Action(BlocklingEntity blockling, String key)
+    public Action(@Nonnull BlocklingEntity blockling, @Nonnull String key)
     {
         this.blockling = blockling;
 
-        elapsedTicks = blockling.getStats().createAttribute(key + "_action", -1.0f);
-
+        count = blockling.getStats().createAttribute(key + "_action", -1.0f);
     }
 
     /**
@@ -39,34 +38,57 @@ public abstract class Action
         }
     }
 
+    /**
+     * Starts the action whether it's running or not.
+     */
     public void start()
     {
-        elapsedTicks.setBaseValue(0.0f);
+        count.setBaseValue(0.0f);
     }
 
+    /**
+     * Increments the count by 1.0f.
+     */
     public void tick()
+    {
+        tick(1.0f);
+    }
+
+    /**
+     * Increments the count by the given amount.
+     */
+    public void tick(float increment)
     {
         if (isRunning())
         {
-            elapsedTicks.incBaseValue(1.0f);
+            count.incBaseValue(increment);
         }
     }
 
+    /**
+     * Stops the action if it is running.
+     */
     public void stop()
     {
         if (isRunning())
         {
-            elapsedTicks.setBaseValue(-2.0f);
+            count.setBaseValue(-1.0f);
         }
     }
 
+    /**
+     * Returns true if the action is currently running.
+     */
     public boolean isRunning()
     {
-        return elapsedTicks.getInt() != -1;
+        return count.getInt() != -1;
     }
 
-    public int elapsedTicks()
+    /**
+     * Returns the current value of the count attribute.
+     */
+    public float count()
     {
-        return elapsedTicks.getInt();
+        return count.getFloat();
     }
 }

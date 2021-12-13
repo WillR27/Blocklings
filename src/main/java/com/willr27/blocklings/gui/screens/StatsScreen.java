@@ -163,7 +163,7 @@ public class StatsScreen extends TabbedScreen
         }
         else if (miningIcon.isMouseOver(mouseX, mouseY))
         {
-            tooltip.add(new Attribute.AttributeTranslationTextComponent("mining.speed", blockling.getStats().miningInterval.getFloat()).getVisualOrderText());
+            tooltip.add(new Attribute.AttributeTranslationTextComponent("mining.speed", blockling.getStats().miningSpeed.getFloat()).getVisualOrderText());
             tooltip.add(new Attribute.AttributeTranslationTextComponent("mining.range", blockling.getStats().miningRange.getFloat()).getVisualOrderText());
         }
         else if (woodcuttingIcon.isMouseOver(mouseX, mouseY))
@@ -232,9 +232,9 @@ public class StatsScreen extends TabbedScreen
     }
 
     @Override
-    public boolean keyPressed(int key, int key2, int key3)
+    public boolean keyPressed(int keyCode, int i, int j)
     {
-        if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_ESCAPE)
+        if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_ESCAPE)
         {
             if (nameField.isFocused())
             {
@@ -245,10 +245,17 @@ public class StatsScreen extends TabbedScreen
         }
         else
         {
-            nameField.keyPressed(key, key2, key3);
+            nameField.keyPressed(keyCode, i, j);
         }
 
-        return super.keyPressed(key, key2, key2); // TODO: TIDY
+        if (!nameField.isFocused() && GuiUtil.isCloseInventoryKey(keyCode))
+        {
+            onClose();
+
+            return true;
+        }
+
+        return super.keyPressed(keyCode, i, i);
     }
 
     @Override
@@ -256,7 +263,7 @@ public class StatsScreen extends TabbedScreen
     {
         nameField.charTyped(cah, code);
 
-        return super.charTyped(cah, code); // TODO: TIDY
+        return super.charTyped(cah, code);
     }
 
     @Override

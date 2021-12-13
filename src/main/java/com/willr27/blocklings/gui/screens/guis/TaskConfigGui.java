@@ -29,7 +29,7 @@ public class TaskConfigGui extends AbstractGui
     private TabWidget tabWidget;
     private ConfigGui configGui;
 
-    private TextFieldWidget nameField;
+    public TextFieldWidget nameField;
 
     public TaskConfigGui(Task task, FontRenderer font, Screen screen)
     {

@@ -1,6 +1,7 @@
 package com.willr27.blocklings.gui.screens.guis;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.skills.Skill;
 import com.willr27.blocklings.skills.SkillGroup;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
@@ -75,11 +76,12 @@ public class SkillsConfirmationGui extends AbstractGui
 
     public boolean keyPressed(int keyCode, int i, int j)
     {
-        if (!closed && keyCode == 256)
+        if (!closed && GuiUtil.isCloseInventoryKey(keyCode))
         {
             if (noButton != null)
             {
                 noButton.onPress();
+
                 return true;
             }
         }

@@ -142,10 +142,18 @@ public class SkillsScreen extends TabbedScreen
             return true;
         }
 
-        if (keyCode == 256 && maximised)
+        if (GuiUtil.isCloseInventoryKey(keyCode))
         {
-            maximised = false;
-            skillsGui.resize(WINDOW_WIDTH, WINDOW_HEIGHT, 1.0f);
+            if (maximised)
+            {
+                maximised = false;
+                skillsGui.resize(WINDOW_WIDTH, WINDOW_HEIGHT, 1.0f);
+            }
+            else
+            {
+                onClose();
+            }
+
             return true;
         }
 

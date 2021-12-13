@@ -1,6 +1,8 @@
 package com.willr27.blocklings.item;
 
 import com.google.common.collect.Multimap;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -13,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SwordItem;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
@@ -99,6 +102,24 @@ public class ToolUtil
         return TOOLS.contains(item);
     }
 
+    public static float findToolAttackSpeed(ItemStack stack)
+    {
+        Multimap<Attribute, AttributeModifier> multimap = stack.getAttributeModifiers(EquipmentSlotType.MAINHAND);
+
+        for (Map.Entry<Attribute, AttributeModifier> entry : multimap.entries())
+        {
+            AttributeModifier attributemodifier = entry.getValue();
+            UUID baseAttackSpeedAttributeId = ObfuscationReflectionHelper.getPrivateValue(Item.class, Items.ACACIA_BOAT, "BASE_ATTACK_SPEED_UUID");
+
+            if (attributemodifier.getId() == baseAttackSpeedAttributeId)
+            {
+                return (float) attributemodifier.getAmount();
+            }
+        }
+
+        return 0.0f;
+    }
+
     public static float findToolBaseDamage(ItemStack stack)
     {
         Multimap<Attribute, AttributeModifier> multimap = stack.getAttributeModifiers(EquipmentSlotType.MAINHAND);
@@ -130,5 +151,43 @@ public class ToolUtil
     public static float findToolFireAspect(ItemStack stack)
     {
         return EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_ASPECT, stack);
+    }
+
+    /**
+     * Returns the mining speed for the given tool against stone.
+     * For reference a wooden pickaxe is 2.0f and diamond pickaxe is 8.0f;
+     */
+    public static float findToolMiningSpeed(ItemStack stack)
+    {
+        return stack.getDestroySpeed(Blocks.STONE.defaultBlockState());
+    }
+
+    /**
+     * Returns the mining speed for the given tool against stone, including enchantments.
+     */
+    public static float findToolMiningSpeedWithEnchantments(ItemStack stack)
+    {
+        return stack.getDestroySpeed(Blocks.STONE.defaultBlockState());
+    }
+
+    /**
+     * Returns true if the given tool can harvest the given block.
+     */
+    public static boolean canToolHarvestBlock(ItemStack stack, BlockState blockState)
+    {
+        ToolType harvestTool = blockState.getHarvestTool();
+
+        for (ToolType toolType : stack.getToolTypes())
+        {
+            if (toolType == harvestTool)
+            {
+                if (stack.getHarvestLevel(toolType, null, blockState) >= blockState.getHarvestLevel())
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

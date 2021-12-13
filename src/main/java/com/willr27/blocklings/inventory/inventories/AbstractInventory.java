@@ -136,7 +136,7 @@ public abstract class AbstractInventory implements IInventory
     public ItemStack removeItemNoUpdate(int index)
     {
         ItemStack stack = getItem(index);
-        setItem(index, ItemStack.EMPTY);
+        stacks[index] = ItemStack.EMPTY;
         return stack;
     }
 
