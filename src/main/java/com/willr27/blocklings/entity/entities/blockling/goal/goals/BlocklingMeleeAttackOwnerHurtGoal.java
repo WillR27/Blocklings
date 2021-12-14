@@ -2,7 +2,7 @@ package com.willr27.blocklings.entity.entities.blockling.goal.goals;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.goal.BlocklingTargetGoal;
-import com.willr27.blocklings.entity.entities.blockling.goal.BlocklingTasks;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import com.willr27.blocklings.entity.entities.blockling.goal.goals.target.BlocklingOwnerHurtTargetGoal;
 
 import java.util.UUID;

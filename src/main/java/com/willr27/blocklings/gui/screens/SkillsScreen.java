@@ -61,7 +61,7 @@ public class SkillsScreen extends TabbedScreen
 
         GuiUtil.bindTexture(GuiUtil.SKILLS);
 
-        String points = "" + blockling.getStats().skillPoints.getInt();
+        String points = "" + blockling.getStats().skillPoints.getValue();
         if (!maximised)
         {
             blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedGui.CONTENT_WIDTH, TabbedGui.CONTENT_HEIGHT);

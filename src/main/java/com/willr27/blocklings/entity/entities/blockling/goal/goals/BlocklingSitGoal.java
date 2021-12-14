@@ -2,7 +2,7 @@ package com.willr27.blocklings.entity.entities.blockling.goal.goals;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.goal.BlocklingGoal;
-import com.willr27.blocklings.entity.entities.blockling.goal.BlocklingTasks;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import net.minecraft.entity.ai.goal.Goal;
 
 import java.util.EnumSet;

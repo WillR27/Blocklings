@@ -1,6 +1,7 @@
 package com.willr27.blocklings.entity.entities.blockling.goal;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import com.willr27.blocklings.network.NetworkHandler;
 import com.willr27.blocklings.network.messages.GoalSetStateMessage;
 import com.willr27.blocklings.whitelist.GoalWhitelist;

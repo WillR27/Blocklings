@@ -1,6 +1,7 @@
 package com.willr27.blocklings.entity.entities.blockling.goal;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.world.World;
 

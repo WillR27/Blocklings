@@ -123,7 +123,7 @@ public class BlocklingModel extends EntityModel<BlocklingEntity> implements IHas
 
         float weaponBonusRotX = 0.7f;
 
-        BlocklingHand hand = BlocklingHand.values()[blockling.getStats().hand.getInt()];
+        BlocklingHand hand = blockling.getStats().hand.getValue();
         BlocklingHand attackingHand = blockling.getEquipment().findAttackingHand();
 
         if (blockling.getTarget() != null)

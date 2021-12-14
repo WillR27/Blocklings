@@ -1,9 +1,9 @@
 package com.willr27.blocklings.gui.screens;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.willr27.blocklings.entity.entities.blockling.attribute.Attribute;
+import com.willr27.blocklings.attribute.Attribute;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.entity.entities.blockling.attribute.BlocklingStats;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingStats;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.screens.guis.TabbedGui;
 import com.willr27.blocklings.gui.widgets.TextFieldWidget;
@@ -152,29 +152,29 @@ public class StatsScreen extends TabbedScreen
     {
         List<IReorderingProcessor> tooltip = new ArrayList<>();
 
-        if (combatXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().combatXp.createTranslation("required", blockling.getStats().combatXp.getInt(), BlocklingStats.getXpUntilNextLevel(blockling.getStats().combatLevel.getInt())), mouseX, mouseY);
-        else if (miningXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().miningXp.createTranslation("required", blockling.getStats().miningXp.getInt(), BlocklingStats.getXpUntilNextLevel(blockling.getStats().miningLevel.getInt())), mouseX, mouseY);
-        else if (woodcuttingXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().woodcuttingXp.createTranslation("required", blockling.getStats().woodcuttingXp.getInt(), BlocklingStats.getXpUntilNextLevel(blockling.getStats().woodcuttingLevel.getInt())), mouseX, mouseY);
-        else if (farmingXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().farmingXp.createTranslation("required", blockling.getStats().farmingXp.getInt(), BlocklingStats.getXpUntilNextLevel(blockling.getStats().farmingLevel.getInt())), mouseX, mouseY);
+        if (combatXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().combatXp.createTranslation("required", blockling.getStats().combatXp.getValue(), BlocklingStats.getXpUntilNextLevel(blockling.getStats().combatLevel.getValue())), mouseX, mouseY);
+        else if (miningXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().miningXp.createTranslation("required", blockling.getStats().miningXp.getValue(), BlocklingStats.getXpUntilNextLevel(blockling.getStats().miningLevel.getValue())), mouseX, mouseY);
+        else if (woodcuttingXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().woodcuttingXp.createTranslation("required", blockling.getStats().woodcuttingXp.getValue(), BlocklingStats.getXpUntilNextLevel(blockling.getStats().woodcuttingLevel.getValue())), mouseX, mouseY);
+        else if (farmingXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().farmingXp.createTranslation("required", blockling.getStats().farmingXp.getValue(), BlocklingStats.getXpUntilNextLevel(blockling.getStats().farmingLevel.getValue())), mouseX, mouseY);
 
         else if (combatIcon.isMouseOver(mouseX, mouseY))
         {
-            tooltip.add(new Attribute.AttributeTranslationTextComponent("combat.speed", blockling.getStats().combatInterval.getFloat()).getVisualOrderText());
+            tooltip.add(new Attribute.AttributeTranslationTextComponent("combat.speed", blockling.getStats().combatInterval.getValue()).getVisualOrderText());
         }
         else if (miningIcon.isMouseOver(mouseX, mouseY))
         {
-            tooltip.add(new Attribute.AttributeTranslationTextComponent("mining.speed", blockling.getStats().miningSpeed.getFloat()).getVisualOrderText());
-            tooltip.add(new Attribute.AttributeTranslationTextComponent("mining.range", blockling.getStats().miningRange.getFloat()).getVisualOrderText());
+            tooltip.add(new Attribute.AttributeTranslationTextComponent("mining.speed", blockling.getStats().miningSpeed.getValue()).getVisualOrderText());
+            tooltip.add(new Attribute.AttributeTranslationTextComponent("mining.range", blockling.getStats().miningRange.getValue()).getVisualOrderText());
         }
         else if (woodcuttingIcon.isMouseOver(mouseX, mouseY))
         {
-            tooltip.add(new Attribute.AttributeTranslationTextComponent("woodcutting.speed", blockling.getStats().woodcuttingInterval.getFloat()).getVisualOrderText());
-            tooltip.add(new Attribute.AttributeTranslationTextComponent("woodcutting.range", blockling.getStats().woodcuttingRange.getFloat()).getVisualOrderText());
+            tooltip.add(new Attribute.AttributeTranslationTextComponent("woodcutting.speed", blockling.getStats().woodcuttingInterval.getValue()).getVisualOrderText());
+            tooltip.add(new Attribute.AttributeTranslationTextComponent("woodcutting.range", blockling.getStats().woodcuttingRange.getValue()).getVisualOrderText());
         }
         else if (farmingIcon.isMouseOver(mouseX, mouseY))
         {
-            tooltip.add(new Attribute.AttributeTranslationTextComponent("farming.speed", blockling.getStats().farmingInterval.getFloat()).getVisualOrderText());
-            tooltip.add(new Attribute.AttributeTranslationTextComponent("farming.range", blockling.getStats().farmingRange.getFloat()).getVisualOrderText());
+            tooltip.add(new Attribute.AttributeTranslationTextComponent("farming.speed", blockling.getStats().farmingInterval.getValue()).getVisualOrderText());
+            tooltip.add(new Attribute.AttributeTranslationTextComponent("farming.range", blockling.getStats().farmingRange.getValue()).getVisualOrderText());
         }
 
         renderTooltip(matrixStack, tooltip, mouseX, mouseY);
@@ -204,15 +204,16 @@ public class StatsScreen extends TabbedScreen
     {
         GuiUtil.bindTexture(GuiUtil.STATS);
 
-        combatXpBar.render(matrixStack, mouseX, mouseY, stats.combatXp.getInt(), stats.combatLevel.getInt());
-        miningXpBar.render(matrixStack, mouseX, mouseY, stats.miningXp.getInt(), stats.miningLevel.getInt());
-        woodcuttingXpBar.render(matrixStack, mouseX, mouseY, stats.woodcuttingXp.getInt(), stats.woodcuttingLevel.getInt());
-        farmingXpBar.render(matrixStack, mouseX, mouseY, stats.farmingXp.getInt(), stats.farmingLevel.getInt());
+        combatXpBar.render(matrixStack, mouseX, mouseY, stats.combatXp.getValue(), stats.combatLevel.getValue());
+        miningXpBar.render(matrixStack, mouseX, mouseY, stats.miningXp.getValue(), stats.miningLevel.getValue());
+        woodcuttingXpBar.render(matrixStack, mouseX, mouseY, stats.woodcuttingXp.getValue(), stats.woodcuttingLevel.getValue());
+        farmingXpBar.render(matrixStack, mouseX, mouseY, stats.farmingXp.getValue(), stats.farmingLevel.getValue());
 
-        combatXpBar.renderText(matrixStack, "" + stats.combatLevel.getInt(), 6, -1, false, 0xff4d4d);
-        miningXpBar.renderText(matrixStack, "" + stats.miningLevel.getInt(), 6, -1, false, 0x7094db);
-        woodcuttingXpBar.renderText(matrixStack, "" + stats.woodcuttingLevel.getInt(), 6, -1, false, 0x57a65b);
-        farmingXpBar.renderText(matrixStack, "" + stats.farmingLevel.getInt(), 6, -1, false, 0x9d6d4a);
+        combatXpBar.renderText(matrixStack, "" + stats.combatLevel.getValue(), 6, -1, false, 0xff4d4d);
+        miningXpBar.renderText(matrixStack, "" + stats.miningLevel.getValue(), 6, -1, false, 0x7094db);
+        woodcuttingXpBar.renderText(matrixStack, "" + stats.woodcuttingLevel.getValue(), 6, -1, false, 0x57a65b);
+        farmingXpBar.renderText(matrixStack, "" + stats.farmingLevel.getValue
+                (), 6, -1, false, 0x9d6d4a);
     }
 
     @Override

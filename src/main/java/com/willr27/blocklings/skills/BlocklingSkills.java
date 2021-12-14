@@ -1,8 +1,8 @@
 package com.willr27.blocklings.skills;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.entity.entities.blockling.attribute.BlocklingStats;
-import com.willr27.blocklings.entity.entities.blockling.goal.BlocklingTasks;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingStats;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import com.willr27.blocklings.gui.widgets.SkillWidget;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.skills.info.*;

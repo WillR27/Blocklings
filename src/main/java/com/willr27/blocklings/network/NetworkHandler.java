@@ -1,8 +1,14 @@
 package com.willr27.blocklings.network;
 
 import com.willr27.blocklings.Blocklings;
-import com.willr27.blocklings.entity.entities.blockling.attribute.Attribute;
-import com.willr27.blocklings.entity.entities.blockling.attribute.AttributeModifier;
+import com.willr27.blocklings.attribute.attributes.EnumAttribute;
+import com.willr27.blocklings.attribute.attributes.numbers.FloatAttribute;
+import com.willr27.blocklings.attribute.attributes.numbers.IntAttribute;
+import com.willr27.blocklings.attribute.modifier.AttributeModifier;
+import com.willr27.blocklings.attribute.attributes.numbers.ModifiableFloatAttribute;
+import com.willr27.blocklings.attribute.attributes.numbers.ModifiableIntAttribute;
+import com.willr27.blocklings.attribute.modifier.modifiers.numbers.FloatAttributeModifier;
+import com.willr27.blocklings.attribute.modifier.modifiers.numbers.IntAttributeModifier;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingGuiInfo;
 import com.willr27.blocklings.network.messages.*;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,13 +34,18 @@ public class NetworkHandler
     {
         int id = 0;
 
-        HANDLER.registerMessage(id++, Attribute.BlocklingAttributeBaseValueMessage.class, Attribute.BlocklingAttributeBaseValueMessage::encode, Attribute.BlocklingAttributeBaseValueMessage::decode, Attribute.BlocklingAttributeBaseValueMessage::handle);
-        HANDLER.registerMessage(id++, AttributeModifier.BlocklingAttributeModifierValueMessage.class, AttributeModifier.BlocklingAttributeModifierValueMessage::encode, AttributeModifier.BlocklingAttributeModifierValueMessage::decode, AttributeModifier.BlocklingAttributeModifierValueMessage::handle);
-        HANDLER.registerMessage(id++, BlocklingGuiInfo.BlocklingGuiInfoMessage.class, BlocklingGuiInfo.BlocklingGuiInfoMessage::encode, BlocklingGuiInfo.BlocklingGuiInfoMessage::decode, BlocklingGuiInfo.BlocklingGuiInfoMessage::handle);
+        HANDLER.registerMessage(id++, BlocklingGuiInfo.Message.class, BlocklingGuiInfo.Message::encode, BlocklingGuiInfo.Message::decode, BlocklingGuiInfo.Message::handle);
         HANDLER.registerMessage(id++, BlocklingTargetMessage.class, BlocklingTargetMessage::encode, BlocklingTargetMessage::decode, BlocklingTargetMessage::handle);
         HANDLER.registerMessage(id++, BlocklingTypeMessage.class, BlocklingTypeMessage::encode, BlocklingTypeMessage::decode, BlocklingTypeMessage::handle);
         HANDLER.registerMessage(id++, EquipmentInventoryMessage.class, EquipmentInventoryMessage::encode, EquipmentInventoryMessage::decode, EquipmentInventoryMessage::handle);
         HANDLER.registerMessage(id++, GoalSetStateMessage.class, GoalSetStateMessage::encode, GoalSetStateMessage::decode, GoalSetStateMessage::handle);
+        HANDLER.registerMessage(id++, EnumAttribute.Message.class, EnumAttribute.Message::encode, EnumAttribute.Message::decode, EnumAttribute.Message::handle);
+        HANDLER.registerMessage(id++, FloatAttribute.ValueMessage.class, FloatAttribute.ValueMessage::encode, FloatAttribute.ValueMessage::decode, FloatAttribute.ValueMessage::handle);
+        HANDLER.registerMessage(id++, ModifiableFloatAttribute.BaseValueMessage.class, ModifiableFloatAttribute.BaseValueMessage::encode, ModifiableFloatAttribute.BaseValueMessage::decode, ModifiableFloatAttribute.BaseValueMessage::handle);
+        HANDLER.registerMessage(id++, FloatAttributeModifier.ValueMesage.class, FloatAttributeModifier.ValueMesage::encode, FloatAttributeModifier.ValueMesage::decode, FloatAttributeModifier.ValueMesage::handle);
+        HANDLER.registerMessage(id++, IntAttribute.ValueMessage.class, IntAttribute.ValueMessage::encode, IntAttribute.ValueMessage::decode, IntAttribute.ValueMessage::handle);
+        HANDLER.registerMessage(id++, ModifiableIntAttribute.BaseValueMessage.class, ModifiableIntAttribute.BaseValueMessage::encode, ModifiableIntAttribute.BaseValueMessage::decode, ModifiableIntAttribute.BaseValueMessage::handle);
+        HANDLER.registerMessage(id++, IntAttributeModifier.ValueMesage.class, IntAttributeModifier.ValueMesage::encode, IntAttributeModifier.ValueMesage::decode, IntAttributeModifier.ValueMesage::handle);
         HANDLER.registerMessage(id++, OpenGuiMessage.class, OpenGuiMessage::encode, OpenGuiMessage::decode, OpenGuiMessage::handle);
         HANDLER.registerMessage(id++, SkillStateMessage.class, SkillStateMessage::encode, SkillStateMessage::decode, SkillStateMessage::handle);
         HANDLER.registerMessage(id++, SkillTryBuyMessage.class, SkillTryBuyMessage::encode, SkillTryBuyMessage::decode, SkillTryBuyMessage::handle);

@@ -1,9 +1,6 @@
 package com.willr27.blocklings.entity.entities.blockling;
 
 import com.google.common.collect.Iterables;
-import com.willr27.blocklings.entity.entities.blockling.action.BlocklingActions;
-import com.willr27.blocklings.entity.entities.blockling.attribute.BlocklingStats;
-import com.willr27.blocklings.entity.entities.blockling.goal.BlocklingTasks;
 import com.willr27.blocklings.gui.GuiHandler;
 import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
 import com.willr27.blocklings.item.ItemUtil;
@@ -46,7 +43,6 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -598,7 +594,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         if (sync)
         {
-            NetworkHandler.sync(level, new BlocklingGuiInfo.BlocklingGuiInfoMessage(guiInfo, getId()));
+            NetworkHandler.sync(level, new BlocklingGuiInfo.Message(guiInfo, getId()));
         }
     }
 

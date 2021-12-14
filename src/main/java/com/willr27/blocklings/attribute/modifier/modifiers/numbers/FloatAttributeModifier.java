@@ -1,69 +1,87 @@
-package com.willr27.blocklings.entity.entities.blockling.attribute;
+package com.willr27.blocklings.attribute.modifier.modifiers.numbers;
 
+import com.willr27.blocklings.attribute.ModifiableAttribute;
+import com.willr27.blocklings.attribute.modifier.AttributeModifier;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.network.IMessage;
 import com.willr27.blocklings.network.NetworkHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class AttributeModifier
+public class FloatAttributeModifier extends AttributeModifier<Float>
 {
-    public final Attribute attribute;
-    public final String key;
-    public float value;
-    public final Operation operation;
-
-    public AttributeModifier(Attribute attribute, String key, float value, Operation operation)
+    public FloatAttributeModifier(String id, String key, ModifiableAttribute<Float> attribute, float value, Operation operation)
     {
-        this.attribute = attribute;
-        this.key = key;
-        this.value = value;
-        this.operation = operation;
+        super(id, key, attribute, value, operation);
     }
 
-    public float getValue()
+    @Override
+    public void writeToNBT(CompoundNBT tag)
+    {
+        CompoundNBT modifierTag = new CompoundNBT();
+
+        modifierTag.putFloat("value", value);
+
+        tag.put(id.toString(), modifierTag);
+    }
+
+    @Override
+    public void readFromNBT(CompoundNBT tag)
+    {
+        CompoundNBT modifierTag = (CompoundNBT) tag.get(id.toString());
+
+        if (modifierTag != null)
+        {
+            value = modifierTag.getFloat("value");
+        }
+    }
+
+    @Override
+    public void encode(PacketBuffer buf)
+    {
+        buf.writeFloat(value);
+    }
+
+    @Override
+    public void decode(PacketBuffer buf)
+    {
+        value = buf.readFloat();
+    }
+
+    @Override
+    public Float getValue()
     {
         return value;
     }
 
-    public void setValue(float value)
-    {
-        setValue(value, true);
-    }
-
-    public void setValue(float value, boolean sync)
+    @Override
+    public void setValue(Float value, boolean sync)
     {
         this.value = value;
 
-        attribute.calculateValue();
+        attribute.calculate();
 
         if (sync)
         {
-            NetworkHandler.sync(attribute.world, new BlocklingAttributeModifierValueMessage(attribute.blockling.getStats().attributes.indexOf(attribute), attribute.indexOf(this), value, attribute.blockling.getId()));
+            NetworkHandler.sync(blockling.level, new ValueMesage(blockling.getStats().attributes.indexOf(attribute), attribute.indexOf(this), value, blockling.getId()));
         }
     }
 
-    public enum Operation
-    {
-        ADD,
-        MULTIPLY_BASE,
-        MULTIPLY_TOTAL
-    }
-
-    public static class BlocklingAttributeModifierValueMessage implements IMessage
+    public static class ValueMesage implements IMessage
     {
         int attributeIndex;
         int attributeModifierIndex;
         float value;
         int entityId;
 
-        private BlocklingAttributeModifierValueMessage() {}
-        public BlocklingAttributeModifierValueMessage(int attributeIndex, int attributeModifierIndex, float value, int entityId)
+        private ValueMesage() {}
+        public ValueMesage(int attributeIndex, int attributeModifierIndex, float value, int entityId)
         {
             this.attributeIndex = attributeIndex;
             this.attributeModifierIndex = attributeModifierIndex;
@@ -71,7 +89,7 @@ public class AttributeModifier
             this.entityId = entityId;
         }
 
-        public static void encode(AttributeModifier.BlocklingAttributeModifierValueMessage msg, PacketBuffer buf)
+        public static void encode(ValueMesage msg, PacketBuffer buf)
         {
             buf.writeInt(msg.attributeIndex);
             buf.writeInt(msg.attributeModifierIndex);
@@ -79,9 +97,9 @@ public class AttributeModifier
             buf.writeInt(msg.entityId);
         }
 
-        public static AttributeModifier.BlocklingAttributeModifierValueMessage decode(PacketBuffer buf)
+        public static ValueMesage decode(PacketBuffer buf)
         {
-            AttributeModifier.BlocklingAttributeModifierValueMessage msg = new AttributeModifier.BlocklingAttributeModifierValueMessage();
+            ValueMesage msg = new ValueMesage();
             msg.attributeIndex = buf.readInt();
             msg.attributeModifierIndex = buf.readInt();
             msg.value = buf.readFloat();
@@ -103,7 +121,7 @@ public class AttributeModifier
                     BlocklingEntity blockling = (BlocklingEntity) player.level.getEntity(entityId);
                     if (blockling != null)
                     {
-                        AttributeModifier modifier = blockling.getStats().attributes.get(attributeIndex).getModifier(attributeModifierIndex);
+                        FloatAttributeModifier modifier = (FloatAttributeModifier) ((ModifiableAttribute<?>) blockling.getStats().attributes.get(attributeIndex)).findModifier(attributeModifierIndex);
                         modifier.setValue(value, !isClient);
                     }
                 }

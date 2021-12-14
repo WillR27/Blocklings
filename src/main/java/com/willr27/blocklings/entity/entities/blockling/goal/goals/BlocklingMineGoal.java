@@ -5,7 +5,7 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.entity.entities.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.entity.entities.blockling.goal.BlocklingTargetGoal;
-import com.willr27.blocklings.entity.entities.blockling.goal.BlocklingTasks;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import com.willr27.blocklings.entity.entities.blockling.goal.goals.target.BlocklingMineTargetGoal;
 import com.willr27.blocklings.entity.entities.blockling.goal.goals.target.IHasTargetGoal;
 import com.willr27.blocklings.item.ToolType;
@@ -13,6 +13,7 @@ import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.Path;
@@ -186,14 +187,14 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
 
                 if (blockling.getActions().mine.isRunning())
                 {
-                    float blocklingDestroySpeed = blockling.getStats().miningSpeed.getFloat();
+                    float blocklingDestroySpeed = blockling.getStats().miningSpeed.getValue();
                     float mainDestroySpeed = mainCanHarvest ? ToolUtil.findToolMiningSpeed(mainStack) : 0.0f;
                     float offDestroySpeed = offCanHarvest ? ToolUtil.findToolMiningSpeed(offStack) : 0.0f;
 
                     float destroySpeed = blocklingDestroySpeed + mainDestroySpeed + offDestroySpeed;
                     float blockStrength = world.getBlockState(targetGoal.getTargetPos()).getDestroySpeed(world, targetGoal.getTargetPos());
 
-                    blockling.getStats().hand.setBaseValue(BlocklingHand.fromBooleans(mainCanHarvest, offCanHarvest).ordinal());
+                    blockling.getStats().hand.setValue(BlocklingHand.fromBooleans(mainCanHarvest, offCanHarvest));
 
                     float progress = destroySpeed / blockStrength / 30.0f;
                     blockling.getActions().mine.tick(progress);
@@ -201,6 +202,8 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
                     if (blockling.getActions().mine.isFinished())
                     {
                         blockling.getActions().mine.stop();
+
+                        blockling.getStats().miningXp.incValue(10);
 
                         world.destroyBlock(targetGoal.getTargetPos(), false);
                         world.destroyBlockProgress(blockling.getId(), targetGoal.getTargetPos(), 0);
@@ -239,7 +242,7 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
 
     private boolean isInRange(BlockPos blockPos)
     {
-        float rangeSq = blockling.getStats().miningRangeSq.getFloat();
+        float rangeSq = blockling.getStats().miningRangeSq.getValue();
         float distanceSq = (float) blockling.distanceToSqr(blockPos.getX() + 0.5f, blockPos.getY() + 0.5f, blockPos.getZ() + 0.5f);
 
         return distanceSq < rangeSq;

@@ -1,6 +1,7 @@
 package com.willr27.blocklings.entity.entities.blockling.goal;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import com.willr27.blocklings.util.TriFunction;

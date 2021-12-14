@@ -1,6 +1,6 @@
 package com.willr27.blocklings.skills.info;
 
-import com.willr27.blocklings.entity.entities.blockling.attribute.BlocklingStats;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingStats;
 
 import java.util.Map;
 

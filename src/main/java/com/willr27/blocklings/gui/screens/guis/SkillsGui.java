@@ -2,9 +2,11 @@ package com.willr27.blocklings.gui.screens.guis;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.willr27.blocklings.entity.entities.blockling.attribute.Attribute;
+import com.willr27.blocklings.attribute.Attribute;
+import com.willr27.blocklings.attribute.attributes.numbers.IntAttribute;
+import com.willr27.blocklings.attribute.attributes.numbers.ModifiableIntAttribute;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.entity.entities.blockling.attribute.BlocklingStats;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingStats;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.widgets.SkillWidget;
 import com.willr27.blocklings.gui.widgets.TexturedWidget;
@@ -323,7 +325,7 @@ public class SkillsGui extends AbstractGui
 
                 if (skill.info.requirements.skillPoints > 0)
                 {
-                    String colour = blockling.getStats().skillPoints.getInt() >= skill.info.requirements.skillPoints ? "" + TextFormatting.GREEN : "" + TextFormatting.RED;
+                    String colour = blockling.getStats().skillPoints.getValue() >= skill.info.requirements.skillPoints ? "" + TextFormatting.GREEN : "" + TextFormatting.RED;
                     description.add(colour + new Attribute.AttributeTranslationTextComponent("skill_points.required", skill.info.requirements.skillPoints).getString());
                 }
 
@@ -333,10 +335,10 @@ public class SkillsGui extends AbstractGui
                     {
                         String levelName = level.getDisplayName();
                         int value = levelRequirements.get(level).intValue();
-                        Attribute attribute = blockling.getStats().getLevel(level);
+                        IntAttribute attribute = blockling.getStats().getLevel(level);
 
-                        String colour = attribute.getFloat() >= value ? "" + TextFormatting.GREEN : "" + TextFormatting.RED;
-                        description.add(colour + attribute.createTranslation("required", attribute.getInt()).getString());
+                        String colour = attribute.getValue() >= value ? "" + TextFormatting.GREEN : "" + TextFormatting.RED;
+                        description.add(colour + attribute.createTranslation("required", attribute.getValue()).getString());
                     }
                 }
             }

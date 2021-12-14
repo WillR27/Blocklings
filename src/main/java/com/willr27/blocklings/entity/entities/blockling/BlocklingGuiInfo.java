@@ -41,34 +41,34 @@ public class BlocklingGuiInfo
 
         if (sync)
         {
-            NetworkHandler.sync(world, new BlocklingGuiInfoMessage(this, blockling.getId()));
+            NetworkHandler.sync(world, new Message(this, blockling.getId()));
         }
     }
 
-    public static class BlocklingGuiInfoMessage implements IMessage
+    public static class Message implements IMessage
     {
         BlocklingGuiInfo guiInfo;
         int entityId;
 
-        private BlocklingGuiInfoMessage()
+        private Message()
         {
         }
 
-        public BlocklingGuiInfoMessage(BlocklingGuiInfo guiInfo, int entityId)
+        public Message(BlocklingGuiInfo guiInfo, int entityId)
         {
             this.guiInfo = guiInfo;
             this.entityId = entityId;
         }
 
-        public static void encode(BlocklingGuiInfo.BlocklingGuiInfoMessage msg, PacketBuffer buf)
+        public static void encode(Message msg, PacketBuffer buf)
         {
             buf.writeInt(msg.guiInfo.currentGuiId);
             buf.writeInt(msg.entityId);
         }
 
-        public static BlocklingGuiInfo.BlocklingGuiInfoMessage decode(PacketBuffer buf)
+        public static Message decode(PacketBuffer buf)
         {
-            BlocklingGuiInfo.BlocklingGuiInfoMessage msg = new BlocklingGuiInfo.BlocklingGuiInfoMessage();
+            Message msg = new Message();
             msg.guiInfo.currentGuiId = buf.readInt();
             msg.entityId = buf.readInt();
 

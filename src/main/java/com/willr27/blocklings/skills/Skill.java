@@ -30,12 +30,12 @@ public class Skill
             return false;
         }
 
-        if (info.requirements.skillPoints > group.blockling.getStats().skillPoints.getInt())
+        if (info.requirements.skillPoints > group.blockling.getStats().skillPoints.getValue())
         {
             return false;
         }
 
-        if (info.requirements.levels.keySet().stream().filter(level -> group.blockling.getStats().getLevel(level).getInt() < info.requirements.levels.get(level)).findAny().isPresent())
+        if (info.requirements.levels.keySet().stream().filter(level -> group.blockling.getStats().getLevel(level).getValue() < info.requirements.levels.get(level)).findAny().isPresent())
         {
             return false;
         }
@@ -82,7 +82,7 @@ public class Skill
 
     private void buy()
     {
-        group.blockling.getStats().skillPoints.incBaseValue(-info.requirements.skillPoints);
+        group.blockling.getStats().skillPoints.incValue(-info.requirements.skillPoints);
 
         setState(State.BOUGHT, false);
     }
