@@ -1,10 +1,15 @@
 package com.willr27.blocklings.item;
 
+import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.ArrayList;
@@ -14,51 +19,22 @@ import java.util.stream.Collectors;
 
 public class DropUtil
 {
-    public static List<ItemStack> getDrops(Entity entity, BlockPos blockPos, ItemStack stack)
+    public static List<ItemStack> getDrops(BlocklingEntity blockling, BlockPos blockPos, ItemStack mainStack, ItemStack offStack)
     {
-        return getDrops(entity, blockPos, stack, stack);
-    }
+        World world = blockling.level;
 
-    public static List<ItemStack> getDrops(Entity entity, BlockPos blockPos, ItemStack mainStack, ItemStack offStack)
-    {
-        List<ItemStack> drops = new ArrayList<>();
-        BlockState blockState = entity.level.getBlockState(blockPos);
-        Block block = blockState.getBlock();
+        ItemStack mergedStack = mainStack.copy();
 
-        ItemStack stack = new Random().nextInt(2) == 0 && !mainStack.isEmpty() ? mainStack : !offStack.isEmpty() ? offStack : mainStack;
-        drops.addAll(block.getDrops(blockState, (ServerWorld) entity.level, blockPos, null, entity, stack));
-        drops = drops.stream().filter(itemStack -> !itemStack.isEmpty()).collect(Collectors.toList());
+        for (Enchantment enchantment : ToolUtil.findToolEnchantments(offStack))
+        {
+            int mainLevel = EnchantmentHelper.getItemEnchantmentLevel(enchantment, mainStack);
+            int offLevel = EnchantmentHelper.getItemEnchantmentLevel(enchantment, offStack);
+            mergedStack.enchant(enchantment, Math.max(mainLevel, offLevel));
+        }
 
-//        if (entity instanceof BlocklingEntity)
-//        {
-//            BlocklingEntity blockling = (BlocklingEntity) entity;
-//            if (blockling.abilityManager.isBought(Abilities.Woodcutting.CHARCOAL))
-//            {
-//                int level = EnchantmentHelper.getEnchantmentLevel(Enchantments.FIRE_ASPECT, stack);
-//                if (level > 0 || blockling.abilityManager.isBought(Abilities.Woodcutting.CHARCOAL_2))
-//                {
-//                    List<ItemStack> remove = new ArrayList<>();
-//                    List<ItemStack> add = new ArrayList<>();
-//                    for (ItemStack drop : drops)
-//                    {
-//                        Optional<FurnaceRecipe> rec = entity.world.getRecipeManager().getRecipe(IRecipeType.SMELTING, new Inventory(drop), entity.world);
-//                        if (rec.isPresent())
-//                        {
-//                            FurnaceRecipe furnaceRecipe = rec.get();
-//                            ItemStack item = furnaceRecipe.getRecipeOutput().copy();
-//                            if (item.getItem() == Items.CHARCOAL)
-//                            {
-//                                remove.add(drop);
-//                                add.add(item);
-//                            }
-//                        }
-//                    }
-//
-//                    drops.removeAll(remove);
-//                    drops.addAll(add);
-//                }
-//            }
-//        }
+        List<ItemStack> drops = Block.getDrops(world.getBlockState(blockPos), (ServerWorld) world, blockPos, null, null, mergedStack);
+
+        // Do any post loot processing here. Skills etc...
 
         return drops;
     }

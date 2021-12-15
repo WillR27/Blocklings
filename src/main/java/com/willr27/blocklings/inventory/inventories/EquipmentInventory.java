@@ -122,6 +122,65 @@ public class EquipmentInventory extends AbstractInventory
     }
 
     @Override
+    public ItemStack addItem(ItemStack stack)
+    {
+        int maxStackSize = stack.getMaxStackSize();
+
+        for (int i = 0; i < invSize && !stack.isEmpty(); i++)
+        {
+            if (i >= UTILITY_1 && i <= UTILITY_2)
+            {
+                continue;
+            }
+            else if (i >= TOOL_MAIN_HAND && i <= TOOL_OFF_HAND)
+            {
+                if (!ToolUtil.isTool(stack))
+                {
+                    continue;
+                }
+            }
+
+            ItemStack slotStack = getItem(i);
+
+            if (ItemStack.isSame(stack, slotStack))
+            {
+                int amountToAdd = stack.getCount();
+                amountToAdd = Math.min(amountToAdd, maxStackSize - slotStack.getCount());
+                stack.shrink(amountToAdd);
+                slotStack.grow(amountToAdd);
+                setItem(i, slotStack);
+            }
+        }
+
+        for (int i = 0; i < invSize && !stack.isEmpty(); i++)
+        {
+            if (i >= UTILITY_1 && i <= UTILITY_2)
+            {
+                continue;
+            }
+            else if (i >= TOOL_MAIN_HAND && i <= TOOL_OFF_HAND)
+            {
+                if (!ToolUtil.isTool(stack))
+                {
+                    continue;
+                }
+            }
+
+            ItemStack slotStack = getItem(i);
+
+            if (slotStack.isEmpty())
+            {
+                setItem(i, stack.copy());
+                stack.setCount(0);
+
+                break;
+            }
+        }
+
+        return stack;
+    }
+
+    @Override
     public void setItem(int index, ItemStack stack)
     {
         super.setItem(index, stack);

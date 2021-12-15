@@ -144,7 +144,6 @@ public abstract class AbstractInventory implements IInventory
     public void setItem(int index, ItemStack stack)
     {
         stacks[index] = stack;
-        markDirty();
     }
 
     @Override
@@ -160,8 +159,6 @@ public abstract class AbstractInventory implements IInventory
         {
             removeItemNoUpdate(i);
         }
-
-        markDirty();
     }
 
     public int find(Item item)
@@ -204,13 +201,11 @@ public abstract class AbstractInventory implements IInventory
             stack.shrink(amountToAdd);
             slotStack.grow(amountToAdd);
             setItem(slot, slotStack);
-            markDirty();
         }
         else
         {
             setItem(slot, stack.copy());
             stack.shrink(stack.getCount());
-            markDirty();
         }
 
         return stack;
@@ -223,6 +218,7 @@ public abstract class AbstractInventory implements IInventory
         for (int i = 0; i < invSize && !stack.isEmpty(); i++)
         {
             ItemStack slotStack = getItem(i);
+
             if (ItemStack.isSame(stack, slotStack))
             {
                 int amountToAdd = stack.getCount();
@@ -230,26 +226,22 @@ public abstract class AbstractInventory implements IInventory
                 stack.shrink(amountToAdd);
                 slotStack.grow(amountToAdd);
                 setItem(i, slotStack);
-                markDirty();
             }
         }
+
         for (int i = 0; i < invSize && !stack.isEmpty(); i++)
         {
             ItemStack slotStack = getItem(i);
+
             if (slotStack.isEmpty())
             {
                 setItem(i, stack.copy());
                 stack.setCount(0);
-                markDirty();
+
                 break;
             }
         }
 
         return stack;
-    }
-
-    private void markDirty()
-    {
-        dirty = true;
     }
 }

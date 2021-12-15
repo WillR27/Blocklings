@@ -328,7 +328,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
                     if (!player.inventory.add(blocklingStack))
                     {
-                        level.addFreshEntity(new ItemEntity(level, getX(), getY() + 0.2f, getZ(), blocklingStack));
+                        dropItemStack(blocklingStack);
                     }
 
                     remove();
@@ -518,6 +518,11 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     public AgeableEntity getBreedOffspring(@Nonnull ServerWorld world, @Nonnull AgeableEntity entity)
     {
         return null;
+    }
+
+    public void dropItemStack(ItemStack stack)
+    {
+        level.addFreshEntity(new ItemEntity(level, getX(), getY() + 0.2f, getZ(), stack));
     }
 
     @Override

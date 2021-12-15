@@ -14,6 +14,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SwordItem;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
@@ -163,11 +167,26 @@ public class ToolUtil
     }
 
     /**
+     * Returns the mining speed for the given tool from only its enchantments.
+     */
+    public static float findToolEnchantmentMiningSpeed(ItemStack stack)
+    {
+        int level = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, stack);
+
+        if (level > 0)
+        {
+            return level * level + 1.0f;
+        }
+
+        return 0.0f;
+    }
+
+    /**
      * Returns the mining speed for the given tool against stone, including enchantments.
      */
     public static float findToolMiningSpeedWithEnchantments(ItemStack stack)
     {
-        return stack.getDestroySpeed(Blocks.STONE.defaultBlockState());
+        return findToolMiningSpeed(stack) + findToolEnchantmentMiningSpeed(stack);
     }
 
     /**
@@ -189,5 +208,27 @@ public class ToolUtil
         }
 
         return false;
+    }
+
+    /**
+     * Returns a list of all the enchantments on the given item.
+     */
+    public static List<Enchantment> findToolEnchantments(ItemStack stack)
+    {
+        List<Enchantment> enchantments = new ArrayList<>();
+        ListNBT listNBT = stack.getEnchantmentTags();
+
+        for (int i = 0; i < listNBT.size(); i++)
+        {
+            CompoundNBT tag = listNBT.getCompound(i);
+            ResourceLocation enchantmentResource = ResourceLocation.tryParse(tag.getString("id"));
+
+            if (enchantmentResource != null)
+            {
+                enchantments.add(Registry.ENCHANTMENT.get(enchantmentResource));
+            }
+        }
+
+        return enchantments;
     }
 }

@@ -8,6 +8,7 @@ import com.willr27.blocklings.entity.entities.blockling.goal.BlocklingTargetGoal
 import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import com.willr27.blocklings.entity.entities.blockling.goal.goals.target.BlocklingMineTargetGoal;
 import com.willr27.blocklings.entity.entities.blockling.goal.goals.target.IHasTargetGoal;
+import com.willr27.blocklings.item.DropUtil;
 import com.willr27.blocklings.item.ToolType;
 import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
@@ -15,6 +16,7 @@ import com.willr27.blocklings.whitelist.Whitelist;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.math.BlockPos;
@@ -188,8 +190,8 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
                 if (blockling.getActions().mine.isRunning())
                 {
                     float blocklingDestroySpeed = blockling.getStats().miningSpeed.getValue();
-                    float mainDestroySpeed = mainCanHarvest ? ToolUtil.findToolMiningSpeed(mainStack) : 0.0f;
-                    float offDestroySpeed = offCanHarvest ? ToolUtil.findToolMiningSpeed(offStack) : 0.0f;
+                    float mainDestroySpeed = mainCanHarvest ? ToolUtil.findToolMiningSpeedWithEnchantments(mainStack) : 0.0f;
+                    float offDestroySpeed = offCanHarvest ? ToolUtil.findToolMiningSpeedWithEnchantments(offStack) : 0.0f;
 
                     float destroySpeed = blocklingDestroySpeed + mainDestroySpeed + offDestroySpeed;
                     float blockStrength = world.getBlockState(targetGoal.getTargetPos()).getDestroySpeed(world, targetGoal.getTargetPos());
@@ -202,23 +204,31 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
                     if (blockling.getActions().mine.isFinished())
                     {
                         blockling.getActions().mine.stop();
-
                         blockling.getStats().miningXp.incValue(10);
 
-                        world.destroyBlock(targetGoal.getTargetPos(), false);
-                        world.destroyBlockProgress(blockling.getId(), targetGoal.getTargetPos(), 0);
+                        for (ItemStack stack : DropUtil.getDrops(blockling, targetBlockPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
+                        {
+                            stack = blockling.getEquipment().addItem(stack);
+                            blockling.dropItemStack(stack);
+                        }
+
+                        mainStack.hurt(mainCanHarvest ? 1 : 0, blockling.getRandom(), null);
+                        offStack.hurt(offCanHarvest ? 1 : 0, blockling.getRandom(), null);
+
+                        world.destroyBlock(targetBlockPos, false);
+                        world.destroyBlockProgress(blockling.getId(), targetBlockPos, 0);
 
                         forceRecalc();
                     }
                     else
                     {
-                        world.destroyBlockProgress(blockling.getId(), targetGoal.getTargetPos(), BlockUtil.calcBlockBreakProgress(blockling.getActions().mine.count()));
+                        world.destroyBlockProgress(blockling.getId(), targetBlockPos, BlockUtil.calcBlockBreakProgress(blockling.getActions().mine.count()));
                     }
                 }
             }
             else
             {
-                world.destroyBlockProgress(blockling.getId(), targetGoal.getTargetPos(), -1);
+                world.destroyBlockProgress(blockling.getId(), targetBlockPos, -1);
                 blockling.getActions().mine.stop();
             }
         }
