@@ -39,6 +39,11 @@ public abstract class Attribute<T>
 
     public abstract T getValue();
 
+    public void callUpdateCallbacks()
+    {
+        updateCallbacks.forEach(floatConsumer -> floatConsumer.accept(getValue()));
+    }
+
     public void addUpdateCallback(Consumer<T> callback)
     {
         updateCallbacks.add(callback);

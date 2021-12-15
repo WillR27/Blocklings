@@ -1,10 +1,10 @@
 package com.willr27.blocklings.entity.entities.blockling;
 
 import com.willr27.blocklings.action.Action;
-import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.action.actions.AttackAction;
 import com.willr27.blocklings.action.actions.KnownTargetAction;
 import com.willr27.blocklings.action.actions.UnknownTargetAction;
+import com.willr27.blocklings.item.ToolUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,31 @@ public class BlocklingActions
     {
         this.blockling = blockling;
 
-        attack = createAction(blockling, "attack", () -> blockling.getStats().combatInterval.getValue(), () -> blockling.getStats().combatInterval.getValue());
+        Supplier<Float> attackTargetSupplier = () ->
+        {
+            float attackSpeed = blockling.getStats().combatSpeed.getValue();
+            float mainAttackSpeed = ToolUtil.findToolAttackSpeed(blockling.getMainHandItem()) * 2.0f;
+            float offAttackSpeed = ToolUtil.findToolAttackSpeed(blockling.getOffhandItem()) * 2.0f;
+
+            BlocklingHand attackingHand = blockling.getEquipment().findAttackingHand();
+
+            if (attackingHand == BlocklingHand.BOTH)
+            {
+                attackSpeed = (attackSpeed + mainAttackSpeed + offAttackSpeed) / 3.0f;
+            }
+            else if (attackingHand == BlocklingHand.MAIN)
+            {
+                attackSpeed = (attackSpeed + mainAttackSpeed) / 2.0f;
+            }
+            else if (attackingHand == BlocklingHand.OFF)
+            {
+                attackSpeed = (attackSpeed + offAttackSpeed) / 2.0f;
+            }
+
+            return (1.0f / attackSpeed) * 80.0f;
+        };
+
+        attack = createAction(blockling, "attack", attackTargetSupplier, attackTargetSupplier);
         mine = new KnownTargetAction(blockling, "mine", () -> 1.0f);
     }
 

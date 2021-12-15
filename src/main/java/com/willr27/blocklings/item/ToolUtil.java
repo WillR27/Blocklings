@@ -117,11 +117,13 @@ public class ToolUtil
 
             if (attributemodifier.getId() == baseAttackSpeedAttributeId)
             {
-                return (float) attributemodifier.getAmount();
+                // Add on 4.0f as this seems to be the default value the player has
+                // This is why the item tooltips say +1.6 instead of -2.4 for example
+                return (float) attributemodifier.getAmount() + 4.0f;
             }
         }
 
-        return 0.0f;
+        return 4.0f;
     }
 
     public static float findToolBaseDamage(ItemStack stack)
@@ -135,7 +137,9 @@ public class ToolUtil
 
             if (attributemodifier.getId() == baseAttackDamageAttributeId)
             {
-                return (float) attributemodifier.getAmount();
+                // Add on 1.0f as this seems to be the default value the player has
+                // This is why the item tooltips say +8.0 instead of -7.0 for example
+                return (float) attributemodifier.getAmount() + 1.0f;
             }
         }
 

@@ -47,29 +47,30 @@ public class BlocklingGuiInfo
 
     public static class Message implements IMessage
     {
-        BlocklingGuiInfo guiInfo;
+        int currentGuiId;
         int entityId;
 
         private Message()
         {
+
         }
 
         public Message(BlocklingGuiInfo guiInfo, int entityId)
         {
-            this.guiInfo = guiInfo;
+            this.currentGuiId = guiInfo.currentGuiId;
             this.entityId = entityId;
         }
 
         public static void encode(Message msg, PacketBuffer buf)
         {
-            buf.writeInt(msg.guiInfo.currentGuiId);
+            buf.writeInt(msg.currentGuiId);
             buf.writeInt(msg.entityId);
         }
 
         public static Message decode(PacketBuffer buf)
         {
             Message msg = new Message();
-            msg.guiInfo.currentGuiId = buf.readInt();
+            msg.currentGuiId = buf.readInt();
             msg.entityId = buf.readInt();
 
             return msg;
@@ -88,7 +89,8 @@ public class BlocklingGuiInfo
                     BlocklingEntity blockling = (BlocklingEntity) player.level.getEntity(entityId);
                     if (blockling != null)
                     {
-                        blockling.setGuiInfo(guiInfo, !isClient);
+                        blockling.getGuiInfo().currentGuiId = currentGuiId;
+                        blockling.setGuiInfo(blockling.getGuiInfo(), !isClient);
                     }
                 }
             });

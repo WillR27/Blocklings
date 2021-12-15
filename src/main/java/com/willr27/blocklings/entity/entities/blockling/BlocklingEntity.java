@@ -1,6 +1,7 @@
 package com.willr27.blocklings.entity.entities.blockling;
 
 import com.google.common.collect.Iterables;
+import com.willr27.blocklings.entity.entities.blockling.goal.Task;
 import com.willr27.blocklings.gui.GuiHandler;
 import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
 import com.willr27.blocklings.item.ItemUtil;
@@ -10,6 +11,7 @@ import com.willr27.blocklings.network.NetworkHandler;
 import com.willr27.blocklings.network.messages.BlocklingTargetMessage;
 import com.willr27.blocklings.network.messages.BlocklingTypeMessage;
 import com.willr27.blocklings.skills.BlocklingSkills;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
@@ -192,7 +194,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         ItemStack mainStack = getMainHandItem();
         ItemStack offStack = getOffhandItem();
 
-        float damage = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE);
+        float damage = stats.damage.getValue();
         float knockback = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
         int fireAspect = 0;
 
@@ -376,10 +378,15 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         if (random.nextInt(3) == 0 && !ForgeEventFactory.onAnimalTame(this, player))
         {
             tame(player);
-            tasks.setIsUnlocked(BlocklingTasks.FOLLOW, true);
-            tasks.setIsUnlocked(BlocklingTasks.SIT, true);
-            tasks.setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT, true);
-            tasks.setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT_BY, true);
+
+            for (Task task : getTasks().getPrioritisedTasks())
+            {
+                if (task.isConfigured() && task.getType() == BlocklingTasks.WANDER)
+                {
+                    task.setType(BlocklingTasks.FOLLOW);
+                }
+            }
+
             navigation.stop();
             level.broadcastEntityEvent(this, (byte) 7);
         }
@@ -392,6 +399,17 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         {
             stack.shrink(1);
         }
+    }
+
+    @Override
+    public void tame(@Nonnull PlayerEntity player)
+    {
+        super.tame(player);
+
+        tasks.setIsUnlocked(BlocklingTasks.FOLLOW, true);
+        tasks.setIsUnlocked(BlocklingTasks.SIT, true);
+        tasks.setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT, true);
+        tasks.setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT_BY, true);
     }
 
     @Override

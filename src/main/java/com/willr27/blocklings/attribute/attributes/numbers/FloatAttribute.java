@@ -81,7 +81,7 @@ public class FloatAttribute extends Attribute<Float>
     {
         this.value = value;
 
-        updateCallbacks.forEach(consumer -> consumer.accept(value));
+        callUpdateCallbacks();
 
         if (sync)
         {

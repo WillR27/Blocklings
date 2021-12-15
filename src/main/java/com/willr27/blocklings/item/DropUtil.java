@@ -12,6 +12,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 
 public class DropUtil
 {
-    public static List<ItemStack> getDrops(BlocklingEntity blockling, BlockPos blockPos, ItemStack mainStack, ItemStack offStack)
+    public static List<ItemStack> getDrops(@Nonnull BlocklingEntity blockling, @Nonnull BlockPos blockPos, @Nonnull ItemStack mainStack, @Nonnull ItemStack offStack)
     {
         World world = blockling.level;
 

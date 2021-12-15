@@ -184,11 +184,6 @@ public class EquipmentInventory extends AbstractInventory
     public void setItem(int index, ItemStack stack)
     {
         super.setItem(index, stack);
-
-        if (index == TOOL_MAIN_HAND || index == TOOL_OFF_HAND)
-        {
-            blockling.getStats().updateToolModifiers(false);
-        }
     }
 
     public void detectAndSendChanges()

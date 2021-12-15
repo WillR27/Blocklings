@@ -93,7 +93,7 @@ public class ModifiableIntAttribute extends ModifiableAttribute<Integer>
             value += tempBase;
         }
 
-        updateCallbacks.forEach(floatConsumer -> floatConsumer.accept(value));
+        callUpdateCallbacks();
     }
 
     @Override

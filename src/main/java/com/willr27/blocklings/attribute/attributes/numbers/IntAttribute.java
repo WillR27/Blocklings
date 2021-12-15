@@ -81,7 +81,7 @@ public class IntAttribute extends Attribute<Integer>
     {
         this.value = value;
 
-        updateCallbacks.forEach(consumer -> consumer.accept(value));
+        callUpdateCallbacks();
 
         if (sync)
         {

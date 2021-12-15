@@ -159,7 +159,7 @@ public class StatsScreen extends TabbedScreen
 
         else if (combatIcon.isMouseOver(mouseX, mouseY))
         {
-            tooltip.add(new Attribute.AttributeTranslationTextComponent("combat.speed", blockling.getStats().combatInterval.getValue()).getVisualOrderText());
+            tooltip.add(new Attribute.AttributeTranslationTextComponent("combat.speed", blockling.getStats().combatSpeed.getValue()).getVisualOrderText());
         }
         else if (miningIcon.isMouseOver(mouseX, mouseY))
         {
@@ -282,8 +282,7 @@ public class StatsScreen extends TabbedScreen
 
         public void render(MatrixStack matrixStack, int mouseX, int mouseY, int xp, int level)
         {
-//            double percentage = xp / (double) BlocklingStats.getXpUntilNextLevel(level);
-            double percentage = 0.4f;
+            double percentage = xp / (double) BlocklingStats.getXpUntilNextLevel(level);
             int middle = (int)(width * percentage);
 
             blit(matrixStack, x, y, textureX, textureY + height, width, height);

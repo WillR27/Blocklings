@@ -93,7 +93,7 @@ public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
             value += tempBase;
         }
 
-        updateCallbacks.forEach(floatConsumer -> floatConsumer.accept(value));
+        callUpdateCallbacks();
     }
 
     @Override

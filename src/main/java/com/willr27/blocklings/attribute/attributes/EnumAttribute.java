@@ -74,6 +74,8 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
     {
         this.value = value;
 
+        callUpdateCallbacks();
+
         if (sync)
         {
             NetworkHandler.sync(blockling.level, new Message<T>(blockling.getStats().attributes.indexOf(this), value, blockling.getId()));

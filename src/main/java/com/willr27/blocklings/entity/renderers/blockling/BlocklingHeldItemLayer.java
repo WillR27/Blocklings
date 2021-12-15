@@ -46,8 +46,9 @@ public class BlocklingHeldItemLayer extends LayerRenderer<BlocklingEntity, Block
     {
         matrixStack.pushPose();
         getParentModel().translateToHand(isLeftHand ? HandSide.LEFT : HandSide.RIGHT, matrixStack);
+        matrixStack.mulPose(Vector3f.YP.rotationDegrees(180.0f));
         matrixStack.mulPose(Vector3f.XP.rotationDegrees(190.0f));
-        matrixStack.translate((isLeftHand ? -1.0f : 1.0f) / 16.0f, 0.0f, getItemHandDisplacement(stack));
+        matrixStack.translate((isLeftHand ? 1.0f : -1.0f) / 16.0f, -0.1f, getItemHandDisplacement(stack));
         Minecraft.getInstance().getItemInHandRenderer().renderItem(blockling, stack, isLeftHand ? ItemCameraTransforms.TransformType.THIRD_PERSON_LEFT_HAND : ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND, isLeftHand, matrixStack, renderTypeBuffer, p_225628_3_);
         matrixStack.popPose();
     }
@@ -56,9 +57,9 @@ public class BlocklingHeldItemLayer extends LayerRenderer<BlocklingEntity, Block
     {
         if (ToolUtil.isWeapon(stack))
         {
-            return 0.1744f;
+            return -0.3044f;
         }
 
-        return 0.1335f;
+        return -0.3552f;
     }
 }

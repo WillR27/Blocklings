@@ -111,6 +111,7 @@ public class BlocklingFollowGoal extends BlocklingGoal
 
             if (!blockling.isLeashed() && !blockling.isPassenger())
             {
+                navigation.stop();
                 navigation.moveTo(owner, speedModifier);
             }
         }

@@ -35,12 +35,22 @@ public abstract class BlocklingTargetGoal extends Goal
             return false;
         }
 
+        if (goal.getState() == BlocklingGoal.State.DISABLED)
+        {
+            return false;
+        }
+
         return true;
     }
 
     @Override
     public boolean canContinueToUse()
     {
+        if (goal.getState() == BlocklingGoal.State.DISABLED)
+        {
+            return false;
+        }
+
         return true;
     }
 

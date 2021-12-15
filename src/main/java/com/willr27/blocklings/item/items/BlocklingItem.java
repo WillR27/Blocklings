@@ -2,6 +2,8 @@ package com.willr27.blocklings.item.items;
 
 import com.willr27.blocklings.entity.EntityTypes;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
+import com.willr27.blocklings.entity.entities.blockling.goal.Task;
 import com.willr27.blocklings.util.BlocklingsResourceLocation;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.SpawnReason;
@@ -57,6 +59,16 @@ public class BlocklingItem extends Item
             if (stack.getTag() != null)
             {
                 blockling.readBlocklingFromNBT((CompoundNBT) stack.getTag().get("blockling"));
+            }
+            else
+            {
+                for (Task task : blockling.getTasks().getPrioritisedTasks())
+                {
+                    if (task.isConfigured() && task.getType() == BlocklingTasks.WANDER)
+                    {
+                        task.setType(BlocklingTasks.FOLLOW);
+                    }
+                }
             }
 
             if (!context.getPlayer().abilities.instabuild)

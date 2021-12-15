@@ -14,6 +14,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
+import org.jline.utils.Log;
 
 public class GuiHandler
 {
@@ -46,6 +47,7 @@ public class GuiHandler
             if (!blockling.level.isClientSide)
             {
                 ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
+                serverPlayer.nextContainerCounter();
                 openGui(guiId, serverPlayer.containerCounter, blockling, player, sync);
             }
             else
@@ -59,23 +61,33 @@ public class GuiHandler
     {
         if (!blockling.level.isClientSide)
         {
+            ((ServerPlayerEntity) player).nextContainerCounter();
+            windowId = ((ServerPlayerEntity) player).containerCounter;
+
             Container container = getContainer(guiId, windowId, blockling, player);
             if (container != null) player.containerMenu = container;
             if (sync) NetworkHandler.sendTo(player, new OpenGuiMessage(guiId, windowId, blockling.getId()));
 
-            // Update the current guiId, shouldn't need to sync if doing inside this method
-            blockling.getGuiInfo().setCurrentGuiId(guiId, false);
+            // Sync back to the client
+            blockling.getGuiInfo().setCurrentGuiId(guiId, true);
         }
         else
         {
-            Container container = getContainer(guiId, windowId, blockling, player);
-            if (container != null) player.containerMenu = container;
-            Screen screen = getScreen(guiId, container, blockling, player);
-            if (screen != null) Minecraft.getInstance().setScreen(screen);
-            if (sync) NetworkHandler.sendToServer(new OpenGuiMessage(guiId, windowId, blockling.getId()));
+            if (windowId == 0)
+            {
+                Log.warn("The window id should never be 0 on the client as this is for the player inventory container!");
+            }
+            else
+            {
+                Container container = getContainer(guiId, windowId, blockling, player);
+                if (container != null) player.containerMenu = container;
+                Screen screen = getScreen(guiId, container, blockling, player);
+                if (screen != null) Minecraft.getInstance().setScreen(screen);
+                if (sync) NetworkHandler.sendToServer(new OpenGuiMessage(guiId, windowId, blockling.getId()));
 
-            // Update the current guiId, shouldn't need to sync if doing inside this method
-            blockling.getGuiInfo().setCurrentGuiId(guiId, false);
+                // Don't sync back to the server
+                blockling.getGuiInfo().setCurrentGuiId(guiId, false);
+            }
         }
     }
 
