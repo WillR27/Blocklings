@@ -72,6 +72,8 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
             setBlocklingType(BlocklingType.TYPES.get(getRandom().nextInt(3)), false);
 
             stats.init();
+
+            setHealth(getMaxHealth());
         }
     }
 

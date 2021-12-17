@@ -4,11 +4,15 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.screen.Screen;
 
 public class Widget extends AbstractGui
 {
+    public final Screen screen;
+
     public FontRenderer font;
     public int x, y;
     public int width, height;
@@ -16,6 +20,7 @@ public class Widget extends AbstractGui
 
     public Widget(FontRenderer font, int x, int y, int width, int height)
     {
+        this.screen = Minecraft.getInstance().screen;
         this.font = font;
         this.x = x;
         this.y = y;

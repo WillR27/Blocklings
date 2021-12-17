@@ -9,9 +9,7 @@ import com.willr27.blocklings.attribute.attributes.numbers.ModifiableIntAttribut
 import com.willr27.blocklings.attribute.modifier.AttributeModifier;
 import com.willr27.blocklings.attribute.modifier.modifiers.numbers.FloatAttributeModifier;
 import com.willr27.blocklings.attribute.modifier.modifiers.numbers.IntAttributeModifier;
-import com.willr27.blocklings.item.ToolType;
 import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
@@ -32,12 +30,8 @@ public class BlocklingStats
     public final ModifiableFloatAttribute combatSpeed;
     public final FloatAttributeModifier combatIntervalLevelModifier;
     public final ModifiableFloatAttribute miningSpeed;
-    public final ModifiableFloatAttribute woodcuttingInterval;
-    public final FloatAttributeModifier woodcuttingIntervalLevelModifier;
-    public final FloatAttributeModifier woodcuttingIntervalToolModifier;
-    public final ModifiableFloatAttribute farmingInterval;
-    public final FloatAttributeModifier farmingIntervalLevelModifier;
-    public final FloatAttributeModifier farmingIntervalToolModifier;
+    public final ModifiableFloatAttribute woodcuttingSpeed;
+    public final ModifiableFloatAttribute farmingSpeed;
 
     public final IntAttribute combatLevel;
     public final IntAttribute miningLevel;
@@ -67,7 +61,7 @@ public class BlocklingStats
     public final ModifiableFloatAttribute armour;
     public final FloatAttributeModifier armourCombatLevelModifier;
     public final FloatAttributeModifier armourTypeModifier;
-    public final ModifiableFloatAttribute movementSpeed;
+    public final ModifiableFloatAttribute moveSpeed;
     public final FloatAttributeModifier movementSpeedTypeModifier;
 
     public final BlocklingEntity blockling;
@@ -90,27 +84,22 @@ public class BlocklingStats
         // Default mining speed for an item/hand is 1.0f
         // A wooden pickaxe is 2.0f
         // A diamond pickaxe is 8.0f
-        // Our default mining speed can be 0.0f as it will be determined by the mining level
+        // Our default mining speed can be 0.0f as it will be determined by the level
         miningSpeed = createModifiableFloatAttribute("0d918c08-2e94-481b-98e1-c2ff3ae395de", "mining_speed", 0.0f);
-
-        woodcuttingInterval = createModifiableFloatAttribute("5ff5bfe0-09ae-4367-9473-d16efb774907", "woodcutting_interval", 10.0f);
-        woodcuttingIntervalLevelModifier = createFloatAttributeModifier("2b5856d2-b451-4bb4-8897-6cb0cfb6e930", "woodcutting_interval_level", woodcuttingInterval, 0.0f, AttributeModifier.Operation.ADD);
-        woodcuttingIntervalToolModifier = createFloatAttributeModifier("d62d6675-dc0f-4682-8b62-d8b8920b5c90", "woodcutting_interval_tool", woodcuttingInterval, 1.0f, AttributeModifier.Operation.MULTIPLY_TOTAL);
-        farmingInterval = createModifiableFloatAttribute("b51399e0-d297-4a34-bfa1-2c51d1a034fa", "farming_interval", 10.0f);
-        farmingIntervalLevelModifier = createFloatAttributeModifier("cbe2c238-ca0e-41b1-be8b-e53d1ceee9f1", "farming_interval_level", farmingInterval, 0.0f, AttributeModifier.Operation.ADD);
-        farmingIntervalToolModifier = createFloatAttributeModifier("2f613528-92f7-4dca-904f-a60b833cf830", "farming_interval_tool", farmingInterval, 1.0f, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        woodcuttingSpeed = createModifiableFloatAttribute("e1e3ecb3-ae1d-46c5-8ea8-a7180641910b", "woodcutting_speed", 0.0f);
+        farmingSpeed = createModifiableFloatAttribute("f6c026b6-1fa9-432f-aca3-d97af784f6d0", "farming_speed", 0.0f);
 
         combatLevel = createIntAttribute("17beee8e-3fca-4601-a766-46f811ad6b69", "combat_level", 10);
         combatLevel.addUpdateCallback((i) -> { combatIntervalLevelModifier.setValue(calcBreakSpeedFromLevel(combatLevel.getValue()), false); updateCombatLevelBonuses(false); });
         levels.add(combatLevel);
         miningLevel = createIntAttribute("a2a62308-0a6e-41bb-9844-4645eeb72fb7", "mining_level", 10);
-        miningLevel.addUpdateCallback((i) -> miningSpeed.setBaseValue(calcBreakSpeedFromLevel(miningLevel.getValue()), false));
+        miningLevel.addUpdateCallback((i) -> miningSpeed.setBaseValue(calcBreakSpeedFromLevel(i), false));
         levels.add(miningLevel);
         woodcuttingLevel = createIntAttribute("c6d3ce7c-52af-44df-833b-fede277eec7f", "woodcutting_level", 10);
-        woodcuttingLevel.addUpdateCallback((i) -> woodcuttingIntervalLevelModifier.setValue(calcBreakSpeedFromLevel((int) woodcuttingLevel.getValue()), false));
+        woodcuttingLevel.addUpdateCallback((i) -> woodcuttingSpeed.setBaseValue(calcBreakSpeedFromLevel(i), false));
         levels.add(woodcuttingLevel);
         farmingLevel = createIntAttribute("ac1c6d1b-18bb-435a-ad93-c24d6fa90816", "farming_level", 10);
-        farmingLevel.addUpdateCallback((i) -> farmingIntervalLevelModifier.setValue(calcBreakSpeedFromLevel(farmingLevel.getValue()), false));
+        farmingLevel.addUpdateCallback((i) -> farmingSpeed.setBaseValue(calcBreakSpeedFromLevel(i), false));
         levels.add(farmingLevel);
 
         combatXp = createIntAttribute("ec56a177-2a08-4f43-b77a-b1d4544a8656", "combat_xp", getXpUntilNextLevel(combatLevel.getValue()));
@@ -146,9 +135,9 @@ public class BlocklingStats
         armour.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.ARMOR)).setBaseValue(f));
         armourCombatLevelModifier = createFloatAttributeModifier("15f2f2ce-cdf1-4188-882e-67ceab22df41", "armour_combat_level", armour, 0.0f, AttributeModifier.Operation.ADD);
         armourTypeModifier = createFloatAttributeModifier("a72fb401-abb7-4d95-ad7e-e83fc6a399d1", "armour_type", armour, 0.0f, AttributeModifier.Operation.ADD);
-        movementSpeed = createModifiableFloatAttribute("9a0bb639-8543-4725-9be1-8a8ce688da70", "movement_speed", 0.3f);
-        movementSpeed.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.MOVEMENT_SPEED)).setBaseValue(f));
-        movementSpeedTypeModifier = createFloatAttributeModifier("1391f012-6482-420e-ae77-5178b7ed77c1", "movement_speed_type", movementSpeed, 0.0f, AttributeModifier.Operation.ADD);
+        moveSpeed = createModifiableFloatAttribute("9a0bb639-8543-4725-9be1-8a8ce688da70", "move_speed", 0.3f);
+        moveSpeed.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.MOVEMENT_SPEED)).setBaseValue(f));
+        movementSpeedTypeModifier = createFloatAttributeModifier("1391f012-6482-420e-ae77-5178b7ed77c1", "move_speed_type", moveSpeed, 0.0f, AttributeModifier.Operation.ADD);
     }
 
     public IntAttribute createIntAttribute(String id, String key, int value)
@@ -223,8 +212,6 @@ public class BlocklingStats
         {
             attribute.callUpdateCallbacks();
         }
-
-        blockling.setHealth(blockling.getMaxHealth());
 
 //        updateCombatLevelBonuses(false);
 //        updateTypeBonuses(false);
@@ -379,7 +366,6 @@ public class BlocklingStats
         return (float) (0.5f * Math.log(combatLevel.getValue()));
     }
 
-
     public void updateHealth()
     {
         if (blockling.getHealth() > blockling.getMaxHealth())
@@ -387,13 +373,6 @@ public class BlocklingStats
             blockling.setHealth(blockling.getMaxHealth());
         }
     }
-
-
-    public double getAttackDamage() { return blockling.getAttribute(Attributes.ATTACK_DAMAGE).getValue(); }
-    public double getArmour() { return blockling.getAttribute(Attributes.ARMOR).getValue(); }
-    public double getMovementSpeed() { return blockling.getAttribute(Attributes.MOVEMENT_SPEED).getValue(); }
-
-
 
     public Attribute<?> getAttribute(String key)
     {
@@ -406,6 +385,46 @@ public class BlocklingStats
         }
 
         return null;
+    }
+
+    public int getAttackDamage()
+    {
+        return (int) Math.ceil(damage.getValue());
+    }
+
+    public int getAttackSpeed()
+    {
+        return (int) Math.ceil(combatSpeed.getValue());
+    }
+
+    public int getHealth()
+    {
+        return (int) Math.ceil(blockling.getHealth());
+    }
+
+    public int getMaxHealth()
+    {
+        return (int) Math.ceil(blockling.getMaxHealth());
+    }
+
+    public float getHealthPercentage()
+    {
+        return blockling.getHealth() / blockling.getMaxHealth();
+    }
+
+    public int getArmour()
+    {
+        return (int) Math.ceil(blockling.getAttribute(Attributes.ARMOR).getValue());
+    }
+
+    public int getArmourToughness()
+    {
+        return (int) Math.ceil(blockling.getAttribute(Attributes.ARMOR_TOUGHNESS).getValue());
+    }
+
+    public int getKnockbackResistance()
+    {
+        return (int) Math.ceil(blockling.getAttribute(Attributes.KNOCKBACK_RESISTANCE).getValue());
     }
 
     public IntAttribute getLevel(Level level)
