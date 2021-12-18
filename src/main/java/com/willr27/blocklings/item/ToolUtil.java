@@ -15,15 +15,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -106,7 +103,7 @@ public class ToolUtil
         return TOOLS.contains(item);
     }
 
-    public static float findToolAttackSpeed(ItemStack stack)
+    public static float getToolAttackSpeed(ItemStack stack)
     {
         Multimap<Attribute, AttributeModifier> multimap = stack.getAttributeModifiers(EquipmentSlotType.MAINHAND);
 
@@ -118,15 +115,16 @@ public class ToolUtil
             if (attributemodifier.getId() == baseAttackSpeedAttributeId)
             {
                 // Add on 4.0f as this seems to be the default value the player has
-                // This is why the item tooltips say +1.6 instead of -2.4 for example
-                return (float) attributemodifier.getAmount() + 4.0f;
+                // This is why the item tooltips say +1.6f instead of -2.4f for example
+                // Multiply this by 2.0f to bring it in range of the blockling's default 4.0f attack speed
+                return (float) (attributemodifier.getAmount() + 4.0f) * 2.0f;
             }
         }
 
         return 4.0f;
     }
 
-    public static float findToolBaseDamage(ItemStack stack)
+    public static float getToolBaseDamage(ItemStack stack)
     {
         Multimap<Attribute, AttributeModifier> multimap = stack.getAttributeModifiers(EquipmentSlotType.MAINHAND);
 
@@ -146,17 +144,29 @@ public class ToolUtil
         return 0.0f;
     }
 
-    public static float findToolEnchantmentDamage(ItemStack stack, CreatureAttribute creatureAttribute)
+    public static float getBaseDamageIfTool(ItemStack stack)
+    {
+        if (isTool(stack))
+        {
+            return getToolBaseDamage(stack);
+        }
+        else
+        {
+            return 0.0f;
+        }
+    }
+
+    public static float getToolEnchantmentDamage(ItemStack stack, CreatureAttribute creatureAttribute)
     {
         return EnchantmentHelper.getDamageBonus(stack, creatureAttribute);
     }
 
-    public static float findToolKnockback(ItemStack stack)
+    public static float getToolKnockback(ItemStack stack)
     {
         return EnchantmentHelper.getItemEnchantmentLevel(Enchantments.KNOCKBACK, stack);
     }
 
-    public static float findToolFireAspect(ItemStack stack)
+    public static float getToolFireAspect(ItemStack stack)
     {
         return EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_ASPECT, stack);
     }
@@ -165,7 +175,7 @@ public class ToolUtil
      * Returns the mining speed for the given tool against stone.
      * For reference a wooden pickaxe is 2.0f and diamond pickaxe is 8.0f;
      */
-    public static float findToolMiningSpeed(ItemStack stack)
+    public static float getToolMiningSpeed(ItemStack stack)
     {
         return stack.getDestroySpeed(Blocks.STONE.defaultBlockState());
     }
@@ -173,7 +183,7 @@ public class ToolUtil
     /**
      * Returns the mining speed for the given tool from only its enchantments.
      */
-    public static float findToolEnchantmentMiningSpeed(ItemStack stack)
+    public static float getToolEnchantmentMiningSpeed(ItemStack stack)
     {
         int level = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, stack);
 
@@ -188,9 +198,9 @@ public class ToolUtil
     /**
      * Returns the mining speed for the given tool against stone, including enchantments.
      */
-    public static float findToolMiningSpeedWithEnchantments(ItemStack stack)
+    public static float getToolMiningSpeedWithEnchantments(ItemStack stack)
     {
-        return findToolMiningSpeed(stack) + findToolEnchantmentMiningSpeed(stack);
+        return getToolMiningSpeed(stack) + getToolEnchantmentMiningSpeed(stack);
     }
 
     /**

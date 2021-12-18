@@ -172,11 +172,14 @@ public class BlocklingModel extends EntityModel<BlocklingEntity> implements IHas
         rightLegSwing += (MathHelper.cos(limbSwing + (float) Math.PI) * rightLegSwingAmount * 0.5f);
         leftLegSwing += (MathHelper.cos(limbSwing + (float) Math.PI) * leftLegSwingAmount * 0.5f);
 
-        body.xRot = bodySwing + BODY_BASE_ROT_X;
         rightArm.xRot = rightArmSwing + RIGHT_ARM_BASE_ROT_X;
         leftArm.xRot = LEFT_ARM_BASE_ROT_X - leftArmSwing;
-        rightLeg.xRot = RIGHT_LEG_BASE_ROT_X - rightLegSwing - bodySwing;
-        leftLeg.xRot = leftLegSwing + LEFT_LEG_BASE_ROT_X - bodySwing;
+        rightLeg.xRot = RIGHT_LEG_BASE_ROT_X - rightLegSwing;
+        leftLeg.xRot = leftLegSwing + LEFT_LEG_BASE_ROT_X;
+
+        body.zRot = bodySwing;
+        rightLeg.zRot = -body.zRot;
+        leftLeg.zRot = -body.zRot;
     }
 
     @Override

@@ -14,9 +14,7 @@ import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.math.BlockPos;
@@ -190,8 +188,8 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
                 if (blockling.getActions().mine.isRunning())
                 {
                     float blocklingDestroySpeed = blockling.getStats().miningSpeed.getValue();
-                    float mainDestroySpeed = mainCanHarvest ? ToolUtil.findToolMiningSpeedWithEnchantments(mainStack) : 0.0f;
-                    float offDestroySpeed = offCanHarvest ? ToolUtil.findToolMiningSpeedWithEnchantments(offStack) : 0.0f;
+                    float mainDestroySpeed = mainCanHarvest ? ToolUtil.getToolMiningSpeedWithEnchantments(mainStack) : 0.0f;
+                    float offDestroySpeed = offCanHarvest ? ToolUtil.getToolMiningSpeedWithEnchantments(offStack) : 0.0f;
 
                     float destroySpeed = blocklingDestroySpeed + mainDestroySpeed + offDestroySpeed;
                     float blockStrength = world.getBlockState(targetGoal.getTargetPos()).getDestroySpeed(world, targetGoal.getTargetPos());

@@ -9,6 +9,7 @@ import com.willr27.blocklings.attribute.attributes.numbers.ModifiableIntAttribut
 import com.willr27.blocklings.attribute.modifier.AttributeModifier;
 import com.willr27.blocklings.attribute.modifier.modifiers.numbers.FloatAttributeModifier;
 import com.willr27.blocklings.attribute.modifier.modifiers.numbers.IntAttributeModifier;
+import com.willr27.blocklings.item.ToolUtil;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -27,8 +28,7 @@ public class BlocklingStats
 
     public final EnumAttribute<BlocklingHand> hand;
 
-    public final ModifiableFloatAttribute combatSpeed;
-    public final FloatAttributeModifier combatIntervalLevelModifier;
+    public final ModifiableFloatAttribute attackSpeed;
     public final ModifiableFloatAttribute miningSpeed;
     public final ModifiableFloatAttribute woodcuttingSpeed;
     public final ModifiableFloatAttribute farmingSpeed;
@@ -55,12 +55,14 @@ public class BlocklingStats
     public final ModifiableFloatAttribute maxHealth;
     public final FloatAttributeModifier maxHealthCombatLevelModifier;
     public final FloatAttributeModifier maxHealthTypeModifier;
-    public final ModifiableFloatAttribute damage;
-    public final FloatAttributeModifier damageCombatLevelModifier;
-    public final FloatAttributeModifier damageTypeModifier;
+    public final ModifiableFloatAttribute attackDamage;
+    public final FloatAttributeModifier attackDamageCombatLevelModifier;
+    public final FloatAttributeModifier attackDamageTypeModifier;
     public final ModifiableFloatAttribute armour;
     public final FloatAttributeModifier armourCombatLevelModifier;
     public final FloatAttributeModifier armourTypeModifier;
+    public final ModifiableFloatAttribute armourToughness;
+    public final ModifiableFloatAttribute knockbackResistance;
     public final ModifiableFloatAttribute moveSpeed;
     public final FloatAttributeModifier movementSpeedTypeModifier;
 
@@ -78,8 +80,7 @@ public class BlocklingStats
         // A sword is 1.6f * 2.0f
         // An axe is 0.8f * 2.0f
         // So any tool use should be slower than fists
-        combatSpeed = createModifiableFloatAttribute("4cbc129d-281d-410e-bba0-45d4e064932a", "combat_speed", 4.0f);
-        combatIntervalLevelModifier = createFloatAttributeModifier("2fa17860-5292-47c5-91e3-642848701ec4", "combat_speed_level", combatSpeed, 0.0f, AttributeModifier.Operation.ADD);
+        attackSpeed = createModifiableFloatAttribute("4cbc129d-281d-410e-bba0-45d4e064932a", "attack_speed", 4.0f);
 
         // Default mining speed for an item/hand is 1.0f
         // A wooden pickaxe is 2.0f
@@ -90,7 +91,7 @@ public class BlocklingStats
         farmingSpeed = createModifiableFloatAttribute("f6c026b6-1fa9-432f-aca3-d97af784f6d0", "farming_speed", 0.0f);
 
         combatLevel = createIntAttribute("17beee8e-3fca-4601-a766-46f811ad6b69", "combat_level", 10);
-        combatLevel.addUpdateCallback((i) -> { combatIntervalLevelModifier.setValue(calcBreakSpeedFromLevel(combatLevel.getValue()), false); updateCombatLevelBonuses(false); });
+        combatLevel.addUpdateCallback((i) -> { attackSpeed.setBaseValue(4.0f + calcBreakSpeedFromLevel(i), false); updateCombatLevelBonuses(false); });
         levels.add(combatLevel);
         miningLevel = createIntAttribute("a2a62308-0a6e-41bb-9844-4645eeb72fb7", "mining_level", 10);
         miningLevel.addUpdateCallback((i) -> miningSpeed.setBaseValue(calcBreakSpeedFromLevel(i), false));
@@ -127,14 +128,23 @@ public class BlocklingStats
         maxHealth.addUpdateCallback((f) -> { Objects.requireNonNull(blockling.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(f); updateHealth(); });
         maxHealthCombatLevelModifier = createFloatAttributeModifier("a78160fa-7bc3-493e-b74b-27af4206d111", "max_health_combat_level", maxHealth, 0.0f, AttributeModifier.Operation.ADD);
         maxHealthTypeModifier  = createFloatAttributeModifier("79043f39-6f44-4077-a358-0f75a0a1e995", "max_health_type", maxHealth, 0.0f, AttributeModifier.Operation.ADD);
-        damage = createModifiableFloatAttribute("e8549f17-e473-4849-8f48-ae624ee0c242", "damage", 1.0f);
-        damage.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.ATTACK_DAMAGE)).setBaseValue(f));
-        damageCombatLevelModifier = createFloatAttributeModifier("406a98f7-df1f-4c7f-93e4-990d71c7747f", "damage_combat_level", damage, 0.0f, AttributeModifier.Operation.ADD);
-        damageTypeModifier = createFloatAttributeModifier("ddb441fc-2d8c-4950-b0a9-b96b60680ac1", "damage_type", damage, 0.0f, AttributeModifier.Operation.ADD);
+
+        attackDamage = createModifiableFloatAttribute("e8549f17-e473-4849-8f48-ae624ee0c242", "attack_damage", 1.0f);
+        attackDamage.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.ATTACK_DAMAGE)).setBaseValue(f));
+        attackDamageCombatLevelModifier = createFloatAttributeModifier("406a98f7-df1f-4c7f-93e4-990d71c7747f", "attack_damage_combat_level", attackDamage, 0.0f, AttributeModifier.Operation.ADD);
+        attackDamageTypeModifier = createFloatAttributeModifier("ddb441fc-2d8c-4950-b0a9-b96b60680ac1", "attack_damage_type", attackDamage, 0.0f, AttributeModifier.Operation.ADD);
+
         armour = createModifiableFloatAttribute("6b34a986-f1ad-4476-a1c6-700d841fb1ec", "armour", 2.0f);
         armour.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.ARMOR)).setBaseValue(f));
         armourCombatLevelModifier = createFloatAttributeModifier("15f2f2ce-cdf1-4188-882e-67ceab22df41", "armour_combat_level", armour, 0.0f, AttributeModifier.Operation.ADD);
         armourTypeModifier = createFloatAttributeModifier("a72fb401-abb7-4d95-ad7e-e83fc6a399d1", "armour_type", armour, 0.0f, AttributeModifier.Operation.ADD);
+
+        armourToughness = createModifiableFloatAttribute("1cfdad6a-0bd3-461f-8007-c0a591a30783", "armour_toughness", 0.0f);
+        armourToughness.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.ARMOR_TOUGHNESS)).setBaseValue(f));
+
+        knockbackResistance = createModifiableFloatAttribute("ddc90fc2-4a68-4c30-8701-d2d9dbe8b94a", "knockback_resistance", 1.0f);
+        knockbackResistance.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.KNOCKBACK_RESISTANCE)).setBaseValue(f));
+
         moveSpeed = createModifiableFloatAttribute("9a0bb639-8543-4725-9be1-8a8ce688da70", "move_speed", 0.3f);
         moveSpeed.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.MOVEMENT_SPEED)).setBaseValue(f));
         movementSpeedTypeModifier = createFloatAttributeModifier("1391f012-6482-420e-ae77-5178b7ed77c1", "move_speed_type", moveSpeed, 0.0f, AttributeModifier.Operation.ADD);
@@ -333,7 +343,7 @@ public class BlocklingStats
     public void updateCombatLevelBonuses(boolean sync)
     {
         maxHealthCombatLevelModifier.setValue(calcBonusHealthFromCombatLevel(), sync);
-        damageCombatLevelModifier.setValue(calcBonusDamageFromCombatLevel(), sync);
+        attackDamageCombatLevelModifier.setValue(calcBonusDamageFromCombatLevel(), sync);
         armourCombatLevelModifier.setValue(calcBonusArmorFromCombatLevel(), sync);
     }
 
@@ -341,7 +351,7 @@ public class BlocklingStats
     {
         BlocklingType type = blockling.getBlocklingType();
         maxHealthTypeModifier.setValue(type.getBonusHealth(), sync);
-        damageTypeModifier.setValue(type.getBonusDamage(), sync);
+        attackDamageTypeModifier.setValue(type.getBonusDamage(), sync);
         armourTypeModifier.setValue(type.getBonusArmour(), sync);
         movementSpeedTypeModifier.setValue(type.getBonusSpeed(), sync);
     }
@@ -387,16 +397,6 @@ public class BlocklingStats
         return null;
     }
 
-    public int getAttackDamage()
-    {
-        return (int) Math.ceil(damage.getValue());
-    }
-
-    public int getAttackSpeed()
-    {
-        return (int) Math.ceil(combatSpeed.getValue());
-    }
-
     public int getHealth()
     {
         return (int) Math.ceil(blockling.getHealth());
@@ -412,19 +412,107 @@ public class BlocklingStats
         return blockling.getHealth() / blockling.getMaxHealth();
     }
 
-    public int getArmour()
+    /**
+     * Returns the attack damage for the given hand, including blockling and weapon damage.
+     */
+    public float getAttackDamage(BlocklingHand hand)
     {
-        return (int) Math.ceil(blockling.getAttribute(Attributes.ARMOR).getValue());
+        float blocklingAttackDamage = attackDamage.getValue();
+        float mainAttackDamage = ToolUtil.getBaseDamageIfTool(blockling.getMainHandItem());
+        float offAttackDamage = ToolUtil.getBaseDamageIfTool(blockling.getOffhandItem());
+
+        float attackDamage = 0.0f;
+
+        if (hand == BlocklingHand.BOTH)
+        {
+            attackDamage = blocklingAttackDamage;
+            attackDamage += mainAttackDamage;
+            attackDamage += offAttackDamage;
+        }
+        else if (hand == BlocklingHand.MAIN)
+        {
+            attackDamage = blocklingAttackDamage;
+            attackDamage += mainAttackDamage;
+        }
+        else if (hand == BlocklingHand.OFF)
+        {
+            attackDamage = blocklingAttackDamage;
+            attackDamage += offAttackDamage;
+        }
+
+        return attackDamage;
     }
 
-    public int getArmourToughness()
+    /**
+     * Returns the attack damage for the given hand, including blockling and weapon damage.
+     * If the hand is not being used to attack it will return 0.0f.
+     */
+    public float getActualAttackDamage(BlocklingHand hand)
     {
-        return (int) Math.ceil(blockling.getAttribute(Attributes.ARMOR_TOUGHNESS).getValue());
+        float blocklingAttackDamage = attackDamage.getValue();
+        float mainAttackDamage = ToolUtil.getBaseDamageIfTool(blockling.getMainHandItem());
+        float offAttackDamage = ToolUtil.getBaseDamageIfTool(blockling.getOffhandItem());
+
+        float attackDamage = 0.0f;
+
+        if (hand == BlocklingHand.BOTH)
+        {
+            attackDamage = blocklingAttackDamage;
+
+            if (blockling.getEquipment().isAttackingWith(BlocklingHand.MAIN))
+            {
+                attackDamage += mainAttackDamage;
+            }
+
+            if (blockling.getEquipment().isAttackingWith(BlocklingHand.OFF))
+            {
+                attackDamage += offAttackDamage;
+            }
+        }
+        else if (hand == BlocklingHand.MAIN)
+        {
+            attackDamage = blocklingAttackDamage;
+
+            if (blockling.getEquipment().isAttackingWith(BlocklingHand.MAIN))
+            {
+                attackDamage += mainAttackDamage;
+            }
+        }
+        else if (hand == BlocklingHand.OFF)
+        {
+            attackDamage = blocklingAttackDamage;
+
+            if (blockling.getEquipment().isAttackingWith(BlocklingHand.OFF))
+            {
+                attackDamage += offAttackDamage;
+            }
+        }
+
+        return attackDamage;
     }
 
-    public int getKnockbackResistance()
+    public float getAverageAttackSpeed()
     {
-        return (int) Math.ceil(blockling.getAttribute(Attributes.KNOCKBACK_RESISTANCE).getValue());
+        float attackSpeed = this.attackSpeed.getValue();
+        float mainAttackSpeed = ToolUtil.getToolAttackSpeed(blockling.getMainHandItem());
+        float offAttackSpeed = ToolUtil.getToolAttackSpeed(blockling.getOffhandItem());
+
+        BlocklingHand attackingHand = blockling.getEquipment().findAttackingHand();
+
+        if (attackingHand == BlocklingHand.BOTH)
+        {
+            attackSpeed = (attackSpeed + mainAttackSpeed + offAttackSpeed) / 3.0f;
+        }
+        else if (attackingHand == BlocklingHand.MAIN)
+        {
+            attackSpeed = (attackSpeed + mainAttackSpeed) / 2.0f;
+        }
+        else if (attackingHand == BlocklingHand.OFF)
+        {
+            attackSpeed = (attackSpeed + offAttackSpeed) / 2.0f;
+        }
+
+        return attackSpeed;
     }
 
     public IntAttribute getLevel(Level level)

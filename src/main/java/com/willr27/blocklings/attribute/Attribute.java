@@ -49,6 +49,11 @@ public abstract class Attribute<T>
         updateCallbacks.add(callback);
     }
 
+    public String format(String format)
+    {
+        return String.format(format, getValue());
+    }
+
     public TranslationTextComponent createTranslation(String key, Object... objects)
     {
         return new AttributeTranslationTextComponent(this.key + "." + key, objects);

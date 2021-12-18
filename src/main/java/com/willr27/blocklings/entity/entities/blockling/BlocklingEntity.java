@@ -11,7 +11,6 @@ import com.willr27.blocklings.network.NetworkHandler;
 import com.willr27.blocklings.network.messages.BlocklingTargetMessage;
 import com.willr27.blocklings.network.messages.BlocklingTypeMessage;
 import com.willr27.blocklings.skills.BlocklingSkills;
-import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
@@ -196,7 +195,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         ItemStack mainStack = getMainHandItem();
         ItemStack offStack = getOffhandItem();
 
-        float damage = stats.damage.getValue();
+        float damage = stats.attackDamage.getValue();
         float knockback = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
         int fireAspect = 0;
 
@@ -204,18 +203,18 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         {
             if (attackingHand == BlocklingHand.MAIN || attackingHand == BlocklingHand.BOTH)
             {
-                damage += ToolUtil.findToolBaseDamage(mainStack);
-                damage += ToolUtil.findToolEnchantmentDamage(mainStack, ((LivingEntity) target).getMobType());
-                knockback += ToolUtil.findToolKnockback(mainStack);
-                fireAspect += ToolUtil.findToolFireAspect(mainStack);
+                damage += ToolUtil.getToolBaseDamage(mainStack);
+                damage += ToolUtil.getToolEnchantmentDamage(mainStack, ((LivingEntity) target).getMobType());
+                knockback += ToolUtil.getToolKnockback(mainStack);
+                fireAspect += ToolUtil.getToolFireAspect(mainStack);
             }
 
             if (attackingHand == BlocklingHand.OFF || attackingHand == BlocklingHand.BOTH)
             {
-                damage += ToolUtil.findToolBaseDamage(offStack);
-                damage += ToolUtil.findToolEnchantmentDamage(offStack, ((LivingEntity) target).getMobType());
-                knockback += ToolUtil.findToolKnockback(offStack);
-                fireAspect += ToolUtil.findToolFireAspect(offStack);
+                damage += ToolUtil.getToolBaseDamage(offStack);
+                damage += ToolUtil.getToolEnchantmentDamage(offStack, ((LivingEntity) target).getMobType());
+                knockback += ToolUtil.getToolKnockback(offStack);
+                fireAspect += ToolUtil.getToolFireAspect(offStack);
             }
         }
 

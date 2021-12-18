@@ -89,6 +89,30 @@ public class EquipmentInventory extends AbstractInventory
         }
     }
 
+    public boolean isAttackingWith(BlocklingHand hand)
+    {
+        BlocklingHand attackingHand = findAttackingHand();
+
+        if (hand == BlocklingHand.BOTH && attackingHand == BlocklingHand.BOTH)
+        {
+            return true;
+        }
+        else if (hand == BlocklingHand.MAIN && (attackingHand == BlocklingHand.BOTH || attackingHand == BlocklingHand.MAIN))
+        {
+            return true;
+        }
+        else if (hand == BlocklingHand.OFF && (attackingHand == BlocklingHand.BOTH || attackingHand == BlocklingHand.OFF))
+        {
+            return true;
+        }
+        else if (hand == BlocklingHand.NONE && attackingHand == BlocklingHand.NONE)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     public BlocklingHand findAttackingHand()
     {
         if (hasToolEquipped(Hand.MAIN_HAND, ToolType.WEAPON) && !hasToolEquipped(Hand.OFF_HAND, ToolType.WEAPON))

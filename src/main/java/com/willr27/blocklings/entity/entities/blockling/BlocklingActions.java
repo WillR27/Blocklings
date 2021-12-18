@@ -25,26 +25,7 @@ public class BlocklingActions
 
         Supplier<Float> attackTargetSupplier = () ->
         {
-            float attackSpeed = blockling.getStats().combatSpeed.getValue();
-            float mainAttackSpeed = ToolUtil.findToolAttackSpeed(blockling.getMainHandItem()) * 2.0f;
-            float offAttackSpeed = ToolUtil.findToolAttackSpeed(blockling.getOffhandItem()) * 2.0f;
-
-            BlocklingHand attackingHand = blockling.getEquipment().findAttackingHand();
-
-            if (attackingHand == BlocklingHand.BOTH)
-            {
-                attackSpeed = (attackSpeed + mainAttackSpeed + offAttackSpeed) / 3.0f;
-            }
-            else if (attackingHand == BlocklingHand.MAIN)
-            {
-                attackSpeed = (attackSpeed + mainAttackSpeed) / 2.0f;
-            }
-            else if (attackingHand == BlocklingHand.OFF)
-            {
-                attackSpeed = (attackSpeed + offAttackSpeed) / 2.0f;
-            }
-
-            return (1.0f / attackSpeed) * 80.0f;
+            return (1.0f / blockling.getStats().getAverageAttackSpeed()) * 80.0f;
         };
 
         attack = createAction(blockling, "attack", attackTargetSupplier, attackTargetSupplier);
