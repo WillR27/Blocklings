@@ -65,8 +65,11 @@
   "blocklings.attribute.knockback_resistance.name": "Knockback Resistance",
 
   "blocklings.attribute.mining_speed.name": "Mining Speed",
+  "blocklings.attribute.mining_range.name": "Mining Range",
   "blocklings.attribute.woodcutting_speed.name": "Woodcutting Speed",
+  "blocklings.attribute.woodcutting_range.name": "Woodcutting Range",
   "blocklings.attribute.farming_speed.name": "Farming Speed",
+  "blocklings.attribute.farming_range.name": "Farming Range",
 
   "blocklings.attribute.move_speed.name": "Move Speed",
 

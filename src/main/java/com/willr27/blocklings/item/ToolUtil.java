@@ -181,6 +181,22 @@ public class ToolUtil
     }
 
     /**
+     * Returns the mining speed for the given tool against wood.
+     */
+    public static float getToolWoodcuttingSpeed(ItemStack stack)
+    {
+        return stack.getDestroySpeed(Blocks.OAK_LOG.defaultBlockState());
+    }
+
+    /**
+     * Returns the mining speed for the given tool against crops.
+     */
+    public static float getToolFarmingSpeed(ItemStack stack)
+    {
+        return stack.getDestroySpeed(Blocks.WHEAT.defaultBlockState());
+    }
+
+    /**
      * Returns the mining speed for the given tool from only its enchantments.
      */
     public static float getToolEnchantmentMiningSpeed(ItemStack stack)

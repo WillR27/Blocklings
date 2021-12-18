@@ -10,7 +10,7 @@ public class BlocklingRenderer extends MobRenderer<BlocklingEntity, BlocklingMod
 {
     public BlocklingRenderer(EntityRendererManager rendererManager)
     {
-        super(rendererManager, new BlocklingModel(), 0.7f);
+        super(rendererManager, new BlocklingModel(), 0.5f);
 
         addLayer(new BlocklingHeldItemLayer(this));
     }

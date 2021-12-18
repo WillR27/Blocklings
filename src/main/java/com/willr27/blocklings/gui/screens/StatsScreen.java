@@ -191,21 +191,21 @@ public class StatsScreen extends TabbedScreen
         return tooltip;
     }
 
-    private ITextComponent createToolToolip(float value, ItemStack stack)
-    {
-        return createToolToolip(value, stack, "+");
-    }
-
-    private ITextComponent createToolToolip(float value, ItemStack stack, String operation)
-    {
-        return new StringTextComponent(" " + TextFormatting.GRAY + operation + String.format("%.1f", value) + " " + TextFormatting.DARK_GRAY + stack.getHoverName().getString());
-    }
-
     private List<ITextComponent> woodcuttingSpeedTooltip()
     {
         List<ITextComponent> tooltip = new ArrayList<>();
 
         tooltip.add(new StringTextComponent(TextFormatting.DARK_GREEN + stats.woodcuttingSpeed.format("%.1f") + " " + TextFormatting.GRAY + stats.woodcuttingSpeed.createTranslation("name").getString()));
+
+        if (blockling.getEquipment().hasToolEquipped(Hand.MAIN_HAND, ToolType.AXE))
+        {
+            tooltip.add(createToolToolip(ToolUtil.getToolWoodcuttingSpeed(blockling.getMainHandItem()), blockling.getMainHandItem()));
+        }
+
+        if (blockling.getEquipment().hasToolEquipped(Hand.OFF_HAND, ToolType.AXE))
+        {
+            tooltip.add(createToolToolip(ToolUtil.getToolWoodcuttingSpeed(blockling.getOffhandItem()), blockling.getOffhandItem()));
+        }
 
         return tooltip;
     }
@@ -215,6 +215,16 @@ public class StatsScreen extends TabbedScreen
         List<ITextComponent> tooltip = new ArrayList<>();
 
         tooltip.add(new StringTextComponent(TextFormatting.YELLOW + stats.farmingSpeed.format("%.1f") + " " + TextFormatting.GRAY + stats.farmingSpeed.createTranslation("name").getString()));
+
+        if (blockling.getEquipment().hasToolEquipped(Hand.MAIN_HAND, ToolType.HOE))
+        {
+            tooltip.add(createToolToolip(ToolUtil.getToolFarmingSpeed(blockling.getMainHandItem()), blockling.getMainHandItem()));
+        }
+
+        if (blockling.getEquipment().hasToolEquipped(Hand.OFF_HAND, ToolType.HOE))
+        {
+            tooltip.add(createToolToolip(ToolUtil.getToolFarmingSpeed(blockling.getOffhandItem()), blockling.getOffhandItem()));
+        }
 
         return tooltip;
     }
@@ -226,6 +236,16 @@ public class StatsScreen extends TabbedScreen
         tooltip.add(new StringTextComponent(TextFormatting.AQUA + stats.moveSpeed.format("%.1f") + " " + TextFormatting.GRAY + stats.moveSpeed.createTranslation("name").getString()));
 
         return tooltip;
+    }
+
+    private ITextComponent createToolToolip(float value, ItemStack stack)
+    {
+        return createToolToolip(value, stack, "+");
+    }
+
+    private ITextComponent createToolToolip(float value, ItemStack stack, String operation)
+    {
+        return new StringTextComponent(" " + TextFormatting.GRAY + operation + String.format("%.1f", value) + " " + TextFormatting.DARK_GRAY + stack.getHoverName().getString());
     }
 
     @Override
