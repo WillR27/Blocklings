@@ -28,6 +28,16 @@ public abstract class ModifiableAttribute<T> extends Attribute<T>
 
     public abstract void setBaseValue(T baseValue, boolean sync);
 
+    public String formatBaseValue(String format)
+    {
+        return String.format(format, getBaseValue());
+    }
+
+    public List<AttributeModifier<T>> getModifiers()
+    {
+        return new ArrayList<>(modifiers);
+    }
+
     public AttributeModifier<T> findModifier(int index)
     {
         return modifiers.get(index);
@@ -54,7 +64,23 @@ public abstract class ModifiableAttribute<T> extends Attribute<T>
         // Add total multiplications last
         if (modifier.operation != AttributeModifier.Operation.MULTIPLY_TOTAL)
         {
-            modifiers.add(0, modifier);
+            boolean inserted = false;
+
+            for (AttributeModifier<T> existingModifier : modifiers)
+            {
+                if (existingModifier.operation == AttributeModifier.Operation.MULTIPLY_TOTAL)
+                {
+                    modifiers.add(modifiers.indexOf(existingModifier), modifier);
+                    inserted = true;
+
+                    break;
+                }
+            }
+
+            if (!inserted)
+            {
+                modifiers.add(modifier);
+            }
         }
         else
         {

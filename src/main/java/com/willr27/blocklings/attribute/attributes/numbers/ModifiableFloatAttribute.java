@@ -16,8 +16,8 @@ import java.util.function.Supplier;
 
 public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
 {
-    private float baseValue;
-    private float value;
+    protected float baseValue;
+    protected float value;
 
     public ModifiableFloatAttribute(String id, String key, BlocklingEntity blockling, float baseValue)
     {

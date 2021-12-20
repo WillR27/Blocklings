@@ -1,6 +1,7 @@
 package com.willr27.blocklings.entity.entities.blockling;
 
 import com.willr27.blocklings.attribute.*;
+import com.willr27.blocklings.attribute.attributes.AveragedAttribute;
 import com.willr27.blocklings.attribute.attributes.EnumAttribute;
 import com.willr27.blocklings.attribute.attributes.numbers.FloatAttribute;
 import com.willr27.blocklings.attribute.attributes.numbers.IntAttribute;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class BlocklingStats
 {
@@ -28,10 +30,22 @@ public class BlocklingStats
 
     public final EnumAttribute<BlocklingHand> hand;
 
-    public final ModifiableFloatAttribute attackSpeed;
+    public final AveragedAttribute attackSpeed;
+    public final FloatAttributeModifier attackSpeedLevelModifier;
+    public final FloatAttributeModifier attackSpeedMainHandModifier;
+    public final FloatAttributeModifier attackSpeedOffHandModifier;
     public final ModifiableFloatAttribute miningSpeed;
+//    public final FloatAttributeModifier miningSpeedLevelModifier;
+//    public final FloatAttributeModifier miningSpeedMainHandModifier;
+//    public final FloatAttributeModifier miningSpeedOffHandModifier;
     public final ModifiableFloatAttribute woodcuttingSpeed;
+//    public final FloatAttributeModifier woodcuttingSpeedLevelModifier;
+//    public final FloatAttributeModifier woodcuttingSpeedMainHandModifier;
+//    public final FloatAttributeModifier woodcuttingSpeedOffHandModifier;
     public final ModifiableFloatAttribute farmingSpeed;
+//    public final FloatAttributeModifier farmingSpeedLevelModifier;
+//    public final FloatAttributeModifier farmingSpeedMainHandModifier;
+//    public final FloatAttributeModifier farmingSpeedOffHandModifier;
 
     public final IntAttribute combatLevel;
     public final IntAttribute miningLevel;
@@ -76,11 +90,18 @@ public class BlocklingStats
 
         hand = createEnumAttribute("f21fcbaa-f800-468e-8c22-ec4b4fd0fdc2", "hand", BlocklingHand.NONE, (i) -> BlocklingHand.values()[i]);
 
+        combatLevel = createIntAttribute("17beee8e-3fca-4601-a766-46f811ad6b69", "combat_level", blockling.getRandom().nextInt(5));
+        combatLevel.addUpdateCallback((i) -> { updateCombatLevelBonuses(false); });
+        levels.add(combatLevel);
+
         // Default set to 4.0f (seems to be the same for a player too)
         // A sword is 1.6f * 2.0f
         // An axe is 0.8f * 2.0f
         // So any tool use should be slower than fists
-        attackSpeed = createModifiableFloatAttribute("4cbc129d-281d-410e-bba0-45d4e064932a", "attack_speed", 4.0f);
+        attackSpeed = createAveragedAttribute("4cbc129d-281d-410e-bba0-45d4e064932a", "attack_speed", 4.0f);
+        attackSpeedLevelModifier = createFloatAttributeModifier("bfeb22fe-aaaf-4294-9850-27449e27e44f", "attack_speed_level", attackSpeed, 0.0f, AttributeModifier.Operation.ADD, combatLevel.displayStringSupplier);
+        attackSpeedMainHandModifier = createFloatAttributeModifier("87343a1e-7a0b-4963-8d7e-e95f809e90ee", "attack_speed_main_hand", attackSpeed, 0.0f, AttributeModifier.Operation.ADD, () -> blockling.getMainHandItem().getHoverName().getString());
+        attackSpeedOffHandModifier = createFloatAttributeModifier("3566961d-db2b-4833-8c0c-cf6813ade8cc", "attack_speed_off_hand", attackSpeed, 0.0f, AttributeModifier.Operation.ADD, () -> blockling.getOffhandItem().getHoverName().getString());
 
         // Default mining speed for an item/hand is 1.0f
         // A wooden pickaxe is 2.0f
@@ -90,26 +111,23 @@ public class BlocklingStats
         woodcuttingSpeed = createModifiableFloatAttribute("e1e3ecb3-ae1d-46c5-8ea8-a7180641910b", "woodcutting_speed", 0.0f);
         farmingSpeed = createModifiableFloatAttribute("f6c026b6-1fa9-432f-aca3-d97af784f6d0", "farming_speed", 0.0f);
 
-        combatLevel = createIntAttribute("17beee8e-3fca-4601-a766-46f811ad6b69", "combat_level", 10);
-        combatLevel.addUpdateCallback((i) -> { attackSpeed.setBaseValue(4.0f + calcBreakSpeedFromLevel(i), false); updateCombatLevelBonuses(false); });
-        levels.add(combatLevel);
-        miningLevel = createIntAttribute("a2a62308-0a6e-41bb-9844-4645eeb72fb7", "mining_level", 10);
+        miningLevel = createIntAttribute("a2a62308-0a6e-41bb-9844-4645eeb72fb7", "mining_level", blockling.getRandom().nextInt(5));
         miningLevel.addUpdateCallback((i) -> miningSpeed.setBaseValue(calcBreakSpeedFromLevel(i), false));
         levels.add(miningLevel);
-        woodcuttingLevel = createIntAttribute("c6d3ce7c-52af-44df-833b-fede277eec7f", "woodcutting_level", 10);
+        woodcuttingLevel = createIntAttribute("c6d3ce7c-52af-44df-833b-fede277eec7f", "woodcutting_level", blockling.getRandom().nextInt(5));
         woodcuttingLevel.addUpdateCallback((i) -> woodcuttingSpeed.setBaseValue(calcBreakSpeedFromLevel(i), false));
         levels.add(woodcuttingLevel);
-        farmingLevel = createIntAttribute("ac1c6d1b-18bb-435a-ad93-c24d6fa90816", "farming_level", 10);
+        farmingLevel = createIntAttribute("ac1c6d1b-18bb-435a-ad93-c24d6fa90816", "farming_level", blockling.getRandom().nextInt(5));
         farmingLevel.addUpdateCallback((i) -> farmingSpeed.setBaseValue(calcBreakSpeedFromLevel(i), false));
         levels.add(farmingLevel);
 
-        combatXp = createIntAttribute("ec56a177-2a08-4f43-b77a-b1d4544a8656", "combat_xp", getXpUntilNextLevel(combatLevel.getValue()));
+        combatXp = createIntAttribute("ec56a177-2a08-4f43-b77a-b1d4544a8656", "combat_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(combatLevel.getValue())));
         combatXp.addUpdateCallback((i) -> checkForLevelUp(false));
-        miningXp = createIntAttribute("ce581807-3fad-45b1-9aec-43ed0cb53c8f", "mining_xp", getXpUntilNextLevel(miningLevel.getValue()));
+        miningXp = createIntAttribute("ce581807-3fad-45b1-9aec-43ed0cb53c8f", "mining_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(miningLevel.getValue())));
         miningXp.addUpdateCallback((i) -> checkForLevelUp(false));
-        woodcuttingXp = createIntAttribute("82165063-6d47-4534-acc9-db3543c3db74", "woodcutting_xp", getXpUntilNextLevel(woodcuttingLevel.getValue()));
+        woodcuttingXp = createIntAttribute("82165063-6d47-4534-acc9-db3543c3db74", "woodcutting_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(woodcuttingLevel.getValue())));
         woodcuttingXp.addUpdateCallback((i) -> checkForLevelUp(false));
-        farmingXp = createIntAttribute("1f1e4cbc-358e-4477-92d8-03e818d5272c", "farming_xp", getXpUntilNextLevel(farmingLevel.getValue()));
+        farmingXp = createIntAttribute("1f1e4cbc-358e-4477-92d8-03e818d5272c", "farming_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(farmingLevel.getValue())));
         farmingXp.addUpdateCallback((i) -> checkForLevelUp(false));
 
         skillPoints = createIntAttribute("a78f9d35-266e-4f86-836e-daaef073940e", "skill_points", 50);
@@ -126,18 +144,18 @@ public class BlocklingStats
 
         maxHealth = createModifiableFloatAttribute("9c6eb101-f025-4f8f-895b-10868b7d06b2", "max_health",10.0f);
         maxHealth.addUpdateCallback((f) -> { Objects.requireNonNull(blockling.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(f); updateHealth(); });
-        maxHealthCombatLevelModifier = createFloatAttributeModifier("a78160fa-7bc3-493e-b74b-27af4206d111", "max_health_combat_level", maxHealth, 0.0f, AttributeModifier.Operation.ADD);
-        maxHealthTypeModifier  = createFloatAttributeModifier("79043f39-6f44-4077-a358-0f75a0a1e995", "max_health_type", maxHealth, 0.0f, AttributeModifier.Operation.ADD);
+        maxHealthCombatLevelModifier = createFloatAttributeModifier("a78160fa-7bc3-493e-b74b-27af4206d111", "max_health_combat_level", maxHealth, 0.0f, AttributeModifier.Operation.ADD, null);
+        maxHealthTypeModifier  = createFloatAttributeModifier("79043f39-6f44-4077-a358-0f75a0a1e995", "max_health_type", maxHealth, 0.0f, AttributeModifier.Operation.ADD, null);
 
         attackDamage = createModifiableFloatAttribute("e8549f17-e473-4849-8f48-ae624ee0c242", "attack_damage", 1.0f);
         attackDamage.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.ATTACK_DAMAGE)).setBaseValue(f));
-        attackDamageCombatLevelModifier = createFloatAttributeModifier("406a98f7-df1f-4c7f-93e4-990d71c7747f", "attack_damage_combat_level", attackDamage, 0.0f, AttributeModifier.Operation.ADD);
-        attackDamageTypeModifier = createFloatAttributeModifier("ddb441fc-2d8c-4950-b0a9-b96b60680ac1", "attack_damage_type", attackDamage, 0.0f, AttributeModifier.Operation.ADD);
+        attackDamageCombatLevelModifier = createFloatAttributeModifier("406a98f7-df1f-4c7f-93e4-990d71c7747f", "attack_damage_combat_level", attackDamage, 0.0f, AttributeModifier.Operation.ADD, null);
+        attackDamageTypeModifier = createFloatAttributeModifier("ddb441fc-2d8c-4950-b0a9-b96b60680ac1", "attack_damage_type", attackDamage, 0.0f, AttributeModifier.Operation.ADD, null);
 
         armour = createModifiableFloatAttribute("6b34a986-f1ad-4476-a1c6-700d841fb1ec", "armour", 2.0f);
         armour.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.ARMOR)).setBaseValue(f));
-        armourCombatLevelModifier = createFloatAttributeModifier("15f2f2ce-cdf1-4188-882e-67ceab22df41", "armour_combat_level", armour, 0.0f, AttributeModifier.Operation.ADD);
-        armourTypeModifier = createFloatAttributeModifier("a72fb401-abb7-4d95-ad7e-e83fc6a399d1", "armour_type", armour, 0.0f, AttributeModifier.Operation.ADD);
+        armourCombatLevelModifier = createFloatAttributeModifier("15f2f2ce-cdf1-4188-882e-67ceab22df41", "armour_combat_level", armour, 0.0f, AttributeModifier.Operation.ADD, null);
+        armourTypeModifier = createFloatAttributeModifier("a72fb401-abb7-4d95-ad7e-e83fc6a399d1", "armour_type", armour, 0.0f, AttributeModifier.Operation.ADD, null);
 
         armourToughness = createModifiableFloatAttribute("1cfdad6a-0bd3-461f-8007-c0a591a30783", "armour_toughness", 0.0f);
         armourToughness.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.ARMOR_TOUGHNESS)).setBaseValue(f));
@@ -147,7 +165,7 @@ public class BlocklingStats
 
         moveSpeed = createModifiableFloatAttribute("9a0bb639-8543-4725-9be1-8a8ce688da70", "move_speed", 0.3f);
         moveSpeed.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.MOVEMENT_SPEED)).setBaseValue(f));
-        movementSpeedTypeModifier = createFloatAttributeModifier("1391f012-6482-420e-ae77-5178b7ed77c1", "move_speed_type", moveSpeed, 0.0f, AttributeModifier.Operation.ADD);
+        movementSpeedTypeModifier = createFloatAttributeModifier("1391f012-6482-420e-ae77-5178b7ed77c1", "move_speed_type", moveSpeed, 0.0f, AttributeModifier.Operation.ADD, null);
     }
 
     public IntAttribute createIntAttribute(String id, String key, int value)
@@ -182,6 +200,14 @@ public class BlocklingStats
         return attribute;
     }
 
+    public AveragedAttribute createAveragedAttribute(String id, String key, float value)
+    {
+        AveragedAttribute attribute = new AveragedAttribute(id, key, blockling, value);
+        attributes.add(attribute);
+
+        return attribute;
+    }
+
     public <T extends Enum<?>> EnumAttribute<T> createEnumAttribute(String id, String key, T value, Function<Integer, T> ordinalConverter)
     {
         EnumAttribute<T> attribute = new EnumAttribute<>(id, key, blockling, value, ordinalConverter);
@@ -190,18 +216,18 @@ public class BlocklingStats
         return attribute;
     }
 
-    public FloatAttributeModifier createFloatAttributeModifier(String id, String key, ModifiableAttribute<Float> attribute, float value, AttributeModifier.Operation operation)
+    public FloatAttributeModifier createFloatAttributeModifier(String id, String key, ModifiableAttribute<Float> attribute, float value, AttributeModifier.Operation operation, Supplier<String> displayStringSupplier)
     {
-        FloatAttributeModifier modifier = new FloatAttributeModifier(id, key, attribute, value, operation);
+        FloatAttributeModifier modifier = new FloatAttributeModifier(id, key, attribute, value, operation, displayStringSupplier);
         attribute.addModifier(modifier);
         modifiers.add(modifier);
 
         return modifier;
     }
 
-    public IntAttributeModifier createIntAttributeModifier(String id, String key, ModifiableAttribute<Integer> attribute, int value, AttributeModifier.Operation operation)
+    public IntAttributeModifier createIntAttributeModifier(String id, String key, ModifiableAttribute<Integer> attribute, int value, AttributeModifier.Operation operation, Supplier<String> displayStringSupplier)
     {
-        IntAttributeModifier modifier = new IntAttributeModifier(id, key, attribute, value, operation);
+        IntAttributeModifier modifier = new IntAttributeModifier(id, key, attribute, value, operation, displayStringSupplier);
         attribute.addModifier(modifier);
         modifiers.add(modifier);
 
@@ -223,7 +249,7 @@ public class BlocklingStats
             attribute.callUpdateCallbacks();
         }
 
-//        updateCombatLevelBonuses(false);
+        updateCombatLevelBonuses(false);
 //        updateTypeBonuses(false);
 //        updateToolModifiers(false);
     }
@@ -344,6 +370,7 @@ public class BlocklingStats
     {
         maxHealthCombatLevelModifier.setValue(calcBonusHealthFromCombatLevel(), sync);
         attackDamageCombatLevelModifier.setValue(calcBonusDamageFromCombatLevel(), sync);
+        attackSpeedLevelModifier.setValue(calcBreakSpeedFromLevel(combatLevel.getValue()), sync);
         armourCombatLevelModifier.setValue(calcBonusArmorFromCombatLevel(), sync);
     }
 
@@ -489,30 +516,6 @@ public class BlocklingStats
         }
 
         return attackDamage;
-    }
-
-    public float getAverageAttackSpeed()
-    {
-        float attackSpeed = this.attackSpeed.getValue();
-        float mainAttackSpeed = ToolUtil.getToolAttackSpeed(blockling.getMainHandItem());
-        float offAttackSpeed = ToolUtil.getToolAttackSpeed(blockling.getOffhandItem());
-
-        BlocklingHand attackingHand = blockling.getEquipment().findAttackingHand();
-
-        if (attackingHand == BlocklingHand.BOTH)
-        {
-            attackSpeed = (attackSpeed + mainAttackSpeed + offAttackSpeed) / 3.0f;
-        }
-        else if (attackingHand == BlocklingHand.MAIN)
-        {
-            attackSpeed = (attackSpeed + mainAttackSpeed) / 2.0f;
-        }
-        else if (attackingHand == BlocklingHand.OFF)
-        {
-            attackSpeed = (attackSpeed + offAttackSpeed) / 2.0f;
-        }
-
-        return attackSpeed;
     }
 
     public IntAttribute getLevel(Level level)

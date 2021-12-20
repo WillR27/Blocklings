@@ -2,6 +2,7 @@ package com.willr27.blocklings.inventory.inventories;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingStats;
 import com.willr27.blocklings.item.ToolType;
 import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.network.NetworkHandler;
@@ -208,6 +209,26 @@ public class EquipmentInventory extends AbstractInventory
     public void setItem(int index, ItemStack stack)
     {
         super.setItem(index, stack);
+
+        if (index == TOOL_MAIN_HAND || index == TOOL_OFF_HAND)
+        {
+            BlocklingStats stats = blockling.getStats();
+
+            stats.attackSpeed.removeModifier(stats.attackSpeedMainHandModifier);
+            stats.attackSpeed.removeModifier(stats.attackSpeedOffHandModifier);
+
+            if (isAttackingWith(BlocklingHand.MAIN) && hasToolEquipped(Hand.MAIN_HAND))
+            {
+                stats.attackSpeedMainHandModifier.setValue(ToolUtil.getToolAttackSpeed(blockling.getMainHandItem()), false);
+                stats.attackSpeed.addModifier(stats.attackSpeedMainHandModifier);
+            }
+
+            if (isAttackingWith(BlocklingHand.OFF) && hasToolEquipped(Hand.OFF_HAND))
+            {
+                stats.attackSpeedOffHandModifier.setValue(ToolUtil.getToolAttackSpeed(blockling.getOffhandItem()), false);
+                stats.attackSpeed.addModifier(stats.attackSpeedOffHandModifier);
+            }
+        }
     }
 
     public void detectAndSendChanges()

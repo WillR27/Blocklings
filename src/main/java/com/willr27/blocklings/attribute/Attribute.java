@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public abstract class Attribute<T>
 {
@@ -18,15 +19,22 @@ public abstract class Attribute<T>
     public final String key;
     public final BlocklingEntity blockling;
     public final World world;
+    public final Supplier<String> displayStringSupplier;
 
     protected final List<Consumer<T>> updateCallbacks = new ArrayList<>();
 
     public Attribute(String id, String key, BlocklingEntity blockling)
     {
+        this(id, key, blockling, null);
+    }
+
+    public Attribute(String id, String key, BlocklingEntity blockling, Supplier<String> displayStringSupplier)
+    {
         this.id = UUID.fromString(id);
         this.key = key;
         this.blockling = blockling;
         this.world = blockling.level;
+        this.displayStringSupplier = displayStringSupplier == null ? () -> createTranslation("name").getString() : displayStringSupplier;
     }
 
     public abstract void writeToNBT(CompoundNBT tag);
@@ -49,7 +57,7 @@ public abstract class Attribute<T>
         updateCallbacks.add(callback);
     }
 
-    public String format(String format)
+    public String formatValue(String format)
     {
         return String.format(format, getValue());
     }

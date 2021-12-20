@@ -73,6 +73,8 @@
 
   "blocklings.attribute.move_speed.name": "Move Speed",
 
+  "blocklings.attribute.combat_level.name": "Combat Level",
+
   "blocklings.attribute.skill_points.required": "Skill Points: %d",
   "blocklings.attribute.combat_level.required": "Combat Level: %d",
   "blocklings.attribute.mining_level.required": "Mining Level: %d",

@@ -25,7 +25,7 @@ public class BlocklingActions
 
         Supplier<Float> attackTargetSupplier = () ->
         {
-            return (1.0f / blockling.getStats().getAverageAttackSpeed()) * 80.0f;
+            return (1.0f / blockling.getStats().attackSpeed.getValue()) * 80.0f;
         };
 
         attack = createAction(blockling, "attack", attackTargetSupplier, attackTargetSupplier);

@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 
 public class IntAttribute extends Attribute<Integer>
 {
-    private int value;
+    protected int value;
 
     public IntAttribute(String id, String key, BlocklingEntity blockling, int value)
     {

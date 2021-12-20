@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 
 public class FloatAttribute extends Attribute<Float>
 {
-    private float value;
+    protected float value;
 
     public FloatAttribute(String id, String key, BlocklingEntity blockling, float value)
     {

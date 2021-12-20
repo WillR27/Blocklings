@@ -2,6 +2,7 @@ package com.willr27.blocklings.gui.screens;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.willr27.blocklings.attribute.modifier.AttributeModifier;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingStats;
@@ -17,7 +18,6 @@ import com.willr27.blocklings.item.items.Items;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -98,7 +98,7 @@ public class StatsScreen extends TabbedScreen
         List<ITextComponent> tooltip = new ArrayList<>();
 
         tooltip.add(new StringTextComponent(TextFormatting.DARK_RED + String.format("%.1f", stats.getActualAttackDamage(BlocklingHand.OFF)) + " " + TextFormatting.GRAY + stats.attackDamage.createTranslation("name.left").getString()));
-        tooltip.add(new StringTextComponent(TextFormatting.GRAY + " +" + stats.attackDamage.format("%.1f") + " " + TextFormatting.DARK_GRAY + blockling.getCustomName().getString()));
+        tooltip.add(new StringTextComponent(TextFormatting.GRAY + " +" + stats.attackDamage.formatValue("%.1f") + " " + TextFormatting.DARK_GRAY + blockling.getCustomName().getString()));
 
         if (blockling.getEquipment().hasToolEquipped(Hand.OFF_HAND))
         {
@@ -113,7 +113,7 @@ public class StatsScreen extends TabbedScreen
         List<ITextComponent> tooltip = new ArrayList<>();
 
         tooltip.add(new StringTextComponent(TextFormatting.DARK_RED + String.format("%.1f", stats.getActualAttackDamage(BlocklingHand.MAIN)) + " " + TextFormatting.GRAY + stats.attackDamage.createTranslation("name.right").getString()));
-        tooltip.add(new StringTextComponent(TextFormatting.GRAY + " +" + stats.attackDamage.format("%.1f") + " " + TextFormatting.DARK_GRAY + blockling.getCustomName().getString()));
+        tooltip.add(new StringTextComponent(TextFormatting.GRAY + " +" + stats.attackDamage.formatValue("%.1f") + " " + TextFormatting.DARK_GRAY + blockling.getCustomName().getString()));
 
         if (blockling.getEquipment().hasToolEquipped(Hand.MAIN_HAND))
         {
@@ -127,19 +127,12 @@ public class StatsScreen extends TabbedScreen
     {
         List<ITextComponent> tooltip = new ArrayList<>();
 
-        tooltip.add(new StringTextComponent(TextFormatting.DARK_PURPLE + String.format("%.1f", stats.getAverageAttackSpeed()) + " " + TextFormatting.GRAY + stats.attackSpeed.createTranslation("name").getString()));
-        tooltip.add(new StringTextComponent(TextFormatting.GRAY + " +" + String.format("%.1f", stats.attackSpeed.getValue()) + " " + TextFormatting.DARK_GRAY + blockling.getCustomName().getString()));
+        tooltip.add(new StringTextComponent(TextFormatting.DARK_PURPLE + stats.attackSpeed.formatValue("%.1f") + " " + TextFormatting.GRAY + stats.attackSpeed.createTranslation("name").getString()));
+        tooltip.add(new StringTextComponent(TextFormatting.GRAY + " +" + stats.attackSpeed.formatBaseValue("%.1f") + " " + TextFormatting.DARK_GRAY + blockling.getCustomName().getString()));
 
-        BlocklingHand attackingHand = blockling.getEquipment().findAttackingHand();
-
-        if (blockling.getEquipment().hasToolEquipped(Hand.OFF_HAND) && (attackingHand == BlocklingHand.BOTH || attackingHand == BlocklingHand.OFF))
+        for (AttributeModifier<Float> modifier : stats.attackSpeed.getModifiers())
         {
-            tooltip.add(createToolToolip(ToolUtil.getToolAttackSpeed(blockling.getOffhandItem()), blockling.getOffhandItem()));
-        }
-
-        if (blockling.getEquipment().hasToolEquipped(Hand.MAIN_HAND) && (attackingHand == BlocklingHand.BOTH || attackingHand == BlocklingHand.MAIN))
-        {
-            tooltip.add(createToolToolip(ToolUtil.getToolAttackSpeed(blockling.getMainHandItem()), blockling.getMainHandItem()));
+            tooltip.add(new StringTextComponent(TextFormatting.GRAY + " +" + modifier.formatValue("%.1f") + " " + TextFormatting.DARK_GRAY + modifier.displayStringSupplier.get()));
         }
 
         return tooltip;
@@ -149,7 +142,7 @@ public class StatsScreen extends TabbedScreen
     {
         List<ITextComponent> tooltip = new ArrayList<>();
 
-        tooltip.add(new StringTextComponent(TextFormatting.DARK_AQUA + stats.armour.format("%.1f") + " " + TextFormatting.GRAY + stats.armour.createTranslation("name").getString()));
+        tooltip.add(new StringTextComponent(TextFormatting.DARK_AQUA + stats.armour.formatValue("%.1f") + " " + TextFormatting.GRAY + stats.armour.createTranslation("name").getString()));
 
         return tooltip;
     }
@@ -158,7 +151,7 @@ public class StatsScreen extends TabbedScreen
     {
         List<ITextComponent> tooltip = new ArrayList<>();
 
-        tooltip.add(new StringTextComponent(TextFormatting.AQUA + stats.armourToughness.format("%.1f") + " " + TextFormatting.GRAY + stats.armourToughness.createTranslation("name").getString()));
+        tooltip.add(new StringTextComponent(TextFormatting.AQUA + stats.armourToughness.formatValue("%.1f") + " " + TextFormatting.GRAY + stats.armourToughness.createTranslation("name").getString()));
 
         return tooltip;
     }
@@ -167,7 +160,7 @@ public class StatsScreen extends TabbedScreen
     {
         List<ITextComponent> tooltip = new ArrayList<>();
 
-        tooltip.add(new StringTextComponent(TextFormatting.YELLOW + stats.knockbackResistance.format("%.1f") + " " + TextFormatting.GRAY + stats.knockbackResistance.createTranslation("name").getString()));
+        tooltip.add(new StringTextComponent(TextFormatting.YELLOW + stats.knockbackResistance.formatValue("%.1f") + " " + TextFormatting.GRAY + stats.knockbackResistance.createTranslation("name").getString()));
 
         return tooltip;
     }
@@ -176,7 +169,7 @@ public class StatsScreen extends TabbedScreen
     {
         List<ITextComponent> tooltip = new ArrayList<>();
 
-        tooltip.add(new StringTextComponent(TextFormatting.BLUE + stats.miningSpeed.format("%.1f") + " " + TextFormatting.GRAY + stats.miningSpeed.createTranslation("name").getString()));
+        tooltip.add(new StringTextComponent(TextFormatting.BLUE + stats.miningSpeed.formatValue("%.1f") + " " + TextFormatting.GRAY + stats.miningSpeed.createTranslation("name").getString()));
 
         if (blockling.getEquipment().hasToolEquipped(Hand.MAIN_HAND, ToolType.PICKAXE))
         {
@@ -195,7 +188,7 @@ public class StatsScreen extends TabbedScreen
     {
         List<ITextComponent> tooltip = new ArrayList<>();
 
-        tooltip.add(new StringTextComponent(TextFormatting.DARK_GREEN + stats.woodcuttingSpeed.format("%.1f") + " " + TextFormatting.GRAY + stats.woodcuttingSpeed.createTranslation("name").getString()));
+        tooltip.add(new StringTextComponent(TextFormatting.DARK_GREEN + stats.woodcuttingSpeed.formatValue("%.1f") + " " + TextFormatting.GRAY + stats.woodcuttingSpeed.createTranslation("name").getString()));
 
         if (blockling.getEquipment().hasToolEquipped(Hand.MAIN_HAND, ToolType.AXE))
         {
@@ -214,7 +207,7 @@ public class StatsScreen extends TabbedScreen
     {
         List<ITextComponent> tooltip = new ArrayList<>();
 
-        tooltip.add(new StringTextComponent(TextFormatting.YELLOW + stats.farmingSpeed.format("%.1f") + " " + TextFormatting.GRAY + stats.farmingSpeed.createTranslation("name").getString()));
+        tooltip.add(new StringTextComponent(TextFormatting.YELLOW + stats.farmingSpeed.formatValue("%.1f") + " " + TextFormatting.GRAY + stats.farmingSpeed.createTranslation("name").getString()));
 
         if (blockling.getEquipment().hasToolEquipped(Hand.MAIN_HAND, ToolType.HOE))
         {
@@ -233,7 +226,7 @@ public class StatsScreen extends TabbedScreen
     {
         List<ITextComponent> tooltip = new ArrayList<>();
 
-        tooltip.add(new StringTextComponent(TextFormatting.AQUA + stats.moveSpeed.format("%.1f") + " " + TextFormatting.GRAY + stats.moveSpeed.createTranslation("name").getString()));
+        tooltip.add(new StringTextComponent(TextFormatting.AQUA + stats.moveSpeed.formatValue("%.1f") + " " + TextFormatting.GRAY + stats.moveSpeed.createTranslation("name").getString()));
 
         return tooltip;
     }
@@ -258,12 +251,12 @@ public class StatsScreen extends TabbedScreen
         attackWidget = new EnumeratingWidget(new BlocklingsTranslationTextComponent("stats.attack.name"), font, contentLeft + LEFT_ICON_X, contentTop + TOP_ICON_Y, ICON_SIZE, ICON_SIZE, false, 60, true, blockling);
         attackWidget.addEnumeration(() -> blockling.getEquipment().isAttackingWith(BlocklingHand.OFF), () -> String.format("%.1f", stats.getActualAttackDamage(BlocklingHand.OFF)), this::leftAttackDamageTooltip, new GuiTexture(GuiUtil.STATS, 0, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
         attackWidget.addEnumeration(() -> blockling.getEquipment().isAttackingWith(BlocklingHand.MAIN), () -> String.format("%.1f", stats.getActualAttackDamage(BlocklingHand.MAIN)), this::rightAttackDamageTooltip, new GuiTexture(GuiUtil.STATS, ICON_SIZE * 10, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
-        attackWidget.addEnumeration(() -> true, () -> String.format("%.1f", stats.getAverageAttackSpeed()), this::attackSpeedTooltip, new GuiTexture(GuiUtil.STATS, 0, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE), Color.PINK);
+        attackWidget.addEnumeration(() -> true, () -> stats.attackSpeed.formatValue("%.1f"), this::attackSpeedTooltip, new GuiTexture(GuiUtil.STATS, 0, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE), Color.PINK);
 
         defenceWidget = new EnumeratingWidget(new BlocklingsTranslationTextComponent("stats.defence.name"), font, contentLeft + LEFT_ICON_X, contentTop + BOTTOM_ICON_Y, ICON_SIZE, ICON_SIZE, false, 60, true, blockling);
-        defenceWidget.addEnumeration(() -> true, () -> stats.armour.format("%.1f"), this::armourTooltip, new GuiTexture(GuiUtil.STATS, ICON_SIZE * 5, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
-        defenceWidget.addEnumeration(() -> true, () -> stats.armourToughness.format("%.1f"), this::armourToughnessTooltip, new GuiTexture(GuiUtil.STATS, ICON_SIZE * 6, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
-        defenceWidget.addEnumeration(() -> true, () -> stats.knockbackResistance.format("%.1f"), this::knockbackResistanceTooltip, new GuiTexture(GuiUtil.STATS, ICON_SIZE * 7, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        defenceWidget.addEnumeration(() -> true, () -> stats.armour.formatValue("%.1f"), this::armourTooltip, new GuiTexture(GuiUtil.STATS, ICON_SIZE * 5, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        defenceWidget.addEnumeration(() -> true, () -> stats.armourToughness.formatValue("%.1f"), this::armourToughnessTooltip, new GuiTexture(GuiUtil.STATS, ICON_SIZE * 6, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        defenceWidget.addEnumeration(() -> true, () -> stats.knockbackResistance.formatValue("%.1f"), this::knockbackResistanceTooltip, new GuiTexture(GuiUtil.STATS, ICON_SIZE * 7, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
 
         gatherWidget = new EnumeratingWidget(new BlocklingsTranslationTextComponent("stats.gather.name"), font, contentRight - LEFT_ICON_X - ICON_SIZE, contentTop + TOP_ICON_Y, ICON_SIZE, ICON_SIZE, true, 60, true, blockling);
         gatherWidget.addEnumeration(() -> true, () -> String.format("%.1f", stats.miningSpeed.getValue()), this::miningSpeedTooltip, new GuiTexture(GuiUtil.STATS, ICON_SIZE * 1, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));

@@ -16,9 +16,9 @@ import java.util.function.Supplier;
 
 public class FloatAttributeModifier extends AttributeModifier<Float>
 {
-    public FloatAttributeModifier(String id, String key, ModifiableAttribute<Float> attribute, float value, Operation operation)
+    public FloatAttributeModifier(String id, String key, ModifiableAttribute<Float> attribute, float value, Operation operation, Supplier<String> displayStringSupplier)
     {
-        super(id, key, attribute, value, operation);
+        super(id, key, attribute, value, operation, displayStringSupplier);
     }
 
     @Override

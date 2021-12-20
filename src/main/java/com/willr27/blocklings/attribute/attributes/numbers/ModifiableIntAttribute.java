@@ -16,8 +16,8 @@ import java.util.function.Supplier;
 
 public class ModifiableIntAttribute extends ModifiableAttribute<Integer>
 {
-    private int baseValue;
-    private int value;
+    protected int baseValue;
+    protected int value;
 
     public ModifiableIntAttribute(String id, String key, BlocklingEntity blockling, int baseValue)
     {

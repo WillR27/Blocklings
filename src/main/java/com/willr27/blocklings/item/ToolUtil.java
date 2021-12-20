@@ -116,8 +116,7 @@ public class ToolUtil
             {
                 // Add on 4.0f as this seems to be the default value the player has
                 // This is why the item tooltips say +1.6f instead of -2.4f for example
-                // Multiply this by 2.0f to bring it in range of the blockling's default 4.0f attack speed
-                return (float) (attributemodifier.getAmount() + 4.0f) * 2.0f;
+                return (float) attributemodifier.getAmount() + 4.0f;
             }
         }
 

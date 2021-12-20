@@ -16,9 +16,9 @@ import java.util.function.Supplier;
 
 public class IntAttributeModifier extends AttributeModifier<Integer>
 {
-    public IntAttributeModifier(String id, String key, ModifiableAttribute<Integer> attribute, int value, Operation operation)
+    public IntAttributeModifier(String id, String key, ModifiableAttribute<Integer> attribute, int value, Operation operation, Supplier<String> displayStringSupplier)
     {
-        super(id, key, attribute, value, operation);
+        super(id, key, attribute, value, operation, displayStringSupplier);
     }
 
     @Override
