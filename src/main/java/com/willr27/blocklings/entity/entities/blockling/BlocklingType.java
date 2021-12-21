@@ -1,8 +1,10 @@
 package com.willr27.blocklings.entity.entities.blockling;
 
 import com.willr27.blocklings.util.BlocklingsResourceLocation;
+import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.block.Block;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
@@ -15,16 +17,16 @@ public class BlocklingType
 {
     public static final List<BlocklingType> TYPES = new ArrayList<>();
 
-    public static final BlocklingType GRASS = create("grass", 8).addBonusStats(2.0f, 1.0f, 1.0f, 2.0f);
-    public static final BlocklingType OAK_LOG = create("oak_log", 7).addBonusStats(3.0f, 1.0f, 2.0f, 2.0f);
-    public static final BlocklingType STONE = create("stone", 2).addBonusStats(5.0f, 1.0f, 3.0f, 1.0f);
-    public static final BlocklingType IRON = create("iron", 2).addBonusStats(6.0f, 2.0f, 4.0f, 1.0f);
-    public static final BlocklingType QUARTZ = create("quartz", 5).addBonusStats(3.0f, 4.0f, 1.0f, 2.0f);
-    public static final BlocklingType LAPIS = create("lapis", 0).addBonusStats(5.0f, 3.0f, 1.0f, 3.0f);
-    public static final BlocklingType GOLD = create("gold", 0).addBonusStats(1.0f, 4.0f, 1.0f, 5.0f);
-    public static final BlocklingType EMERALD = create("emerald", 0).addBonusStats(5.0f, 3.0f, 3.0f, 1.0f);
-    public static final BlocklingType DIAMOND = create("diamond", 0).addBonusStats(8.0f, 6.0f, 4.0f, 1.0f);
-    public static final BlocklingType OBSIDIAN = create("obsidian", 0).addBonusStats(25.0f, 5.0f, 8.0f, 0.0f);
+    public static final BlocklingType GRASS = create("grass", 8).addCombatStats(2.0f, 1.0f, 3.5f, 0.0f, 0.0f, 0.0f, 0.3f).addGatheringStats(0.5f, 1.0f, 2.0f);
+    public static final BlocklingType OAK_LOG = create("oak_log", 7).addCombatStats(3.0f, 1.0f, 3.5f, 0.0f, 0.0f, 0.0f, 0.3f).addGatheringStats(0.5f, 2.0f, 1.0f);
+    public static final BlocklingType STONE = create("stone", 2).addCombatStats(5.0f, 1.0f, 3.0f, 2.0f, 1.0f, 0.0f, 0.25f).addGatheringStats(1.5f, 0.5f, 0.5f);
+    public static final BlocklingType IRON = create("iron", 2).addCombatStats(6.0f, 2.0f, 3.0f, 2.0f, 1.0f, 0.0f, 0.3f).addGatheringStats(2.0f, 0.5f, 0.5f);
+    public static final BlocklingType QUARTZ = create("quartz", 5).addCombatStats(3.0f, 4.0f, 3.0f, 1.0f, 0.5f, 0.0f, 0.35f).addGatheringStats(2.0f, 0.5f, 0.5f);
+    public static final BlocklingType LAPIS = create("lapis", 0).addCombatStats(5.0f, 3.0f, 3.0f, 1.0f, 0.5f, 0.0f, 0.3f).addGatheringStats(2.0f, 0.5f, 0.5f);
+    public static final BlocklingType GOLD = create("gold", 0).addCombatStats(1.0f, 4.0f, 3.0f, 1.0f, 0.5f, 0.0f, 0.4f).addGatheringStats(2.5f, 0.5f, 0.5f);
+    public static final BlocklingType EMERALD = create("emerald", 0).addCombatStats(5.0f, 3.0f, 3.0f, 2.0f, 1.0f, 1.0f, 0.3f).addGatheringStats(2.5f, 0.5f, 0.5f);
+    public static final BlocklingType DIAMOND = create("diamond", 0).addCombatStats(8.0f, 6.0f, 3.0f, 3.0f, 1.5f, 1.0f, 0.3f).addGatheringStats(3.0f, 0.5f, 0.5f);
+    public static final BlocklingType OBSIDIAN = create("obsidian", 0).addCombatStats(25.0f, 5.0f, 2.0f, 4.0f, 2.0f, 1.0f, 0.2f).addGatheringStats(1.0f, 0.5f, 0.5f);
 
     static
     {
@@ -71,16 +73,24 @@ public class BlocklingType
 
 
     public final ResourceLocation entityTexture;
+    public final TranslationTextComponent name;
     public final int spawnRateReduction;
-    private float bonusHealth;
-    private float bonusDamage;
-    private float bonusArmour;
-    private float bonusSpeed;
+    private float maxHealth = 0.0f;
+    private float attackDamage = 0.0f;
+    private float attackSpeed = 3.0f;
+    private float armour = 0.0f;
+    private float armourToughness = 0.0f;
+    private float knockbackResistance = 0.0f;
+    private float moveSpeed = 0.0f;
+    private float miningSpeed = 0.0f;
+    private float woodcuttingSpeed = 0.0f;
+    private float farmingSpeed = 0.0f;
     public List<BiPredicate<BlocklingEntity, IWorld>> predicates = new ArrayList<>();
 
-    public BlocklingType(String texture, int spawnRateReduction)
+    public BlocklingType(String key, int spawnRateReduction)
     {
-        this.entityTexture = new BlocklingsResourceLocation("textures/entity/blockling/blockling_" + texture + ".png");
+        this.entityTexture = new BlocklingsResourceLocation("textures/entity/blockling/blockling_" + key + ".png");
+        this.name = new BlocklingsTranslationTextComponent("type." + key);
         this.spawnRateReduction = spawnRateReduction + 1;
     }
 
@@ -91,36 +101,77 @@ public class BlocklingType
         return type;
     }
 
-    private BlocklingType addBonusStats(float health, float damage, float armour, float speed)
+    private BlocklingType addCombatStats(float health, float attackDamage, float attackSpeed, float armour, float armourToughness, float knockbackResistance, float moveSpeed)
     {
-        this.bonusHealth = health;
-        this.bonusDamage = damage;
-        this.bonusArmour = armour;
-        this.bonusSpeed = speed;
+        this.maxHealth = health;
+        this.attackDamage = attackDamage;
+        this.attackSpeed = attackSpeed;
+        this.armour = armour;
+        this.armourToughness = armourToughness;
+        this.knockbackResistance = knockbackResistance;
+        this.moveSpeed = moveSpeed;
+
         return this;
     }
 
-    public float getBonusHealth()
+    private BlocklingType addGatheringStats(float miningSpeed, float woodcuttingSpeed, float farmingSpeed)
     {
-        return bonusHealth;
+        this.miningSpeed = miningSpeed;
+        this.woodcuttingSpeed = woodcuttingSpeed;
+        this.farmingSpeed = farmingSpeed;
+
+        return this;
     }
 
-    public float getBonusDamage()
+    public float getMaxHealth()
     {
-        return bonusDamage;
+        return maxHealth;
     }
 
-    public float getBonusArmour()
+    public float getAttackDamage()
     {
-        return bonusArmour;
+        return attackDamage;
     }
 
-    public float getBonusSpeed()
+    public float getArmour()
     {
-        return bonusSpeed;
+        return armour;
     }
 
+    public float getMoveSpeed()
+    {
+        return moveSpeed;
+    }
 
+    public float getAttackSpeed()
+    {
+        return attackSpeed;
+    }
+
+    public float getArmourToughness()
+    {
+        return armourToughness;
+    }
+
+    public float getKnockbackResistance()
+    {
+        return knockbackResistance;
+    }
+
+    public float getMiningSpeed()
+    {
+        return miningSpeed;
+    }
+
+    public float getWoodcuttingSpeed()
+    {
+        return woodcuttingSpeed;
+    }
+
+    public float getFarmingSpeed()
+    {
+        return farmingSpeed;
+    }
 
     private static boolean isInDimension(BlocklingEntity blockling, IWorld world, DimensionType... dimensionTypes)
     {

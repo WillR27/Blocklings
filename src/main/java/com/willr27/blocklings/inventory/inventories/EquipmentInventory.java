@@ -212,22 +212,54 @@ public class EquipmentInventory extends AbstractInventory
 
         if (index == TOOL_MAIN_HAND || index == TOOL_OFF_HAND)
         {
-            BlocklingStats stats = blockling.getStats();
+            updateToolAttributes();
+        }
+    }
 
-            stats.attackSpeed.removeModifier(stats.attackSpeedMainHandModifier);
-            stats.attackSpeed.removeModifier(stats.attackSpeedOffHandModifier);
+    public void updateToolAttributes()
+    {
+        BlocklingStats stats = blockling.getStats();
 
-            if (isAttackingWith(BlocklingHand.MAIN) && hasToolEquipped(Hand.MAIN_HAND))
-            {
-                stats.attackSpeedMainHandModifier.setValue(ToolUtil.getToolAttackSpeed(blockling.getMainHandItem()), false);
-                stats.attackSpeed.addModifier(stats.attackSpeedMainHandModifier);
-            }
+        stats.mainHandAttackDamage.removeModifier(stats.mainHandAttackDamageToolModifier);
+        stats.offHandAttackDamage.removeModifier(stats.offHandAttackDamageToolModifier);
+        stats.attackSpeed.removeModifier(stats.attackSpeedMainHandModifier);
+        stats.attackSpeed.removeModifier(stats.attackSpeedOffHandModifier);
 
-            if (isAttackingWith(BlocklingHand.OFF) && hasToolEquipped(Hand.OFF_HAND))
-            {
-                stats.attackSpeedOffHandModifier.setValue(ToolUtil.getToolAttackSpeed(blockling.getOffhandItem()), false);
-                stats.attackSpeed.addModifier(stats.attackSpeedOffHandModifier);
-            }
+        stats.miningSpeed.removeModifier(stats.miningSpeedMainHandModifier);
+        stats.miningSpeed.removeModifier(stats.miningSpeedOffHandModifier);
+        stats.woodcuttingSpeed.removeModifier(stats.woodcuttingSpeedMainHandModifier);
+        stats.woodcuttingSpeed.removeModifier(stats.woodcuttingSpeedOffHandModifier);
+        stats.farmingSpeed.removeModifier(stats.farmingSpeedMainHandModifier);
+        stats.farmingSpeed.removeModifier(stats.farmingSpeedOffHandModifier);
+
+        if (isAttackingWith(BlocklingHand.MAIN) && hasToolEquipped(Hand.MAIN_HAND))
+        {
+            stats.mainHandAttackDamageToolModifier.setValue(ToolUtil.getToolBaseDamage(blockling.getMainHandItem()), false);
+            stats.mainHandAttackDamage.addModifier(stats.mainHandAttackDamageToolModifier);
+            stats.attackSpeedMainHandModifier.setValue(ToolUtil.getToolAttackSpeed(blockling.getMainHandItem()), false);
+            stats.attackSpeed.addModifier(stats.attackSpeedMainHandModifier);
+
+            stats.miningSpeedMainHandModifier.setValue(ToolUtil.getToolMiningSpeed(blockling.getMainHandItem()), false);
+            stats.miningSpeed.addModifier(stats.miningSpeedMainHandModifier);
+            stats.woodcuttingSpeedMainHandModifier.setValue(ToolUtil.getToolWoodcuttingSpeed(blockling.getMainHandItem()), false);
+            stats.woodcuttingSpeed.addModifier(stats.woodcuttingSpeedMainHandModifier);
+            stats.farmingSpeedMainHandModifier.setValue(ToolUtil.getToolFarmingSpeed(blockling.getMainHandItem()), false);
+            stats.farmingSpeed.addModifier(stats.farmingSpeedMainHandModifier);
+        }
+
+        if (isAttackingWith(BlocklingHand.OFF) && hasToolEquipped(Hand.OFF_HAND))
+        {
+            stats.offHandAttackDamageToolModifier.setValue(ToolUtil.getToolBaseDamage(blockling.getOffhandItem()), false);
+            stats.offHandAttackDamage.addModifier(stats.offHandAttackDamageToolModifier);
+            stats.attackSpeedOffHandModifier.setValue(ToolUtil.getToolAttackSpeed(blockling.getOffhandItem()), false);
+            stats.attackSpeed.addModifier(stats.attackSpeedOffHandModifier);
+
+            stats.miningSpeedMainHandModifier.setValue(ToolUtil.getToolMiningSpeed(blockling.getOffhandItem()), false);
+            stats.miningSpeed.addModifier(stats.miningSpeedMainHandModifier);
+            stats.woodcuttingSpeedMainHandModifier.setValue(ToolUtil.getToolWoodcuttingSpeed(blockling.getOffhandItem()), false);
+            stats.woodcuttingSpeed.addModifier(stats.woodcuttingSpeedMainHandModifier);
+            stats.farmingSpeedMainHandModifier.setValue(ToolUtil.getToolFarmingSpeed(blockling.getOffhandItem()), false);
+            stats.farmingSpeed.addModifier(stats.farmingSpeedMainHandModifier);
         }
     }
 

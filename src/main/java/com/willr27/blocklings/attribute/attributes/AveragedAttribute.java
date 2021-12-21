@@ -1,7 +1,8 @@
 package com.willr27.blocklings.attribute.attributes;
 
+import com.willr27.blocklings.attribute.IModifier;
 import com.willr27.blocklings.attribute.attributes.numbers.ModifiableFloatAttribute;
-import com.willr27.blocklings.attribute.modifier.AttributeModifier;
+import com.willr27.blocklings.attribute.Operation;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 
 public class AveragedAttribute extends ModifiableFloatAttribute
@@ -18,17 +19,17 @@ public class AveragedAttribute extends ModifiableFloatAttribute
         float tempBase = baseValue;
         boolean end = false;
 
-        for (AttributeModifier<Float> modifier : modifiers)
+        for (IModifier<Float> modifier : modifiers)
         {
-            if (modifier.operation == AttributeModifier.Operation.ADD)
+            if (modifier.getOperation() == Operation.ADD)
             {
-                value += modifier.value;
+                value += modifier.getValue();
             }
-            else if (modifier.operation == AttributeModifier.Operation.MULTIPLY_BASE)
+            else if (modifier.getOperation() == Operation.MULTIPLY_BASE)
             {
-                tempBase *= modifier.value;
+                tempBase *= modifier.getValue();
             }
-            else if (modifier.operation == AttributeModifier.Operation.MULTIPLY_TOTAL)
+            else if (modifier.getOperation() == Operation.MULTIPLY_TOTAL)
             {
                 if (!end)
                 {
@@ -36,7 +37,7 @@ public class AveragedAttribute extends ModifiableFloatAttribute
                     end = true;
                 }
 
-                value *= modifier.value;
+                value *= modifier.getValue();
             }
         }
 

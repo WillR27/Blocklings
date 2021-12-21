@@ -1,7 +1,8 @@
 package com.willr27.blocklings.attribute.attributes.numbers;
 
+import com.willr27.blocklings.attribute.IModifier;
 import com.willr27.blocklings.attribute.ModifiableAttribute;
-import com.willr27.blocklings.attribute.modifier.AttributeModifier;
+import com.willr27.blocklings.attribute.Operation;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.network.IMessage;
 import com.willr27.blocklings.network.NetworkHandler;
@@ -16,14 +17,9 @@ import java.util.function.Supplier;
 
 public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
 {
-    protected float baseValue;
-    protected float value;
-
     public ModifiableFloatAttribute(String id, String key, BlocklingEntity blockling, float baseValue)
     {
-        super(id, key, blockling);
-        this.baseValue = baseValue;
-        this.value = baseValue;
+        super(id, key, blockling, baseValue);
     }
 
     @Override
@@ -66,17 +62,17 @@ public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
         float tempBase = baseValue;
         boolean end = false;
 
-        for (AttributeModifier<Float> modifier : modifiers)
+        for (IModifier<Float> modifier : modifiers)
         {
-            if (modifier.operation == AttributeModifier.Operation.ADD)
+            if (modifier.getOperation() == Operation.ADD)
             {
-                value += modifier.value;
+                value += modifier.getValue();
             }
-            else if (modifier.operation == AttributeModifier.Operation.MULTIPLY_BASE)
+            else if (modifier.getOperation() == Operation.MULTIPLY_BASE)
             {
-                tempBase *= modifier.value;
+                tempBase *= modifier.getValue();
             }
-            else if (modifier.operation == AttributeModifier.Operation.MULTIPLY_TOTAL)
+            else if (modifier.getOperation() == Operation.MULTIPLY_TOTAL)
             {
                 if (!end)
                 {
@@ -84,7 +80,7 @@ public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
                     end = true;
                 }
 
-                value *= modifier.value;
+                value *= modifier.getValue();
             }
         }
 
@@ -97,27 +93,9 @@ public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
     }
 
     @Override
-    public Float getBaseValue()
-    {
-        return baseValue;
-    }
-
-    @Override
-    public void incBaseValue(Float amount)
-    {
-        incBaseValue(amount, true);
-    }
-
-    @Override
     public void incBaseValue(Float amount, boolean sync)
     {
         setBaseValue(baseValue + amount, sync);
-    }
-
-    @Override
-    public void setBaseValue(Float baseValue)
-    {
-        setBaseValue(baseValue, true);
     }
 
     @Override
@@ -131,12 +109,6 @@ public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
         {
             NetworkHandler.sync(world, new BaseValueMessage(blockling.getStats().attributes.indexOf(this), baseValue, blockling.getId()));
         }
-    }
-
-    @Override
-    public Float getValue()
-    {
-        return value;
     }
 
     public static class BaseValueMessage implements IMessage

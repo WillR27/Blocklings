@@ -1,59 +1,64 @@
 package com.willr27.blocklings.attribute;
 
-import com.willr27.blocklings.attribute.modifier.AttributeModifier;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
-public abstract class ModifiableAttribute<T> extends Attribute<T>
+public abstract class ModifiableAttribute<T> extends Attribute<T> implements IModifiable<T>
 {
-    protected final List<AttributeModifier<T>> modifiers = new ArrayList<>();
+    protected final List<IModifier<T>> modifiers = new ArrayList<>();
 
-    public ModifiableAttribute(String id, String key, BlocklingEntity blockling)
+    protected T baseValue;
+    protected T value;
+
+    public ModifiableAttribute(String id, String key, BlocklingEntity blockling, T value)
     {
         super(id, key, blockling);
+        this.baseValue = value;
+        this.value = value;
     }
 
-    public abstract void calculate();
-
-    public abstract T getBaseValue();
-
-    public abstract void incBaseValue(T amount);
-
-    public abstract void incBaseValue(T amount, boolean sync);
-
-    public abstract void setBaseValue(T baseValue);
-
-    public abstract void setBaseValue(T baseValue, boolean sync);
-
-    public String formatBaseValue(String format)
+    @Override
+    public T getValue()
     {
-        return String.format(format, getBaseValue());
+        return value;
     }
 
-    public List<AttributeModifier<T>> getModifiers()
+    @Override
+    public T getBaseValue()
+    {
+        return baseValue;
+    }
+
+    @Override
+    public List<IModifier<T>> getModifiers()
     {
         return new ArrayList<>(modifiers);
     }
 
-    public AttributeModifier<T> findModifier(int index)
+    @Override
+    public IModifier<T> findModifier(int index)
     {
         return modifiers.get(index);
     }
 
-    public int indexOf(AttributeModifier<T> modifier)
+    @Override
+    public int indexOf(IModifier<T> modifier)
     {
         return modifiers.indexOf(modifier);
     }
 
-    public AttributeModifier<T> getModifier(int index)
+    @Override
+    public IModifier<T> getModifier(int index)
     {
         return modifiers.get(index);
     }
 
-    public void addModifier(AttributeModifier<T> modifier)
+    @Override
+    public void addModifier(IModifier<T> modifier)
     {
         // Don't add if modifier is already applied
         if (modifiers.contains(modifier))
@@ -62,13 +67,13 @@ public abstract class ModifiableAttribute<T> extends Attribute<T>
         }
 
         // Add total multiplications last
-        if (modifier.operation != AttributeModifier.Operation.MULTIPLY_TOTAL)
+        if (modifier.getOperation() != Operation.MULTIPLY_TOTAL)
         {
             boolean inserted = false;
 
-            for (AttributeModifier<T> existingModifier : modifiers)
+            for (IModifier<T> existingModifier : modifiers)
             {
-                if (existingModifier.operation == AttributeModifier.Operation.MULTIPLY_TOTAL)
+                if (existingModifier.getOperation() == Operation.MULTIPLY_TOTAL)
                 {
                     modifiers.add(modifiers.indexOf(existingModifier), modifier);
                     inserted = true;
@@ -91,7 +96,8 @@ public abstract class ModifiableAttribute<T> extends Attribute<T>
         calculate();
     }
 
-    public void removeModifier(AttributeModifier<T> modifier)
+    @Override
+    public void removeModifier(IModifier<T> modifier)
     {
         // Remove if exists
         modifiers.remove(modifier);

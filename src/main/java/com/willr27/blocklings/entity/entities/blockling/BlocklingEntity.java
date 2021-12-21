@@ -64,6 +64,8 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         setCustomName(new StringTextComponent("Blockling"));
 
+        stats.initCallbacks();
+
         // Set up any values that are determined randomly here
         // So that we can sync them up using read/writeSpawnData
         if (!level.isClientSide)
@@ -71,14 +73,16 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
             setBlocklingType(BlocklingType.TYPES.get(getRandom().nextInt(3)), false);
 
             stats.init();
-
-            setHealth(getMaxHealth());
         }
+
+        equipmentInv.updateToolAttributes();
+
+        setHealth(getMaxHealth());
     }
 
     public static AttributeModifierMap.MutableAttribute createAttributes()
     {
-        return MobEntity.createMobAttributes().add(Attributes.ATTACK_DAMAGE, 2.0D);
+        return MobEntity.createMobAttributes().add(Attributes.ATTACK_DAMAGE, 0.0).add(Attributes.ATTACK_SPEED, 0.0);
     }
 
     @Override
@@ -146,6 +150,8 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         stats.readFromNBT(c);
         tasks.readFromNBT(c);
         skills.readFromNBT(c);
+
+        equipmentInv.updateToolAttributes();
     }
 
     @Override
@@ -168,6 +174,8 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         stats.decode(buf);
         tasks.decode(buf);
         skills.decode(buf);
+
+        equipmentInv.updateToolAttributes();
     }
 
     @Override
@@ -195,7 +203,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         ItemStack mainStack = getMainHandItem();
         ItemStack offStack = getOffhandItem();
 
-        float damage = stats.attackDamage.getValue();
+        float damage = 0.0f;
         float knockback = (float) this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
         int fireAspect = 0;
 
@@ -203,7 +211,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         {
             if (attackingHand == BlocklingHand.MAIN || attackingHand == BlocklingHand.BOTH)
             {
-                damage += ToolUtil.getToolBaseDamage(mainStack);
+                damage += stats.mainHandAttackDamage.getValue();
                 damage += ToolUtil.getToolEnchantmentDamage(mainStack, ((LivingEntity) target).getMobType());
                 knockback += ToolUtil.getToolKnockback(mainStack);
                 fireAspect += ToolUtil.getToolFireAspect(mainStack);
@@ -211,7 +219,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
             if (attackingHand == BlocklingHand.OFF || attackingHand == BlocklingHand.BOTH)
             {
-                damage += ToolUtil.getToolBaseDamage(offStack);
+                damage += stats.offHandAttackDamage.getValue();
                 damage += ToolUtil.getToolEnchantmentDamage(offStack, ((LivingEntity) target).getMobType());
                 knockback += ToolUtil.getToolKnockback(offStack);
                 fireAspect += ToolUtil.getToolFireAspect(offStack);
@@ -229,7 +237,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         if (hasHurt)
         {
-            if (knockback > 0.0F && target instanceof LivingEntity)
+            if (knockback > 0.0f && target instanceof LivingEntity)
             {
                 ((LivingEntity) target).knockback(knockback * 0.5f, (double) MathHelper.sin(this.yRot * ((float) Math.PI / 180.0f)), (-MathHelper.cos(this.yRot * ((float) Math.PI / 180.0f))));
                 setDeltaMovement(getDeltaMovement().multiply(0.6, 1.0, 0.6));
@@ -379,6 +387,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         if (random.nextInt(3) == 0 && !ForgeEventFactory.onAnimalTame(this, player))
         {
             tame(player);
+            unlockedTamedTasks(true);
 
             for (Task task : getTasks().getPrioritisedTasks())
             {
@@ -402,15 +411,12 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         }
     }
 
-    @Override
-    public void tame(@Nonnull PlayerEntity player)
+    public void unlockedTamedTasks(boolean sync)
     {
-        super.tame(player);
-
-        tasks.setIsUnlocked(BlocklingTasks.FOLLOW, true);
-        tasks.setIsUnlocked(BlocklingTasks.SIT, true);
-        tasks.setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT, true);
-        tasks.setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT_BY, true);
+        tasks.setIsUnlocked(BlocklingTasks.FOLLOW, true, sync);
+        tasks.setIsUnlocked(BlocklingTasks.SIT, true, sync);
+        tasks.setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT, true, sync);
+        tasks.setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT_BY, true, sync);
     }
 
     @Override
@@ -578,6 +584,8 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     public void setBlocklingType(BlocklingType blocklingType, boolean sync)
     {
         this.blocklingType = blocklingType;
+
+        stats.updateTypeBonuses(sync);
 
         if (sync)
         {

@@ -6,6 +6,7 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import com.willr27.blocklings.entity.entities.blockling.goal.Task;
 import com.willr27.blocklings.util.BlocklingsResourceLocation;
 import net.minecraft.block.BlockState;
+import net.minecraft.command.arguments.NBTTagArgument;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemModelsProperties;
@@ -30,7 +31,10 @@ public class BlocklingItem extends Item
     {
         ItemStack stack = new ItemStack(Items.BLOCKLING.get(), 1);
         stack.setHoverName(blockling.getCustomName());
-        stack.getTag().put("blockling", blockling.writeBlocklingToNBT());
+
+        CompoundNBT entityTag = new CompoundNBT();
+        blockling.addAdditionalSaveData(entityTag);
+        stack.getTag().put("entity", entityTag);
 
         return stack;
     }
@@ -52,13 +56,13 @@ public class BlocklingItem extends Item
                 blockpos = blockpos.relative(direction);
             }
 
-            BlocklingEntity blockling = (BlocklingEntity) EntityTypes.BLOCKLING_ENTITY.get().spawn((ServerWorld) world, stack, context.getPlayer(), blockpos, SpawnReason.SPAWN_EGG, true, true);
+//            BlocklingEntity blockling = (BlocklingEntity) EntityTypes.BLOCKLING_ENTITY.get().spawn((ServerWorld) world, stack, context.getPlayer(), blockpos, SpawnReason.SPAWN_EGG, true, true);
 
-            blockling.tame(context.getPlayer());
+            BlocklingEntity blockling = new BlocklingEntity(EntityTypes.BLOCKLING_ENTITY.get(), world);
 
             if (stack.getTag() != null)
             {
-                blockling.readBlocklingFromNBT((CompoundNBT) stack.getTag().get("blockling"));
+                blockling.readAdditionalSaveData((CompoundNBT) stack.getTag().get("entity"));
             }
             else
             {
@@ -66,10 +70,16 @@ public class BlocklingItem extends Item
                 {
                     if (task.isConfigured() && task.getType() == BlocklingTasks.WANDER)
                     {
-                        task.setType(BlocklingTasks.FOLLOW);
+                        task.setType(BlocklingTasks.FOLLOW, false);
                     }
                 }
             }
+
+            blockling.setPos(blockpos.getX() + 0.5, blockpos.getY(), blockpos.getZ() + 0.5);
+            blockling.tame(context.getPlayer());
+            blockling.unlockedTamedTasks(false);
+
+            world.addFreshEntity(blockling);
 
             if (!context.getPlayer().abilities.instabuild)
             {
@@ -93,7 +103,7 @@ public class BlocklingItem extends Item
                     return 0;
                 }
 
-                return ((CompoundNBT) c.get("blockling")).getInt("type");
+                return ((CompoundNBT) ((CompoundNBT) c.get("entity")).get("blockling")).getInt("type");
             });
         });
     }
