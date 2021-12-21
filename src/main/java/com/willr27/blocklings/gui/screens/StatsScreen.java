@@ -97,52 +97,6 @@ public class StatsScreen extends TabbedScreen
         this.stats = blockling.getStats();
     }
 
-    private List<ITextComponent> armourTooltip()
-    {
-        List<ITextComponent> tooltip = new ArrayList<>();
-
-        tooltip.add(new StringTextComponent(TextFormatting.DARK_AQUA + stats.armour.formatValue("%.1f") + " " + TextFormatting.GRAY + stats.armour.createTranslation("name").getString()));
-
-        return tooltip;
-    }
-
-    private List<ITextComponent> armourToughnessTooltip()
-    {
-        List<ITextComponent> tooltip = new ArrayList<>();
-
-        tooltip.add(new StringTextComponent(TextFormatting.AQUA + stats.armourToughness.formatValue("%.1f") + " " + TextFormatting.GRAY + stats.armourToughness.createTranslation("name").getString()));
-
-        return tooltip;
-    }
-
-    private List<ITextComponent> knockbackResistanceTooltip()
-    {
-        List<ITextComponent> tooltip = new ArrayList<>();
-
-        tooltip.add(new StringTextComponent(TextFormatting.YELLOW + stats.knockbackResistance.formatValue("%.1f") + " " + TextFormatting.GRAY + stats.knockbackResistance.createTranslation("name").getString()));
-
-        return tooltip;
-    }
-
-    private List<ITextComponent> moveSpeedTooltip()
-    {
-        List<ITextComponent> tooltip = new ArrayList<>();
-
-        tooltip.add(new StringTextComponent(TextFormatting.AQUA + stats.moveSpeed.formatValue("%.1f") + " " + TextFormatting.GRAY + stats.moveSpeed.createTranslation("name").getString()));
-
-        return tooltip;
-    }
-
-    private ITextComponent createToolToolip(float value, ItemStack stack)
-    {
-        return createToolToolip(value, stack, "+");
-    }
-
-    private ITextComponent createToolToolip(float value, ItemStack stack, String operation)
-    {
-        return new StringTextComponent(" " + TextFormatting.GRAY + operation + String.format("%.1f", value) + " " + TextFormatting.DARK_GRAY + stack.getHoverName().getString());
-    }
-
     private List<ITextComponent> createModifiableFloatAttributeTooltip(IModifiable<Float> attribute, TextFormatting colour)
     {
         List<ITextComponent> tooltip = new ArrayList<>();
@@ -180,9 +134,9 @@ public class StatsScreen extends TabbedScreen
         attackWidget.addEnumeration(() -> true, () -> stats.attackSpeed.formatValue("%.1f"), () -> createModifiableFloatAttributeTooltip(stats.attackSpeed, TextFormatting.DARK_PURPLE), new GuiTexture(GuiUtil.STATS, 0, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE), Color.PINK);
 
         defenceWidget = new EnumeratingWidget(new BlocklingsTranslationTextComponent("stats.defence.name"), font, contentLeft + LEFT_ICON_X, contentTop + BOTTOM_ICON_Y, ICON_SIZE, ICON_SIZE, false, 60, true, blockling);
-        defenceWidget.addEnumeration(() -> true, () -> stats.armour.formatValue("%.1f"), this::armourTooltip, new GuiTexture(GuiUtil.STATS, ICON_SIZE * 5, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
-        defenceWidget.addEnumeration(() -> true, () -> stats.armourToughness.formatValue("%.1f"), this::armourToughnessTooltip, new GuiTexture(GuiUtil.STATS, ICON_SIZE * 6, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
-        defenceWidget.addEnumeration(() -> true, () -> stats.knockbackResistance.formatValue("%.1f"), this::knockbackResistanceTooltip, new GuiTexture(GuiUtil.STATS, ICON_SIZE * 7, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        defenceWidget.addEnumeration(() -> true, () -> stats.armour.formatValue("%.1f"), () -> createModifiableFloatAttributeTooltip(stats.armour, TextFormatting.DARK_AQUA), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 5, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        defenceWidget.addEnumeration(() -> true, () -> stats.armourToughness.formatValue("%.1f"), () -> createModifiableFloatAttributeTooltip(stats.armourToughness, TextFormatting.AQUA), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 6, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        defenceWidget.addEnumeration(() -> true, () -> stats.knockbackResistance.formatValue("%.1f"), () -> createModifiableFloatAttributeTooltip(stats.knockbackResistance, TextFormatting.YELLOW), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 7, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
 
         gatherWidget = new EnumeratingWidget(new BlocklingsTranslationTextComponent("stats.gather.name"), font, contentRight - LEFT_ICON_X - ICON_SIZE, contentTop + TOP_ICON_Y, ICON_SIZE, ICON_SIZE, true, 60, true, blockling);
         gatherWidget.addEnumeration(() -> true, () -> stats.miningSpeed.formatValue("%.1f"), () -> createModifiableFloatAttributeTooltip(stats.miningSpeed, TextFormatting.BLUE), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 1, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
@@ -190,7 +144,7 @@ public class StatsScreen extends TabbedScreen
         gatherWidget.addEnumeration(() -> true, () -> stats.farmingSpeed.formatValue("%.1f"), () -> createModifiableFloatAttributeTooltip(stats.farmingSpeed, TextFormatting.YELLOW), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 3, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
 
         movementWidget = new EnumeratingWidget(new BlocklingsTranslationTextComponent("stats.movement.name"), font, contentRight - LEFT_ICON_X - ICON_SIZE, contentTop + BOTTOM_ICON_Y, ICON_SIZE, ICON_SIZE, true, 60, true, blockling);
-        movementWidget.addEnumeration(() -> true, () -> String.format("%.1f", stats.moveSpeed.getValue() * 10.0f), this::moveSpeedTooltip, new GuiTexture(GuiUtil.STATS, ICON_SIZE * 8, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        movementWidget.addEnumeration(() -> true, () -> stats.moveSpeed.formatValue("%.1f"), () -> createModifiableFloatAttributeTooltip(stats.moveSpeed, TextFormatting.BLUE), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 8, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
 
         combatIcon = new TexturedWidget(font, contentLeft + LEVEL_ICON_X, contentTop + COMBAT_ICON_Y, ICON_SIZE, ICON_SIZE, COMBAT_ICON_TEXTURE_X, LEVEL_ICON_TEXTURE_Y);
         miningIcon = new TexturedWidget(font, contentLeft + LEVEL_ICON_X, contentTop + MINING_ICON_Y, ICON_SIZE, ICON_SIZE, MINING_ICON_TEXTURE_X, LEVEL_ICON_TEXTURE_Y);

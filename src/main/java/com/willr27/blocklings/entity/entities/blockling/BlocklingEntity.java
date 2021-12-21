@@ -237,6 +237,8 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         if (hasHurt)
         {
+            stats.combatXp.incValue((int) damage + 1);
+
             if (knockback > 0.0f && target instanceof LivingEntity)
             {
                 ((LivingEntity) target).knockback(knockback * 0.5f, (double) MathHelper.sin(this.yRot * ((float) Math.PI / 180.0f)), (-MathHelper.cos(this.yRot * ((float) Math.PI / 180.0f))));

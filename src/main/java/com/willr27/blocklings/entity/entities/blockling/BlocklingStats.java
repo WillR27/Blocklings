@@ -35,6 +35,48 @@ public class BlocklingStats
 
     public final EnumAttribute<BlocklingHand> hand;
 
+    public final ModifiableFloatAttribute maxHealth;
+    public final FloatAttributeModifier maxHealthCombatLevelModifier;
+    public final FloatAttributeModifier maxHealthTypeModifier;
+
+    public final ModifiableFloatAttribute mainHandAttackDamage;
+    public final ModifiableFloatAttributeModifier mainHandAttackDamageBlocklingModifier;
+    public final FloatAttributeModifier mainHandAttackDamageTypeModifier;
+    public final FloatAttributeModifier mainHandAttackDamageCombatLevelModifier;
+    public final FloatAttributeModifier mainHandAttackDamageToolModifier;
+
+    public final ModifiableFloatAttribute offHandAttackDamage;
+    public final ModifiableFloatAttributeModifier offHandAttackDamageBlocklingModifier;
+    public final FloatAttributeModifier offHandAttackDamageTypeModifier;
+    public final FloatAttributeModifier offHandAttackDamageCombatLevelModifier;
+    public final FloatAttributeModifier offHandAttackDamageToolModifier;
+
+    public final AveragedAttribute attackSpeed;
+    public final ModifiableFloatAttributeModifier attackSpeedBlocklingModifier;
+    public final FloatAttributeModifier attackSpeedTypeModifier;
+    public final FloatAttributeModifier attackSpeedLevelModifier;
+    public final FloatAttributeModifier attackSpeedMainHandModifier;
+    public final FloatAttributeModifier attackSpeedOffHandModifier;
+
+    public final ModifiableFloatAttribute armour;
+    public final ModifiableFloatAttributeModifier armourBlocklingModifier;
+    public final FloatAttributeModifier armourCombatLevelModifier;
+    public final FloatAttributeModifier armourTypeModifier;
+
+    public final ModifiableFloatAttribute armourToughness;
+    public final ModifiableFloatAttributeModifier armourToughnessBlocklingModifier;
+    public final FloatAttributeModifier armourToughnessCombatLevelModifier;
+    public final FloatAttributeModifier armourToughnessTypeModifier;
+
+    public final ModifiableFloatAttribute knockbackResistance;
+    public final ModifiableFloatAttributeModifier knockbackResistanceBlocklingModifier;
+    public final FloatAttributeModifier knockbackResistanceCombatLevelModifier;
+    public final FloatAttributeModifier knockbackResistanceTypeModifier;
+
+    public final ModifiableFloatAttribute moveSpeed;
+    public final ModifiableFloatAttributeModifier moveSpeedBlocklingModifier;
+    public final FloatAttributeModifier moveSpeedTypeModifier;
+
     public final ModifiableFloatAttribute miningRange;
     public final ModifiableFloatAttribute miningRangeSq;
     public final ModifiableFloatAttribute woodcuttingRange;
@@ -61,40 +103,6 @@ public class BlocklingStats
     public final FloatAttributeModifier farmingSpeedMainHandModifier;
     public final FloatAttributeModifier farmingSpeedOffHandModifier;
 
-    public final ModifiableFloatAttribute maxHealth;
-    public final FloatAttributeModifier maxHealthCombatLevelModifier;
-    public final FloatAttributeModifier maxHealthTypeModifier;
-
-    public final ModifiableFloatAttribute mainHandAttackDamage;
-    public final ModifiableFloatAttributeModifier mainHandAttackDamageBlocklingModifier;
-    public final FloatAttributeModifier mainHandAttackDamageTypeModifier;
-    public final FloatAttributeModifier mainHandAttackDamageCombatLevelModifier;
-    public final FloatAttributeModifier mainHandAttackDamageToolModifier;
-
-    public final ModifiableFloatAttribute offHandAttackDamage;
-    public final ModifiableFloatAttributeModifier offHandAttackDamageBlocklingModifier;
-    public final FloatAttributeModifier offHandAttackDamageTypeModifier;
-    public final FloatAttributeModifier offHandAttackDamageCombatLevelModifier;
-    public final FloatAttributeModifier offHandAttackDamageToolModifier;
-
-    public final AveragedAttribute attackSpeed;
-    public final ModifiableFloatAttributeModifier attackSpeedBlocklingModifier;
-    public final FloatAttributeModifier attackSpeedTypeModifier;
-    public final FloatAttributeModifier attackSpeedLevelModifier;
-    public final FloatAttributeModifier attackSpeedMainHandModifier;
-    public final FloatAttributeModifier attackSpeedOffHandModifier;
-
-    public final ModifiableFloatAttribute armour;
-    public final FloatAttributeModifier armourCombatLevelModifier;
-    public final FloatAttributeModifier armourTypeModifier;
-
-    public final ModifiableFloatAttribute armourToughness;
-
-    public final ModifiableFloatAttribute knockbackResistance;
-
-    public final ModifiableFloatAttribute moveSpeed;
-    public final FloatAttributeModifier movementSpeedTypeModifier;
-
     public final BlocklingEntity blockling;
     public final World world;
 
@@ -119,39 +127,7 @@ public class BlocklingStats
 
         skillPoints = createIntAttribute("a78f9d35-266e-4f86-836e-daaef073940e", "skill_points", 50);
 
-        miningRange = createModifiableFloatAttribute("76e044ca-e73e-4004-b576-920a8446612d", "mining_range", 2.5f);
-        miningRangeSq = createModifiableFloatAttribute("55af3992-cf8d-4d5d-8634-fbc1e05d30fe", "mining_range_sq", miningRange.getValue() * miningRange.getValue());
-        woodcuttingRange = createModifiableFloatAttribute("bc50cc2d-2323-4743-a175-5af87e61e04e", "woodcutting_range", 2.5f);
-        woodcuttingRangeSq = createModifiableFloatAttribute("8ba7fea6-6790-4010-b210-fa69b1effad8", "woodcutting_range_sq", woodcuttingRange.getValue() * woodcuttingRange.getValue());
-        farmingRange = createModifiableFloatAttribute("c549a710-62d9-4d79-8d9d-ba3690752d08", "farming_range", 2.5f);
-        farmingRangeSq = createModifiableFloatAttribute("bc3a8f41-d033-437f-bce2-840df7a55fad", "farming_range_sq", farmingRange.getValue() * farmingRange.getValue());
-
         hand = createEnumAttribute("f21fcbaa-f800-468e-8c22-ec4b4fd0fdc2", "hand", BlocklingHand.NONE, (i) -> BlocklingHand.values()[i]);
-
-        // Default mining speed for an item/hand is 1.0f
-        // A wooden pickaxe is 2.0f
-        // A diamond pickaxe is 8.0f
-        // Our default mining speed can be 0.0f as it will be determined by the level
-        miningSpeed = createModifiableFloatAttribute("0d918c08-2e94-481b-98e1-c2ff3ae395de", "mining_speed", 0.0f);
-        miningSpeedBlocklingModifier = createModifiableFloatAttributeModifier("1e9d4f59-e3a5-410b-a3dd-c9dce952f22d", "mining_speed_blockling", miningSpeed, 0.0f, Operation.ADD, () -> blockling.getCustomName().getString());
-        miningSpeedTypeModifier = createFloatAttributeModifier("565dea40-53ac-4861-bc6c-1eafce77f80f", "mining_speed_type", miningSpeedBlocklingModifier, 0.0f, Operation.ADD, () -> blockling.getBlocklingType().name.getString());
-        miningSpeedLevelModifier = createFloatAttributeModifier("f0914966-d53a-4292-b48c-5595f944f5d2", "mining_speed_level", miningSpeedBlocklingModifier, 0.0f, Operation.ADD, miningLevel.displayStringSupplier);
-        miningSpeedMainHandModifier = createFloatAttributeModifier("fc0dd885-273b-4465-a9ff-e801dcaf07e2", "mining_speed_main_hand", miningSpeed, 0.0f, Operation.ADD, () -> blockling.getMainHandItem().getHoverName().getString());
-        miningSpeedOffHandModifier = createFloatAttributeModifier("aada86a0-4233-47cf-b5ab-aa208a216bb5", "mining_speed_off_hand", miningSpeed, 0.0f, Operation.ADD, () -> blockling.getOffhandItem().getHoverName().getString());
-
-        woodcuttingSpeed = createModifiableFloatAttribute("e1e3ecb3-ae1d-46c5-8ea8-a7180641910b", "woodcutting_speed", 0.0f);
-        woodcuttingSpeedBlocklingModifier = createModifiableFloatAttributeModifier("51a21884-8c41-49d8-bae4-f21866b58718", "woodcutting_speed_blockling", woodcuttingSpeed, 0.0f, Operation.ADD, () -> blockling.getCustomName().getString());
-        woodcuttingSpeedTypeModifier = createFloatAttributeModifier("a66110e2-3a7f-4907-b85c-05c65341cd2e", "woodcutting_speed_type", woodcuttingSpeedBlocklingModifier, 0.0f, Operation.ADD, () -> blockling.getBlocklingType().name.getString());
-        woodcuttingSpeedLevelModifier = createFloatAttributeModifier("6b71ee16-7d04-442e-9d49-9373833f5539", "woodcutting_speed_level", woodcuttingSpeedBlocklingModifier, 0.0f, Operation.ADD, woodcuttingLevel.displayStringSupplier);
-        woodcuttingSpeedMainHandModifier = createFloatAttributeModifier("978f9dd4-3fbb-41ee-9bba-eddcfb42b6ff", "woodcutting_speed_main_hand", woodcuttingSpeed, 0.0f, Operation.ADD, () -> blockling.getMainHandItem().getHoverName().getString());
-        woodcuttingSpeedOffHandModifier = createFloatAttributeModifier("80fd0028-a793-491c-bc9c-fe94071f91c7", "woodcutting_speed_off_hand", woodcuttingSpeed, 0.0f, Operation.ADD, () -> blockling.getOffhandItem().getHoverName().getString());
-
-        farmingSpeed = createModifiableFloatAttribute("f6c026b6-1fa9-432f-aca3-d97af784f6d0", "farming_speed", 0.0f);
-        farmingSpeedBlocklingModifier = createModifiableFloatAttributeModifier("39548773-84ee-42ca-8ad6-681d64eaee54", "farming_speed_blockling", farmingSpeed, 0.0f, Operation.ADD, () -> blockling.getCustomName().getString());
-        farmingSpeedTypeModifier = createFloatAttributeModifier("f99bbc83-30fc-451f-a53b-fa343cc9244a", "farming_speed_type", farmingSpeedBlocklingModifier, 0.0f, Operation.ADD, () -> blockling.getBlocklingType().name.getString());
-        farmingSpeedLevelModifier = createFloatAttributeModifier("3b3079cf-8640-436b-bf0a-3aae4deb29be", "farming_speed_level", farmingSpeedBlocklingModifier, 0.0f, Operation.ADD, farmingLevel.displayStringSupplier);
-        farmingSpeedMainHandModifier = createFloatAttributeModifier("5ece4240-17b3-4983-bd0d-67f962a0a838", "farming_speed_main_hand", farmingSpeed, 0.0f, Operation.ADD, () -> blockling.getMainHandItem().getHoverName().getString());
-        farmingSpeedOffHandModifier = createFloatAttributeModifier("b4bb7131-f2ce-41cd-88ed-ee27e3837679", "farming_speed_off_hand", farmingSpeed, 0.0f, Operation.ADD, () -> blockling.getOffhandItem().getHoverName().getString());
 
         maxHealth = createModifiableFloatAttribute("9c6eb101-f025-4f8f-895b-10868b7d06b2", "max_health",10.0f);
         maxHealthCombatLevelModifier = createFloatAttributeModifier("a78160fa-7bc3-493e-b74b-27af4206d111", "max_health_combat_level", maxHealth, 0.0f, Operation.ADD, null);
@@ -181,15 +157,55 @@ public class BlocklingStats
         attackSpeedOffHandModifier = createFloatAttributeModifier("3566961d-db2b-4833-8c0c-cf6813ade8cc", "attack_speed_off_hand", attackSpeed, 0.0f, Operation.ADD, () -> blockling.getOffhandItem().getHoverName().getString());
 
         armour = createModifiableFloatAttribute("6b34a986-f1ad-4476-a1c6-700d841fb1ec", "armour", 2.0f);
-        armourCombatLevelModifier = createFloatAttributeModifier("15f2f2ce-cdf1-4188-882e-67ceab22df41", "armour_combat_level", armour, 0.0f, Operation.ADD, null);
-        armourTypeModifier = createFloatAttributeModifier("a72fb401-abb7-4d95-ad7e-e83fc6a399d1", "armour_type", armour, 0.0f, Operation.ADD, null);
+        armourBlocklingModifier = createModifiableFloatAttributeModifier("1e5b8f41-bab6-41f9-9a3d-5303f2f1ed6e", "armour_blockling", armour, 0.0f, Operation.ADD, () -> blockling.getCustomName().getString());
+        armourTypeModifier = createFloatAttributeModifier("a72fb401-abb7-4d95-ad7e-e83fc6a399d1", "armour_type", armourBlocklingModifier, 0.0f, Operation.ADD, () -> blockling.getBlocklingType().name.getString());
+        armourCombatLevelModifier = createFloatAttributeModifier("15f2f2ce-cdf1-4188-882e-67ceab22df41", "armour_combat_level", armourBlocklingModifier, 0.0f, Operation.ADD, combatLevel.displayStringSupplier);
 
         armourToughness = createModifiableFloatAttribute("1cfdad6a-0bd3-461f-8007-c0a591a30783", "armour_toughness", 0.0f);
+        armourToughnessBlocklingModifier = createModifiableFloatAttributeModifier("9f08c15b-fa91-4c1e-97ef-4b465936c5ab", "armour_toughness_blockling", armourToughness, 0.0f, Operation.ADD, () -> blockling.getCustomName().getString());
+        armourToughnessTypeModifier = createFloatAttributeModifier("4f806fa7-1ebe-4426-99c6-5c0d0f41be25", "armour_toughness_type", armourToughnessBlocklingModifier, 0.0f, Operation.ADD, () -> blockling.getBlocklingType().name.getString());
+        armourToughnessCombatLevelModifier = createFloatAttributeModifier("0f438ab0-2e72-4555-840f-3b3dc2335014", "armour_toughness_combat_level", armourToughnessBlocklingModifier, 0.0f, Operation.ADD, combatLevel.displayStringSupplier);
 
         knockbackResistance = createModifiableFloatAttribute("ddc90fc2-4a68-4c30-8701-d2d9dbe8b94a", "knockback_resistance", 1.0f);
+        knockbackResistanceBlocklingModifier = createModifiableFloatAttributeModifier("3b6bf894-3beb-42f5-b516-759bacf9acab", "knockback_resistance_blockling", knockbackResistance, 0.0f, Operation.ADD, () -> blockling.getCustomName().getString());
+        knockbackResistanceTypeModifier = createFloatAttributeModifier("eb217d5e-6e7d-4ef0-9ca1-153a7bc18593", "knockback_resistance_type", knockbackResistanceBlocklingModifier, 0.0f, Operation.ADD, () -> blockling.getBlocklingType().name.getString());
+        knockbackResistanceCombatLevelModifier = createFloatAttributeModifier("711cf234-2f57-413c-be3d-ce4c5f809b86", "knockback_resistance_combat_level", knockbackResistanceBlocklingModifier, 0.0f, Operation.ADD, combatLevel.displayStringSupplier);
 
-        moveSpeed = createModifiableFloatAttribute("9a0bb639-8543-4725-9be1-8a8ce688da70", "move_speed", 0.3f);
-        movementSpeedTypeModifier = createFloatAttributeModifier("1391f012-6482-420e-ae77-5178b7ed77c1", "move_speed_type", moveSpeed, 0.0f, Operation.ADD, null);
+        moveSpeed = createModifiableFloatAttribute("9a0bb639-8543-4725-9be1-8a8ce688da70", "move_speed", 0.0f);
+        moveSpeedBlocklingModifier = createModifiableFloatAttributeModifier("f4300b1a-ee93-4d36-a457-4d71c349a4ab", "move_speed_blockling", moveSpeed, 0.0f, Operation.ADD, () -> blockling.getCustomName().getString());
+        moveSpeedTypeModifier = createFloatAttributeModifier("6f685317-7be6-4ea8-ae63-b1c907209040", "move_speed_type", moveSpeedBlocklingModifier, 0.0f, Operation.ADD, () -> blockling.getBlocklingType().name.getString());
+
+        miningRange = createModifiableFloatAttribute("76e044ca-e73e-4004-b576-920a8446612d", "mining_range", 2.5f);
+        miningRangeSq = createModifiableFloatAttribute("55af3992-cf8d-4d5d-8634-fbc1e05d30fe", "mining_range_sq", miningRange.getValue() * miningRange.getValue());
+        woodcuttingRange = createModifiableFloatAttribute("bc50cc2d-2323-4743-a175-5af87e61e04e", "woodcutting_range", 2.5f);
+        woodcuttingRangeSq = createModifiableFloatAttribute("8ba7fea6-6790-4010-b210-fa69b1effad8", "woodcutting_range_sq", woodcuttingRange.getValue() * woodcuttingRange.getValue());
+        farmingRange = createModifiableFloatAttribute("c549a710-62d9-4d79-8d9d-ba3690752d08", "farming_range", 2.5f);
+        farmingRangeSq = createModifiableFloatAttribute("bc3a8f41-d033-437f-bce2-840df7a55fad", "farming_range_sq", farmingRange.getValue() * farmingRange.getValue());
+
+        // Default mining speed for an item/hand is 1.0f
+        // A wooden pickaxe is 2.0f
+        // A diamond pickaxe is 8.0f
+        // Our default mining speed can be 0.0f as it will be determined by the level
+        miningSpeed = createModifiableFloatAttribute("0d918c08-2e94-481b-98e1-c2ff3ae395de", "mining_speed", 0.0f);
+        miningSpeedBlocklingModifier = createModifiableFloatAttributeModifier("1e9d4f59-e3a5-410b-a3dd-c9dce952f22d", "mining_speed_blockling", miningSpeed, 0.0f, Operation.ADD, () -> blockling.getCustomName().getString());
+        miningSpeedTypeModifier = createFloatAttributeModifier("565dea40-53ac-4861-bc6c-1eafce77f80f", "mining_speed_type", miningSpeedBlocklingModifier, 0.0f, Operation.ADD, () -> blockling.getBlocklingType().name.getString());
+        miningSpeedLevelModifier = createFloatAttributeModifier("f0914966-d53a-4292-b48c-5595f944f5d2", "mining_speed_level", miningSpeedBlocklingModifier, 0.0f, Operation.ADD, miningLevel.displayStringSupplier);
+        miningSpeedMainHandModifier = createFloatAttributeModifier("fc0dd885-273b-4465-a9ff-e801dcaf07e2", "mining_speed_main_hand", miningSpeed, 0.0f, Operation.ADD, () -> blockling.getMainHandItem().getHoverName().getString());
+        miningSpeedOffHandModifier = createFloatAttributeModifier("aada86a0-4233-47cf-b5ab-aa208a216bb5", "mining_speed_off_hand", miningSpeed, 0.0f, Operation.ADD, () -> blockling.getOffhandItem().getHoverName().getString());
+
+        woodcuttingSpeed = createModifiableFloatAttribute("e1e3ecb3-ae1d-46c5-8ea8-a7180641910b", "woodcutting_speed", 0.0f);
+        woodcuttingSpeedBlocklingModifier = createModifiableFloatAttributeModifier("51a21884-8c41-49d8-bae4-f21866b58718", "woodcutting_speed_blockling", woodcuttingSpeed, 0.0f, Operation.ADD, () -> blockling.getCustomName().getString());
+        woodcuttingSpeedTypeModifier = createFloatAttributeModifier("a66110e2-3a7f-4907-b85c-05c65341cd2e", "woodcutting_speed_type", woodcuttingSpeedBlocklingModifier, 0.0f, Operation.ADD, () -> blockling.getBlocklingType().name.getString());
+        woodcuttingSpeedLevelModifier = createFloatAttributeModifier("6b71ee16-7d04-442e-9d49-9373833f5539", "woodcutting_speed_level", woodcuttingSpeedBlocklingModifier, 0.0f, Operation.ADD, woodcuttingLevel.displayStringSupplier);
+        woodcuttingSpeedMainHandModifier = createFloatAttributeModifier("978f9dd4-3fbb-41ee-9bba-eddcfb42b6ff", "woodcutting_speed_main_hand", woodcuttingSpeed, 0.0f, Operation.ADD, () -> blockling.getMainHandItem().getHoverName().getString());
+        woodcuttingSpeedOffHandModifier = createFloatAttributeModifier("80fd0028-a793-491c-bc9c-fe94071f91c7", "woodcutting_speed_off_hand", woodcuttingSpeed, 0.0f, Operation.ADD, () -> blockling.getOffhandItem().getHoverName().getString());
+
+        farmingSpeed = createModifiableFloatAttribute("f6c026b6-1fa9-432f-aca3-d97af784f6d0", "farming_speed", 0.0f);
+        farmingSpeedBlocklingModifier = createModifiableFloatAttributeModifier("39548773-84ee-42ca-8ad6-681d64eaee54", "farming_speed_blockling", farmingSpeed, 0.0f, Operation.ADD, () -> blockling.getCustomName().getString());
+        farmingSpeedTypeModifier = createFloatAttributeModifier("f99bbc83-30fc-451f-a53b-fa343cc9244a", "farming_speed_type", farmingSpeedBlocklingModifier, 0.0f, Operation.ADD, () -> blockling.getBlocklingType().name.getString());
+        farmingSpeedLevelModifier = createFloatAttributeModifier("3b3079cf-8640-436b-bf0a-3aae4deb29be", "farming_speed_level", farmingSpeedBlocklingModifier, 0.0f, Operation.ADD, farmingLevel.displayStringSupplier);
+        farmingSpeedMainHandModifier = createFloatAttributeModifier("5ece4240-17b3-4983-bd0d-67f962a0a838", "farming_speed_main_hand", farmingSpeed, 0.0f, Operation.ADD, () -> blockling.getMainHandItem().getHoverName().getString());
+        farmingSpeedOffHandModifier = createFloatAttributeModifier("b4bb7131-f2ce-41cd-88ed-ee27e3837679", "farming_speed_off_hand", farmingSpeed, 0.0f, Operation.ADD, () -> blockling.getOffhandItem().getHoverName().getString());
     }
 
     public IntAttribute createIntAttribute(String id, String key, int value)
@@ -319,7 +335,7 @@ public class BlocklingStats
         armour.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.ARMOR)).setBaseValue(f));
         armourToughness.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.ARMOR_TOUGHNESS)).setBaseValue(f));
         knockbackResistance.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.KNOCKBACK_RESISTANCE)).setBaseValue(f));
-        moveSpeed.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.MOVEMENT_SPEED)).setBaseValue(f));
+        moveSpeed.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.MOVEMENT_SPEED)).setBaseValue(f / 10.0f));
     }
 
     public void writeToNBT(CompoundNBT c)
@@ -435,6 +451,8 @@ public class BlocklingStats
         offHandAttackDamageCombatLevelModifier.setValue(calcBonusDamageFromCombatLevel(), sync);
         attackSpeedLevelModifier.setValue(calcBreakSpeedFromLevel(combatLevel.getValue()), sync);
         armourCombatLevelModifier.setValue(calcBonusArmorFromCombatLevel(), sync);
+        armourToughnessCombatLevelModifier.setValue(calcBonusArmorFromCombatLevel(), sync);
+        knockbackResistanceCombatLevelModifier.setValue(calcBonusArmorFromCombatLevel(), sync);
     }
 
     public void updateTypeBonuses(boolean sync)
@@ -445,7 +463,9 @@ public class BlocklingStats
         offHandAttackDamageTypeModifier.setValue(type.getAttackDamage(), sync);
         attackSpeedTypeModifier.setValue(type.getAttackSpeed(), sync);
         armourTypeModifier.setValue(type.getArmour(), sync);
-        movementSpeedTypeModifier.setValue(type.getMoveSpeed(), sync);
+        armourToughnessTypeModifier.setValue(type.getArmourToughness(), sync);
+        knockbackResistanceTypeModifier.setValue(type.getKnockbackResistance(), sync);
+        moveSpeedTypeModifier.setValue(type.getMoveSpeed(), sync);
         miningSpeedTypeModifier.setValue(type.getMiningSpeed(), sync);
         woodcuttingSpeedTypeModifier.setValue(type.getWoodcuttingSpeed(), sync);
         farmingSpeedTypeModifier.setValue(type.getFarmingSpeed(), sync);
@@ -453,7 +473,7 @@ public class BlocklingStats
 
     private float calcBreakSpeedFromLevel(int level)
     {
-        return level / 10.0f;
+        return (float) (3.0f * Math.log(level));
     }
 
     private float calcBonusHealthFromCombatLevel()
