@@ -19,9 +19,9 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
     private T value;
     private final Function<Integer, T> ordinalConverter;
 
-    public EnumAttribute(String id, String key, BlocklingEntity blockling, T value, Function<Integer, T> ordinalConverter)
+    public EnumAttribute(String id, String key, BlocklingEntity blockling, T value, Function<Integer, T> ordinalConverter, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
-        super(id, key, blockling);
+        super(id, key, blockling, displayStringValueSupplier, displayStringNameSupplier);
         this.value = value;
         this.ordinalConverter = ordinalConverter;
     }

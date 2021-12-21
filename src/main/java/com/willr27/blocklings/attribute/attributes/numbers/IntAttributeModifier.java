@@ -11,14 +11,12 @@ public class IntAttributeModifier extends IntAttribute implements IModifier<Inte
 {
     public final IModifiable<Integer> attribute;
     public final Operation operation;
-    public final Supplier<String> displayStringSupplier;
 
-    public IntAttributeModifier(String id, String key, IModifiable<Integer> attribute, BlocklingEntity blockling, int value, Operation operation, Supplier<String> displayStringSupplier)
+    public IntAttributeModifier(String id, String key, IModifiable<Integer> attribute, BlocklingEntity blockling, int value, Operation operation, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
-        super(id, key, blockling, value);
+        super(id, key, blockling, value, displayStringValueSupplier, displayStringNameSupplier);
         this.attribute = attribute;
         this.operation = operation;
-        this.displayStringSupplier = displayStringSupplier;
     }
 
     @Override
@@ -36,8 +34,14 @@ public class IntAttributeModifier extends IntAttribute implements IModifier<Inte
     }
 
     @Override
-    public Supplier<String> getDisplayStringSupplier()
+    public Supplier<String> getDisplayStringValueSupplier()
     {
-        return displayStringSupplier;
+        return displayStringValueSupplier;
+    }
+
+    @Override
+    public Supplier<String> getDisplayStringNameSupplier()
+    {
+        return displayStringNameSupplier;
     }
 }

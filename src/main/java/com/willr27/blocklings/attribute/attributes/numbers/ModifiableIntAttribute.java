@@ -17,9 +17,9 @@ import java.util.function.Supplier;
 
 public class ModifiableIntAttribute extends ModifiableAttribute<Integer>
 {
-    public ModifiableIntAttribute(String id, String key, BlocklingEntity blockling, int baseValue)
+    public ModifiableIntAttribute(String id, String key, BlocklingEntity blockling, int baseValue, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
-        super(id, key, blockling, baseValue);
+        super(id, key, blockling, baseValue, displayStringValueSupplier, displayStringNameSupplier);
     }
 
     @Override

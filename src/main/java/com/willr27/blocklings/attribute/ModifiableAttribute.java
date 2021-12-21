@@ -6,6 +6,7 @@ import net.minecraft.network.PacketBuffer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public abstract class ModifiableAttribute<T> extends Attribute<T> implements IModifiable<T>
 {
@@ -14,9 +15,9 @@ public abstract class ModifiableAttribute<T> extends Attribute<T> implements IMo
     protected T baseValue;
     protected T value;
 
-    public ModifiableAttribute(String id, String key, BlocklingEntity blockling, T value)
+    public ModifiableAttribute(String id, String key, BlocklingEntity blockling, T value, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
-        super(id, key, blockling);
+        super(id, key, blockling, displayStringValueSupplier, displayStringNameSupplier);
         this.baseValue = value;
         this.value = value;
     }
@@ -104,5 +105,17 @@ public abstract class ModifiableAttribute<T> extends Attribute<T> implements IMo
 
         // Recalculate value
         calculate();
+    }
+
+    @Override
+    public Supplier<String> getDisplayStringValueSupplier()
+    {
+        return displayStringValueSupplier;
+    }
+
+    @Override
+    public Supplier<String> getDisplayStringNameSupplier()
+    {
+        return displayStringNameSupplier;
     }
 }

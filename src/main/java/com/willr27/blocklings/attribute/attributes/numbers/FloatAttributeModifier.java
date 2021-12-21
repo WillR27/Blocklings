@@ -4,7 +4,6 @@ import com.willr27.blocklings.attribute.IModifiable;
 import com.willr27.blocklings.attribute.IModifier;
 import com.willr27.blocklings.attribute.Operation;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.network.NetworkHandler;
 
 import java.util.function.Supplier;
 
@@ -12,14 +11,12 @@ public class FloatAttributeModifier extends FloatAttribute implements IModifier<
 {
     public final IModifiable<Float> attribute;
     public final Operation operation;
-    public final Supplier<String> displayStringSupplier;
 
-    public FloatAttributeModifier(String id, String key, IModifiable<Float> attribute, BlocklingEntity blockling, float value, Operation operation, Supplier<String> displayStringSupplier)
+    public FloatAttributeModifier(String id, String key, IModifiable<Float> attribute, BlocklingEntity blockling, float value, Operation operation, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
-        super(id, key, blockling, value);
+        super(id, key, blockling, value, displayStringValueSupplier, displayStringNameSupplier);
         this.attribute = attribute;
         this.operation = operation;
-        this.displayStringSupplier = displayStringSupplier;
     }
 
     @Override
@@ -37,8 +34,14 @@ public class FloatAttributeModifier extends FloatAttribute implements IModifier<
     }
 
     @Override
-    public Supplier<String> getDisplayStringSupplier()
+    public Supplier<String> getDisplayStringValueSupplier()
     {
-        return displayStringSupplier;
+        return displayStringValueSupplier;
+    }
+
+    @Override
+    public Supplier<String> getDisplayStringNameSupplier()
+    {
+        return displayStringNameSupplier;
     }
 }

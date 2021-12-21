@@ -112,7 +112,6 @@ public class TaskConfigGui extends AbstractGui
             nameField.setValue(task.getCustomName());
         }
 
-        nameField.tick();
         nameField.render(matrixStack, mouseX, mouseY, partialTicks);
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
     }

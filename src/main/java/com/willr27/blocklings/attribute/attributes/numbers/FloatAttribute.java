@@ -17,9 +17,9 @@ public class FloatAttribute extends Attribute<Float>
 {
     protected float value;
 
-    public FloatAttribute(String id, String key, BlocklingEntity blockling, float value)
+    public FloatAttribute(String id, String key, BlocklingEntity blockling, float value, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
-        super(id, key, blockling);
+        super(id, key, blockling, displayStringValueSupplier, displayStringNameSupplier);
         this.value = value;
     }
 

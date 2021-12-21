@@ -13,19 +13,16 @@ import com.willr27.blocklings.gui.screens.guis.TabbedGui;
 import com.willr27.blocklings.gui.widgets.TextFieldWidget;
 import com.willr27.blocklings.gui.widgets.TexturedWidget;
 import com.willr27.blocklings.gui.widgets.Widget;
-import com.willr27.blocklings.item.ToolType;
-import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.item.items.Items;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import org.jline.utils.Log;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
@@ -55,7 +52,7 @@ public class StatsScreen extends TabbedScreen
     private static final int FARMING_ICON_TEXTURE_X = ICON_SIZE * 3;
     private static final int LEVEL_XP_GAP = 13;
     private static final int LEVEL_ICON_X = 15;
-    private static final int COMBAT_ICON_Y = 102;
+    private static final int COMBAT_ICON_Y = 101;
     private static final int MINING_ICON_Y = COMBAT_ICON_Y + LEVEL_XP_GAP;
     private static final int WOODCUTTING_ICON_Y = COMBAT_ICON_Y + LEVEL_XP_GAP * 2;
     private static final int FARMING_ICON_Y = COMBAT_ICON_Y + LEVEL_XP_GAP * 3;
@@ -65,7 +62,7 @@ public class StatsScreen extends TabbedScreen
     private static final int WOODCUTTING_XP_BAR_TEXTURE_Y = COMBAT_XP_BAR_TEXTURE_Y + XP_BAR_HEIGHT * 4;
     private static final int FARMING_XP_BAR_TEXTURE_Y = COMBAT_XP_BAR_TEXTURE_Y + XP_BAR_HEIGHT * 6;
     private static final int XP_BAR_X = 31;
-    private static final int COMBAT_XP_BAR_Y = 103;
+    private static final int COMBAT_XP_BAR_Y = 104;
     private static final int MINING_XP_BAR_Y = COMBAT_XP_BAR_Y + LEVEL_XP_GAP;
     private static final int WOODCUTTING_XP_BAR_Y = COMBAT_XP_BAR_Y + LEVEL_XP_GAP * 2;
     private static final int FARMING_XP_BAR_Y = COMBAT_XP_BAR_Y + LEVEL_XP_GAP * 3;
@@ -101,7 +98,7 @@ public class StatsScreen extends TabbedScreen
     {
         List<ITextComponent> tooltip = new ArrayList<>();
 
-        tooltip.add(new StringTextComponent(colour + attribute.formatValue("%.1f") + " " + TextFormatting.GRAY + attribute.createTranslation("name").getString()));
+        tooltip.add(new StringTextComponent(colour + attribute.getDisplayStringValueSupplier().get() + " " + TextFormatting.GRAY + attribute.createTranslation("name").getString()));
 
         appendModifiableFloatAttributeToTooltip(attribute, tooltip, 1);
 
@@ -112,7 +109,7 @@ public class StatsScreen extends TabbedScreen
     {
         for (IModifier<Float> modifier : attribute.getModifiers())
         {
-            tooltip.add(new StringTextComponent(TextFormatting.GRAY + generate(() -> " ").limit(depth).collect(joining()) + "+" + modifier.formatValue("%.1f") + " " + TextFormatting.DARK_GRAY + modifier.getDisplayStringSupplier().get()));
+            tooltip.add(new StringTextComponent(TextFormatting.GRAY + generate(() -> " ").limit(depth).collect(joining()) + "+" + modifier.getDisplayStringValueSupplier().get() + " " + TextFormatting.DARK_GRAY + modifier.getDisplayStringNameSupplier().get()));
 
             if (modifier instanceof IModifiable<?>)
             {
@@ -129,22 +126,22 @@ public class StatsScreen extends TabbedScreen
         healthBar = new HealthBar(blockling, font, contentLeft + 20, contentTop + 36);
 
         attackWidget = new EnumeratingWidget(new BlocklingsTranslationTextComponent("stats.attack.name"), font, contentLeft + LEFT_ICON_X, contentTop + TOP_ICON_Y, ICON_SIZE, ICON_SIZE, false, 60, true, blockling);
-        attackWidget.addEnumeration(() -> blockling.getEquipment().isAttackingWith(BlocklingHand.MAIN), () -> stats.mainHandAttackDamage.formatValue("%.1f"), () -> createModifiableFloatAttributeTooltip(stats.mainHandAttackDamage, TextFormatting.DARK_RED), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 10, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
-        attackWidget.addEnumeration(() -> blockling.getEquipment().isAttackingWith(BlocklingHand.OFF), () -> stats.offHandAttackDamage.formatValue("%.1f"), () -> createModifiableFloatAttributeTooltip(stats.offHandAttackDamage, TextFormatting.DARK_RED), new GuiTexture(GuiUtil.STATS, 0, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
-        attackWidget.addEnumeration(() -> true, () -> stats.attackSpeed.formatValue("%.1f"), () -> createModifiableFloatAttributeTooltip(stats.attackSpeed, TextFormatting.DARK_PURPLE), new GuiTexture(GuiUtil.STATS, 0, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE), Color.PINK);
+        attackWidget.addEnumeration(() -> blockling.getEquipment().isAttackingWith(BlocklingHand.MAIN), stats.mainHandAttackDamage.displayStringValueSupplier, () -> createModifiableFloatAttributeTooltip(stats.mainHandAttackDamage, TextFormatting.DARK_RED), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 10, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        attackWidget.addEnumeration(() -> blockling.getEquipment().isAttackingWith(BlocklingHand.OFF), stats.offHandAttackDamage.displayStringValueSupplier, () -> createModifiableFloatAttributeTooltip(stats.offHandAttackDamage, TextFormatting.DARK_RED), new GuiTexture(GuiUtil.STATS, 0, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        attackWidget.addEnumeration(() -> true, stats.attackSpeed.displayStringValueSupplier, () -> createModifiableFloatAttributeTooltip(stats.attackSpeed, TextFormatting.DARK_PURPLE), new GuiTexture(GuiUtil.STATS, 0, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE), Color.PINK);
 
         defenceWidget = new EnumeratingWidget(new BlocklingsTranslationTextComponent("stats.defence.name"), font, contentLeft + LEFT_ICON_X, contentTop + BOTTOM_ICON_Y, ICON_SIZE, ICON_SIZE, false, 60, true, blockling);
-        defenceWidget.addEnumeration(() -> true, () -> stats.armour.formatValue("%.1f"), () -> createModifiableFloatAttributeTooltip(stats.armour, TextFormatting.DARK_AQUA), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 5, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
-        defenceWidget.addEnumeration(() -> true, () -> stats.armourToughness.formatValue("%.1f"), () -> createModifiableFloatAttributeTooltip(stats.armourToughness, TextFormatting.AQUA), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 6, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
-        defenceWidget.addEnumeration(() -> true, () -> stats.knockbackResistance.formatValue("%.1f"), () -> createModifiableFloatAttributeTooltip(stats.knockbackResistance, TextFormatting.YELLOW), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 7, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        defenceWidget.addEnumeration(() -> true, stats.armour.displayStringValueSupplier, () -> createModifiableFloatAttributeTooltip(stats.armour, TextFormatting.DARK_AQUA), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 5, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        defenceWidget.addEnumeration(() -> true, stats.armourToughness.displayStringValueSupplier, () -> createModifiableFloatAttributeTooltip(stats.armourToughness, TextFormatting.AQUA), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 6, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        defenceWidget.addEnumeration(() -> true, stats.knockbackResistance.displayStringValueSupplier, () -> createModifiableFloatAttributeTooltip(stats.knockbackResistance, TextFormatting.YELLOW), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 7, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
 
         gatherWidget = new EnumeratingWidget(new BlocklingsTranslationTextComponent("stats.gather.name"), font, contentRight - LEFT_ICON_X - ICON_SIZE, contentTop + TOP_ICON_Y, ICON_SIZE, ICON_SIZE, true, 60, true, blockling);
-        gatherWidget.addEnumeration(() -> true, () -> stats.miningSpeed.formatValue("%.1f"), () -> createModifiableFloatAttributeTooltip(stats.miningSpeed, TextFormatting.BLUE), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 1, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
-        gatherWidget.addEnumeration(() -> true, () -> stats.woodcuttingSpeed.formatValue("%.1f"), () -> createModifiableFloatAttributeTooltip(stats.woodcuttingSpeed, TextFormatting.DARK_GREEN), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 2, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
-        gatherWidget.addEnumeration(() -> true, () -> stats.farmingSpeed.formatValue("%.1f"), () -> createModifiableFloatAttributeTooltip(stats.farmingSpeed, TextFormatting.YELLOW), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 3, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        gatherWidget.addEnumeration(() -> true, stats.miningSpeed.displayStringValueSupplier, () -> createModifiableFloatAttributeTooltip(stats.miningSpeed, TextFormatting.BLUE), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 1, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        gatherWidget.addEnumeration(() -> true, stats.woodcuttingSpeed.displayStringValueSupplier, () -> createModifiableFloatAttributeTooltip(stats.woodcuttingSpeed, TextFormatting.DARK_GREEN), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 2, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        gatherWidget.addEnumeration(() -> true, stats.farmingSpeed.displayStringValueSupplier, () -> createModifiableFloatAttributeTooltip(stats.farmingSpeed, TextFormatting.YELLOW), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 3, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
 
         movementWidget = new EnumeratingWidget(new BlocklingsTranslationTextComponent("stats.movement.name"), font, contentRight - LEFT_ICON_X - ICON_SIZE, contentTop + BOTTOM_ICON_Y, ICON_SIZE, ICON_SIZE, true, 60, true, blockling);
-        movementWidget.addEnumeration(() -> true, () -> stats.moveSpeed.formatValue("%.1f"), () -> createModifiableFloatAttributeTooltip(stats.moveSpeed, TextFormatting.BLUE), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 8, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        movementWidget.addEnumeration(() -> true, stats.moveSpeed.displayStringValueSupplier, () -> createModifiableFloatAttributeTooltip(stats.moveSpeed, TextFormatting.BLUE), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 8, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
 
         combatIcon = new TexturedWidget(font, contentLeft + LEVEL_ICON_X, contentTop + COMBAT_ICON_Y, ICON_SIZE, ICON_SIZE, COMBAT_ICON_TEXTURE_X, LEVEL_ICON_TEXTURE_Y);
         miningIcon = new TexturedWidget(font, contentLeft + LEVEL_ICON_X, contentTop + MINING_ICON_Y, ICON_SIZE, ICON_SIZE, MINING_ICON_TEXTURE_X, LEVEL_ICON_TEXTURE_Y);
@@ -185,6 +182,12 @@ public class StatsScreen extends TabbedScreen
     }
 
     @Override
+    public void tick()
+    {
+        nameField.tick();
+    }
+
+    @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         GuiUtil.bindTexture(GuiUtil.STATS);
@@ -200,7 +203,6 @@ public class StatsScreen extends TabbedScreen
 
         healthBar.render(matrixStack, mouseX, mouseY);
 
-        nameField.tick();
         nameField.render(matrixStack, mouseX, mouseY, partialTicks);
 
         matrixStack.popPose();

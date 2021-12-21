@@ -5,11 +5,13 @@ import com.willr27.blocklings.attribute.attributes.numbers.ModifiableFloatAttrib
 import com.willr27.blocklings.attribute.Operation;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 
+import java.util.function.Supplier;
+
 public class AveragedAttribute extends ModifiableFloatAttribute
 {
-    public AveragedAttribute(String id, String key, BlocklingEntity blockling, float baseValue)
+    public AveragedAttribute(String id, String key, BlocklingEntity blockling, float baseValue, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
-        super(id, key, blockling, baseValue);
+        super(id, key, blockling, baseValue, displayStringValueSupplier, displayStringNameSupplier);
     }
 
     @Override

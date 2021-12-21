@@ -111,154 +111,174 @@ public class BlocklingStats
         this.blockling = blockling;
         this.world = blockling.level;
 
-        combatLevel = createIntAttribute("17beee8e-3fca-4601-a766-46f811ad6b69", "combat_level", blockling.getRandom().nextInt(5) + 1);
+        combatLevel = createIntAttribute("17beee8e-3fca-4601-a766-46f811ad6b69", "combat_level", blockling.getRandom().nextInt(5) + 1, null, null);
         levels.add(combatLevel);
-        miningLevel = createIntAttribute("a2a62308-0a6e-41bb-9844-4645eeb72fb7", "mining_level", blockling.getRandom().nextInt(5) + 1);
+        miningLevel = createIntAttribute("a2a62308-0a6e-41bb-9844-4645eeb72fb7", "mining_level", blockling.getRandom().nextInt(5) + 1, null, null);
         levels.add(miningLevel);
-        woodcuttingLevel = createIntAttribute("c6d3ce7c-52af-44df-833b-fede277eec7f", "woodcutting_level", blockling.getRandom().nextInt(5) + 1);
+        woodcuttingLevel = createIntAttribute("c6d3ce7c-52af-44df-833b-fede277eec7f", "woodcutting_level", blockling.getRandom().nextInt(5) + 1, null, null);
         levels.add(woodcuttingLevel);
-        farmingLevel = createIntAttribute("ac1c6d1b-18bb-435a-ad93-c24d6fa90816", "farming_level", blockling.getRandom().nextInt(5) + 1);
+        farmingLevel = createIntAttribute("ac1c6d1b-18bb-435a-ad93-c24d6fa90816", "farming_level", blockling.getRandom().nextInt(5) + 1, null, null);
         levels.add(farmingLevel);
 
-        combatXp = createIntAttribute("ec56a177-2a08-4f43-b77a-b1d4544a8656", "combat_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(combatLevel.getValue())));
-        miningXp = createIntAttribute("ce581807-3fad-45b1-9aec-43ed0cb53c8f", "mining_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(miningLevel.getValue())));
-        woodcuttingXp = createIntAttribute("82165063-6d47-4534-acc9-db3543c3db74", "woodcutting_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(woodcuttingLevel.getValue())));
-        farmingXp = createIntAttribute("1f1e4cbc-358e-4477-92d8-03e818d5272c", "farming_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(farmingLevel.getValue())));
+        combatXp = createIntAttribute("ec56a177-2a08-4f43-b77a-b1d4544a8656", "combat_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(combatLevel.getValue())), null, null);
+        miningXp = createIntAttribute("ce581807-3fad-45b1-9aec-43ed0cb53c8f", "mining_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(miningLevel.getValue())), null, null);
+        woodcuttingXp = createIntAttribute("82165063-6d47-4534-acc9-db3543c3db74", "woodcutting_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(woodcuttingLevel.getValue())), null, null);
+        farmingXp = createIntAttribute("1f1e4cbc-358e-4477-92d8-03e818d5272c", "farming_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(farmingLevel.getValue())), null, null);
 
-        skillPoints = createIntAttribute("a78f9d35-266e-4f86-836e-daaef073940e", "skill_points", 50);
+        skillPoints = createIntAttribute("a78f9d35-266e-4f86-836e-daaef073940e", "skill_points", 50, null, null);
 
-        hand = createEnumAttribute("f21fcbaa-f800-468e-8c22-ec4b4fd0fdc2", "hand", BlocklingHand.NONE, (i) -> BlocklingHand.values()[i]);
+        hand = createEnumAttribute("f21fcbaa-f800-468e-8c22-ec4b4fd0fdc2", "hand", BlocklingHand.NONE, (i) -> BlocklingHand.values()[i], null, null);
 
-        maxHealth = createModifiableFloatAttribute("9c6eb101-f025-4f8f-895b-10868b7d06b2", "max_health",10.0f);
-        maxHealthCombatLevelModifier = createFloatAttributeModifier("a78160fa-7bc3-493e-b74b-27af4206d111", "max_health_combat_level", maxHealth, 0.0f, Operation.ADD, null);
-        maxHealthTypeModifier  = createFloatAttributeModifier("79043f39-6f44-4077-a358-0f75a0a1e995", "max_health_type", maxHealth, 0.0f, Operation.ADD, null);
+        maxHealth = createModifiableFloatAttribute("9c6eb101-f025-4f8f-895b-10868b7d06b2", "max_health",10.0f, null, null);
+        maxHealthCombatLevelModifier = createFloatAttributeModifier("a78160fa-7bc3-493e-b74b-27af4206d111", "max_health_combat_level", maxHealth, 0.0f, Operation.ADD, null, null);
+        maxHealthTypeModifier  = createFloatAttributeModifier("79043f39-6f44-4077-a358-0f75a0a1e995", "max_health_type", maxHealth, 0.0f, Operation.ADD, null, null);
 
-        mainHandAttackDamage = createModifiableFloatAttribute("e8549f17-e473-4849-8f48-ae624ee0c242", "main_hand_attack_damage", 0.0f);
-        mainHandAttackDamageBlocklingModifier = createModifiableFloatAttributeModifier("9bfdfe35-c6c4-4364-8535-7aa50927f484", "main_hand_attack_blockling", mainHandAttackDamage, 0.0f, Operation.ADD, () -> blockling.getCustomName().getString());
-        mainHandAttackDamageTypeModifier = createFloatAttributeModifier("ddb441fc-2d8c-4950-b0a9-b96b60680ac1", "main_hand_attack_damage_type", mainHandAttackDamageBlocklingModifier, 0.0f, Operation.ADD, () -> blockling.getBlocklingType().name.getString());
-        mainHandAttackDamageCombatLevelModifier = createFloatAttributeModifier("406a98f7-df1f-4c7f-93e4-990d71c7747f", "main_hand_attack_damage_combat_level", mainHandAttackDamageBlocklingModifier, 0.0f, Operation.ADD, combatLevel.displayStringSupplier);
-        mainHandAttackDamageToolModifier = createFloatAttributeModifier("2ae58b89-fed6-4b2f-90bc-e7dbc9d7b249", "main_hand_attack_damage_tool", mainHandAttackDamage, 0.0f, Operation.ADD, () -> blockling.getMainHandItem().getHoverName().getString());
+        mainHandAttackDamage = createModifiableFloatAttribute("e8549f17-e473-4849-8f48-ae624ee0c242", "main_hand_attack_damage", 0.0f, null, null);
+        mainHandAttackDamageBlocklingModifier = createModifiableFloatAttributeModifier("9bfdfe35-c6c4-4364-8535-7aa50927f484", "main_hand_attack_blockling", mainHandAttackDamage, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString());
+        mainHandAttackDamageTypeModifier = createFloatAttributeModifier("ddb441fc-2d8c-4950-b0a9-b96b60680ac1", "main_hand_attack_damage_type", mainHandAttackDamageBlocklingModifier, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString());
+        mainHandAttackDamageCombatLevelModifier = createFloatAttributeModifier("406a98f7-df1f-4c7f-93e4-990d71c7747f", "main_hand_attack_damage_combat_level", mainHandAttackDamageBlocklingModifier, 0.0f, Operation.ADD, null, combatLevel.displayStringNameSupplier);
+        mainHandAttackDamageToolModifier = createFloatAttributeModifier("2ae58b89-fed6-4b2f-90bc-e7dbc9d7b249", "main_hand_attack_damage_tool", mainHandAttackDamage, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString());
 
-        offHandAttackDamage = createModifiableFloatAttribute("519e98de-c213-4c1c-8a07-cd659bc9982c", "off_hand_attack_damage", 0.0f);
-        offHandAttackDamageBlocklingModifier = createModifiableFloatAttributeModifier("806bd9bf-86de-416c-9e11-7beb7f482f11", "off_hand_attack_blockling", offHandAttackDamage, 0.0f, Operation.ADD, () -> blockling.getCustomName().getString());
-        offHandAttackDamageTypeModifier = createFloatAttributeModifier("c4bc950e-65c4-49c5-94e1-08e809788104", "off_hand_attack_damage_type", offHandAttackDamageBlocklingModifier, 0.0f, Operation.ADD, () -> blockling.getBlocklingType().name.getString());
-        offHandAttackDamageCombatLevelModifier = createFloatAttributeModifier("8d1c1da2-7a92-4142-8fde-306d21010a92", "off_hand_attack_damage_combat_level", offHandAttackDamageBlocklingModifier, 0.0f, Operation.ADD, combatLevel.displayStringSupplier);
-        offHandAttackDamageToolModifier = createFloatAttributeModifier("c1aa1629-fe40-47eb-8c5c-a02d0b82e636", "off_hand_attack_damage_tool", offHandAttackDamage, 0.0f, Operation.ADD, () -> blockling.getOffhandItem().getHoverName().getString());
+        offHandAttackDamage = createModifiableFloatAttribute("519e98de-c213-4c1c-8a07-cd659bc9982c", "off_hand_attack_damage", 0.0f, null, null);
+        offHandAttackDamageBlocklingModifier = createModifiableFloatAttributeModifier("806bd9bf-86de-416c-9e11-7beb7f482f11", "off_hand_attack_blockling", offHandAttackDamage, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString());
+        offHandAttackDamageTypeModifier = createFloatAttributeModifier("c4bc950e-65c4-49c5-94e1-08e809788104", "off_hand_attack_damage_type", offHandAttackDamageBlocklingModifier, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString());
+        offHandAttackDamageCombatLevelModifier = createFloatAttributeModifier("8d1c1da2-7a92-4142-8fde-306d21010a92", "off_hand_attack_damage_combat_level", offHandAttackDamageBlocklingModifier, 0.0f, Operation.ADD, null, combatLevel.displayStringNameSupplier);
+        offHandAttackDamageToolModifier = createFloatAttributeModifier("c1aa1629-fe40-47eb-8c5c-a02d0b82e636", "off_hand_attack_damage_tool", offHandAttackDamage, 0.0f, Operation.ADD, null, () -> blockling.getOffhandItem().getHoverName().getString());
 
         // Default set to 4.0f (seems to be the same for a player too)
         // A sword is 1.6f * 2.0f
         // An axe is 0.8f * 2.0f
         // So any tool use should be slower than fists
-        attackSpeed = createAveragedAttribute("4cbc129d-281d-410e-bba0-45d4e064932a", "attack_speed", 0.0f);
-        attackSpeedBlocklingModifier = createModifiableFloatAttributeModifier("8c4e3d41-2a17-4cd1-8dbb-8866008960a5", "attack_speed_blockling", attackSpeed, 0.0f, Operation.ADD, () -> blockling.getCustomName().getString());
-        attackSpeedTypeModifier = createFloatAttributeModifier("f40d211d-c6fd-449a-a2f8-8bffd24ac810", "attack_speed_type", attackSpeedBlocklingModifier, 0.0f, Operation.ADD, () -> blockling.getBlocklingType().name.getString());
-        attackSpeedLevelModifier = createFloatAttributeModifier("bfeb22fe-aaaf-4294-9850-27449e27e44f", "attack_speed_level", attackSpeedBlocklingModifier, 0.0f, Operation.ADD, combatLevel.displayStringSupplier);
-        attackSpeedMainHandModifier = createFloatAttributeModifier("87343a1e-7a0b-4963-8d7e-e95f809e90ee", "attack_speed_main_hand", attackSpeed, 0.0f, Operation.ADD, () -> blockling.getMainHandItem().getHoverName().getString());
-        attackSpeedOffHandModifier = createFloatAttributeModifier("3566961d-db2b-4833-8c0c-cf6813ade8cc", "attack_speed_off_hand", attackSpeed, 0.0f, Operation.ADD, () -> blockling.getOffhandItem().getHoverName().getString());
+        attackSpeed = createAveragedAttribute("4cbc129d-281d-410e-bba0-45d4e064932a", "attack_speed", 0.0f, null, null);
+        attackSpeedBlocklingModifier = createModifiableFloatAttributeModifier("8c4e3d41-2a17-4cd1-8dbb-8866008960a5", "attack_speed_blockling", attackSpeed, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString());
+        attackSpeedTypeModifier = createFloatAttributeModifier("f40d211d-c6fd-449a-a2f8-8bffd24ac810", "attack_speed_type", attackSpeedBlocklingModifier, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString());
+        attackSpeedLevelModifier = createFloatAttributeModifier("bfeb22fe-aaaf-4294-9850-27449e27e44f", "attack_speed_level", attackSpeedBlocklingModifier, 0.0f, Operation.ADD, null, combatLevel.displayStringNameSupplier);
+        attackSpeedMainHandModifier = createFloatAttributeModifier("87343a1e-7a0b-4963-8d7e-e95f809e90ee", "attack_speed_main_hand", attackSpeed, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString());
+        attackSpeedOffHandModifier = createFloatAttributeModifier("3566961d-db2b-4833-8c0c-cf6813ade8cc", "attack_speed_off_hand", attackSpeed, 0.0f, Operation.ADD, null, () -> blockling.getOffhandItem().getHoverName().getString());
 
-        armour = createModifiableFloatAttribute("6b34a986-f1ad-4476-a1c6-700d841fb1ec", "armour", 2.0f);
-        armourBlocklingModifier = createModifiableFloatAttributeModifier("1e5b8f41-bab6-41f9-9a3d-5303f2f1ed6e", "armour_blockling", armour, 0.0f, Operation.ADD, () -> blockling.getCustomName().getString());
-        armourTypeModifier = createFloatAttributeModifier("a72fb401-abb7-4d95-ad7e-e83fc6a399d1", "armour_type", armourBlocklingModifier, 0.0f, Operation.ADD, () -> blockling.getBlocklingType().name.getString());
-        armourCombatLevelModifier = createFloatAttributeModifier("15f2f2ce-cdf1-4188-882e-67ceab22df41", "armour_combat_level", armourBlocklingModifier, 0.0f, Operation.ADD, combatLevel.displayStringSupplier);
+        armour = createModifiableFloatAttribute("6b34a986-f1ad-4476-a1c6-700d841fb1ec", "armour", 2.0f, null, null);
+        armourBlocklingModifier = createModifiableFloatAttributeModifier("1e5b8f41-bab6-41f9-9a3d-5303f2f1ed6e", "armour_blockling", armour, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString());
+        armourTypeModifier = createFloatAttributeModifier("a72fb401-abb7-4d95-ad7e-e83fc6a399d1", "armour_type", armourBlocklingModifier, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString());
+        armourCombatLevelModifier = createFloatAttributeModifier("15f2f2ce-cdf1-4188-882e-67ceab22df41", "armour_combat_level", armourBlocklingModifier, 0.0f, Operation.ADD, null, combatLevel.displayStringNameSupplier);
 
-        armourToughness = createModifiableFloatAttribute("1cfdad6a-0bd3-461f-8007-c0a591a30783", "armour_toughness", 0.0f);
-        armourToughnessBlocklingModifier = createModifiableFloatAttributeModifier("9f08c15b-fa91-4c1e-97ef-4b465936c5ab", "armour_toughness_blockling", armourToughness, 0.0f, Operation.ADD, () -> blockling.getCustomName().getString());
-        armourToughnessTypeModifier = createFloatAttributeModifier("4f806fa7-1ebe-4426-99c6-5c0d0f41be25", "armour_toughness_type", armourToughnessBlocklingModifier, 0.0f, Operation.ADD, () -> blockling.getBlocklingType().name.getString());
-        armourToughnessCombatLevelModifier = createFloatAttributeModifier("0f438ab0-2e72-4555-840f-3b3dc2335014", "armour_toughness_combat_level", armourToughnessBlocklingModifier, 0.0f, Operation.ADD, combatLevel.displayStringSupplier);
+        armourToughness = createModifiableFloatAttribute("1cfdad6a-0bd3-461f-8007-c0a591a30783", "armour_toughness", 0.0f, null, null);
+        armourToughnessBlocklingModifier = createModifiableFloatAttributeModifier("9f08c15b-fa91-4c1e-97ef-4b465936c5ab", "armour_toughness_blockling", armourToughness, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString());
+        armourToughnessTypeModifier = createFloatAttributeModifier("4f806fa7-1ebe-4426-99c6-5c0d0f41be25", "armour_toughness_type", armourToughnessBlocklingModifier, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString());
+        armourToughnessCombatLevelModifier = createFloatAttributeModifier("0f438ab0-2e72-4555-840f-3b3dc2335014", "armour_toughness_combat_level", armourToughnessBlocklingModifier, 0.0f, Operation.ADD, null, combatLevel.displayStringNameSupplier);
 
-        knockbackResistance = createModifiableFloatAttribute("ddc90fc2-4a68-4c30-8701-d2d9dbe8b94a", "knockback_resistance", 1.0f);
-        knockbackResistanceBlocklingModifier = createModifiableFloatAttributeModifier("3b6bf894-3beb-42f5-b516-759bacf9acab", "knockback_resistance_blockling", knockbackResistance, 0.0f, Operation.ADD, () -> blockling.getCustomName().getString());
-        knockbackResistanceTypeModifier = createFloatAttributeModifier("eb217d5e-6e7d-4ef0-9ca1-153a7bc18593", "knockback_resistance_type", knockbackResistanceBlocklingModifier, 0.0f, Operation.ADD, () -> blockling.getBlocklingType().name.getString());
-        knockbackResistanceCombatLevelModifier = createFloatAttributeModifier("711cf234-2f57-413c-be3d-ce4c5f809b86", "knockback_resistance_combat_level", knockbackResistanceBlocklingModifier, 0.0f, Operation.ADD, combatLevel.displayStringSupplier);
+        knockbackResistance = createModifiableFloatAttribute("ddc90fc2-4a68-4c30-8701-d2d9dbe8b94a", "knockback_resistance", 0.0f, this::knockbackResistanceDisplayStringValueProvider, null);
+        knockbackResistanceBlocklingModifier = createModifiableFloatAttributeModifier("3b6bf894-3beb-42f5-b516-759bacf9acab", "knockback_resistance_blockling", knockbackResistance, 0.0f, Operation.ADD, this::knockbackResistanceBlocklingModifierDisplayStringValueProvider, () -> blockling.getCustomName().getString());
+        knockbackResistanceTypeModifier = createFloatAttributeModifier("eb217d5e-6e7d-4ef0-9ca1-153a7bc18593", "knockback_resistance_type", knockbackResistanceBlocklingModifier, 0.0f, Operation.ADD, this::knockbackResistanceTypeModifierDisplayStringValueProvider, () -> blockling.getBlocklingType().name.getString());
+        knockbackResistanceCombatLevelModifier = createFloatAttributeModifier("711cf234-2f57-413c-be3d-ce4c5f809b86", "knockback_resistance_combat_level", knockbackResistanceBlocklingModifier, 0.0f, Operation.ADD, this::knockbackResistanceCombatLevelModifierDisplayStringValueProvider, combatLevel.displayStringNameSupplier);
 
-        moveSpeed = createModifiableFloatAttribute("9a0bb639-8543-4725-9be1-8a8ce688da70", "move_speed", 0.0f);
-        moveSpeedBlocklingModifier = createModifiableFloatAttributeModifier("f4300b1a-ee93-4d36-a457-4d71c349a4ab", "move_speed_blockling", moveSpeed, 0.0f, Operation.ADD, () -> blockling.getCustomName().getString());
-        moveSpeedTypeModifier = createFloatAttributeModifier("6f685317-7be6-4ea8-ae63-b1c907209040", "move_speed_type", moveSpeedBlocklingModifier, 0.0f, Operation.ADD, () -> blockling.getBlocklingType().name.getString());
+        moveSpeed = createModifiableFloatAttribute("9a0bb639-8543-4725-9be1-8a8ce688da70", "move_speed", 0.0f, null, null);
+        moveSpeedBlocklingModifier = createModifiableFloatAttributeModifier("f4300b1a-ee93-4d36-a457-4d71c349a4ab", "move_speed_blockling", moveSpeed, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString());
+        moveSpeedTypeModifier = createFloatAttributeModifier("6f685317-7be6-4ea8-ae63-b1c907209040", "move_speed_type", moveSpeedBlocklingModifier, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString());
 
-        miningRange = createModifiableFloatAttribute("76e044ca-e73e-4004-b576-920a8446612d", "mining_range", 2.5f);
-        miningRangeSq = createModifiableFloatAttribute("55af3992-cf8d-4d5d-8634-fbc1e05d30fe", "mining_range_sq", miningRange.getValue() * miningRange.getValue());
-        woodcuttingRange = createModifiableFloatAttribute("bc50cc2d-2323-4743-a175-5af87e61e04e", "woodcutting_range", 2.5f);
-        woodcuttingRangeSq = createModifiableFloatAttribute("8ba7fea6-6790-4010-b210-fa69b1effad8", "woodcutting_range_sq", woodcuttingRange.getValue() * woodcuttingRange.getValue());
-        farmingRange = createModifiableFloatAttribute("c549a710-62d9-4d79-8d9d-ba3690752d08", "farming_range", 2.5f);
-        farmingRangeSq = createModifiableFloatAttribute("bc3a8f41-d033-437f-bce2-840df7a55fad", "farming_range_sq", farmingRange.getValue() * farmingRange.getValue());
+        miningRange = createModifiableFloatAttribute("76e044ca-e73e-4004-b576-920a8446612d", "mining_range", 2.5f, null, null);
+        miningRangeSq = createModifiableFloatAttribute("55af3992-cf8d-4d5d-8634-fbc1e05d30fe", "mining_range_sq", miningRange.getValue() * miningRange.getValue(), null, null);
+        woodcuttingRange = createModifiableFloatAttribute("bc50cc2d-2323-4743-a175-5af87e61e04e", "woodcutting_range", 2.5f, null, null);
+        woodcuttingRangeSq = createModifiableFloatAttribute("8ba7fea6-6790-4010-b210-fa69b1effad8", "woodcutting_range_sq", woodcuttingRange.getValue() * woodcuttingRange.getValue(), null, null);
+        farmingRange = createModifiableFloatAttribute("c549a710-62d9-4d79-8d9d-ba3690752d08", "farming_range", 2.5f, null, null);
+        farmingRangeSq = createModifiableFloatAttribute("bc3a8f41-d033-437f-bce2-840df7a55fad", "farming_range_sq", farmingRange.getValue() * farmingRange.getValue(), null, null);
 
         // Default mining speed for an item/hand is 1.0f
         // A wooden pickaxe is 2.0f
         // A diamond pickaxe is 8.0f
         // Our default mining speed can be 0.0f as it will be determined by the level
-        miningSpeed = createModifiableFloatAttribute("0d918c08-2e94-481b-98e1-c2ff3ae395de", "mining_speed", 0.0f);
-        miningSpeedBlocklingModifier = createModifiableFloatAttributeModifier("1e9d4f59-e3a5-410b-a3dd-c9dce952f22d", "mining_speed_blockling", miningSpeed, 0.0f, Operation.ADD, () -> blockling.getCustomName().getString());
-        miningSpeedTypeModifier = createFloatAttributeModifier("565dea40-53ac-4861-bc6c-1eafce77f80f", "mining_speed_type", miningSpeedBlocklingModifier, 0.0f, Operation.ADD, () -> blockling.getBlocklingType().name.getString());
-        miningSpeedLevelModifier = createFloatAttributeModifier("f0914966-d53a-4292-b48c-5595f944f5d2", "mining_speed_level", miningSpeedBlocklingModifier, 0.0f, Operation.ADD, miningLevel.displayStringSupplier);
-        miningSpeedMainHandModifier = createFloatAttributeModifier("fc0dd885-273b-4465-a9ff-e801dcaf07e2", "mining_speed_main_hand", miningSpeed, 0.0f, Operation.ADD, () -> blockling.getMainHandItem().getHoverName().getString());
-        miningSpeedOffHandModifier = createFloatAttributeModifier("aada86a0-4233-47cf-b5ab-aa208a216bb5", "mining_speed_off_hand", miningSpeed, 0.0f, Operation.ADD, () -> blockling.getOffhandItem().getHoverName().getString());
+        miningSpeed = createModifiableFloatAttribute("0d918c08-2e94-481b-98e1-c2ff3ae395de", "mining_speed", 0.0f, null, null);
+        miningSpeedBlocklingModifier = createModifiableFloatAttributeModifier("1e9d4f59-e3a5-410b-a3dd-c9dce952f22d", "mining_speed_blockling", miningSpeed, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString());
+        miningSpeedTypeModifier = createFloatAttributeModifier("565dea40-53ac-4861-bc6c-1eafce77f80f", "mining_speed_type", miningSpeedBlocklingModifier, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString());
+        miningSpeedLevelModifier = createFloatAttributeModifier("f0914966-d53a-4292-b48c-5595f944f5d2", "mining_speed_level", miningSpeedBlocklingModifier, 0.0f, Operation.ADD, null, miningLevel.displayStringNameSupplier);
+        miningSpeedMainHandModifier = createFloatAttributeModifier("fc0dd885-273b-4465-a9ff-e801dcaf07e2", "mining_speed_main_hand", miningSpeed, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString());
+        miningSpeedOffHandModifier = createFloatAttributeModifier("aada86a0-4233-47cf-b5ab-aa208a216bb5", "mining_speed_off_hand", miningSpeed, 0.0f, Operation.ADD, null, () -> blockling.getOffhandItem().getHoverName().getString());
 
-        woodcuttingSpeed = createModifiableFloatAttribute("e1e3ecb3-ae1d-46c5-8ea8-a7180641910b", "woodcutting_speed", 0.0f);
-        woodcuttingSpeedBlocklingModifier = createModifiableFloatAttributeModifier("51a21884-8c41-49d8-bae4-f21866b58718", "woodcutting_speed_blockling", woodcuttingSpeed, 0.0f, Operation.ADD, () -> blockling.getCustomName().getString());
-        woodcuttingSpeedTypeModifier = createFloatAttributeModifier("a66110e2-3a7f-4907-b85c-05c65341cd2e", "woodcutting_speed_type", woodcuttingSpeedBlocklingModifier, 0.0f, Operation.ADD, () -> blockling.getBlocklingType().name.getString());
-        woodcuttingSpeedLevelModifier = createFloatAttributeModifier("6b71ee16-7d04-442e-9d49-9373833f5539", "woodcutting_speed_level", woodcuttingSpeedBlocklingModifier, 0.0f, Operation.ADD, woodcuttingLevel.displayStringSupplier);
-        woodcuttingSpeedMainHandModifier = createFloatAttributeModifier("978f9dd4-3fbb-41ee-9bba-eddcfb42b6ff", "woodcutting_speed_main_hand", woodcuttingSpeed, 0.0f, Operation.ADD, () -> blockling.getMainHandItem().getHoverName().getString());
-        woodcuttingSpeedOffHandModifier = createFloatAttributeModifier("80fd0028-a793-491c-bc9c-fe94071f91c7", "woodcutting_speed_off_hand", woodcuttingSpeed, 0.0f, Operation.ADD, () -> blockling.getOffhandItem().getHoverName().getString());
+        woodcuttingSpeed = createModifiableFloatAttribute("e1e3ecb3-ae1d-46c5-8ea8-a7180641910b", "woodcutting_speed", 0.0f, null, null);
+        woodcuttingSpeedBlocklingModifier = createModifiableFloatAttributeModifier("51a21884-8c41-49d8-bae4-f21866b58718", "woodcutting_speed_blockling", woodcuttingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString());
+        woodcuttingSpeedTypeModifier = createFloatAttributeModifier("a66110e2-3a7f-4907-b85c-05c65341cd2e", "woodcutting_speed_type", woodcuttingSpeedBlocklingModifier, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString());
+        woodcuttingSpeedLevelModifier = createFloatAttributeModifier("6b71ee16-7d04-442e-9d49-9373833f5539", "woodcutting_speed_level", woodcuttingSpeedBlocklingModifier, 0.0f, Operation.ADD, null, woodcuttingLevel.displayStringNameSupplier);
+        woodcuttingSpeedMainHandModifier = createFloatAttributeModifier("978f9dd4-3fbb-41ee-9bba-eddcfb42b6ff", "woodcutting_speed_main_hand", woodcuttingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString());
+        woodcuttingSpeedOffHandModifier = createFloatAttributeModifier("80fd0028-a793-491c-bc9c-fe94071f91c7", "woodcutting_speed_off_hand", woodcuttingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getOffhandItem().getHoverName().getString());
 
-        farmingSpeed = createModifiableFloatAttribute("f6c026b6-1fa9-432f-aca3-d97af784f6d0", "farming_speed", 0.0f);
-        farmingSpeedBlocklingModifier = createModifiableFloatAttributeModifier("39548773-84ee-42ca-8ad6-681d64eaee54", "farming_speed_blockling", farmingSpeed, 0.0f, Operation.ADD, () -> blockling.getCustomName().getString());
-        farmingSpeedTypeModifier = createFloatAttributeModifier("f99bbc83-30fc-451f-a53b-fa343cc9244a", "farming_speed_type", farmingSpeedBlocklingModifier, 0.0f, Operation.ADD, () -> blockling.getBlocklingType().name.getString());
-        farmingSpeedLevelModifier = createFloatAttributeModifier("3b3079cf-8640-436b-bf0a-3aae4deb29be", "farming_speed_level", farmingSpeedBlocklingModifier, 0.0f, Operation.ADD, farmingLevel.displayStringSupplier);
-        farmingSpeedMainHandModifier = createFloatAttributeModifier("5ece4240-17b3-4983-bd0d-67f962a0a838", "farming_speed_main_hand", farmingSpeed, 0.0f, Operation.ADD, () -> blockling.getMainHandItem().getHoverName().getString());
-        farmingSpeedOffHandModifier = createFloatAttributeModifier("b4bb7131-f2ce-41cd-88ed-ee27e3837679", "farming_speed_off_hand", farmingSpeed, 0.0f, Operation.ADD, () -> blockling.getOffhandItem().getHoverName().getString());
+        farmingSpeed = createModifiableFloatAttribute("f6c026b6-1fa9-432f-aca3-d97af784f6d0", "farming_speed", 0.0f, null, null);
+        farmingSpeedBlocklingModifier = createModifiableFloatAttributeModifier("39548773-84ee-42ca-8ad6-681d64eaee54", "farming_speed_blockling", farmingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString());
+        farmingSpeedTypeModifier = createFloatAttributeModifier("f99bbc83-30fc-451f-a53b-fa343cc9244a", "farming_speed_type", farmingSpeedBlocklingModifier, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString());
+        farmingSpeedLevelModifier = createFloatAttributeModifier("3b3079cf-8640-436b-bf0a-3aae4deb29be", "farming_speed_level", farmingSpeedBlocklingModifier, 0.0f, Operation.ADD, null, farmingLevel.displayStringNameSupplier);
+        farmingSpeedMainHandModifier = createFloatAttributeModifier("5ece4240-17b3-4983-bd0d-67f962a0a838", "farming_speed_main_hand", farmingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString());
+        farmingSpeedOffHandModifier = createFloatAttributeModifier("b4bb7131-f2ce-41cd-88ed-ee27e3837679", "farming_speed_off_hand", farmingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getOffhandItem().getHoverName().getString());
     }
 
-    public IntAttribute createIntAttribute(String id, String key, int value)
+    private String knockbackResistanceDisplayStringValueProvider()
     {
-        IntAttribute attribute = new IntAttribute(id, key, blockling, value);
+        return String.format("%.0f%%", knockbackResistance.getValue() * 100.0f);
+    }
+
+    private String knockbackResistanceBlocklingModifierDisplayStringValueProvider()
+    {
+        return String.format("%.0f%%", knockbackResistanceBlocklingModifier.getValue() * 100.0f);
+    }
+
+    private String knockbackResistanceTypeModifierDisplayStringValueProvider()
+    {
+        return String.format("%.0f%%", knockbackResistanceTypeModifier.getValue() * 100.0f);
+    }
+
+    private String knockbackResistanceCombatLevelModifierDisplayStringValueProvider()
+    {
+        return String.format("%.0f%%", knockbackResistanceCombatLevelModifier.getValue() * 100.0f);
+    }
+
+    public IntAttribute createIntAttribute(String id, String key, int value, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
+    {
+        IntAttribute attribute = new IntAttribute(id, key, blockling, value, displayStringValueSupplier, displayStringNameSupplier);
         attributes.add(attribute);
 
         return attribute;
     }
 
-    public FloatAttribute createFloatAttribute(String id, String key, float value)
+    public FloatAttribute createFloatAttribute(String id, String key, float value, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
-        FloatAttribute attribute = new FloatAttribute(id, key, blockling, value);
+        FloatAttribute attribute = new FloatAttribute(id, key, blockling, value, displayStringValueSupplier, displayStringNameSupplier);
         attributes.add(attribute);
 
         return attribute;
     }
 
-    public ModifiableIntAttribute createModifiableIntAttribute(String id, String key, int value)
+    public ModifiableIntAttribute createModifiableIntAttribute(String id, String key, int value, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
-        ModifiableIntAttribute attribute = new ModifiableIntAttribute(id, key, blockling, value);
+        ModifiableIntAttribute attribute = new ModifiableIntAttribute(id, key, blockling, value, displayStringValueSupplier, displayStringNameSupplier);
         attributes.add(attribute);
 
         return attribute;
     }
 
-    public ModifiableFloatAttribute createModifiableFloatAttribute(String id, String key, float value)
+    public ModifiableFloatAttribute createModifiableFloatAttribute(String id, String key, float value, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
-        ModifiableFloatAttribute attribute = new ModifiableFloatAttribute(id, key, blockling, value);
+        ModifiableFloatAttribute attribute = new ModifiableFloatAttribute(id, key, blockling, value, displayStringValueSupplier, displayStringNameSupplier);
         attributes.add(attribute);
 
         return attribute;
     }
 
-    public AveragedAttribute createAveragedAttribute(String id, String key, float value)
+    public AveragedAttribute createAveragedAttribute(String id, String key, float value, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
-        AveragedAttribute attribute = new AveragedAttribute(id, key, blockling, value);
+        AveragedAttribute attribute = new AveragedAttribute(id, key, blockling, value, displayStringValueSupplier, displayStringNameSupplier);
         attributes.add(attribute);
 
         return attribute;
     }
 
-    public <T extends Enum<?>> EnumAttribute<T> createEnumAttribute(String id, String key, T value, Function<Integer, T> ordinalConverter)
+    public <T extends Enum<?>> EnumAttribute<T> createEnumAttribute(String id, String key, T value, Function<Integer, T> ordinalConverter, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
-        EnumAttribute<T> attribute = new EnumAttribute<>(id, key, blockling, value, ordinalConverter);
+        EnumAttribute<T> attribute = new EnumAttribute<>(id, key, blockling, value, ordinalConverter, displayStringValueSupplier, displayStringNameSupplier);
         attributes.add(attribute);
 
         return attribute;
     }
 
-    public FloatAttributeModifier createFloatAttributeModifier(String id, String key, IModifiable<Float> attribute, float value, Operation operation, Supplier<String> displayStringSupplier)
+    public FloatAttributeModifier createFloatAttributeModifier(String id, String key, IModifiable<Float> attribute, float value, Operation operation, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
-        FloatAttributeModifier modifier = new FloatAttributeModifier(id, key, attribute, blockling, value, operation, displayStringSupplier);
+        FloatAttributeModifier modifier = new FloatAttributeModifier(id, key, attribute, blockling, value, operation, displayStringValueSupplier, displayStringNameSupplier);
         attribute.addModifier(modifier);
         attributes.add(modifier);
         modifiers.add(modifier);
@@ -266,9 +286,9 @@ public class BlocklingStats
         return modifier;
     }
 
-    public IntAttributeModifier createIntAttributeModifier(String id, String key, IModifiable<Integer> attribute, int value, Operation operation, Supplier<String> displayStringSupplier)
+    public IntAttributeModifier createIntAttributeModifier(String id, String key, IModifiable<Integer> attribute, int value, Operation operation, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
-        IntAttributeModifier modifier = new IntAttributeModifier(id, key, attribute, blockling, value, operation, displayStringSupplier);
+        IntAttributeModifier modifier = new IntAttributeModifier(id, key, attribute, blockling, value, operation, displayStringValueSupplier, displayStringNameSupplier);
         attribute.addModifier(modifier);
         attributes.add(modifier);
         modifiers.add(modifier);
@@ -276,9 +296,9 @@ public class BlocklingStats
         return modifier;
     }
 
-    public ModifiableFloatAttributeModifier createModifiableFloatAttributeModifier(String id, String key, IModifiable<Float> attribute, float value, Operation operation, Supplier<String> displayStringSupplier)
+    public ModifiableFloatAttributeModifier createModifiableFloatAttributeModifier(String id, String key, IModifiable<Float> attribute, float value, Operation operation, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
-        ModifiableFloatAttributeModifier modifier = new ModifiableFloatAttributeModifier(id, key, attribute, blockling, value, operation, displayStringSupplier);
+        ModifiableFloatAttributeModifier modifier = new ModifiableFloatAttributeModifier(id, key, attribute, blockling, value, operation, displayStringValueSupplier, displayStringNameSupplier);
         attribute.addModifier(modifier);
         attributes.add(modifier);
         modifiers.add(modifier);
@@ -286,9 +306,9 @@ public class BlocklingStats
         return modifier;
     }
 
-    public ModifiableIntAttributeModifier createModifiableIntAttributeModifier(String id, String key, IModifiable<Integer> attribute, int value, Operation operation, Supplier<String> displayStringSupplier)
+    public ModifiableIntAttributeModifier createModifiableIntAttributeModifier(String id, String key, IModifiable<Integer> attribute, int value, Operation operation, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
-        ModifiableIntAttributeModifier modifier = new ModifiableIntAttributeModifier(id, key, attribute, blockling, value, operation, displayStringSupplier);
+        ModifiableIntAttributeModifier modifier = new ModifiableIntAttributeModifier(id, key, attribute, blockling, value, operation, displayStringValueSupplier, displayStringNameSupplier);
         attribute.addModifier(modifier);
         attributes.add(modifier);
         modifiers.add(modifier);
@@ -451,8 +471,8 @@ public class BlocklingStats
         offHandAttackDamageCombatLevelModifier.setValue(calcBonusDamageFromCombatLevel(), sync);
         attackSpeedLevelModifier.setValue(calcBreakSpeedFromLevel(combatLevel.getValue()), sync);
         armourCombatLevelModifier.setValue(calcBonusArmorFromCombatLevel(), sync);
-        armourToughnessCombatLevelModifier.setValue(calcBonusArmorFromCombatLevel(), sync);
-        knockbackResistanceCombatLevelModifier.setValue(calcBonusArmorFromCombatLevel(), sync);
+        armourToughnessCombatLevelModifier.setValue(calcBonusArmorToughnessFromCombatLevel(), sync);
+        knockbackResistanceCombatLevelModifier.setValue(calcBonusKnockbackResistanceFromCombatLevel(), sync);
     }
 
     public void updateTypeBonuses(boolean sync)
@@ -473,22 +493,32 @@ public class BlocklingStats
 
     private float calcBreakSpeedFromLevel(int level)
     {
-        return (float) (3.0f * Math.log(level));
+        return (float) (10.0f * Math.tan((level / 99.0) * (Math.PI / 4.0)));
     }
 
     private float calcBonusHealthFromCombatLevel()
     {
-        return (float) (3.0f * Math.log(combatLevel.getValue()));
+        return (float) (50.0f * Math.tan((combatLevel.getValue() / 99.0) * (Math.PI / 4.0)));
     }
 
     private float calcBonusDamageFromCombatLevel()
     {
-        return (float) (2.0f * Math.log(combatLevel.getValue()));
+        return (float) (20.0f * Math.tan((combatLevel.getValue() / 99.0) * (Math.PI / 4.0)));
     }
 
     private float calcBonusArmorFromCombatLevel()
     {
-        return (float) (0.5f * Math.log(combatLevel.getValue()));
+        return (float) (10.0f * Math.tan((combatLevel.getValue() / 99.0) * (Math.PI / 4.0)));
+    }
+
+    private float calcBonusArmorToughnessFromCombatLevel()
+    {
+        return (float) (5.0f * Math.tan((combatLevel.getValue() / 99.0) * (Math.PI / 4.0)));
+    }
+
+    private float calcBonusKnockbackResistanceFromCombatLevel()
+    {
+        return (float) (0.5f * Math.tan((combatLevel.getValue() / 99.0) * (Math.PI / 4.0)));
     }
 
     public void updateHealth()

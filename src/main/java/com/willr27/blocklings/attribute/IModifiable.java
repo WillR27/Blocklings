@@ -3,6 +3,7 @@ package com.willr27.blocklings.attribute;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public interface IModifiable<T>
 {
@@ -47,6 +48,10 @@ public interface IModifiable<T>
     void addModifier(IModifier<T> modifier);
 
     void removeModifier(IModifier<T> modifier);
+
+    Supplier<String> getDisplayStringValueSupplier();
+
+    Supplier<String> getDisplayStringNameSupplier();
 
     TranslationTextComponent createTranslation(String key, Object... objects);
 }

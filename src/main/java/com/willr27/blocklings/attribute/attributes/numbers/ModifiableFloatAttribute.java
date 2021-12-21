@@ -17,9 +17,9 @@ import java.util.function.Supplier;
 
 public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
 {
-    public ModifiableFloatAttribute(String id, String key, BlocklingEntity blockling, float baseValue)
+    public ModifiableFloatAttribute(String id, String key, BlocklingEntity blockling, float baseValue, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
-        super(id, key, blockling, baseValue);
+        super(id, key, blockling, baseValue, displayStringValueSupplier, displayStringNameSupplier);
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.screens.guis.TabbedGui;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.text.StringTextComponent;
@@ -41,6 +42,8 @@ public class TabbedScreen extends Screen
         contentBottom = contentTop + TabbedGui.CONTENT_HEIGHT;
 
         tabbedGui = new TabbedGui(blockling, player, centerX, centerY);
+
+        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
 
         super.init();
     }

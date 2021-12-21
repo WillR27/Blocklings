@@ -19,22 +19,24 @@ public abstract class Attribute<T>
     public final String key;
     public final BlocklingEntity blockling;
     public final World world;
-    public final Supplier<String> displayStringSupplier;
+    public final Supplier<String> displayStringValueSupplier;
+    public final Supplier<String> displayStringNameSupplier;
 
     protected final List<Consumer<T>> updateCallbacks = new ArrayList<>();
 
     public Attribute(String id, String key, BlocklingEntity blockling)
     {
-        this(id, key, blockling, null);
+        this(id, key, blockling, null, null);
     }
 
-    public Attribute(String id, String key, BlocklingEntity blockling, Supplier<String> displayStringSupplier)
+    public Attribute(String id, String key, BlocklingEntity blockling, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
         this.id = UUID.fromString(id);
         this.key = key;
         this.blockling = blockling;
         this.world = blockling.level;
-        this.displayStringSupplier = displayStringSupplier == null ? () -> createTranslation("name").getString() : displayStringSupplier;
+        this.displayStringValueSupplier = displayStringValueSupplier == null ? () -> formatValue("%.1f") : displayStringValueSupplier;
+        this.displayStringNameSupplier = displayStringNameSupplier == null ? () -> createTranslation("name").getString() : displayStringNameSupplier;
     }
 
     public abstract void writeToNBT(CompoundNBT tag);

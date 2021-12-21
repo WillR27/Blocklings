@@ -196,13 +196,13 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
 
                     blockling.getStats().hand.setValue(BlocklingHand.fromBooleans(mainCanHarvest, offCanHarvest));
 
-                    float progress = destroySpeed / blockStrength / 30.0f;
+                    float progress = destroySpeed / blockStrength / 100.0f;
                     blockling.getActions().mine.tick(progress);
 
                     if (blockling.getActions().mine.isFinished())
                     {
                         blockling.getActions().mine.stop();
-                        blockling.getStats().miningXp.incValue(10);
+                        blockling.getStats().miningXp.incValue((int) (blockStrength * 3.0f));
 
                         for (ItemStack stack : DropUtil.getDrops(blockling, targetBlockPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
                         {

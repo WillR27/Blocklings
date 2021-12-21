@@ -11,14 +11,12 @@ public class ModifiableFloatAttributeModifier extends ModifiableFloatAttribute i
 {
     public final IModifiable<Float> attribute;
     public final Operation operation;
-    public final Supplier<String> displayStringSupplier;
 
-    public ModifiableFloatAttributeModifier(String id, String key, IModifiable<Float> attribute, BlocklingEntity blockling, float value, Operation operation, Supplier<String> displayStringSupplier)
+    public ModifiableFloatAttributeModifier(String id, String key, IModifiable<Float> attribute, BlocklingEntity blockling, float value, Operation operation, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
-        super(id, key, blockling, value);
+        super(id, key, blockling, value, displayStringValueSupplier, displayStringNameSupplier);
         this.attribute = attribute;
         this.operation = operation;
-        this.displayStringSupplier = displayStringSupplier;
     }
 
     @Override
@@ -41,11 +39,5 @@ public class ModifiableFloatAttributeModifier extends ModifiableFloatAttribute i
     public Operation getOperation()
     {
         return operation;
-    }
-
-    @Override
-    public Supplier<String> getDisplayStringSupplier()
-    {
-        return displayStringSupplier;
     }
 }

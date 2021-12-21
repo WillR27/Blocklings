@@ -59,6 +59,16 @@ public class TasksScreen extends TabbedScreen
         }
     }
 
+
+    @Override
+    public void tick()
+    {
+        if (taskConfigGui != null)
+        {
+            taskConfigGui.nameField.tick();
+        }
+    }
+
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {

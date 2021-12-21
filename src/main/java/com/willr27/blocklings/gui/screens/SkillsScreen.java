@@ -87,8 +87,9 @@ public class SkillsScreen extends TabbedScreen
 
         GuiUtil.bindTexture(GuiUtil.SKILLS);
 
+        RenderSystem.enableDepthTest();
         matrixStack.pushPose();
-        matrixStack.translate(0.0f, 0.0f, 30.0f);
+        matrixStack.translate(0.0f, 0.0f, 0.0f);
         maximiseWidget.textureX = maximiseWidget.isMouseOver(mouseX, mouseY) && !skillsGui.isDragging() ? 0 : MAXIMISE_SIZE;
         if (!maximised) maximiseWidget.render(matrixStack, mouseX, mouseY);
         matrixStack.popPose();

@@ -21,5 +21,7 @@ public interface IModifier<T>
 
     Operation getOperation();
 
-    Supplier<String> getDisplayStringSupplier();
+    Supplier<String> getDisplayStringValueSupplier();
+
+    Supplier<String> getDisplayStringNameSupplier();
 }

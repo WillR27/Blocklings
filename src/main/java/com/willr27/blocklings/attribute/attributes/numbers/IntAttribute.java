@@ -17,9 +17,9 @@ public class IntAttribute extends Attribute<Integer>
 {
     protected int value;
 
-    public IntAttribute(String id, String key, BlocklingEntity blockling, int value)
+    public IntAttribute(String id, String key, BlocklingEntity blockling, int value, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
-        super(id, key, blockling);
+        super(id, key, blockling, displayStringValueSupplier, displayStringNameSupplier);
         this.value = value;
     }
 

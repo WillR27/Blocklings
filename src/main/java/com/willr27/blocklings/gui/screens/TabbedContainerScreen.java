@@ -3,6 +3,7 @@ package com.willr27.blocklings.gui.screens;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.screens.guis.TabbedGui;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;
@@ -41,6 +42,8 @@ public class TabbedContainerScreen<T extends Container> extends ContainerScreen<
         contentBottom = contentTop + TabbedGui.CONTENT_HEIGHT;
 
         tabbedGui = new TabbedGui(blockling, player, centerX, centerY);
+
+        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
 
         super.init();
     }
