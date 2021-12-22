@@ -1,7 +1,7 @@
 package com.willr27.blocklings.gui.widgets;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.willr27.blocklings.entity.entities.blockling.goal.Task;
+import com.willr27.blocklings.goal.Task;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiUtil;
 import net.minecraft.client.gui.FontRenderer;

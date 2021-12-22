@@ -34,6 +34,7 @@ public class NetworkHandler
         int id = 0;
 
         HANDLER.registerMessage(id++, BlocklingGuiInfo.Message.class, BlocklingGuiInfo.Message::encode, BlocklingGuiInfo.Message::decode, BlocklingGuiInfo.Message::handle);
+        HANDLER.registerMessage(id++, BlocklingScaleMessage.class, BlocklingScaleMessage::encode, BlocklingScaleMessage::decode, BlocklingScaleMessage::handle);
         HANDLER.registerMessage(id++, BlocklingTargetMessage.class, BlocklingTargetMessage::encode, BlocklingTargetMessage::decode, BlocklingTargetMessage::handle);
         HANDLER.registerMessage(id++, BlocklingTypeMessage.class, BlocklingTypeMessage::encode, BlocklingTypeMessage::decode, BlocklingTypeMessage::handle);
         HANDLER.registerMessage(id++, EquipmentInventoryMessage.class, EquipmentInventoryMessage::encode, EquipmentInventoryMessage::decode, EquipmentInventoryMessage::handle);

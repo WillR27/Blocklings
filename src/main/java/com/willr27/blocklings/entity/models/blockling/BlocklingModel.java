@@ -4,7 +4,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
-import com.willr27.blocklings.item.ToolType;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.entity.model.IHasArm;
 import net.minecraft.client.renderer.model.ModelRenderer;
@@ -13,6 +12,7 @@ import net.minecraft.entity.Pose;
 import net.minecraft.util.Hand;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -180,13 +180,20 @@ public class BlocklingModel extends EntityModel<BlocklingEntity> implements IHas
         body.zRot = bodySwing;
         rightLeg.zRot = -body.zRot;
         leftLeg.zRot = -body.zRot;
+//        scaleY = ageInTicks;
     }
 
     @Override
     public void renderToBuffer(MatrixStack matrixStack, IVertexBuilder p_225598_2_, int p_225598_3_, int p_225598_4_, float p_225598_5_, float p_225598_6_, float p_225598_7_, float p_225598_8_)
     {
+        matrixStack.pushPose();
+        matrixStack.translate(0.0, 1.501, 0.0); // There is a random 1.501 translation in render that messes up scales
         matrixStack.scale(scaleX, scaleY, scaleX);
-        body.render(matrixStack, p_225598_2_, p_225598_3_, p_225598_4_);
+        matrixStack.translate(0.0, -1.501, 0.0);
+
+        body.render(matrixStack, p_225598_2_, p_225598_3_, p_225598_4_, p_225598_5_, p_225598_6_, p_225598_7_, p_225598_8_);
+
+        matrixStack.popPose();
     }
 
 //    public void render(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)

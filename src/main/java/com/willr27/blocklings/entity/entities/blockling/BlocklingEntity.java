@@ -1,13 +1,14 @@
 package com.willr27.blocklings.entity.entities.blockling;
 
 import com.google.common.collect.Iterables;
-import com.willr27.blocklings.entity.entities.blockling.goal.Task;
+import com.willr27.blocklings.goal.Task;
 import com.willr27.blocklings.gui.GuiHandler;
 import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
 import com.willr27.blocklings.item.ItemUtil;
 import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.item.items.BlocklingItem;
 import com.willr27.blocklings.network.NetworkHandler;
+import com.willr27.blocklings.network.messages.BlocklingScaleMessage;
 import com.willr27.blocklings.network.messages.BlocklingTargetMessage;
 import com.willr27.blocklings.network.messages.BlocklingTypeMessage;
 import com.willr27.blocklings.skills.BlocklingSkills;
@@ -58,6 +59,8 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
     private final EquipmentInventory equipmentInv = new EquipmentInventory(this);
 
+    private float scale;
+
     public BlocklingEntity(EntityType<? extends BlocklingEntity> type, World world)
     {
         super(type, world);
@@ -71,6 +74,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         if (!level.isClientSide)
         {
             setBlocklingType(BlocklingType.TYPES.get(getRandom().nextInt(3)), false);
+            setScale(getRandom().nextFloat() * 0.5f + 0.49f, false);
 
             stats.init();
         }
@@ -115,6 +119,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         CompoundNBT c = new CompoundNBT();
 
         c.putInt("type", BlocklingType.TYPES.indexOf(blocklingType));
+        c.putFloat("scale", scale);
 
         equipmentInv.writeToNBT(c);
         stats.writeToNBT(c);
@@ -145,6 +150,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         }
 
         setBlocklingType(BlocklingType.TYPES.get(c.getInt("type")), false);
+        setScale(c.getFloat("scale"), false);
 
         equipmentInv.readFromNBT(c);
         stats.readFromNBT(c);
@@ -158,6 +164,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     public void writeSpawnData(PacketBuffer buf)
     {
         buf.writeInt(BlocklingType.TYPES.indexOf(blocklingType));
+        buf.writeFloat(scale);
 
         equipmentInv.encode(buf);
         stats.encode(buf);
@@ -169,6 +176,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     public void readSpawnData(PacketBuffer buf)
     {
         setBlocklingType(BlocklingType.TYPES.get(buf.readInt()), false);
+        setScale(buf.readFloat(), false);
 
         equipmentInv.decode(buf);
         stats.decode(buf);
@@ -190,8 +198,6 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         super.tick();
 
         actions.tick();
-
-        refreshDimensions();
 
         equipmentInv.detectAndSendChanges();
     }
@@ -530,14 +536,9 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     }
 
     @Override
-    public @Nonnull EntitySize getDimensions(@Nonnull Pose pose)
+    public float getEyeHeightAccess(Pose pose, EntitySize size)
     {
-//        if (id == 1)
-//        {
-//            return new EntitySize(2.0f, 1.0f, true);
-//        }
-
-        return this.getType().getDimensions();
+        return size.height * 0.45f;
     }
 
     @Nullable
@@ -635,5 +636,28 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     public EquipmentInventory getEquipment()
     {
         return equipmentInv;
+    }
+
+    @Override
+    public float getScale()
+    {
+        return scale;
+    }
+
+    public void setScale(float scale)
+    {
+        setScale(scale, true);
+    }
+
+    public void setScale(float scale, boolean sync)
+    {
+        this.scale = scale;
+
+        refreshDimensions();
+
+        if (sync)
+        {
+            NetworkHandler.sync(level, new BlocklingScaleMessage(scale, getId()));
+        }
     }
 }

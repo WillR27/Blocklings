@@ -1,17 +1,16 @@
 package com.willr27.blocklings.entity.entities.blockling;
 
-import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.entity.entities.blockling.goal.BlocklingGoal;
-import com.willr27.blocklings.entity.entities.blockling.goal.Task;
-import com.willr27.blocklings.entity.entities.blockling.goal.TaskType;
-import com.willr27.blocklings.entity.entities.blockling.goal.goals.*;
-import com.willr27.blocklings.entity.entities.blockling.goal.goals.target.IHasTargetGoal;
+import com.willr27.blocklings.entity.goals.blockling.*;
+import com.willr27.blocklings.entity.goals.blockling.target.IHasTargetGoal;
+import com.willr27.blocklings.goal.BlocklingGoal;
+import com.willr27.blocklings.goal.Task;
+import com.willr27.blocklings.goal.TaskType;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.widgets.tasks.TaskIconWidget;
 import com.willr27.blocklings.network.NetworkHandler;
 import com.willr27.blocklings.network.messages.TaskCreateMessage;
-import com.willr27.blocklings.network.messages.TaskTypeIsUnlockedMessage;
 import com.willr27.blocklings.network.messages.TaskRemoveMessage;
+import com.willr27.blocklings.network.messages.TaskTypeIsUnlockedMessage;
 import com.willr27.blocklings.util.PacketBufferUtils;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import net.minecraft.entity.ai.goal.Goal;

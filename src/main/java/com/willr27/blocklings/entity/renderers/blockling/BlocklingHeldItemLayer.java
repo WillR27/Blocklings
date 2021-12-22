@@ -45,11 +45,16 @@ public class BlocklingHeldItemLayer extends LayerRenderer<BlocklingEntity, Block
     private void renderItem(MatrixStack matrixStack, ItemStack stack, boolean isLeftHand, BlocklingEntity blockling, IRenderTypeBuffer renderTypeBuffer, int p_225628_3_)
     {
         matrixStack.pushPose();
+        matrixStack.translate(0.0, 1.501, 0.0); // There is a random 1.501 translation in render that messes up scales
+        matrixStack.scale(blockling.getScale(), blockling.getScale(), blockling.getScale());
+        matrixStack.translate(0.0, -1.501, 0.0);
         getParentModel().translateToHand(isLeftHand ? HandSide.LEFT : HandSide.RIGHT, matrixStack);
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(180.0f));
         matrixStack.mulPose(Vector3f.XP.rotationDegrees(190.0f));
         matrixStack.translate((isLeftHand ? 1.0f : -1.0f) / 16.0f, -0.1f, getItemHandDisplacement(stack));
+
         Minecraft.getInstance().getItemInHandRenderer().renderItem(blockling, stack, isLeftHand ? ItemCameraTransforms.TransformType.THIRD_PERSON_LEFT_HAND : ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND, isLeftHand, matrixStack, renderTypeBuffer, p_225628_3_);
+
         matrixStack.popPose();
     }
 

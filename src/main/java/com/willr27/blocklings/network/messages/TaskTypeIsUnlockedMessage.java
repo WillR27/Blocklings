@@ -1,7 +1,7 @@
 package com.willr27.blocklings.network.messages;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.entity.entities.blockling.goal.TaskType;
+import com.willr27.blocklings.goal.TaskType;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import com.willr27.blocklings.network.IMessage;
 import net.minecraft.client.Minecraft;

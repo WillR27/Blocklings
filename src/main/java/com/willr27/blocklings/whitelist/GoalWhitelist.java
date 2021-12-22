@@ -1,7 +1,7 @@
 package com.willr27.blocklings.whitelist;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.entity.entities.blockling.goal.BlocklingGoal;
+import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.network.NetworkHandler;
 import com.willr27.blocklings.network.messages.WhitelistAllMessage;
 import com.willr27.blocklings.network.messages.WhitelistSingleMessage;
