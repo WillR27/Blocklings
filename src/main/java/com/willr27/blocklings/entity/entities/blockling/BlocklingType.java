@@ -41,7 +41,7 @@ public class BlocklingType
         FOODS.clear();
         TYPES.forEach(blocklingType -> { blocklingType.predicates.clear(); blocklingType.foods.clear(); });
 
-        GRASS.addFoods(Blocks.GRASS, Blocks.DIRT);
+        GRASS.addFoods(Blocks.GRASS_BLOCK, Blocks.DIRT);
         GRASS.predicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
         GRASS.predicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.GRASS_BLOCK));
         GRASS.predicates.add((blockling, world) -> canSeeSky(blockling, world));
@@ -93,6 +93,7 @@ public class BlocklingType
 
     private static final Set<Item> FOODS = new HashSet<>();
 
+    public final String key;
     public final ResourceLocation entityTexture;
     public final TranslationTextComponent name;
     public final int spawnRateReduction;
@@ -111,14 +112,15 @@ public class BlocklingType
 
     public BlocklingType(String key, int spawnRateReduction)
     {
+        this.key = key;
         this.entityTexture = new BlocklingsResourceLocation("textures/entity/blockling/blockling_" + key + ".png");
         this.name = new BlocklingsTranslationTextComponent("type." + key);
         this.spawnRateReduction = spawnRateReduction + 1;
     }
 
-    private static BlocklingType create(String texture, int spawnRateReduction)
+    private static BlocklingType create(String key, int spawnRateReduction)
     {
-        BlocklingType type = new BlocklingType(texture, spawnRateReduction);
+        BlocklingType type = new BlocklingType(key, spawnRateReduction);
         TYPES.add(type);
         return type;
     }
@@ -143,6 +145,11 @@ public class BlocklingType
         this.farmingSpeed = farmingSpeed;
 
         return this;
+    }
+
+    public ResourceLocation getCombinedTexture(BlocklingType blocklingType)
+    {
+        return new BlocklingsResourceLocation("textures/entity/blockling/blockling_" + key + "_merged_with_" + blocklingType.key);
     }
 
     public float getMaxHealth()

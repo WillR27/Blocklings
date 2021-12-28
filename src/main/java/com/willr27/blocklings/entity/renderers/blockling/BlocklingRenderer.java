@@ -3,6 +3,7 @@ package com.willr27.blocklings.entity.renderers.blockling;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.models.blockling.BlocklingModel;
+import com.willr27.blocklings.util.BlocklingsResourceLocation;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;
@@ -28,6 +29,6 @@ public class BlocklingRenderer extends MobRenderer<BlocklingEntity, BlocklingMod
     @Override
     public ResourceLocation getTextureLocation(BlocklingEntity blockling)
     {
-        return blockling.getBlocklingType().entityTexture;
+        return blockling.getBlocklingType() == blockling.getOriginalBlocklingType() ? blockling.getBlocklingType().entityTexture : blockling.getOriginalBlocklingType().getCombinedTexture(blockling.getBlocklingType());
     }
 }
