@@ -6,7 +6,6 @@ import com.willr27.blocklings.entity.renderers.blockling.BlocklingRenderer;
 import com.willr27.blocklings.item.items.BlocklingItem;
 import com.willr27.blocklings.item.items.Items;
 import com.willr27.blocklings.network.NetworkHandler;
-import com.willr27.blocklings.skills.SkillsConfig;
 import net.minecraft.block.Block;
 import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
 import net.minecraftforge.common.MinecraftForge;
@@ -24,7 +23,6 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

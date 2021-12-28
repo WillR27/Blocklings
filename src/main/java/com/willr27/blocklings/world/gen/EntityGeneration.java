@@ -20,7 +20,7 @@ public class EntityGeneration
     @SubscribeEvent
     public static void onBiomeLoad(final BiomeLoadingEvent event)
     {
-        addEntityToAllBiomes(event.getSpawns(), EntityTypes.BLOCKLING_ENTITY.get(), 200, 2, 4);
+        addEntityToAllBiomes(event.getSpawns(), EntityTypes.BLOCKLING_ENTITY.get(), 200, 1, 2);
     }
 
     private static void addEntityToAllBiomesExceptThese(BiomeLoadingEvent event, EntityType<?> type, int weight, int minCount, int maxCount, RegistryKey<Biome>... biomes)

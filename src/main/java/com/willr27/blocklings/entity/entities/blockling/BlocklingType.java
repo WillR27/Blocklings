@@ -3,11 +3,15 @@ package com.willr27.blocklings.entity.entities.blockling;
 import com.willr27.blocklings.util.BlocklingsResourceLocation;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.DimensionType;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biomes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +22,10 @@ public class BlocklingType
     public static final List<BlocklingType> TYPES = new ArrayList<>();
 
     public static final BlocklingType GRASS = create("grass", 8).addCombatStats(2.0f, 1.0f, 3.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 1.0f, 2.0f);
-    public static final BlocklingType OAK_LOG = create("oak_log", 7).addCombatStats(3.0f, 1.0f, 3.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 2.0f, 1.0f);
-    public static final BlocklingType STONE = create("stone", 2).addCombatStats(5.0f, 1.0f, 3.0f, 2.0f, 1.0f, 0.3f, 2.5f).addGatheringStats(1.5f, 0.5f, 0.5f);
+    public static final BlocklingType OAK_LOG = create("oak_log", 2).addCombatStats(3.0f, 1.0f, 3.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 2.0f, 1.0f);
+    public static final BlocklingType STONE = create("stone", 12).addCombatStats(5.0f, 1.0f, 3.0f, 2.0f, 1.0f, 0.3f, 2.5f).addGatheringStats(1.5f, 0.5f, 0.5f);
     public static final BlocklingType IRON = create("iron", 2).addCombatStats(6.0f, 2.0f, 3.0f, 2.0f, 1.0f, 0.1f, 3.0f).addGatheringStats(2.0f, 0.5f, 0.5f);
-    public static final BlocklingType QUARTZ = create("quartz", 5).addCombatStats(3.0f, 4.0f, 3.0f, 1.0f, 0.5f, 0.1f, 3.5f).addGatheringStats(2.0f, 0.5f, 0.5f);
+    public static final BlocklingType QUARTZ = create("quartz", 0).addCombatStats(3.0f, 4.0f, 3.0f, 1.0f, 0.5f, 0.1f, 3.5f).addGatheringStats(2.0f, 0.5f, 0.5f);
     public static final BlocklingType LAPIS = create("lapis", 0).addCombatStats(5.0f, 3.0f, 3.0f, 1.0f, 0.5f, 0.1f, 3.0f).addGatheringStats(2.0f, 0.5f, 0.5f);
     public static final BlocklingType GOLD = create("gold", 0).addCombatStats(1.0f, 4.0f, 3.0f, 1.0f, 0.5f, 0.1f, 4.0f).addGatheringStats(2.5f, 0.5f, 0.5f);
     public static final BlocklingType EMERALD = create("emerald", 0).addCombatStats(5.0f, 3.0f, 3.0f, 2.0f, 1.0f, 0.2f, 3.0f).addGatheringStats(2.5f, 0.5f, 0.5f);
@@ -30,47 +34,39 @@ public class BlocklingType
 
     static
     {
-//        GRASS.predicates.add((blockling, world) -> isInDimension(blockling, world, DimensionType.OVERWORLD));
-//        GRASS.predicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.GRASS_BLOCK));
-//        GRASS.predicates.add((blockling, world) -> canSeeSky(blockling, world));
-//
-//        OAK_LOG.predicates.add((blockling, world) -> isInDimension(blockling, world, DimensionType.OVERWORLD));
-//        OAK_LOG.predicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.GRASS_BLOCK));
-//        OAK_LOG.predicates.add((blockling, world) -> blockNearbyIs(blockling, world, 3, Blocks.OAK_LOG));
-//
-//        STONE.predicates.add((blockling, world) -> isInDimension(blockling, world, DimensionType.OVERWORLD));
-//        STONE.predicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.STONE));
-//
-//        IRON.predicates.add((blockling, world) -> isInDimension(blockling, world, DimensionType.OVERWORLD));
-//        IRON.predicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.STONE, Blocks.IRON_ORE));
-//        IRON.predicates.add((blockling, world) -> blockNearbyIs(blockling, world, 2, Blocks.IRON_ORE));
-//
-//        QUARTZ.predicates.add((blockling, world) -> isInDimension(blockling, world, DimensionType.THE_NETHER));
-//        QUARTZ.predicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.NETHERRACK, Blocks.NETHER_QUARTZ_ORE));
-//        QUARTZ.predicates.add((blockling, world) -> blockNearbyIs(blockling, world, 1, Blocks.NETHER_QUARTZ_ORE));
-//
-//        LAPIS.predicates.add((blockling, world) -> isInDimension(blockling, world, DimensionType.OVERWORLD));
-//        LAPIS.predicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.STONE, Blocks.LAPIS_ORE));
-//        LAPIS.predicates.add((blockling, world) -> blockNearbyIs(blockling, world, 3, Blocks.LAPIS_ORE));
-//
-//        GOLD.predicates.add((blockling, world) -> isInDimension(blockling, world, DimensionType.OVERWORLD));
-//        GOLD.predicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.STONE, Blocks.GOLD_ORE));
-//        GOLD.predicates.add((blockling, world) -> blockNearbyIs(blockling, world, 3, Blocks.GOLD_ORE));
-//
-//        EMERALD.predicates.add((blockling, world) -> isInDimension(blockling, world, DimensionType.OVERWORLD));
-//        EMERALD.predicates.add((blockling, world) -> isInBiome(blockling, world, Biomes.MOUNTAINS, Biomes.MOUNTAIN_EDGE, Biomes.GRAVELLY_MOUNTAINS, Biomes.MODIFIED_GRAVELLY_MOUNTAINS, Biomes.SNOWY_MOUNTAINS, Biomes.SNOWY_TAIGA_MOUNTAINS, Biomes.TAIGA_MOUNTAINS, Biomes.WOODED_MOUNTAINS));
-//        EMERALD.predicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.STONE, Blocks.EMERALD_ORE));
-//        EMERALD.predicates.add((blockling, world) -> blockNearbyIs(blockling, world, 3, Blocks.EMERALD_ORE));
-//
-//        DIAMOND.predicates.add((blockling, world) -> isInDimension(blockling, world, DimensionType.OVERWORLD));
-//        DIAMOND.predicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.STONE, Blocks.DIAMOND_ORE));
-//        DIAMOND.predicates.add((blockling, world) -> blockNearbyIs(blockling, world, 3, Blocks.DIAMOND_ORE));
-//
-//        OBSIDIAN.predicates.add((blockling, world) -> isInDimension(blockling, world, DimensionType.OVERWORLD));
-//        OBSIDIAN.predicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.OBSIDIAN));
+        GRASS.predicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
+        GRASS.predicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.GRASS_BLOCK));
+        GRASS.predicates.add((blockling, world) -> canSeeSky(blockling, world));
+
+        OAK_LOG.predicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
+        OAK_LOG.predicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.GRASS_BLOCK));
+        OAK_LOG.predicates.add((blockling, world) -> blockNearbyIs(blockling, world, 16, Blocks.OAK_LOG));
+
+        STONE.predicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
+        STONE.predicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.STONE));
+
+        IRON.predicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
+        IRON.predicates.add((blockling, world) -> blockNearbyIs(blockling, world, 5, Blocks.IRON_ORE));
+
+        QUARTZ.predicates.add((blockling, world) -> isInWorld(blockling, world, World.NETHER));
+        QUARTZ.predicates.add((blockling, world) -> blockNearbyIs(blockling, world, 5, Blocks.NETHER_QUARTZ_ORE));
+
+        LAPIS.predicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
+        LAPIS.predicates.add((blockling, world) -> blockNearbyIs(blockling, world, 5, Blocks.LAPIS_ORE));
+
+        GOLD.predicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
+        GOLD.predicates.add((blockling, world) -> blockNearbyIs(blockling, world, 5, Blocks.GOLD_ORE));
+
+        EMERALD.predicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
+        EMERALD.predicates.add((blockling, world) -> isInBiome(blockling, world, Biomes.MOUNTAINS, Biomes.MOUNTAIN_EDGE, Biomes.GRAVELLY_MOUNTAINS, Biomes.MODIFIED_GRAVELLY_MOUNTAINS, Biomes.SNOWY_MOUNTAINS, Biomes.SNOWY_TAIGA_MOUNTAINS, Biomes.TAIGA_MOUNTAINS, Biomes.WOODED_MOUNTAINS));
+        EMERALD.predicates.add((blockling, world) -> blockNearbyIs(blockling, world, 5, Blocks.EMERALD_ORE));
+
+        DIAMOND.predicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
+        DIAMOND.predicates.add((blockling, world) -> blockNearbyIs(blockling, world, 5, Blocks.DIAMOND_ORE));
+
+        OBSIDIAN.predicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
+        OBSIDIAN.predicates.add((blockling, world) -> blockNearbyIs(blockling, world, 5, Blocks.OBSIDIAN));
     }
-
-
 
     public final ResourceLocation entityTexture;
     public final TranslationTextComponent name;
@@ -173,23 +169,23 @@ public class BlocklingType
         return farmingSpeed;
     }
 
-    private static boolean isInDimension(BlocklingEntity blockling, IWorld world, DimensionType... dimensionTypes)
+    private static boolean isInWorld(BlocklingEntity blockling, IWorld world, RegistryKey<World>... worldTypes)
     {
-        for (DimensionType dimensionType : dimensionTypes)
+        for (RegistryKey<World> worldType : worldTypes)
         {
-//            if (world.getDimension().getType() == dimensionType)
-//            {
-//                return true;
-//            }
+            if (blockling.level.dimension() == worldType)
+            {
+                return true;
+            }
         }
         return false;
     }
 
-    private static boolean isInBiome(BlocklingEntity blockling, IWorld world, Biome... biomes)
+    private static boolean isInBiome(BlocklingEntity blockling, IWorld world, RegistryKey<Biome>... biomes)
     {
-        for (Biome biome : biomes)
+        for (RegistryKey<Biome> biome : biomes)
         {
-            if (world.getBiome(blockling.blockPosition()) == biome)
+            if (world.getBiome(blockling.blockPosition()).getRegistryName() == biome.getRegistryName())
             {
                 return true;
             }
@@ -205,6 +201,7 @@ public class BlocklingType
     private static boolean blockBelowIs(BlocklingEntity blockling, IWorld world, Block... blocks)
     {
         Block testBlock = world.getBlockState(blockling.blockPosition().below()).getBlock();
+
         for (Block block : blocks)
         {
             if (testBlock == block)
@@ -212,44 +209,45 @@ public class BlocklingType
                 return true;
             }
         }
+
         return false;
     }
 
     private static boolean blockNearbyIs(BlocklingEntity blockling, IWorld world, int radius, Block... blocks)
     {
-//        int startX = (int) blockling.posX - radius;
-//        int startY = (int) blockling.posY - radius;
-//        int startZ = (int) blockling.posZ - radius;
-//
-//        int endX = (int) blockling.posX + radius;
-//        int endY = (int) blockling.posY + radius;
-//        int endZ = (int) blockling.posZ + radius;
-//
-//        BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
-//        for (int x = startX; x <= endX; x++)
-//        {
-//            for (int y = startY; y <= endY; y++)
-//            {
-//                for (int z = startZ; z <= endZ; z++)
-//                {
-//                    blockPos.setPos(x, y, z);
-//                    if (!world.isBlockLoaded(blockPos))
-//                    {
-//                        continue;
-//                    }
-//
-//                    Block block = world.getBlockState(blockPos).getBlock();
-//
-//                    for (Block block2 : blocks)
-//                    {
-//                        if (block == block2)
-//                        {
-//                            return true;
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        int startX = (int) blockling.getX() - radius;
+        int startY = (int) blockling.getY() - radius;
+        int startZ = (int) blockling.getZ() - radius;
+
+        int endX = (int) blockling.getX() + radius;
+        int endY = (int) blockling.getY() + radius;
+        int endZ = (int) blockling.getZ() + radius;
+
+        for (int x = startX; x <= endX; x++)
+        {
+            for (int y = startY; y <= endY; y++)
+            {
+                for (int z = startZ; z <= endZ; z++)
+                {
+                    BlockPos blockPos = new BlockPos(x, y, z);
+
+                    if (!world.isAreaLoaded(blockPos, 1))
+                    {
+                        continue;
+                    }
+
+                    Block block = world.getBlockState(blockPos).getBlock();
+
+                    for (Block block2 : blocks)
+                    {
+                        if (block == block2)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
 
         return false;
     }

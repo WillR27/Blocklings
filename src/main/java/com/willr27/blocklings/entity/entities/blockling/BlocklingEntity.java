@@ -47,9 +47,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.function.BiPredicate;
 
 public class BlocklingEntity extends TameableEntity implements IEntityAdditionalSpawnData
 {
+    private BlocklingType originalBlocklingType = BlocklingType.GRASS;
     private BlocklingType blocklingType = BlocklingType.GRASS;
     private final BlocklingStats stats = new BlocklingStats(this);
     private final BlocklingTasks tasks = new BlocklingTasks(this);
@@ -73,7 +75,8 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         // So that we can sync them up using read/writeSpawnData
         if (!level.isClientSide)
         {
-            setBlocklingType(BlocklingType.TYPES.get(getRandom().nextInt(3)), false);
+            originalBlocklingType = BlocklingType.TYPES.get(getRandom().nextInt(BlocklingType.TYPES.size()));
+            setBlocklingType(originalBlocklingType, false);
             setScale(getRandom().nextFloat() * 0.5f + 0.49f, false);
 
             stats.init();
@@ -118,6 +121,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     {
         CompoundNBT c = new CompoundNBT();
 
+        c.putInt("original_type", BlocklingType.TYPES.indexOf(originalBlocklingType));
         c.putInt("type", BlocklingType.TYPES.indexOf(blocklingType));
         c.putFloat("scale", scale);
 
@@ -149,6 +153,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
             return;
         }
 
+        originalBlocklingType = BlocklingType.TYPES.get(c.getInt("original_type"));
         setBlocklingType(BlocklingType.TYPES.get(c.getInt("type")), false);
         setScale(c.getFloat("scale"), false);
 
@@ -163,6 +168,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     @Override
     public void writeSpawnData(PacketBuffer buf)
     {
+        buf.writeInt(BlocklingType.TYPES.indexOf(originalBlocklingType));
         buf.writeInt(BlocklingType.TYPES.indexOf(blocklingType));
         buf.writeFloat(scale);
 
@@ -175,6 +181,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     @Override
     public void readSpawnData(PacketBuffer buf)
     {
+        originalBlocklingType = BlocklingType.TYPES.get(buf.readInt());
         setBlocklingType(BlocklingType.TYPES.get(buf.readInt()), false);
         setScale(buf.readFloat(), false);
 
@@ -320,9 +327,12 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         ItemStack stack = player.getItemInHand(Hand.MAIN_HAND);
         Item item = stack.getItem();
 
-        if (!ItemUtil.isFlower(item))
+        if (isTame() && getOwner() == player)
         {
-            OpenGui(player);
+            if (!ItemUtil.isFlower(item))
+            {
+                OpenGui(player);
+            }
         }
 
         return ActionResultType.PASS;
@@ -530,9 +540,28 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     @Override
     public boolean checkSpawnRules(@Nonnull IWorld world, @Nonnull SpawnReason reason)
     {
-//        return super.checkSpawnRules(world, reason);
+        if (reason == SpawnReason.NATURAL || reason == SpawnReason.CHUNK_GENERATION)
+        {
+            if (random.nextInt(blocklingType.spawnRateReduction) != 0)
+            {
+                return false;
+            }
 
-        return reason != SpawnReason.NATURAL;
+            if (!world.getBlockState(getOnPos()).getMaterial().isSolid())
+            {
+                return false;
+            }
+
+            for (BiPredicate<BlocklingEntity, IWorld> predicate : getBlocklingType().predicates)
+            {
+                if (!predicate.test(this, world))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     @Override
@@ -572,6 +601,11 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     private void OpenGui(PlayerEntity player)
     {
         GuiHandler.openGui(guiInfo.getCurrentGuiId(), this, player);
+    }
+
+    public BlocklingType getOriginalBlocklingType()
+    {
+        return originalBlocklingType;
     }
 
     public BlocklingType getBlocklingType()

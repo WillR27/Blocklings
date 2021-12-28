@@ -16,7 +16,7 @@ public class EntityTypes
 
     public static final RegistryObject<EntityType<BlocklingEntity>> BLOCKLING_ENTITY =
             ENTITY_TYPES.register("blockling",
-                    () -> EntityType.Builder.of(BlocklingEntity::new, EntityClassification.CREATURE)
+                    () -> EntityType.Builder.of(BlocklingEntity::new, EntityClassification.AMBIENT)
                             .sized(1.0f, 1.0f)
                             .build(new ResourceLocation(Blocklings.MODID, "blockling").toString()));
 
