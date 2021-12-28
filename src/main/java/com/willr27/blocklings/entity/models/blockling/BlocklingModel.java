@@ -89,6 +89,7 @@ public class BlocklingModel extends EntityModel<BlocklingEntity> implements IHas
     }
 
     private float scaleX = 1.0f, scaleY = 1.0f;
+    private boolean hasOriginalBlocklingType = false;
 
     @Override
     public void setupAnim(BlocklingEntity blockling, float limbSwing, float limbSwingAmount, float ageInTicks, float headYaw, float headPitch)
@@ -96,6 +97,7 @@ public class BlocklingModel extends EntityModel<BlocklingEntity> implements IHas
         EntitySize size = blockling.getDimensions(Pose.STANDING);
         scaleX = size.width;
         scaleY = size.height;
+        hasOriginalBlocklingType = blockling.getOriginalBlocklingType() == blockling.getBlocklingType();
 
         float partialTicks = ageInTicks % 1.0f;
 
@@ -179,31 +181,27 @@ public class BlocklingModel extends EntityModel<BlocklingEntity> implements IHas
         body.zRot = bodySwing;
         rightLeg.zRot = -body.zRot;
         leftLeg.zRot = -body.zRot;
-//        scaleY = ageInTicks;
     }
 
     @Override
-    public void renderToBuffer(MatrixStack matrixStack, IVertexBuilder p_225598_2_, int p_225598_3_, int p_225598_4_, float p_225598_5_, float p_225598_6_, float p_225598_7_, float p_225598_8_)
+    public void renderToBuffer(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float r, float g, float b, float a)
     {
         matrixStack.pushPose();
         matrixStack.translate(0.0, 1.501, 0.0); // There is a random 1.501 translation in render that messes up scales
         matrixStack.scale(scaleX, scaleY, scaleX);
         matrixStack.translate(0.0, -1.501, 0.0);
 
-        body.render(matrixStack, p_225598_2_, p_225598_3_, p_225598_4_, p_225598_5_, p_225598_6_, p_225598_7_, p_225598_8_);
+        if (!hasOriginalBlocklingType)
+        {
+            r *= 0.7f;
+            g *= 0.7f;
+            b *= 0.7f;
+        }
+
+        body.render(matrixStack, buffer, packedLight, packedOverlay, r, g, b, a);
 
         matrixStack.popPose();
     }
-
-//    public void render(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-//    {
-//        super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-//    }
-//
-//    public void setRotationAngles(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor)
-//    {
-//        super.setRotationAngles(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor);
-//    }
 
     private static void setRotation(ModelRenderer model, float x, float y, float z)
     {

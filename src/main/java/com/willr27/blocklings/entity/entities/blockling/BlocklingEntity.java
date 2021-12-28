@@ -329,7 +329,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         if (isTame() && getOwner() == player)
         {
-            if (!ItemUtil.isFlower(item))
+            if ((!BlocklingType.isFood(item) || blocklingType == BlocklingType.findTypeForFood(item)) && (!blocklingType.isFoodForType(item) || getHealth() >= getMaxHealth()))
             {
                 OpenGui(player);
             }
@@ -343,7 +343,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         ItemStack stack = player.getItemInHand(Hand.MAIN_HAND);
         Item item = stack.getItem();
 
-        if (ItemUtil.isFlower(item))
+        if (blocklingType.isFoodForType(item))
         {
             if (!isTame())
             {
@@ -362,6 +362,31 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
                     remove();
                 }
+                else
+                {
+                    if (getHealth() < getMaxHealth())
+                    {
+                        heal(random.nextInt(3) + 3);
+
+                        level.broadcastEntityEvent(this, (byte) 7);
+                    }
+                }
+            }
+        }
+        else if (BlocklingType.isFood(item))
+        {
+            if (random.nextInt(4) == 0)
+            {
+                setBlocklingType(BlocklingType.findTypeForFood(item));
+            }
+            else
+            {
+                level.broadcastEntityEvent(this, (byte) 6);
+            }
+
+            if (!player.abilities.instabuild)
+            {
+                stack.shrink(1);
             }
         }
 

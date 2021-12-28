@@ -20,7 +20,7 @@ public class BlocklingRenderer extends MobRenderer<BlocklingEntity, BlocklingMod
     @Override
     public void render(BlocklingEntity blockling, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_)
     {
-        shadowRadius = blockling.getScale() * 0.6f;
+        shadowRadius = blockling.getScale() * 0.5f;
 
         super.render(blockling, p_225623_2_, p_225623_3_, p_225623_4_, p_225623_5_, p_225623_6_);
     }

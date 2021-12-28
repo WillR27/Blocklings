@@ -62,7 +62,7 @@ public abstract class Action
     {
         if (isRunning())
         {
-            count.incBaseValue(increment);
+            count.incBaseValue(increment, false);
         }
     }
 
