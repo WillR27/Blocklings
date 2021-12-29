@@ -171,6 +171,30 @@ public class ToolUtil
     }
 
     /**
+     * Returns the mining speed for the given tool against stone, including enchantments.
+     */
+    public static float getToolMiningSpeedWithEnchantments(ItemStack stack)
+    {
+        return getToolMiningSpeed(stack) + getToolEnchantmentMiningSpeed(stack);
+    }
+
+    /**
+     * Returns the mining speed for the given tool against wood, including enchantments.
+     */
+    public static float getToolWoodcuttingSpeedWithEnchantments(ItemStack stack)
+    {
+        return getToolWoodcuttingSpeed(stack) + getToolEnchantmentMiningSpeed(stack);
+    }
+
+    /**
+     * Returns the mining speed for the given tool against crops, including enchantments.
+     */
+    public static float getToolFarmingSpeedWithEnchantments(ItemStack stack)
+    {
+        return getToolFarmingSpeed(stack) + getToolEnchantmentMiningSpeed(stack);
+    }
+
+    /**
      * Returns the mining speed for the given tool against stone.
      * For reference a wooden pickaxe is 2.0f and diamond pickaxe is 8.0f;
      */
@@ -208,14 +232,6 @@ public class ToolUtil
         }
 
         return 0.0f;
-    }
-
-    /**
-     * Returns the mining speed for the given tool against stone, including enchantments.
-     */
-    public static float getToolMiningSpeedWithEnchantments(ItemStack stack)
-    {
-        return getToolMiningSpeed(stack) + getToolEnchantmentMiningSpeed(stack);
     }
 
     /**

@@ -40,9 +40,12 @@
   "blocklings.task.owner_hurt_melee.desc": "Your blockling will target your target with melee.",
   "blocklings.task.mine_ores.name": "Mine Ores",
   "blocklings.task.mine_ores.desc": "Your blockling will mine nearby ores.",
+  "blocklings.task.chop_trees.name": "Chop Trees",
+  "blocklings.task.chop_trees.desc": "Your blockling will chop nearby trees.",
 
   "blocklings.whitelist.targets": "Targets",
   "blocklings.whitelist.ores": "Ores",
+  "blocklings.whitelist.logs": "Logs",
 
   "blocklings.skill_group.general.gui_title": "General Skills",
   "blocklings.skill_group.combat.gui_title": "Combat Skills",

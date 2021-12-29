@@ -33,6 +33,7 @@ public class BlocklingTasks
     public static final TaskType MELEE_ATTACK_OWNER_HURT_BY = new TaskType("72b27eb1-e5bd-48e0-b562-74dece3d144a", "owner_hurt_by_melee", false, false, new GuiTexture.GoalGuiTexture(3, 0), BlocklingMeleeAttackOwnerHurtByGoal::new);
     public static final TaskType MELEE_ATTACK_OWNER_HURT = new TaskType("51d0ae15-8605-4240-a515-89f47b2f450a", "owner_hurt_melee", false, false, new GuiTexture.GoalGuiTexture(3, 0), BlocklingMeleeAttackOwnerHurtGoal::new);
     public static final TaskType MINE = new TaskType("657c60cf-9fac-408e-ad8d-3335409301d6", "mine_ores", false, false, new GuiTexture.GoalGuiTexture(7, 0), BlocklingMineGoal::new);
+    public static final TaskType WOODCUT = new TaskType("9701e1f6-99e0-4772-88a1-906778499a8c", "chop_trees", true, false, new GuiTexture.GoalGuiTexture(8, 0), BlocklingWoodcutGoal::new);
 
     /**
      * A global list of all task types.
@@ -46,6 +47,7 @@ public class BlocklingTasks
         add(MELEE_ATTACK_OWNER_HURT_BY);
         add(MELEE_ATTACK_OWNER_HURT);
         add(MINE);
+        add(WOODCUT);
     }};
 
     public static TaskType getTaskType(UUID id)

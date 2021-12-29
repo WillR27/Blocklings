@@ -29,6 +29,8 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.pathfinding.GroundPathNavigator;
+import net.minecraft.pathfinding.PathNavigator;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
@@ -62,6 +64,10 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     private final EquipmentInventory equipmentInv = new EquipmentInventory(this);
 
     private float scale;
+
+    protected PathNavigator createNavigation(World p_175447_1_) {
+        return new BlocklingNavigator(this, p_175447_1_);
+    }
 
     public BlocklingEntity(EntityType<? extends BlocklingEntity> type, World world)
     {
