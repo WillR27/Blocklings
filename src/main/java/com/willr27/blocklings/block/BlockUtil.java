@@ -113,6 +113,39 @@ public class BlockUtil
         return null;
     }
 
+    public static List<Block> CROPS = new ArrayList<Block>()
+    {{
+        add(Blocks.WHEAT);
+        add(Blocks.CARROTS);
+        add(Blocks.POTATOES);
+        add(Blocks.BEETROOTS);
+        add(Blocks.PUMPKIN);
+        add(Blocks.MELON);
+    }};
+
+    public static boolean isCrop(Block block)
+    {
+        return CROPS.contains(block);
+    }
+
+    public static boolean isCrop(Item item)
+    {
+        return getLeaf(item) != null;
+    }
+
+    public static Block getCrop(Item item)
+    {
+        for (Block crop : CROPS)
+        {
+            if (new ItemStack(crop).getItem() == item) // TODO: CACHE THESE ITEMS
+            {
+                return crop;
+            }
+        }
+
+        return null;
+    }
+
     public static int calcBlockBreakProgress(float percentage)
     {
         return (int) (10 * percentage);

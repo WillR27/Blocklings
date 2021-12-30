@@ -42,10 +42,14 @@
   "blocklings.task.mine_ores.desc": "Your blockling will mine nearby ores.",
   "blocklings.task.chop_trees.name": "Chop Trees",
   "blocklings.task.chop_trees.desc": "Your blockling will chop nearby trees.",
+  "blocklings.task.farm_crops.name": "Farm Crops",
+  "blocklings.task.farm_crops.desc": "Your blockling will farm nearby crops.",
 
   "blocklings.whitelist.targets": "Targets",
   "blocklings.whitelist.ores": "Ores",
   "blocklings.whitelist.logs": "Logs",
+  "blocklings.whitelist.crops": "Crops",
+  "blocklings.whitelist.seeds": "Seeds",
 
   "blocklings.skill_group.general.gui_title": "General Skills",
   "blocklings.skill_group.combat.gui_title": "Combat Skills",

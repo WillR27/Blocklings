@@ -8,6 +8,7 @@ import com.willr27.blocklings.gui.widgets.ScrollbarWidget;
 import com.willr27.blocklings.gui.widgets.TabWidget;
 import com.willr27.blocklings.gui.widgets.TextFieldWidget;
 import com.willr27.blocklings.gui.widgets.Widget;
+import com.willr27.blocklings.whitelist.GoalWhitelist;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -87,7 +88,10 @@ public class TaskConfigGui extends AbstractGui
 
         if (task.isConfigured() && !task.getGoal().whitelists.isEmpty())
         {
-            tabWidget.add(task.getGoal().whitelists.get(0).name.getString(), () -> configGui = new WhitelistGui(task.getGoal().whitelists.get(0), font, contentLeft + 9, contentTop + 49, 140, 109, contentScrollbarWidget));
+            for (GoalWhitelist whitelist : task.getGoal().whitelists)
+            {
+                tabWidget.add(whitelist.name.getString(), () -> configGui = new WhitelistGui(whitelist, font, contentLeft + 9, contentTop + 49, 140, 109, contentScrollbarWidget));
+            }
         }
     }
 

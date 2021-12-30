@@ -156,7 +156,7 @@ public class GuiUtil
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.translatef((float)x + 7, (float)y + 7, 100.0F);
         RenderSystem.translatef(8.0F, 8.0F, 0.0F);
-        RenderSystem.scalef(1.0F, 1.0F, 1.0F);
+        RenderSystem.scalef(1.0F, -1.0F, 1.0F);
         RenderSystem.scalef(24.0F, 24.0F, 24.0F);
         MatrixStack matrixstack = new MatrixStack();
         IRenderTypeBuffer.Impl irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();

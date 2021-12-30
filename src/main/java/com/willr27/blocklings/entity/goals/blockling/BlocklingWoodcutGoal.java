@@ -175,8 +175,6 @@ public class BlocklingWoodcutGoal extends BlocklingGoal implements IHasTargetGoa
 
         if (isInRange(trunkPos))
         {
-            blockling.lookAt(EntityAnchorArgument.Type.EYES, new Vector3d(trunkPos.getX() + 0.5, trunkPos.getY() + 0.5, trunkPos.getZ() + 0.5));
-
             ItemStack mainStack = blockling.getMainHandItem();
             ItemStack offStack = blockling.getOffhandItem();
 
@@ -185,6 +183,8 @@ public class BlocklingWoodcutGoal extends BlocklingGoal implements IHasTargetGoa
 
             boolean mainCanHarvest = ToolUtil.canToolHarvestBlock(mainStack, targetBlockState);
             boolean offCanHarvest = ToolUtil.canToolHarvestBlock(offStack, targetBlockState);
+
+            blockling.lookAt(EntityAnchorArgument.Type.EYES, new Vector3d(trunkPos.getX() + 0.5, trunkPos.getY() + 0.5, trunkPos.getZ() + 0.5));
 
             if (mainCanHarvest || offCanHarvest)
             {
@@ -197,7 +197,7 @@ public class BlocklingWoodcutGoal extends BlocklingGoal implements IHasTargetGoa
                     float offDestroySpeed = offCanHarvest ? ToolUtil.getToolWoodcuttingSpeedWithEnchantments(offStack) : 0.0f;
 
                     float destroySpeed = blocklingDestroySpeed + mainDestroySpeed + offDestroySpeed;
-                    float blockStrength = world.getBlockState(targetGoal.getTargetPos()).getDestroySpeed(world, targetGoal.getTargetPos());
+                    float blockStrength = targetBlockState.getDestroySpeed(world, targetGoal.getTargetPos());
 
                     blockling.getStats().hand.setValue(BlocklingHand.fromBooleans(mainCanHarvest, offCanHarvest));
 
@@ -215,8 +215,15 @@ public class BlocklingWoodcutGoal extends BlocklingGoal implements IHasTargetGoa
                             blockling.dropItemStack(stack);
                         }
 
-                        mainStack.hurt(mainCanHarvest ? 1 : 0, blockling.getRandom(), null);
-                        offStack.hurt(offCanHarvest ? 1 : 0, blockling.getRandom(), null);
+                        if (mainStack.hurt(mainCanHarvest ? 1 : 0, blockling.getRandom(), null))
+                        {
+                            mainStack.shrink(1);
+                        }
+
+                        if (offStack.hurt(offCanHarvest ? 1 : 0, blockling.getRandom(), null))
+                        {
+                            offStack.shrink(1);
+                        }
 
                         world.destroyBlock(targetBlockPos, false);
                         world.destroyBlockProgress(blockling.getId(), targetBlockPos, 0);

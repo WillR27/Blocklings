@@ -3,49 +3,58 @@ package com.willr27.blocklings.entity.goals.blockling;
 import com.willr27.blocklings.block.BlockUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
+import com.willr27.blocklings.entity.goals.blockling.target.BlocklingFarmTargetGoal;
+import com.willr27.blocklings.entity.goals.blockling.target.IHasTargetGoal;
 import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.goal.BlocklingTargetGoal;
-import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
-import com.willr27.blocklings.entity.goals.blockling.target.BlocklingMineTargetGoal;
-import com.willr27.blocklings.entity.goals.blockling.target.IHasTargetGoal;
 import com.willr27.blocklings.item.DropUtil;
 import com.willr27.blocklings.item.ToolType;
 import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.CropsBlock;
 import net.minecraft.command.arguments.EntityAnchorArgument;
-import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.UUID;
 
-public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
+public class BlocklingFarmGoal extends BlocklingGoal implements IHasTargetGoal
 {
-    private static final int SEARCH_RADIUS_X = 8;
-    private static final int SEARCH_RADIUS_Y = 8;
-
-    private final BlocklingMineTargetGoal targetGoal;
+    private final BlocklingFarmTargetGoal targetGoal;
 
     private Path path = null;
     private int recalc = 0;
     private final int recalcInterval = 20;
     private float prevMoveDist = 0.0f;
 
-    public BlocklingMineGoal(UUID id, BlocklingEntity blockling, BlocklingTasks goals)
+    public BlocklingFarmGoal(UUID id, BlocklingEntity blockling, BlocklingTasks goals)
     {
         super(id, blockling, goals);
 
-        targetGoal = new BlocklingMineTargetGoal(this);
+        targetGoal = new BlocklingFarmTargetGoal(this);
 
-        GoalWhitelist whitelist = new GoalWhitelist("24d7135e-607b-413b-a2a7-00d19119b9de", "ores", Whitelist.Type.BLOCK, this);
-        BlockUtil.ORES.forEach(ore -> whitelist.put(ore.getRegistryName(), true));
+        GoalWhitelist whitelist = new GoalWhitelist("25140edf-f60e-459e-b1f0-9ff82108ec0b", "crops", Whitelist.Type.BLOCK, this);
+        BlockUtil.CROPS.forEach(crop -> whitelist.put(crop.getRegistryName(), true));
         whitelists.add(whitelist);
 
-        setFlags(EnumSet.of(Goal.Flag.JUMP, Goal.Flag.MOVE));
+        GoalWhitelist whitelist2 = new GoalWhitelist("d77bf1c1-7718-4733-b763-298b03340eea", "seeds", Whitelist.Type.ITEM, this);
+        BlockUtil.CROPS.forEach(crop ->
+        {
+            if (crop instanceof CropsBlock)
+            {
+                whitelist2.put(crop.getCloneItemStack(world, null, crop.defaultBlockState()).getItem().getRegistryName(), true);
+            }
+        });
+        whitelists.add(whitelist2);
+
+        setFlags(EnumSet.of(Flag.JUMP, Flag.MOVE));
     }
 
     @Override
@@ -62,7 +71,7 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
             return false;
         }
 
-        if (!blockling.getEquipment().hasToolEquipped(ToolType.PICKAXE))
+        if (!blockling.getEquipment().hasToolEquipped(ToolType.HOE))
         {
             return false;
         }
@@ -72,10 +81,10 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
             return false;
         }
 
-        if (!blockling.getEquipment().canHarvestBlockWithEquippedTools(world.getBlockState(targetGoal.getTargetPos())))
-        {
-            return false;
-        }
+//        if (!blockling.getEquipment().canHarvestBlockWithEquippedTools(world.getBlockState(targetGoal.getTargetPos())))
+//        {
+//            return false;
+//        }
 
         path = blockling.getNavigation().createPath(targetGoal.getTargetPos(), 0);
 
@@ -83,6 +92,8 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
         {
             if (!isInRange(targetGoal.getTargetPos()))
             {
+                targetGoal.markTargetBad();
+
                 return false;
             }
         }
@@ -98,7 +109,7 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
             return false;
         }
 
-        if (!blockling.getEquipment().hasToolEquipped(ToolType.PICKAXE))
+        if (!blockling.getEquipment().hasToolEquipped(ToolType.HOE))
         {
             return false;
         }
@@ -108,15 +119,17 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
             return false;
         }
 
-        if (!blockling.getEquipment().canHarvestBlockWithEquippedTools(world.getBlockState(targetGoal.getTargetPos())))
-        {
-            return false;
-        }
+//        if (!blockling.getEquipment().canHarvestBlockWithEquippedTools(world.getBlockState(targetGoal.getTargetPos())))
+//        {
+//            return false;
+//        }
 
         if (path == null)
         {
             if (!isInRange(targetGoal.getTargetPos()))
             {
+                targetGoal.markTargetBad();
+
                 return false;
             }
         }
@@ -168,9 +181,10 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
 
             BlockPos targetBlockPos = targetGoal.getTargetPos();
             BlockState targetBlockState = world.getBlockState(targetBlockPos);
+            Block targetBlock = targetBlockState.getBlock();
 
-            boolean mainCanHarvest = ToolUtil.canToolHarvestBlock(mainStack, targetBlockState);
-            boolean offCanHarvest = ToolUtil.canToolHarvestBlock(offStack, targetBlockState);
+            boolean mainCanHarvest = ToolUtil.isHoe(mainStack);
+            boolean offCanHarvest = ToolUtil.isHoe(offStack);
 
             blockling.lookAt(EntityAnchorArgument.Type.EYES, new Vector3d(targetBlockPos.getX() + 0.5, targetBlockPos.getY() + 0.5, targetBlockPos.getZ() + 0.5));
 
@@ -180,22 +194,22 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
 
                 if (blockling.getActions().mine.isRunning())
                 {
-                    float blocklingDestroySpeed = blockling.getStats().miningSpeed.getValue();
-                    float mainDestroySpeed = mainCanHarvest ? ToolUtil.getToolMiningSpeedWithEnchantments(mainStack) : 0.0f;
-                    float offDestroySpeed = offCanHarvest ? ToolUtil.getToolMiningSpeedWithEnchantments(offStack) : 0.0f;
+                    float blocklingDestroySpeed = blockling.getStats().farmingSpeed.getValue();
+                    float mainDestroySpeed = mainCanHarvest ? ToolUtil.getToolFarmingSpeedWithEnchantments(mainStack) : 0.0f;
+                    float offDestroySpeed = offCanHarvest ? ToolUtil.getToolFarmingSpeedWithEnchantments(offStack) : 0.0f;
 
                     float destroySpeed = blocklingDestroySpeed + mainDestroySpeed + offDestroySpeed;
                     float blockStrength = targetBlockState.getDestroySpeed(world, targetGoal.getTargetPos());
 
                     blockling.getStats().hand.setValue(BlocklingHand.fromBooleans(mainCanHarvest, offCanHarvest));
 
-                    float progress = destroySpeed / blockStrength / 100.0f;
+                    float progress = destroySpeed / (blockStrength + 5.0f) / 100.0f;
                     blockling.getActions().mine.tick(progress);
 
                     if (blockling.getActions().mine.isFinished())
                     {
                         blockling.getActions().mine.stop();
-                        blockling.getStats().miningXp.incValue((int) (blockStrength * 3.0f));
+                        blockling.getStats().farmingXp.incValue((int) ((blockStrength + 1.0f) * 3.0f));
 
                         for (ItemStack stack : DropUtil.getDrops(blockling, targetBlockPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
                         {
@@ -213,12 +227,25 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
                             offStack.shrink(1);
                         }
 
+                        ItemStack seedStack = ItemStack.EMPTY;
+
+                        if (targetBlock instanceof CropsBlock)
+                        {
+                            CropsBlock cropsBlock = (CropsBlock) targetBlock;
+                            seedStack = cropsBlock.getCloneItemStack(world, targetBlockPos, targetBlockState);
+                        }
+
                         world.destroyBlock(targetBlockPos, false);
                         world.destroyBlockProgress(blockling.getId(), targetBlockPos, 0);
 
+                        if (blockling.getEquipment().take(seedStack) && whitelists.get(1).isEntryWhitelisted(seedStack.getItem()))
+                        {
+                            world.setBlock(targetBlockPos, Block.byItem(seedStack.getItem()).defaultBlockState(), 3);
+                        }
+
                         forceRecalc();
                     }
-                    else
+                    else if (targetBlockState.getMaterial().isSolid())
                     {
                         world.destroyBlockProgress(blockling.getId(), targetBlockPos, BlockUtil.calcBlockBreakProgress(blockling.getActions().mine.count()));
                     }
@@ -262,7 +289,7 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
 
     private boolean isInRange(BlockPos blockPos)
     {
-        float rangeSq = blockling.getStats().miningRangeSq.getValue();
+        float rangeSq = blockling.getStats().farmingRangeSq.getValue();
         float distanceSq = (float) blockling.distanceToSqr(blockPos.getX() + 0.5f, blockPos.getY() + 0.5f, blockPos.getZ() + 0.5f);
 
         return distanceSq < rangeSq;

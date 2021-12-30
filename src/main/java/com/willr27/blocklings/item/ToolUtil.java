@@ -216,7 +216,7 @@ public class ToolUtil
      */
     public static float getToolFarmingSpeed(ItemStack stack)
     {
-        return stack.getDestroySpeed(Blocks.WHEAT.defaultBlockState());
+        return stack.getDestroySpeed(Blocks.HAY_BLOCK.defaultBlockState());
     }
 
     /**

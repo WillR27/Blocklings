@@ -175,7 +175,74 @@ public abstract class AbstractInventory implements IInventory
                 return i;
             }
         }
+
         return -1;
+    }
+
+    public boolean has(ItemStack stack)
+    {
+        return has(stack, 0, getContainerSize() - 1);
+    }
+
+    public boolean has(ItemStack stack, int startIndex, int endIndex)
+    {
+        int count = 0;
+
+        for (int i = startIndex; i < endIndex + 1; i++)
+        {
+            ItemStack slotStack = getItem(i);
+
+            if (ItemStack.isSame(slotStack, stack))
+            {
+                count += slotStack.getCount();
+
+                if (count >= stack.getCount())
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public boolean take(ItemStack stack)
+    {
+        return take(stack, 0, getContainerSize() - 1);
+    }
+
+    public boolean take(ItemStack stack, int startIndex, int endIndex)
+    {
+        if (!has(stack))
+        {
+            return false;
+        }
+
+        int remainder = stack.getCount();
+
+        for (int i = startIndex; i < endIndex + 1; i++)
+        {
+            ItemStack slotStack = getItem(i);
+
+            if (ItemStack.isSame(slotStack, stack))
+            {
+                int slotCount = slotStack.getCount();
+
+                if (slotCount >= remainder)
+                {
+                    slotStack.shrink(remainder);
+
+                    break;
+                }
+                else
+                {
+                    remainder -= slotCount;
+                    slotStack.shrink(slotCount);
+                }
+            }
+        }
+
+        return true;
     }
 
     public boolean couldAddItem(ItemStack stack, int slot)
