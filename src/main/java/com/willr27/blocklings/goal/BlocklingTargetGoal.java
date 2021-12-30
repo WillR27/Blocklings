@@ -5,9 +5,9 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.world.World;
 
-public abstract class BlocklingTargetGoal extends Goal
+public abstract class BlocklingTargetGoal<T extends BlocklingGoal> extends Goal
 {
-    public final BlocklingGoal goal;
+    public final T goal;
     public final BlocklingTasks goals;
     public final BlocklingEntity blockling;
     public final World world;
@@ -19,7 +19,7 @@ public abstract class BlocklingTargetGoal extends Goal
      */
     private final int recalcInterval = 20;
 
-    public BlocklingTargetGoal(BlocklingGoal goal)
+    public BlocklingTargetGoal(T goal)
     {
         this.goal = goal;
         this.goals = goal.tasks;

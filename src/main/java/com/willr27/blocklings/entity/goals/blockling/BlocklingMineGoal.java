@@ -25,8 +25,7 @@ import java.util.*;
 
 public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
 {
-    private static final int SEARCH_RADIUS_X = 8;
-    private static final int SEARCH_RADIUS_Y = 8;
+    public final GoalWhitelist oreWhitelist;
 
     private final BlocklingMineTargetGoal targetGoal;
 
@@ -41,9 +40,9 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
 
         targetGoal = new BlocklingMineTargetGoal(this);
 
-        GoalWhitelist whitelist = new GoalWhitelist("24d7135e-607b-413b-a2a7-00d19119b9de", "ores", Whitelist.Type.BLOCK, this);
-        BlockUtil.ORES.forEach(ore -> whitelist.put(ore.getRegistryName(), true));
-        whitelists.add(whitelist);
+        oreWhitelist = new GoalWhitelist("24d7135e-607b-413b-a2a7-00d19119b9de", "ores", Whitelist.Type.BLOCK, this);
+        BlockUtil.ORES.forEach(ore -> oreWhitelist.put(ore.getRegistryName(), true));
+        whitelists.add(oreWhitelist);
 
         setFlags(EnumSet.of(Goal.Flag.JUMP, Goal.Flag.MOVE));
     }

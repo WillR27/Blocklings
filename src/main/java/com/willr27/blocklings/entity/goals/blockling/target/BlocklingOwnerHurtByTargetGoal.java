@@ -5,7 +5,7 @@ import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import net.minecraft.entity.LivingEntity;
 
-public class BlocklingOwnerHurtByTargetGoal extends BlocklingTargetGoal
+public class BlocklingOwnerHurtByTargetGoal extends BlocklingTargetGoal<BlocklingGoal>
 {
     private LivingEntity ownersAttacker = null;
     private int timestamp = 0;

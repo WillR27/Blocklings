@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 
 public class BlocklingWoodcutGoal extends BlocklingGoal implements IHasTargetGoal
 {
+    public final GoalWhitelist logWhitelist;
+
     private final BlocklingWoodcutTargetGoal targetGoal;
 
     private BlockPos trunkPos;
@@ -45,9 +47,9 @@ public class BlocklingWoodcutGoal extends BlocklingGoal implements IHasTargetGoa
 
         targetGoal = new BlocklingWoodcutTargetGoal(this);
 
-        GoalWhitelist whitelist = new GoalWhitelist("fbfbfd44-c1b0-4420-824a-270b34c866f7", "logs", Whitelist.Type.BLOCK, this);
-        BlockUtil.LOGS.forEach(log -> whitelist.put(log.getRegistryName(), true));
-        whitelists.add(whitelist);
+        logWhitelist = new GoalWhitelist("fbfbfd44-c1b0-4420-824a-270b34c866f7", "logs", Whitelist.Type.BLOCK, this);
+        BlockUtil.LOGS.forEach(log -> logWhitelist.put(log.getRegistryName(), true));
+        whitelists.add(logWhitelist);
 
         setFlags(EnumSet.of(Flag.JUMP, Flag.MOVE));
     }

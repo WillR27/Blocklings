@@ -5,10 +5,9 @@ import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import net.minecraft.entity.LivingEntity;
 
-public class BlocklingOwnerHurtTargetGoal extends BlocklingTargetGoal
+public class BlocklingOwnerHurtTargetGoal extends BlocklingTargetGoal<BlocklingGoal>
 {
     private LivingEntity ownersTarget = null;
-    private int timestamp = 0;
 
     public BlocklingOwnerHurtTargetGoal(BlocklingGoal goal)
     {
@@ -62,8 +61,6 @@ public class BlocklingOwnerHurtTargetGoal extends BlocklingTargetGoal
     @Override
     public void start()
     {
-        timestamp = blockling.getOwner().getLastHurtMobTimestamp();
-
         blockling.setTarget(ownersTarget);
     }
 }

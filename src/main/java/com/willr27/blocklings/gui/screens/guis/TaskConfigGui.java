@@ -71,7 +71,6 @@ public class TaskConfigGui extends AbstractGui
             }
         };
         nameField.setMaxLength(25);
-//        nameField.setEnableBackgroundDrawing(true);
         nameField.setVisible(true);
         nameField.setTextColor(16777215);
         nameField.setValue(task.getCustomName());
@@ -90,7 +89,10 @@ public class TaskConfigGui extends AbstractGui
         {
             for (GoalWhitelist whitelist : task.getGoal().whitelists)
             {
-                tabWidget.add(whitelist.name.getString(), () -> configGui = new WhitelistGui(whitelist, font, contentLeft + 9, contentTop + 49, 140, 109, contentScrollbarWidget));
+                if (whitelist.isUnlocked())
+                {
+                    tabWidget.add(whitelist.name.getString(), () -> configGui = new WhitelistGui(whitelist, font, contentLeft + 9, contentTop + 49, 140, 109, contentScrollbarWidget));
+                }
             }
         }
     }

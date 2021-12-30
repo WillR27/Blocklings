@@ -55,6 +55,7 @@ public class NetworkHandler
         HANDLER.registerMessage(id++, TaskSwapPriorityMessage.class, TaskSwapPriorityMessage::encode, TaskSwapPriorityMessage::decode, TaskSwapPriorityMessage::handle);
         HANDLER.registerMessage(id++, TaskTypeIsUnlockedMessage.class, TaskTypeIsUnlockedMessage::encode, TaskTypeIsUnlockedMessage::decode, TaskTypeIsUnlockedMessage::handle);
         HANDLER.registerMessage(id++, WhitelistAllMessage.class, WhitelistAllMessage::encode, WhitelistAllMessage::decode, WhitelistAllMessage::handle);
+        HANDLER.registerMessage(id++, WhitelistIsUnlockedMessage.class, WhitelistIsUnlockedMessage::encode, WhitelistIsUnlockedMessage::decode, WhitelistIsUnlockedMessage::handle);
         HANDLER.registerMessage(id++, WhitelistSingleMessage.class, WhitelistSingleMessage::encode, WhitelistSingleMessage::decode, WhitelistSingleMessage::handle);
     }
 

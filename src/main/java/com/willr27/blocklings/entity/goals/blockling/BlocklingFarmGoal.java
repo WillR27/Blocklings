@@ -27,6 +27,9 @@ import java.util.UUID;
 
 public class BlocklingFarmGoal extends BlocklingGoal implements IHasTargetGoal
 {
+    public final GoalWhitelist cropWhitelist;
+    public final GoalWhitelist seedWhitelist;
+
     private final BlocklingFarmTargetGoal targetGoal;
 
     private Path path = null;
@@ -40,19 +43,19 @@ public class BlocklingFarmGoal extends BlocklingGoal implements IHasTargetGoal
 
         targetGoal = new BlocklingFarmTargetGoal(this);
 
-        GoalWhitelist whitelist = new GoalWhitelist("25140edf-f60e-459e-b1f0-9ff82108ec0b", "crops", Whitelist.Type.BLOCK, this);
-        BlockUtil.CROPS.forEach(crop -> whitelist.put(crop.getRegistryName(), true));
-        whitelists.add(whitelist);
+        cropWhitelist = new GoalWhitelist("25140edf-f60e-459e-b1f0-9ff82108ec0b", "crops", Whitelist.Type.BLOCK, this);
+        BlockUtil.CROPS.forEach(crop -> cropWhitelist.put(crop.getRegistryName(), true));
+        whitelists.add(cropWhitelist);
 
-        GoalWhitelist whitelist2 = new GoalWhitelist("d77bf1c1-7718-4733-b763-298b03340eea", "seeds", Whitelist.Type.ITEM, this);
+        seedWhitelist = new GoalWhitelist("d77bf1c1-7718-4733-b763-298b03340eea", "seeds", Whitelist.Type.ITEM, this);
         BlockUtil.CROPS.forEach(crop ->
         {
             if (crop instanceof CropsBlock)
             {
-                whitelist2.put(crop.getCloneItemStack(world, null, crop.defaultBlockState()).getItem().getRegistryName(), true);
+                seedWhitelist.put(crop.getCloneItemStack(world, null, crop.defaultBlockState()).getItem().getRegistryName(), true);
             }
         });
-        whitelists.add(whitelist2);
+        whitelists.add(seedWhitelist);
 
         setFlags(EnumSet.of(Flag.JUMP, Flag.MOVE));
     }
@@ -238,7 +241,7 @@ public class BlocklingFarmGoal extends BlocklingGoal implements IHasTargetGoal
                         world.destroyBlock(targetBlockPos, false);
                         world.destroyBlockProgress(blockling.getId(), targetBlockPos, 0);
 
-                        if (blockling.getEquipment().take(seedStack) && whitelists.get(1).isEntryWhitelisted(seedStack.getItem()))
+                        if (blockling.getEquipment().take(seedStack) && seedWhitelist.isEntryWhitelisted(seedStack.getItem()))
                         {
                             world.setBlock(targetBlockPos, Block.byItem(seedStack.getItem()).defaultBlockState(), 3);
                         }

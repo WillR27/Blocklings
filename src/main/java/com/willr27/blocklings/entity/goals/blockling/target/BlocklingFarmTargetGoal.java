@@ -1,13 +1,11 @@
 package com.willr27.blocklings.entity.goals.blockling.target;
 
-import com.willr27.blocklings.entity.EntityUtil;
+import com.willr27.blocklings.entity.goals.blockling.BlocklingFarmGoal;
 import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropsBlock;
-import net.minecraft.block.IGrowable;
-import net.minecraft.state.IntegerProperty;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.HashMap;
@@ -15,7 +13,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class BlocklingFarmTargetGoal extends BlocklingTargetGoal
+public class BlocklingFarmTargetGoal extends BlocklingTargetGoal<BlocklingFarmGoal>
 {
     private static final int SEARCH_RADIUS_X = 8;
     private static final int SEARCH_RADIUS_Y = 8;
@@ -30,7 +28,7 @@ public class BlocklingFarmTargetGoal extends BlocklingTargetGoal
      */
     private final int recalcBadInterval = 20;
 
-    public BlocklingFarmTargetGoal(BlocklingGoal goal)
+    public BlocklingFarmTargetGoal(BlocklingFarmGoal goal)
     {
         super(goal);
     }
@@ -201,7 +199,7 @@ public class BlocklingFarmTargetGoal extends BlocklingTargetGoal
 
     private boolean isValidCrop(Block block)
     {
-        return goal.whitelists.get(0).isEntryWhitelisted(block);
+        return goal.cropWhitelist.isEntryWhitelisted(block);
     }
 
     public void markTargetBad()

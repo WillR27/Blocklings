@@ -1,7 +1,8 @@
 package com.willr27.blocklings.entity.goals.blockling.target;
 
 import com.willr27.blocklings.block.BlockUtil;
-import com.willr27.blocklings.entity.EntityUtil;
+import com.willr27.blocklings.entity.goals.blockling.BlocklingFarmGoal;
+import com.willr27.blocklings.entity.goals.blockling.BlocklingWoodcutGoal;
 import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import net.minecraft.block.Block;
@@ -12,7 +13,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class BlocklingWoodcutTargetGoal extends BlocklingTargetGoal
+public class BlocklingWoodcutTargetGoal extends BlocklingTargetGoal<BlocklingWoodcutGoal>
 {
     private static final int SEARCH_RADIUS_X = 8;
     private static final int SEARCH_RADIUS_Y = 8;
@@ -33,7 +34,7 @@ public class BlocklingWoodcutTargetGoal extends BlocklingTargetGoal
      */
     private final float leafToLogRatio = 1.0f;
 
-    public BlocklingWoodcutTargetGoal(BlocklingGoal goal)
+    public BlocklingWoodcutTargetGoal(BlocklingWoodcutGoal goal)
     {
         super(goal);
     }
@@ -240,7 +241,7 @@ public class BlocklingWoodcutTargetGoal extends BlocklingTargetGoal
 
     private boolean isValidLog(Block block)
     {
-        return goal.whitelists.get(0).isEntryWhitelisted(block);
+        return goal.logWhitelist.isEntryWhitelisted(block);
     }
 
     private boolean isValidLeaf(Block block)

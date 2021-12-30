@@ -1,6 +1,7 @@
 package com.willr27.blocklings.entity.goals.blockling.target;
 
 import com.willr27.blocklings.entity.EntityUtil;
+import com.willr27.blocklings.entity.goals.blockling.BlocklingMineGoal;
 import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import net.minecraft.block.Block;
@@ -11,7 +12,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class BlocklingMineTargetGoal extends BlocklingTargetGoal
+public class BlocklingMineTargetGoal extends BlocklingTargetGoal<BlocklingMineGoal>
 {
     private static final int SEARCH_RADIUS_X = 8;
     private static final int SEARCH_RADIUS_Y = 8;
@@ -27,7 +28,7 @@ public class BlocklingMineTargetGoal extends BlocklingTargetGoal
      */
     private final int recalcBadInterval = 20;
 
-    public BlocklingMineTargetGoal(BlocklingGoal goal)
+    public BlocklingMineTargetGoal(BlocklingMineGoal goal)
     {
         super(goal);
     }
@@ -236,7 +237,7 @@ public class BlocklingMineTargetGoal extends BlocklingTargetGoal
 
     private boolean isValidOre(Block block)
     {
-        return goal.whitelists.get(0).isEntryWhitelisted(block);
+        return goal.oreWhitelist.isEntryWhitelisted(block);
     }
 
     public void markTargetBad()
