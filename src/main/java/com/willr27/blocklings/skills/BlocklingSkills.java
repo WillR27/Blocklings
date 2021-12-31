@@ -1,6 +1,5 @@
 package com.willr27.blocklings.skills;
 
-import com.sun.org.apache.regexp.internal.RE;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingStats;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
@@ -29,9 +28,18 @@ public class BlocklingSkills
 
     public static class Combat
     {
+        private static final SkillGeneralInfo NOVICE_GUARD_GENERAL = new SkillGeneralInfo(Skill.Type.AI, "combat.novice_guard");
+        private static final SkillDefaultsInfo NOVICE_GUARD_DEFAULTS = new SkillDefaultsInfo(Skill.State.UNLOCKED);
+        private static final SkillRelationshipsInfo NOVICE_GUARD_RELATIONSHIPS = new SkillRelationshipsInfo(new SkillInfo[] {  }, new SkillInfo[] {  });
+        private static final SkillRequirementsInfo NOVICE_GUARD_REQUIREMENTS = new SkillRequirementsInfo(0, new HashMap<BlocklingStats.Level, Integer>() {{  }});
+        private static final SkillCallbackInfo NOVICE_GUARD_CALLBACKS = new SkillCallbackInfo(skill -> { skill.group.blockling.getTasks().setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT_BY, true); skill.group.blockling.getTasks().setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT, true); return true; });
+        private static final SkillGuiInfo.AbilityGuiTexture NOVICE_GUARD_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.COMBAT_ICONS, 0, 0);
+        private static final SkillGuiInfo NOVICE_GUARD_GUI = new SkillGuiInfo(0, 0, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, NOVICE_GUARD_TEXTURE);
+        public static final SkillInfo NOVICE_GUARD = new SkillInfo("dcbf7cc1-8bef-49aa-a5a0-cd70cb40cbac", NOVICE_GUARD_GENERAL, NOVICE_GUARD_DEFAULTS, NOVICE_GUARD_RELATIONSHIPS, NOVICE_GUARD_REQUIREMENTS, NOVICE_GUARD_CALLBACKS, NOVICE_GUARD_GUI);
+
         public static final List<Function<SkillGroup, Skill>> SKILLS = new ArrayList<Function<SkillGroup, Skill>>()
         {{
-
+            add(group -> new Skill(NOVICE_GUARD, group));
         }};
     }
 
@@ -172,7 +180,7 @@ public class BlocklingSkills
         private static final SkillGuiInfo EFFICIENCY_GUI = new SkillGuiInfo(70, 0, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xffd56d, EFFICIENCY_TEXTURE);
         public static final SkillInfo EFFICIENCY = new SkillInfo("a7a02e05-c349-4a6c-9822-f05025c73bb5", EFFICIENCY_GENERAL, EFFICIENCY_DEFAULTS, EFFICIENCY_RELATIONSHIPS, EFFICIENCY_REQUIREMENTS, EFFICIENCY_CALLBACKS, EFFICIENCY_GUI);
 
-        private static final SkillGeneralInfo REPLANTER_GENERAL = new SkillGeneralInfo(Skill.Type.STAT, "farming.replanter");
+        private static final SkillGeneralInfo REPLANTER_GENERAL = new SkillGeneralInfo(Skill.Type.AI, "farming.replanter");
         private static final SkillDefaultsInfo REPLANTER_DEFAULTS = new SkillDefaultsInfo(Skill.State.LOCKED);
         private static final SkillRelationshipsInfo REPLANTER_RELATIONSHIPS = new SkillRelationshipsInfo(new SkillInfo[] { NOVICE_FARMER }, new SkillInfo[] {  });
         private static final SkillRequirementsInfo REPLANTER_REQUIREMENTS = new SkillRequirementsInfo(2, new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.FARMING, 10); }});

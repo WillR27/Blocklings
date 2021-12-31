@@ -131,7 +131,7 @@ public class BlocklingStats
         woodcuttingXp = createIntAttribute("82165063-6d47-4534-acc9-db3543c3db74", "woodcutting_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(woodcuttingLevel.getValue())), null, null);
         farmingXp = createIntAttribute("1f1e4cbc-358e-4477-92d8-03e818d5272c", "farming_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(farmingLevel.getValue())), null, null);
 
-        skillPoints = createIntAttribute("a78f9d35-266e-4f86-836e-daaef073940e", "skill_points", 50, null, null);
+        skillPoints = createIntAttribute("a78f9d35-266e-4f86-836e-daaef073940e", "skill_points", combatLevel.getValue() + miningLevel.getValue() + woodcuttingLevel.getValue() + farmingLevel.getValue(), null, null);
 
         hand = createEnumAttribute("f21fcbaa-f800-468e-8c22-ec4b4fd0fdc2", "hand", BlocklingHand.NONE, (i) -> BlocklingHand.values()[i], null, null);
 
@@ -368,9 +368,9 @@ public class BlocklingStats
     {
         combatLevel.addUpdateCallback((i) -> { updateCombatLevelBonuses(false); });
         attackSpeed.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.ATTACK_SPEED)).setBaseValue(f));
-        miningLevel.addUpdateCallback((i) -> miningSpeedLevelModifier.setValue(calcBreakSpeedFromLevel(i), false));
-        woodcuttingLevel.addUpdateCallback((i) -> woodcuttingSpeedLevelModifier.setValue(calcBreakSpeedFromLevel(i), false));
-        farmingLevel.addUpdateCallback((i) -> farmingSpeedLevelModifier.setValue(calcBreakSpeedFromLevel(i), false));
+        miningLevel.addUpdateCallback((i) -> { miningSpeedLevelModifier.setValue(calcBreakSpeedFromLevel(i), false); });
+        woodcuttingLevel.addUpdateCallback((i) -> { woodcuttingSpeedLevelModifier.setValue(calcBreakSpeedFromLevel(i), false); });
+        farmingLevel.addUpdateCallback((i) -> { farmingSpeedLevelModifier.setValue(calcBreakSpeedFromLevel(i), false); });
         combatXp.addUpdateCallback((i) -> checkForLevelUp(false));
         miningXp.addUpdateCallback((i) -> checkForLevelUp(false));
         woodcuttingXp.addUpdateCallback((i) -> checkForLevelUp(false));
@@ -463,6 +463,7 @@ public class BlocklingStats
         {
             this.combatLevel.setValue(combatLevel + 1, sync);
             this.combatXp.setValue(combatXp - combatXpReq, sync);
+            skillPoints.incValue(1, sync);
         }
 
         int miningLevel = this.miningLevel.getValue();
@@ -472,6 +473,7 @@ public class BlocklingStats
         {
             this.miningLevel.setValue(miningLevel + 1, sync);
             this.miningXp.setValue(miningXp - miningXpReq, sync);
+            skillPoints.incValue(1, sync);
         }
 
         int woodcuttingLevel = this.woodcuttingLevel.getValue();
@@ -481,6 +483,7 @@ public class BlocklingStats
         {
             this.woodcuttingLevel.setValue(woodcuttingLevel + 1, sync);
             this.woodcuttingXp.setValue(woodcuttingXp - woodcuttingXpReq, sync);
+            skillPoints.incValue(1, sync);
         }
 
         int farmingLevel = this.farmingLevel.getValue();
@@ -490,6 +493,7 @@ public class BlocklingStats
         {
             this.farmingLevel.setValue(farmingLevel + 1, sync);
             this.farmingXp.setValue(farmingXp - farmingXpReq, sync);
+            skillPoints.incValue(1, sync);
         }
     }
 

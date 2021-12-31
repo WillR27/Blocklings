@@ -35,9 +35,9 @@
   "blocklings.task.hurt_by_melee.name": "Retaliate",
   "blocklings.task.hurt_by_melee.desc": "Your blockling will attack their attacker with melee.",
   "blocklings.task.owner_hurt_by_melee.name": "Attack Owner's Attacker",
-  "blocklings.task.owner_hurt_by_melee.desc": "Your blockling will target your attacker with melee.",
+  "blocklings.task.owner_hurt_by_melee.desc": "Your blockling will attack your attacker with melee.",
   "blocklings.task.owner_hurt_melee.name": "Attack Owner's Target",
-  "blocklings.task.owner_hurt_melee.desc": "Your blockling will target your target with melee.",
+  "blocklings.task.owner_hurt_melee.desc": "Your blockling will attack your target with melee.",
   "blocklings.task.mine_ores.name": "Mine Ores",
   "blocklings.task.mine_ores.desc": "Your blockling will mine nearby ores.",
   "blocklings.task.chop_trees.name": "Chop Trees",
@@ -60,6 +60,9 @@
   "blocklings.skill.buy_confirmation": "Are you sure you want to buy %1$s for %2$s skill point(s)?",
   "blocklings.skill.unknown": "???",
   "blocklings.skill.name": "Skill",
+
+  "blocklings.skill.combat.novice_guard.name": "Novice Guard",
+  "blocklings.skill.combat.novice_guard.desc": "Unlocks the \"Attack Owner''s Attacker\" and \"Attack Owner''s Target\" tasks.",
 
   "blocklings.skill.mining.novice_miner.name": "Novice Miner",
   "blocklings.skill.mining.novice_miner.desc": "Unlocks the \"Mine Ores\" task.",

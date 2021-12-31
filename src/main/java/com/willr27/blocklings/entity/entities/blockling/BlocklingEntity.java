@@ -65,10 +65,6 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
     private float scale;
 
-    protected PathNavigator createNavigation(World p_175447_1_) {
-        return new BlocklingNavigator(this, p_175447_1_);
-    }
-
     public BlocklingEntity(EntityType<? extends BlocklingEntity> type, World world)
     {
         super(type, world);
@@ -335,7 +331,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         if (isTame() && getOwner() == player)
         {
-            if ((!BlocklingType.isFood(item) || blocklingType == BlocklingType.findTypeForFood(item) || ItemUtil.isFlower(item)) && (!blocklingType.isFoodForType(item) || getHealth() >= getMaxHealth()))
+            if ((!BlocklingType.isFood(item) || !player.isCrouching()) && (!blocklingType.isFoodForType(item) || getHealth() >= getMaxHealth()))
             {
                 OpenGui(player);
             }
@@ -439,7 +435,6 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         if (random.nextInt(3) == 0 && !ForgeEventFactory.onAnimalTame(this, player))
         {
             tame(player);
-            unlockedTamedTasks(true);
 
             for (Task task : getTasks().getPrioritisedTasks())
             {
@@ -461,14 +456,6 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         {
             stack.shrink(1);
         }
-    }
-
-    public void unlockedTamedTasks(boolean sync)
-    {
-        tasks.setIsUnlocked(BlocklingTasks.FOLLOW, true, sync);
-        tasks.setIsUnlocked(BlocklingTasks.SIT, true, sync);
-        tasks.setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT, true, sync);
-        tasks.setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT_BY, true, sync);
     }
 
     @Override

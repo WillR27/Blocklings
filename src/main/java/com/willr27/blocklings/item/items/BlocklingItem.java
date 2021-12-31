@@ -74,7 +74,6 @@ public class BlocklingItem extends Item
 
             blockling.setPos(blockpos.getX() + 0.5, blockpos.getY(), blockpos.getZ() + 0.5);
             blockling.tame(context.getPlayer());
-            blockling.unlockedTamedTasks(false);
 
             world.addFreshEntity(blockling);
 

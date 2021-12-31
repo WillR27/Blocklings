@@ -32,8 +32,8 @@ public class BlocklingTasks
     public static final TaskType MINE = new TaskType("657c60cf-9fac-408e-ad8d-3335409301d6", "mine_ores", false, false, new GuiTexture.GoalGuiTexture(7, 0), BlocklingMineGoal::new);
     public static final TaskType WOODCUT = new TaskType("9701e1f6-99e0-4772-88a1-906778499a8c", "chop_trees", false, false, new GuiTexture.GoalGuiTexture(8, 0), BlocklingWoodcutGoal::new);
     public static final TaskType FARM = new TaskType("190bb949-6fb0-456b-9009-991c8db9be10", "farm_crops", false, false, new GuiTexture.GoalGuiTexture(9, 0), BlocklingFarmGoal::new);
-    public static final TaskType SIT = new TaskType("d64385ca-9306-4e38-b4ac-5aa8800e5e02", "sit", false, false, new GuiTexture.GoalGuiTexture(0, 0), BlocklingSitGoal::new);
-    public static final TaskType FOLLOW = new TaskType("299ad70d-350b-43da-8f55-ec502ac360bd", "follow", false, false, new GuiTexture.GoalGuiTexture(1, 0), BlocklingFollowGoal::new);
+    public static final TaskType SIT = new TaskType("d64385ca-9306-4e38-b4ac-5aa8800e5e02", "sit", true, false, new GuiTexture.GoalGuiTexture(0, 0), BlocklingSitGoal::new);
+    public static final TaskType FOLLOW = new TaskType("299ad70d-350b-43da-8f55-ec502ac360bd", "follow", true, false, new GuiTexture.GoalGuiTexture(1, 0), BlocklingFollowGoal::new);
     public static final TaskType WANDER = new TaskType("39246a4f-3341-4e99-a3a6-450f9501daeb", "wander", true, true, new GuiTexture.GoalGuiTexture(2, 0), BlocklingWanderGoal::new);
 
     /**
