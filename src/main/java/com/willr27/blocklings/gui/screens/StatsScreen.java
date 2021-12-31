@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.attribute.IModifiable;
 import com.willr27.blocklings.attribute.IModifier;
+import com.willr27.blocklings.attribute.Operation;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingStats;
@@ -109,7 +110,13 @@ public class StatsScreen extends TabbedScreen
     {
         for (IModifier<Float> modifier : attribute.getModifiers())
         {
-            tooltip.add(new StringTextComponent(TextFormatting.GRAY + generate(() -> " ").limit(depth).collect(joining()) + "+" + modifier.getDisplayStringValueSupplier().get() + " " + TextFormatting.DARK_GRAY + modifier.getDisplayStringNameSupplier().get()));
+            if ((modifier.getValue() == 0.0f && modifier.getOperation() == Operation.ADD) || modifier.getValue() == 1.0f)
+            {
+                continue;
+            }
+
+            String sign = modifier.getValue() < 0.0f && modifier.getOperation() == Operation.ADD ? "" : modifier.getValue() < 1.0f && modifier.getOperation() != Operation.ADD ? "" : "+";
+            tooltip.add(new StringTextComponent(TextFormatting.GRAY + generate(() -> " ").limit(depth).collect(joining()) + sign + modifier.getDisplayStringValueSupplier().get() + " " + TextFormatting.DARK_GRAY + modifier.getDisplayStringNameSupplier().get()));
 
             if (modifier instanceof IModifiable<?>)
             {

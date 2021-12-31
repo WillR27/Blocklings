@@ -338,7 +338,7 @@ public class SkillsGui extends AbstractGui
                         IntAttribute attribute = blockling.getStats().getLevel(level);
 
                         String colour = attribute.getValue() >= value ? "" + TextFormatting.GREEN : "" + TextFormatting.RED;
-                        description.add(colour + attribute.createTranslation("required", attribute.getValue()).getString());
+                        description.add(colour + attribute.createTranslation("required", value).getString());
                     }
                 }
             }
@@ -367,6 +367,8 @@ public class SkillsGui extends AbstractGui
 
         int nameY = skillWidget.y + 2;
         int descY = nameY + 23;
+
+        RenderSystem.enableDepthTest();
 
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
         new TexturedWidget(font, startX, descY - DESCRIPTION_START_OFFSET_Y, maxWidth, DESCRIPTION_START_OFFSET_Y, 0, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH).render(matrixStack, 0, 0);

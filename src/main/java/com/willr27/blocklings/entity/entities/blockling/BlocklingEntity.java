@@ -335,7 +335,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         if (isTame() && getOwner() == player)
         {
-            if ((!BlocklingType.isFood(item) || blocklingType == BlocklingType.findTypeForFood(item)) && (!blocklingType.isFoodForType(item) || getHealth() >= getMaxHealth()))
+            if ((!BlocklingType.isFood(item) || blocklingType == BlocklingType.findTypeForFood(item) || ItemUtil.isFlower(item)) && (!blocklingType.isFoodForType(item) || getHealth() >= getMaxHealth()))
             {
                 OpenGui(player);
             }
@@ -381,18 +381,21 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         }
         else if (BlocklingType.isFood(item))
         {
-            if (random.nextInt(4) == 0)
+            if (player.isCrouching())
             {
-                setBlocklingType(BlocklingType.findTypeForFood(item));
-            }
-            else
-            {
-                level.broadcastEntityEvent(this, (byte) 6);
-            }
+                if (random.nextInt(4) == 0)
+                {
+                    setBlocklingType(BlocklingType.findTypeForFood(item));
+                }
+                else
+                {
+                    level.broadcastEntityEvent(this, (byte) 6);
+                }
 
-            if (!player.abilities.instabuild)
-            {
-                stack.shrink(1);
+                if (!player.abilities.instabuild)
+                {
+                    stack.shrink(1);
+                }
             }
         }
 

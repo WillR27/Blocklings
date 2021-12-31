@@ -4,6 +4,9 @@ import com.willr27.blocklings.attribute.*;
 import com.willr27.blocklings.attribute.attributes.AveragedAttribute;
 import com.willr27.blocklings.attribute.attributes.EnumAttribute;
 import com.willr27.blocklings.attribute.attributes.numbers.*;
+import com.willr27.blocklings.skills.BlocklingSkills;
+import com.willr27.blocklings.skills.info.SkillInfo;
+import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -90,18 +93,21 @@ public class BlocklingStats
     public final FloatAttributeModifier miningSpeedLevelModifier;
     public final FloatAttributeModifier miningSpeedMainHandModifier;
     public final FloatAttributeModifier miningSpeedOffHandModifier;
+    public final FloatAttributeModifier miningSpeedSkillEfficiencyModifier;
     public final ModifiableFloatAttribute woodcuttingSpeed;
     public final ModifiableFloatAttributeModifier woodcuttingSpeedBlocklingModifier;
     public final FloatAttributeModifier woodcuttingSpeedTypeModifier;
     public final FloatAttributeModifier woodcuttingSpeedLevelModifier;
     public final FloatAttributeModifier woodcuttingSpeedMainHandModifier;
     public final FloatAttributeModifier woodcuttingSpeedOffHandModifier;
+    public final FloatAttributeModifier woodcuttingSpeedSkillEfficiencyModifier;
     public final ModifiableFloatAttribute farmingSpeed;
     public final ModifiableFloatAttributeModifier farmingSpeedBlocklingModifier;
     public final FloatAttributeModifier farmingSpeedTypeModifier;
     public final FloatAttributeModifier farmingSpeedLevelModifier;
     public final FloatAttributeModifier farmingSpeedMainHandModifier;
     public final FloatAttributeModifier farmingSpeedOffHandModifier;
+    public final FloatAttributeModifier farmingSpeedSkillEfficiencyModifier;
 
     public final BlocklingEntity blockling;
     public final World world;
@@ -192,6 +198,7 @@ public class BlocklingStats
         miningSpeedLevelModifier = createFloatAttributeModifier("f0914966-d53a-4292-b48c-5595f944f5d2", "mining_speed_level", miningSpeedBlocklingModifier, 0.0f, Operation.ADD, null, miningLevel.displayStringNameSupplier);
         miningSpeedMainHandModifier = createFloatAttributeModifier("fc0dd885-273b-4465-a9ff-e801dcaf07e2", "mining_speed_main_hand", miningSpeed, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString());
         miningSpeedOffHandModifier = createFloatAttributeModifier("aada86a0-4233-47cf-b5ab-aa208a216bb5", "mining_speed_off_hand", miningSpeed, 0.0f, Operation.ADD, null, () -> blockling.getOffhandItem().getHoverName().getString());
+        miningSpeedSkillEfficiencyModifier = createFloatAttributeModifier("9464fc16-0f3c-438f-ac0b-8715a3542aaa", "mining_speed_skill_efficiency", miningSpeed, 1.0f, Operation.MULTIPLY_TOTAL, this::miningSpeedSkillEfficiencymodifierDisplayStringValueProvider, () -> skillDisplayNameProvider(BlocklingSkills.Mining.EFFICIENCY));
 
         woodcuttingSpeed = createModifiableFloatAttribute("e1e3ecb3-ae1d-46c5-8ea8-a7180641910b", "woodcutting_speed", 0.0f, null, null);
         woodcuttingSpeedBlocklingModifier = createModifiableFloatAttributeModifier("51a21884-8c41-49d8-bae4-f21866b58718", "woodcutting_speed_blockling", woodcuttingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString());
@@ -199,6 +206,7 @@ public class BlocklingStats
         woodcuttingSpeedLevelModifier = createFloatAttributeModifier("6b71ee16-7d04-442e-9d49-9373833f5539", "woodcutting_speed_level", woodcuttingSpeedBlocklingModifier, 0.0f, Operation.ADD, null, woodcuttingLevel.displayStringNameSupplier);
         woodcuttingSpeedMainHandModifier = createFloatAttributeModifier("978f9dd4-3fbb-41ee-9bba-eddcfb42b6ff", "woodcutting_speed_main_hand", woodcuttingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString());
         woodcuttingSpeedOffHandModifier = createFloatAttributeModifier("80fd0028-a793-491c-bc9c-fe94071f91c7", "woodcutting_speed_off_hand", woodcuttingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getOffhandItem().getHoverName().getString());
+        woodcuttingSpeedSkillEfficiencyModifier = createFloatAttributeModifier("38a9d80c-4f96-4929-bd34-8c03156dec6d", "woodcutting_speed_skill_efficiency", woodcuttingSpeed, 1.0f, Operation.MULTIPLY_TOTAL, this::woodcuttingSpeedSkillEfficiencymodifierDisplayStringValueProvider, () -> skillDisplayNameProvider(BlocklingSkills.Woodcutting.EFFICIENCY));
 
         farmingSpeed = createModifiableFloatAttribute("f6c026b6-1fa9-432f-aca3-d97af784f6d0", "farming_speed", 0.0f, null, null);
         farmingSpeedBlocklingModifier = createModifiableFloatAttributeModifier("39548773-84ee-42ca-8ad6-681d64eaee54", "farming_speed_blockling", farmingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString());
@@ -206,6 +214,12 @@ public class BlocklingStats
         farmingSpeedLevelModifier = createFloatAttributeModifier("3b3079cf-8640-436b-bf0a-3aae4deb29be", "farming_speed_level", farmingSpeedBlocklingModifier, 0.0f, Operation.ADD, null, farmingLevel.displayStringNameSupplier);
         farmingSpeedMainHandModifier = createFloatAttributeModifier("5ece4240-17b3-4983-bd0d-67f962a0a838", "farming_speed_main_hand", farmingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString());
         farmingSpeedOffHandModifier = createFloatAttributeModifier("b4bb7131-f2ce-41cd-88ed-ee27e3837679", "farming_speed_off_hand", farmingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getOffhandItem().getHoverName().getString());
+        farmingSpeedSkillEfficiencyModifier = createFloatAttributeModifier("792be316-19cb-49ec-a24a-ee224312c60f", "farming_speed_skill_efficiency", farmingSpeed, 1.0f, Operation.MULTIPLY_TOTAL, this::farmingSpeedSkillEfficiencymodifierDisplayStringValueProvider, () -> skillDisplayNameProvider(BlocklingSkills.Farming.EFFICIENCY));
+    }
+
+    private String skillDisplayNameProvider(SkillInfo skillInfo)
+    {
+        return skillInfo.general.name.getString() + " ("+ new BlocklingsTranslationTextComponent("skill.name").getString() +")";
     }
 
     private String knockbackResistanceDisplayStringValueProvider()
@@ -226,6 +240,21 @@ public class BlocklingStats
     private String knockbackResistanceCombatLevelModifierDisplayStringValueProvider()
     {
         return String.format("%.0f%%", knockbackResistanceCombatLevelModifier.getValue() * 100.0f);
+    }
+
+    private String miningSpeedSkillEfficiencymodifierDisplayStringValueProvider()
+    {
+        return String.format("%.0f%%", (miningSpeedSkillEfficiencyModifier.getValue() - 1.0f) * 100.0f);
+    }
+
+    private String woodcuttingSpeedSkillEfficiencymodifierDisplayStringValueProvider()
+    {
+        return String.format("%.0f%%", (woodcuttingSpeedSkillEfficiencyModifier.getValue() - 1.0f) * 100.0f);
+    }
+
+    private String farmingSpeedSkillEfficiencymodifierDisplayStringValueProvider()
+    {
+        return String.format("%.0f%%", (farmingSpeedSkillEfficiencyModifier.getValue() - 1.0f) * 100.0f);
     }
 
     public IntAttribute createIntAttribute(String id, String key, int value, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)

@@ -11,6 +11,8 @@ import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.item.DropUtil;
 import com.willr27.blocklings.item.ToolType;
 import com.willr27.blocklings.item.ToolUtil;
+import com.willr27.blocklings.skills.BlocklingSkills;
+import com.willr27.blocklings.skills.Skill;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
 import net.minecraft.block.Block;
@@ -44,10 +46,12 @@ public class BlocklingFarmGoal extends BlocklingGoal implements IHasTargetGoal
         targetGoal = new BlocklingFarmTargetGoal(this);
 
         cropWhitelist = new GoalWhitelist("25140edf-f60e-459e-b1f0-9ff82108ec0b", "crops", Whitelist.Type.BLOCK, this);
+        cropWhitelist.setIsUnlocked(blockling.getSkills().getSkill(BlocklingSkills.Farming.CROP_WHITELIST).isBought(), false);
         BlockUtil.CROPS.forEach(crop -> cropWhitelist.put(crop.getRegistryName(), true));
         whitelists.add(cropWhitelist);
 
         seedWhitelist = new GoalWhitelist("d77bf1c1-7718-4733-b763-298b03340eea", "seeds", Whitelist.Type.ITEM, this);
+        seedWhitelist.setIsUnlocked(blockling.getSkills().getSkill(BlocklingSkills.Farming.SEED_WHITELIST).isBought(), false);
         BlockUtil.CROPS.forEach(crop ->
         {
             if (crop instanceof CropsBlock)
@@ -206,7 +210,7 @@ public class BlocklingFarmGoal extends BlocklingGoal implements IHasTargetGoal
 
                     blockling.getStats().hand.setValue(BlocklingHand.fromBooleans(mainCanHarvest, offCanHarvest));
 
-                    float progress = destroySpeed / (blockStrength + 5.0f) / 100.0f;
+                    float progress = destroySpeed / (blockStrength + 2.5f) / 100.0f;
                     blockling.getActions().mine.tick(progress);
 
                     if (blockling.getActions().mine.isFinished())
@@ -232,7 +236,7 @@ public class BlocklingFarmGoal extends BlocklingGoal implements IHasTargetGoal
 
                         ItemStack seedStack = ItemStack.EMPTY;
 
-                        if (targetBlock instanceof CropsBlock)
+                        if (blockling.getSkills().getSkill(BlocklingSkills.Farming.REPLANTER).isBought() && targetBlock instanceof CropsBlock)
                         {
                             CropsBlock cropsBlock = (CropsBlock) targetBlock;
                             seedStack = cropsBlock.getCloneItemStack(world, targetBlockPos, targetBlockState);
@@ -241,7 +245,7 @@ public class BlocklingFarmGoal extends BlocklingGoal implements IHasTargetGoal
                         world.destroyBlock(targetBlockPos, false);
                         world.destroyBlockProgress(blockling.getId(), targetBlockPos, 0);
 
-                        if (blockling.getEquipment().take(seedStack) && seedWhitelist.isEntryWhitelisted(seedStack.getItem()))
+                        if (!seedStack.isEmpty() && blockling.getEquipment().take(seedStack) && seedWhitelist.isEntryWhitelisted(seedStack.getItem()))
                         {
                             world.setBlock(targetBlockPos, Block.byItem(seedStack.getItem()).defaultBlockState(), 3);
                         }

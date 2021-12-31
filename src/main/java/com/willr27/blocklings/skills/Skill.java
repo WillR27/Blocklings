@@ -82,9 +82,14 @@ public class Skill
 
     private void buy()
     {
-        group.blockling.getStats().skillPoints.incValue(-info.requirements.skillPoints);
+        group.blockling.getStats().skillPoints.incValue(-info.requirements.skillPoints, false);
 
         setState(State.BOUGHT, false);
+    }
+
+    public boolean isBought()
+    {
+        return state == State.BOUGHT;
     }
 
     public State getState()

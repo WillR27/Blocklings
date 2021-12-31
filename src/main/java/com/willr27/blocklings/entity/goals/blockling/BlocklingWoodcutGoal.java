@@ -11,6 +11,8 @@ import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.item.DropUtil;
 import com.willr27.blocklings.item.ToolType;
 import com.willr27.blocklings.item.ToolUtil;
+import com.willr27.blocklings.skills.BlocklingSkills;
+import com.willr27.blocklings.skills.Skill;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
 import net.minecraft.block.BlockState;
@@ -48,6 +50,7 @@ public class BlocklingWoodcutGoal extends BlocklingGoal implements IHasTargetGoa
         targetGoal = new BlocklingWoodcutTargetGoal(this);
 
         logWhitelist = new GoalWhitelist("fbfbfd44-c1b0-4420-824a-270b34c866f7", "logs", Whitelist.Type.BLOCK, this);
+        logWhitelist.setIsUnlocked(blockling.getSkills().getSkill(BlocklingSkills.Woodcutting.WHITELIST).isBought(), false);
         BlockUtil.LOGS.forEach(log -> logWhitelist.put(log.getRegistryName(), true));
         whitelists.add(logWhitelist);
 
@@ -209,7 +212,7 @@ public class BlocklingWoodcutGoal extends BlocklingGoal implements IHasTargetGoa
                     if (blockling.getActions().mine.isFinished())
                     {
                         blockling.getActions().mine.stop();
-                        blockling.getStats().woodcuttingXp.incValue((int) (blockStrength * 3.0f));
+                        blockling.getStats().woodcuttingXp.incValue((int) (blockStrength * 2.0f));
 
                         for (ItemStack stack : DropUtil.getDrops(blockling, targetBlockPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
                         {

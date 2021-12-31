@@ -11,6 +11,8 @@ import com.willr27.blocklings.entity.goals.blockling.target.IHasTargetGoal;
 import com.willr27.blocklings.item.DropUtil;
 import com.willr27.blocklings.item.ToolType;
 import com.willr27.blocklings.item.ToolUtil;
+import com.willr27.blocklings.skills.BlocklingSkills;
+import com.willr27.blocklings.skills.Skill;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
 import net.minecraft.block.BlockState;
@@ -41,6 +43,7 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
         targetGoal = new BlocklingMineTargetGoal(this);
 
         oreWhitelist = new GoalWhitelist("24d7135e-607b-413b-a2a7-00d19119b9de", "ores", Whitelist.Type.BLOCK, this);
+        oreWhitelist.setIsUnlocked(blockling.getSkills().getSkill(BlocklingSkills.Mining.WHITELIST).isBought(), false);
         BlockUtil.ORES.forEach(ore -> oreWhitelist.put(ore.getRegistryName(), true));
         whitelists.add(oreWhitelist);
 
@@ -194,7 +197,7 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
                     if (blockling.getActions().mine.isFinished())
                     {
                         blockling.getActions().mine.stop();
-                        blockling.getStats().miningXp.incValue((int) (blockStrength * 3.0f));
+                        blockling.getStats().miningXp.incValue((int) (blockStrength * 2.0f));
 
                         for (ItemStack stack : DropUtil.getDrops(blockling, targetBlockPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
                         {
