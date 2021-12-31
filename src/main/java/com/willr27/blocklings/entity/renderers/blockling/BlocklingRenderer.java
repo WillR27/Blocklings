@@ -29,6 +29,6 @@ public class BlocklingRenderer extends MobRenderer<BlocklingEntity, BlocklingMod
     @Override
     public ResourceLocation getTextureLocation(BlocklingEntity blockling)
     {
-        return blockling.getBlocklingType() == blockling.getOriginalBlocklingType() ? blockling.getBlocklingType().entityTexture : blockling.getOriginalBlocklingType().getCombinedTexture(blockling.getBlocklingType());
+        return blockling.getBlocklingType() == blockling.getOriginalBlocklingType() ? blockling.getBlocklingType().entityTexture : blockling.getOriginalBlocklingType().getCombinedTexture(blockling.getBlocklingType(), blockling.getBlocklingTypeVariant());
     }
 }

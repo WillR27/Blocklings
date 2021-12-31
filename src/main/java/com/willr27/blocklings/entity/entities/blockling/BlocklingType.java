@@ -147,9 +147,9 @@ public class BlocklingType
         return this;
     }
 
-    public ResourceLocation getCombinedTexture(BlocklingType blocklingType)
+    public ResourceLocation getCombinedTexture(BlocklingType blocklingType, int variant)
     {
-        return new BlocklingsResourceLocation("textures/entity/blockling/blockling_" + key + "_merged_with_" + blocklingType.key);
+        return new BlocklingsResourceLocation("textures/entity/blockling/blockling_" + key + "_merged_with_" + blocklingType.key + "_" + variant);
     }
 
     public float getMaxHealth()

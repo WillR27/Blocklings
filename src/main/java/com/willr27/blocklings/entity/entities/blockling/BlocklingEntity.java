@@ -4,7 +4,6 @@ import com.google.common.collect.Iterables;
 import com.willr27.blocklings.goal.Task;
 import com.willr27.blocklings.gui.GuiHandler;
 import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
-import com.willr27.blocklings.item.ItemUtil;
 import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.item.items.BlocklingItem;
 import com.willr27.blocklings.network.NetworkHandler;
@@ -29,8 +28,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.pathfinding.GroundPathNavigator;
-import net.minecraft.pathfinding.PathNavigator;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
@@ -55,6 +52,8 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 {
     private BlocklingType originalBlocklingType = BlocklingType.GRASS;
     private BlocklingType blocklingType = BlocklingType.GRASS;
+    private int blocklingTypeVariant = 0;
+
     private final BlocklingStats stats = new BlocklingStats(this);
     private final BlocklingTasks tasks = new BlocklingTasks(this);
     private final BlocklingSkills skills = new BlocklingSkills(this);
@@ -77,8 +76,10 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         // So that we can sync them up using read/writeSpawnData
         if (!level.isClientSide)
         {
+            blocklingTypeVariant = getRandom().nextInt(3);
             originalBlocklingType = BlocklingType.TYPES.get(getRandom().nextInt(BlocklingType.TYPES.size()));
             setBlocklingType(originalBlocklingType, false);
+
             setScale(getRandom().nextFloat() * 0.5f + 0.49f, false);
 
             stats.init();
@@ -125,6 +126,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         c.putInt("original_type", BlocklingType.TYPES.indexOf(originalBlocklingType));
         c.putInt("type", BlocklingType.TYPES.indexOf(blocklingType));
+        c.putInt("variant", blocklingTypeVariant);
         c.putFloat("scale", scale);
 
         equipmentInv.writeToNBT(c);
@@ -155,6 +157,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
             return;
         }
 
+        blocklingTypeVariant = c.getInt("variant");
         originalBlocklingType = BlocklingType.TYPES.get(c.getInt("original_type"));
         setBlocklingType(BlocklingType.TYPES.get(c.getInt("type")), false);
         setScale(c.getFloat("scale"), false);
@@ -172,6 +175,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     {
         buf.writeInt(BlocklingType.TYPES.indexOf(originalBlocklingType));
         buf.writeInt(BlocklingType.TYPES.indexOf(blocklingType));
+        buf.writeInt(blocklingTypeVariant);
         buf.writeFloat(scale);
 
         equipmentInv.encode(buf);
@@ -185,6 +189,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     {
         originalBlocklingType = BlocklingType.TYPES.get(buf.readInt());
         setBlocklingType(BlocklingType.TYPES.get(buf.readInt()), false);
+        blocklingTypeVariant = buf.readInt();
         setScale(buf.readFloat(), false);
 
         equipmentInv.decode(buf);
@@ -649,6 +654,11 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         {
             NetworkHandler.sync(level, new BlocklingTypeMessage(blocklingType, getId()));
         }
+    }
+
+    public int getBlocklingTypeVariant()
+    {
+        return blocklingTypeVariant;
     }
 
     public BlocklingStats getStats()
