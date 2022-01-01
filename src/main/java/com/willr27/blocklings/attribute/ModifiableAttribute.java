@@ -125,12 +125,4 @@ public abstract class ModifiableAttribute<T> extends Attribute<T> implements IMo
     {
         return displayStringNameSupplier;
     }
-
-    @Override
-    public void setIsEnabled(boolean isEnabled, boolean sync)
-    {
-        super.setIsEnabled(isEnabled, sync);
-
-        calculate();
-    }
 }

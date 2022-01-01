@@ -74,7 +74,7 @@ public class BlocklingSkills
 
         private static final SkillGeneralInfo ADRENALINE_GENERAL = new SkillGeneralInfo(Skill.Type.STAT, "mining.adrenaline");
         private static final SkillDefaultsInfo ADRENALINE_DEFAULTS = new SkillDefaultsInfo(Skill.State.LOCKED);
-        private static final SkillRelationshipsInfo ADRENALINE_RELATIONSHIPS = new SkillRelationshipsInfo(new SkillInfo[] { EFFICIENCY }, new SkillInfo[] {  });
+        private static final SkillRelationshipsInfo ADRENALINE_RELATIONSHIPS = new SkillRelationshipsInfo(new SkillInfo[] { EFFICIENCY }, new SkillInfo[] { MOMENTUM(), HASTY(), NIGHT_OWL() });
         private static final SkillRequirementsInfo ADRENALINE_REQUIREMENTS = new SkillRequirementsInfo(5, new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.MINING, 25); }});
         private static final SkillCallbackInfo ADRENALINE_CALLBACKS = new SkillCallbackInfo(skill -> { skill.blockling.getStats().miningSpeedSkillAdrenalineModifier.setIsEnabled(true, false); return true; });
         private static final SkillGuiInfo.AbilityGuiTexture ADRENALINE_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.MINING_ICONS, 3, 0);
@@ -87,28 +87,31 @@ public class BlocklingSkills
                 skill.blockling.getStats().miningSpeedSkillAdrenalineModifier.setValue(10.0f * (1.0f - skill.blockling.getStats().getHealthPercentage()), false);
             }
         };
+        private static SkillInfo ADRENALINE() { return ADRENALINE; }
 
         private static final SkillGeneralInfo MOMENTUM_GENERAL = new SkillGeneralInfo(Skill.Type.STAT, "mining.momentum");
         private static final SkillDefaultsInfo MOMENTUM_DEFAULTS = new SkillDefaultsInfo(Skill.State.LOCKED);
-        private static final SkillRelationshipsInfo MOMENTUM_RELATIONSHIPS = new SkillRelationshipsInfo(new SkillInfo[] { EFFICIENCY }, new SkillInfo[] {  });
+        private static final SkillRelationshipsInfo MOMENTUM_RELATIONSHIPS = new SkillRelationshipsInfo(new SkillInfo[] { EFFICIENCY }, new SkillInfo[] { ADRENALINE(), HASTY(), NIGHT_OWL() });
         private static final SkillRequirementsInfo MOMENTUM_REQUIREMENTS = new SkillRequirementsInfo(5, new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.MINING, 25); }});
         private static final SkillCallbackInfo MOMENTUM_CALLBACKS = new SkillCallbackInfo(skill -> { skill.blockling.getStats().miningSpeedSkillMomentumModifier.setIsEnabled(true, false); return true; });
         private static final SkillGuiInfo.AbilityGuiTexture MOMENTUM_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.MINING_ICONS, 4, 0);
         private static final SkillGuiInfo MOMENTUM_GUI = new SkillGuiInfo(140, 50, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xad79b5, MOMENTUM_TEXTURE);
         public static final SkillInfo MOMENTUM = new SkillInfo("656aaacb-3c87-4b36-b12c-6ab970f09279", MOMENTUM_GENERAL, MOMENTUM_DEFAULTS, MOMENTUM_RELATIONSHIPS, MOMENTUM_REQUIREMENTS, MOMENTUM_CALLBACKS, MOMENTUM_GUI);
+        private static SkillInfo MOMENTUM() { return MOMENTUM; }
 
         private static final SkillGeneralInfo HASTY_GENERAL = new SkillGeneralInfo(Skill.Type.STAT, "mining.hasty");
         private static final SkillDefaultsInfo HASTY_DEFAULTS = new SkillDefaultsInfo(Skill.State.LOCKED);
-        private static final SkillRelationshipsInfo HASTY_RELATIONSHIPS = new SkillRelationshipsInfo(new SkillInfo[] { EFFICIENCY }, new SkillInfo[] {  });
+        private static final SkillRelationshipsInfo HASTY_RELATIONSHIPS = new SkillRelationshipsInfo(new SkillInfo[] { EFFICIENCY }, new SkillInfo[] { ADRENALINE(), MOMENTUM(), NIGHT_OWL() });
         private static final SkillRequirementsInfo HASTY_REQUIREMENTS = new SkillRequirementsInfo(5, new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.MINING, 25); }});
         private static final SkillCallbackInfo HASTY_CALLBACKS = new SkillCallbackInfo(skill -> { skill.blockling.getStats().miningSpeedSkillHastyModifier.setIsEnabled(true, false); return true; });
         private static final SkillGuiInfo.AbilityGuiTexture HASTY_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.MINING_ICONS, 5, 0);
         private static final SkillGuiInfo HASTY_GUI = new SkillGuiInfo(210, -50, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0x4eb2aa, HASTY_TEXTURE);
         public static final SkillInfo HASTY = new SkillInfo("1cfca8ba-d518-4403-b0ed-8da83e350de3", HASTY_GENERAL, HASTY_DEFAULTS, HASTY_RELATIONSHIPS, HASTY_REQUIREMENTS, HASTY_CALLBACKS, HASTY_GUI);
+        private static SkillInfo HASTY() { return HASTY; }
 
         private static final SkillGeneralInfo NIGHT_OWL_GENERAL = new SkillGeneralInfo(Skill.Type.STAT, "mining.night_owl");
         private static final SkillDefaultsInfo NIGHT_OWL_DEFAULTS = new SkillDefaultsInfo(Skill.State.LOCKED);
-        private static final SkillRelationshipsInfo NIGHT_OWL_RELATIONSHIPS = new SkillRelationshipsInfo(new SkillInfo[] { EFFICIENCY }, new SkillInfo[] {  });
+        private static final SkillRelationshipsInfo NIGHT_OWL_RELATIONSHIPS = new SkillRelationshipsInfo(new SkillInfo[] { EFFICIENCY }, new SkillInfo[] { ADRENALINE(), MOMENTUM(), HASTY() });
         private static final SkillRequirementsInfo NIGHT_OWL_REQUIREMENTS = new SkillRequirementsInfo(5, new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.MINING, 25); }});
         private static final SkillCallbackInfo NIGHT_OWL_CALLBACKS = new SkillCallbackInfo(skill -> { skill.blockling.getStats().miningSpeedSkillNightOwlModifier.setIsEnabled(true, false); return true; });
         private static final SkillGuiInfo.AbilityGuiTexture NIGHT_OWL_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.MINING_ICONS, 6, 0);
@@ -121,6 +124,7 @@ public class BlocklingSkills
                 skill.blockling.getStats().miningSpeedSkillNightOwlModifier.setValue(10.0f * (1.0f - skill.blockling.level.getBrightness(skill.blockling.blockPosition())), false);
             }
         };
+        private static SkillInfo NIGHT_OWL() { return NIGHT_OWL; }
 
         public static final List<Function<SkillGroup, Skill>> SKILLS = new ArrayList<Function<SkillGroup, Skill>>()
         {{

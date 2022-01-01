@@ -26,4 +26,6 @@ public interface IModifier<T>
     Supplier<String> getDisplayStringNameSupplier();
 
     boolean isEnabled();
+
+    void setIsEnabled(boolean isEnabled, boolean sync);
 }

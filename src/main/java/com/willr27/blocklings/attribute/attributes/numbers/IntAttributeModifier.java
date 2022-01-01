@@ -44,4 +44,12 @@ public class IntAttributeModifier extends IntAttribute implements IModifier<Inte
     {
         return displayStringNameSupplier;
     }
+
+    @Override
+    public void setIsEnabled(boolean isEnabled, boolean sync)
+    {
+        super.setIsEnabled(isEnabled, sync);
+
+        attribute.calculate();
+    }
 }

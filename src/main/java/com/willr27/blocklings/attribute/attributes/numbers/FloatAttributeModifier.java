@@ -44,4 +44,12 @@ public class FloatAttributeModifier extends FloatAttribute implements IModifier<
     {
         return displayStringNameSupplier;
     }
+
+    @Override
+    public void setIsEnabled(boolean isEnabled, boolean sync)
+    {
+        super.setIsEnabled(isEnabled, sync);
+
+        attribute.calculate();
+    }
 }

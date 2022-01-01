@@ -333,7 +333,6 @@ public class SkillsGui extends AbstractGui
                 {
                     for (BlocklingStats.Level level : levelRequirements.keySet())
                     {
-                        String levelName = level.getDisplayName();
                         int value = levelRequirements.get(level).intValue();
                         IntAttribute attribute = blockling.getStats().getLevel(level);
 
@@ -343,7 +342,7 @@ public class SkillsGui extends AbstractGui
                 }
             }
 
-            List<Skill> conflicts = new ArrayList<Skill>();
+            List<Skill> conflicts = skill.conflicts();
             if (!conflicts.isEmpty())
             {
                 description.add("");

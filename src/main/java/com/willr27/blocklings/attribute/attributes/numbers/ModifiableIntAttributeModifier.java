@@ -40,4 +40,12 @@ public class ModifiableIntAttributeModifier extends ModifiableIntAttribute imple
     {
         return operation;
     }
+
+    @Override
+    public void setIsEnabled(boolean isEnabled, boolean sync)
+    {
+        super.setIsEnabled(isEnabled, sync);
+
+        attribute.calculate();
+    }
 }
