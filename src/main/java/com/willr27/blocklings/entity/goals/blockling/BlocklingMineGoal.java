@@ -3,16 +3,15 @@ package com.willr27.blocklings.entity.goals.blockling;
 import com.willr27.blocklings.block.BlockUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
-import com.willr27.blocklings.goal.BlocklingGoal;
-import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import com.willr27.blocklings.entity.goals.blockling.target.BlocklingMineTargetGoal;
 import com.willr27.blocklings.entity.goals.blockling.target.IHasTargetGoal;
+import com.willr27.blocklings.goal.BlocklingGoal;
+import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.item.DropUtil;
 import com.willr27.blocklings.item.ToolType;
 import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.skills.BlocklingSkills;
-import com.willr27.blocklings.skills.Skill;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
 import net.minecraft.block.BlockState;
@@ -23,7 +22,8 @@ import net.minecraft.pathfinding.Path;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.UUID;
 
 public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
 {
@@ -51,7 +51,7 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
     }
 
     @Override
-    public BlocklingTargetGoal getTargetGoal()
+    public BlocklingTargetGoal<BlocklingMineGoal> getTargetGoal()
     {
         return targetGoal;
     }
@@ -205,15 +205,17 @@ public class BlocklingMineGoal extends BlocklingGoal implements IHasTargetGoal
                             blockling.dropItemStack(stack);
                         }
 
-                        if (mainStack.hurt(mainCanHarvest ? 1 : 0, blockling.getRandom(), null))
+                        if (mainStack.hurt(mainCanHarvest ? blockling.getSkills().getSkill(BlocklingSkills.Mining.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
                         {
                             mainStack.shrink(1);
                         }
 
-                        if (offStack.hurt(offCanHarvest ? 1 : 0, blockling.getRandom(), null))
+                        if (offStack.hurt(offCanHarvest ? blockling.getSkills().getSkill(BlocklingSkills.Mining.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
                         {
                             offStack.shrink(1);
                         }
+
+                        blockling.incOresMinedRecently();
 
                         world.destroyBlock(targetBlockPos, false);
                         world.destroyBlockProgress(blockling.getId(), targetBlockPos, 0);

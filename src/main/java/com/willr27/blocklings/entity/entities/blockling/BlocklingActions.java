@@ -16,6 +16,9 @@ public class BlocklingActions
 
     public final AttackAction attack;
     public final KnownTargetAction mine;
+    public final KnownTargetAction oresMinedCooldown;
+    public final KnownTargetAction logsChoppedCooldown;
+    public final KnownTargetAction cropsHarvestedCooldown;
 
     public final BlocklingEntity blockling;
 
@@ -30,6 +33,9 @@ public class BlocklingActions
 
         attack = createAction(blockling, "attack", attackTargetSupplier, attackTargetSupplier);
         mine = new KnownTargetAction(blockling, "mine", () -> 1.0f);
+        oresMinedCooldown = createAction(blockling, "ores_mined_cooldown", () -> 100.0f);
+        logsChoppedCooldown = createAction(blockling, "logs_chopped_cooldown", () -> 100.0f);
+        cropsHarvestedCooldown = createAction(blockling, "crops_harvested_cooldown", () -> 100.0f);
     }
 
     public UnknownTargetAction createAction(BlocklingEntity blockling, String key)

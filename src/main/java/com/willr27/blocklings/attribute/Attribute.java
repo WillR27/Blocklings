@@ -91,7 +91,7 @@ public abstract class Attribute<T>
 
     public void setIsEnabled(boolean isEnabled)
     {
-        setIsEnabled(isEnabled);
+        setIsEnabled(isEnabled, true);
     }
 
     public void setIsEnabled(boolean isEnabled, boolean sync)

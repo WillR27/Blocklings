@@ -73,9 +73,9 @@
   "blocklings.skill.mining.adrenaline.name": "Adrenaline",
   "blocklings.skill.mining.adrenaline.desc": "The lower your blockling's health, the faster they will mine.",
   "blocklings.skill.mining.momentum.name": "Momentum",
-  "blocklings.skill.mining.momentum.desc": "Your blockling mines faster for each consecutive ore mined.",
+  "blocklings.skill.mining.momentum.desc": "Your blockling mines faster for each ore mined within 5 seconds.",
   "blocklings.skill.mining.hasty.name": "Hasty",
-  "blocklings.skill.mining.hasty.desc": "Your blockling mines 25% faster but their pickaxes use 2x the durability.",
+  "blocklings.skill.mining.hasty.desc": "Your blockling mines faster but their pickaxes use 2x the durability.",
   "blocklings.skill.mining.night_owl.name": "Night Owl",
   "blocklings.skill.mining.night_owl.desc": "Your blockling mines faster the lower the light level.",
 

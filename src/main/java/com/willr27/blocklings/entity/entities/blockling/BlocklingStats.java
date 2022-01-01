@@ -207,7 +207,7 @@ public class BlocklingStats
         miningSpeedSkillEfficiencyModifier = createFloatAttributeModifier("9464fc16-0f3c-438f-ac0b-8715a3542aaa", "mining_speed_skill_efficiency", miningSpeed, 1.1f, Operation.MULTIPLY_TOTAL, this::miningSpeedSkillEfficiencymodifierDisplayStringValueProvider, () -> skillDisplayNameProvider(BlocklingSkills.Mining.EFFICIENCY));
         miningSpeedSkillAdrenalineModifier = createFloatAttributeModifier("1543fadc-3a9e-412b-819b-a6379a0911ca", "mining_speed_skill_adrenaline", miningSpeed, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Mining.ADRENALINE));
         miningSpeedSkillMomentumModifier = createFloatAttributeModifier("1ca4d69f-05b8-4598-97c5-95f6bc750b7a", "mining_speed_skill_momentum", miningSpeed, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Mining.MOMENTUM));
-        miningSpeedSkillHastyModifier = createFloatAttributeModifier("035c4e96-a628-4b20-9699-28ade0fa5a80", "mining_speed_skill_hasty", miningSpeed, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Mining.HASTY));
+        miningSpeedSkillHastyModifier = createFloatAttributeModifier("035c4e96-a628-4b20-9699-28ade0fa5a80", "mining_speed_skill_hasty", miningSpeed, 10.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Mining.HASTY));
         miningSpeedSkillNightOwlModifier = createFloatAttributeModifier("f858c34f-d215-450a-847d-a54525d2f82f", "mining_speed_skill_night_owl", miningSpeed, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Mining.NIGHT_OWL));
 
         woodcuttingSpeed = createModifiableFloatAttribute("e1e3ecb3-ae1d-46c5-8ea8-a7180641910b", "woodcutting_speed", 0.0f, null, null);

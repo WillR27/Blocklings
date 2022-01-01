@@ -4,5 +4,5 @@ import com.willr27.blocklings.goal.BlocklingTargetGoal;
 
 public interface IHasTargetGoal
 {
-    BlocklingTargetGoal getTargetGoal();
+    BlocklingTargetGoal<?> getTargetGoal();
 }

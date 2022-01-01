@@ -1,5 +1,7 @@
 package com.willr27.blocklings.skills.info;
 
+import com.willr27.blocklings.skills.Skill;
+
 import java.util.UUID;
 
 public class SkillInfo
@@ -21,5 +23,13 @@ public class SkillInfo
         this.requirements = requirements;
         this.callbacks = callbacks;
         this.gui = guiInfo;
+    }
+
+    /**
+     * Called once every tick for a bought skill.
+     */
+    public void tick(Skill skill)
+    {
+
     }
 }

@@ -64,6 +64,24 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
     private float scale;
 
+    /**
+     * Tracks how many ores have been mined within 100 ticks of each other.
+     * Used by the momentum skill.
+     */
+    private int oresMinedRecently = 0;
+
+    /**
+     * Tracks how many logs have been chopped within 100 ticks of each other.
+     * Used by the momentum skill.
+     */
+    private int logsChoppedRecently = 0;
+
+    /**
+     * Tracks how many crops have been harvested within 100 ticks of each other.
+     * Used by the momentum skill.
+     */
+    private int cropsHarvestedRecently = 0;
+
     public BlocklingEntity(EntityType<? extends BlocklingEntity> type, World world)
     {
         super(type, world);
@@ -211,9 +229,31 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     {
         super.tick();
 
+        skills.tick();
         actions.tick();
 
+        checkCooldowns();
+
         equipmentInv.detectAndSendChanges();
+    }
+
+    private void checkCooldowns()
+    {
+        if (actions.oresMinedCooldown.isFinished())
+        {
+            oresMinedRecently = 0;
+            stats.miningSpeedSkillMomentumModifier.setValue(0);
+        }
+
+        if (actions.logsChoppedCooldown.isFinished())
+        {
+            logsChoppedRecently = 0;
+        }
+
+        if (actions.cropsHarvestedCooldown.isFinished())
+        {
+            cropsHarvestedRecently = 0;
+        }
     }
 
     @Override
@@ -336,7 +376,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         if (isTame() && getOwner() == player)
         {
-            if ((!BlocklingType.isFood(item) || !player.isCrouching()) && (!blocklingType.isFoodForType(item) || getHealth() >= getMaxHealth()))
+            if (item != Items.EXPERIENCE_BOTTLE && (!BlocklingType.isFood(item) || !player.isCrouching()) && (!blocklingType.isFoodForType(item) || getHealth() >= getMaxHealth()))
             {
                 OpenGui(player);
             }
@@ -397,6 +437,18 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 {
                     stack.shrink(1);
                 }
+            }
+        }
+        else if (item == Items.EXPERIENCE_BOTTLE)
+        {
+            stats.combatXp.incValue(BlocklingStats.getXpUntilNextLevel(stats.combatLevel.getValue()));
+            stats.miningXp.incValue(BlocklingStats.getXpUntilNextLevel(stats.miningLevel.getValue()));
+            stats.woodcuttingXp.incValue(BlocklingStats.getXpUntilNextLevel(stats.woodcuttingLevel.getValue()));
+            stats.farmingXp.incValue(BlocklingStats.getXpUntilNextLevel(stats.farmingLevel.getValue()));
+
+            if (!player.abilities.instabuild)
+            {
+                stack.shrink(1);
             }
         }
 
@@ -724,5 +776,38 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         {
             NetworkHandler.sync(level, new BlocklingScaleMessage(scale, getId()));
         }
+    }
+
+    /**
+     * Increments the count of ores mined recently and resets the cooldown.
+     */
+    public void incOresMinedRecently()
+    {
+        oresMinedRecently++;
+        actions.oresMinedCooldown.start();
+
+        if (skills.getSkill(BlocklingSkills.Mining.MOMENTUM).isBought())
+        {
+            int cappedCount = Math.min(oresMinedRecently, 20);
+            stats.miningSpeedSkillMomentumModifier.setValue(cappedCount);
+        }
+    }
+
+    /**
+     * Increments the count of logs chopped recently and resets the cooldown.
+     */
+    public void incLogsChoppedRecently()
+    {
+        logsChoppedRecently++;
+        actions.logsChoppedCooldown.start();
+    }
+
+    /**
+     * Increments the count of crops harvested recently and resets the cooldown.
+     */
+    public void incCropsHarvestedRecently()
+    {
+        cropsHarvestedRecently++;
+        actions.cropsHarvestedCooldown.start();
     }
 }

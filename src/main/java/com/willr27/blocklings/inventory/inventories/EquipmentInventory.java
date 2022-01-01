@@ -220,64 +220,54 @@ public class EquipmentInventory extends AbstractInventory
     {
         BlocklingStats stats = blockling.getStats();
 
-        stats.mainHandAttackDamage.removeModifier(stats.mainHandAttackDamageToolModifier);
-        stats.offHandAttackDamage.removeModifier(stats.offHandAttackDamageToolModifier);
-        stats.attackSpeed.removeModifier(stats.attackSpeedMainHandModifier);
-        stats.attackSpeed.removeModifier(stats.attackSpeedOffHandModifier);
+        stats.mainHandAttackDamageToolModifier.setValue(0.0f, false);
+        stats.offHandAttackDamageToolModifier.setValue(0.0f, false);
+        stats.attackSpeedMainHandModifier.setValue(0.0f, false);
+        stats.attackSpeedOffHandModifier.setValue(0.0f, false);
 
-        stats.miningSpeed.removeModifier(stats.miningSpeedMainHandModifier);
-        stats.miningSpeed.removeModifier(stats.miningSpeedOffHandModifier);
-        stats.woodcuttingSpeed.removeModifier(stats.woodcuttingSpeedMainHandModifier);
-        stats.woodcuttingSpeed.removeModifier(stats.woodcuttingSpeedOffHandModifier);
-        stats.farmingSpeed.removeModifier(stats.farmingSpeedMainHandModifier);
-        stats.farmingSpeed.removeModifier(stats.farmingSpeedOffHandModifier);
+        stats.miningSpeedMainHandModifier.setValue(0.0f, false);
+        stats.miningSpeedOffHandModifier.setValue(0.0f, false);
+        stats.woodcuttingSpeedMainHandModifier.setValue(0.0f, false);
+        stats.woodcuttingSpeedOffHandModifier.setValue(0.0f, false);
+        stats.farmingSpeedMainHandModifier.setValue(0.0f, false);
+        stats.farmingSpeedOffHandModifier.setValue(0.0f, false);
 
         if (isAttackingWith(BlocklingHand.MAIN) && hasToolEquipped(Hand.MAIN_HAND))
         {
             stats.mainHandAttackDamageToolModifier.setValue(ToolUtil.getToolBaseDamage(blockling.getMainHandItem()), false);
-            stats.mainHandAttackDamage.addModifier(stats.mainHandAttackDamageToolModifier);
             stats.attackSpeedMainHandModifier.setValue(ToolUtil.getToolAttackSpeed(blockling.getMainHandItem()), false);
-            stats.attackSpeed.addModifier(stats.attackSpeedMainHandModifier);
         }
 
         if (isAttackingWith(BlocklingHand.OFF) && hasToolEquipped(Hand.OFF_HAND))
         {
             stats.offHandAttackDamageToolModifier.setValue(ToolUtil.getToolBaseDamage(blockling.getOffhandItem()), false);
-            stats.offHandAttackDamage.addModifier(stats.offHandAttackDamageToolModifier);
             stats.attackSpeedOffHandModifier.setValue(ToolUtil.getToolAttackSpeed(blockling.getOffhandItem()), false);
-            stats.attackSpeed.addModifier(stats.attackSpeedOffHandModifier);
         }
 
         if (hasToolEquipped(Hand.MAIN_HAND, ToolType.PICKAXE))
         {
             stats.miningSpeedMainHandModifier.setValue(ToolUtil.getToolMiningSpeed(blockling.getMainHandItem()), false);
-            stats.miningSpeed.addModifier(stats.miningSpeedMainHandModifier);
         }
         else if (hasToolEquipped(Hand.MAIN_HAND, ToolType.AXE))
         {
             stats.woodcuttingSpeedMainHandModifier.setValue(ToolUtil.getToolWoodcuttingSpeed(blockling.getMainHandItem()), false);
-            stats.woodcuttingSpeed.addModifier(stats.woodcuttingSpeedMainHandModifier);
         }
         else if (hasToolEquipped(Hand.MAIN_HAND, ToolType.HOE))
         {
             stats.farmingSpeedMainHandModifier.setValue(ToolUtil.getToolFarmingSpeed(blockling.getMainHandItem()), false);
-            stats.farmingSpeed.addModifier(stats.farmingSpeedMainHandModifier);
         }
 
         if (hasToolEquipped(Hand.OFF_HAND, ToolType.PICKAXE))
         {
             stats.miningSpeedOffHandModifier.setValue(ToolUtil.getToolMiningSpeed(blockling.getOffhandItem()), false);
-            stats.miningSpeed.addModifier(stats.miningSpeedOffHandModifier);
         }
         else if (hasToolEquipped(Hand.OFF_HAND, ToolType.AXE))
         {
             stats.woodcuttingSpeedOffHandModifier.setValue(ToolUtil.getToolWoodcuttingSpeed(blockling.getOffhandItem()), false);
-            stats.woodcuttingSpeed.addModifier(stats.woodcuttingSpeedOffHandModifier);
         }
         else if (hasToolEquipped(Hand.OFF_HAND, ToolType.HOE))
         {
             stats.farmingSpeedOffHandModifier.setValue(ToolUtil.getToolFarmingSpeed(blockling.getOffhandItem()), false);
-            stats.farmingSpeed.addModifier(stats.farmingSpeedOffHandModifier);
         }
     }
 
