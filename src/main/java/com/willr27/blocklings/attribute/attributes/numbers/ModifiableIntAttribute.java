@@ -23,35 +23,34 @@ public class ModifiableIntAttribute extends ModifiableAttribute<Integer>
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag)
+    public void writeToNBT(CompoundNBT attributeTag)
     {
-        CompoundNBT attributeTag = new CompoundNBT();
+        super.writeToNBT(attributeTag);
 
         attributeTag.putInt("base_value", baseValue);
-
-        tag.put(id.toString(), attributeTag);
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag)
+    public void readFromNBT(CompoundNBT attributeTag)
     {
-        CompoundNBT attributeTag = (CompoundNBT) tag.get(id.toString());
+        super.readFromNBT(attributeTag);
 
-        if (attributeTag != null)
-        {
-            baseValue = attributeTag.getInt("base_value");
-        }
+        baseValue = attributeTag.getInt("base_value");
     }
 
     @Override
     public void encode(PacketBuffer buf)
     {
+        super.encode(buf);
+
         buf.writeInt(value);
     }
 
     @Override
     public void decode(PacketBuffer buf)
     {
+        super.decode(buf);
+
         value = buf.readInt();
     }
 
@@ -62,7 +61,7 @@ public class ModifiableIntAttribute extends ModifiableAttribute<Integer>
         int tempBase = baseValue;
         boolean end = false;
 
-        for (IModifier<Integer> modifier : modifiers)
+        for (IModifier<Integer> modifier : getEnabledModifiers())
         {
             if (modifier.getOperation() == Operation.ADD)
             {

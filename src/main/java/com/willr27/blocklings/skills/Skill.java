@@ -1,5 +1,6 @@
 package com.willr27.blocklings.skills;
 
+import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.network.NetworkHandler;
 import com.willr27.blocklings.network.messages.SkillTryBuyMessage;
 import com.willr27.blocklings.network.messages.SkillStateMessage;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 
 public class Skill
 {
+    public final BlocklingEntity blockling;
     public final SkillInfo info;
     public final SkillGroup group;
 
@@ -18,6 +20,7 @@ public class Skill
 
     public Skill(SkillInfo info, SkillGroup group)
     {
+        this.blockling = group.blockling;
         this.info = info;
         this.group = group;
         this.state = info.defaults.defaultState;

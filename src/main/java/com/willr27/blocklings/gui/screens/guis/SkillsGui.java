@@ -254,8 +254,8 @@ public class SkillsGui extends AbstractGui
             Skill.State state = skill.getState();
             Color colour = state.colour;
             if (skill == selectedSkill) RenderSystem.color3f(0.7f, 1.0f, 0.7f);
-            else if (skill.hasConflict() && state != Skill.State.LOCKED) RenderSystem.color3f(0.8f, 0.4f, 0.4f);
-            else if (state == Skill.State.UNLOCKED && !skill.canBuy()) RenderSystem.color3f(0.9f, 0.6f, 0.6f);
+            else if (skill.hasConflict() && state != Skill.State.LOCKED) RenderSystem.color3f(0.8f, 0.6f, 0.6f);
+            else if (state == Skill.State.UNLOCKED && !skill.canBuy()) RenderSystem.color3f(0.8f, 0.6f, 0.6f);
             else
             {
 //                if (skillGroup.allParentsHaveState(skill, Skill.State.LOCKED) && skill.getParents().length != 0) colour = colour.darker().darker().darker();
@@ -267,8 +267,8 @@ public class SkillsGui extends AbstractGui
             GuiUtil.bindTexture(skill.info.gui.texture.texture);
 
             if (state == Skill.State.LOCKED) RenderSystem.color3f(0.0f, 0.0f, 0.0f);
-            else if (skill.hasConflict()) RenderSystem.color3f(0.8f, 0.4f, 0.4f);
-            else if (state == Skill.State.UNLOCKED && !skill.canBuy()) RenderSystem.color3f(0.9f, 0.6f, 0.6f);
+            else if (skill.hasConflict()) RenderSystem.color3f(0.8f, 0.6f, 0.6f);
+            else if (state == Skill.State.UNLOCKED && !skill.canBuy()) RenderSystem.color3f(0.8f, 0.6f, 0.6f);
             else  RenderSystem.color3f(1.0f, 1.0f, 1.0f);
             skillWidget = new SkillWidget(font, skill.info.gui.x + x, skill.info.gui.y + y, skill.info.gui.texture.width, skill.info.gui.texture.height, skill.info.gui.texture.x, skill.info.gui.texture.y);
             if (isHover) skillWidget.render(matrixStack, mouseX, mouseY);

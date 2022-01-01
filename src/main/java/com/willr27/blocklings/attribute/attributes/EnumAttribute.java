@@ -27,35 +27,34 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag)
+    public void writeToNBT(CompoundNBT attributeTag)
     {
-        CompoundNBT attributeTag = new CompoundNBT();
+        super.writeToNBT(attributeTag);
 
         attributeTag.putInt("value", value.ordinal());
-
-        tag.put(id.toString(), attributeTag);
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag)
+    public void readFromNBT(CompoundNBT attributeTag)
     {
-        CompoundNBT attributeTag = (CompoundNBT) tag.get(id.toString());
+        super.readFromNBT(attributeTag);
 
-        if (attributeTag != null)
-        {
-            setValue(ordinalConverter.apply(attributeTag.getInt("value")), false);
-        }
+        setValue(ordinalConverter.apply(attributeTag.getInt("value")), false);
     }
 
     @Override
     public void encode(PacketBuffer buf)
     {
+        super.encode(buf);
+
         buf.writeInt(value.ordinal());
     }
 
     @Override
     public void decode(PacketBuffer buf)
     {
+        super.decode(buf);
+
         setValue(ordinalConverter.apply(buf.readInt()), false);
     }
 

@@ -39,6 +39,8 @@ public interface IModifiable<T>
 
     List<IModifier<T>> getModifiers();
 
+    List<IModifier<T>> getEnabledModifiers();
+
     IModifier<T> findModifier(int index);
 
     int indexOf(IModifier<T> modifier);

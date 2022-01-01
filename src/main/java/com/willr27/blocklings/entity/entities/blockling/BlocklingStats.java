@@ -94,6 +94,11 @@ public class BlocklingStats
     public final FloatAttributeModifier miningSpeedMainHandModifier;
     public final FloatAttributeModifier miningSpeedOffHandModifier;
     public final FloatAttributeModifier miningSpeedSkillEfficiencyModifier;
+    public final FloatAttributeModifier miningSpeedSkillAdrenalineModifier;
+    public final FloatAttributeModifier miningSpeedSkillMomentumModifier;
+    public final FloatAttributeModifier miningSpeedSkillHastyModifier;
+    public final FloatAttributeModifier miningSpeedSkillNightOwlModifier;
+
     public final ModifiableFloatAttribute woodcuttingSpeed;
     public final ModifiableFloatAttributeModifier woodcuttingSpeedBlocklingModifier;
     public final FloatAttributeModifier woodcuttingSpeedTypeModifier;
@@ -101,6 +106,7 @@ public class BlocklingStats
     public final FloatAttributeModifier woodcuttingSpeedMainHandModifier;
     public final FloatAttributeModifier woodcuttingSpeedOffHandModifier;
     public final FloatAttributeModifier woodcuttingSpeedSkillEfficiencyModifier;
+
     public final ModifiableFloatAttribute farmingSpeed;
     public final ModifiableFloatAttributeModifier farmingSpeedBlocklingModifier;
     public final FloatAttributeModifier farmingSpeedTypeModifier;
@@ -198,7 +204,11 @@ public class BlocklingStats
         miningSpeedLevelModifier = createFloatAttributeModifier("f0914966-d53a-4292-b48c-5595f944f5d2", "mining_speed_level", miningSpeedBlocklingModifier, 0.0f, Operation.ADD, null, miningLevel.displayStringNameSupplier);
         miningSpeedMainHandModifier = createFloatAttributeModifier("fc0dd885-273b-4465-a9ff-e801dcaf07e2", "mining_speed_main_hand", miningSpeed, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString());
         miningSpeedOffHandModifier = createFloatAttributeModifier("aada86a0-4233-47cf-b5ab-aa208a216bb5", "mining_speed_off_hand", miningSpeed, 0.0f, Operation.ADD, null, () -> blockling.getOffhandItem().getHoverName().getString());
-        miningSpeedSkillEfficiencyModifier = createFloatAttributeModifier("9464fc16-0f3c-438f-ac0b-8715a3542aaa", "mining_speed_skill_efficiency", miningSpeed, 1.0f, Operation.MULTIPLY_TOTAL, this::miningSpeedSkillEfficiencymodifierDisplayStringValueProvider, () -> skillDisplayNameProvider(BlocklingSkills.Mining.EFFICIENCY));
+        miningSpeedSkillEfficiencyModifier = createFloatAttributeModifier("9464fc16-0f3c-438f-ac0b-8715a3542aaa", "mining_speed_skill_efficiency", miningSpeed, 1.1f, Operation.MULTIPLY_TOTAL, this::miningSpeedSkillEfficiencymodifierDisplayStringValueProvider, () -> skillDisplayNameProvider(BlocklingSkills.Mining.EFFICIENCY));
+        miningSpeedSkillAdrenalineModifier = createFloatAttributeModifier("1543fadc-3a9e-412b-819b-a6379a0911ca", "mining_speed_skill_adrenaline", miningSpeed, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Mining.ADRENALINE));
+        miningSpeedSkillMomentumModifier = createFloatAttributeModifier("1ca4d69f-05b8-4598-97c5-95f6bc750b7a", "mining_speed_skill_momentum", miningSpeed, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Mining.MOMENTUM));
+        miningSpeedSkillHastyModifier = createFloatAttributeModifier("035c4e96-a628-4b20-9699-28ade0fa5a80", "mining_speed_skill_hasty", miningSpeed, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Mining.HASTY));
+        miningSpeedSkillNightOwlModifier = createFloatAttributeModifier("f858c34f-d215-450a-847d-a54525d2f82f", "mining_speed_skill_night_owl", miningSpeed, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Mining.NIGHT_OWL));
 
         woodcuttingSpeed = createModifiableFloatAttribute("e1e3ecb3-ae1d-46c5-8ea8-a7180641910b", "woodcutting_speed", 0.0f, null, null);
         woodcuttingSpeedBlocklingModifier = createModifiableFloatAttributeModifier("51a21884-8c41-49d8-bae4-f21866b58718", "woodcutting_speed_blockling", woodcuttingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString());
@@ -206,7 +216,7 @@ public class BlocklingStats
         woodcuttingSpeedLevelModifier = createFloatAttributeModifier("6b71ee16-7d04-442e-9d49-9373833f5539", "woodcutting_speed_level", woodcuttingSpeedBlocklingModifier, 0.0f, Operation.ADD, null, woodcuttingLevel.displayStringNameSupplier);
         woodcuttingSpeedMainHandModifier = createFloatAttributeModifier("978f9dd4-3fbb-41ee-9bba-eddcfb42b6ff", "woodcutting_speed_main_hand", woodcuttingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString());
         woodcuttingSpeedOffHandModifier = createFloatAttributeModifier("80fd0028-a793-491c-bc9c-fe94071f91c7", "woodcutting_speed_off_hand", woodcuttingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getOffhandItem().getHoverName().getString());
-        woodcuttingSpeedSkillEfficiencyModifier = createFloatAttributeModifier("38a9d80c-4f96-4929-bd34-8c03156dec6d", "woodcutting_speed_skill_efficiency", woodcuttingSpeed, 1.0f, Operation.MULTIPLY_TOTAL, this::woodcuttingSpeedSkillEfficiencymodifierDisplayStringValueProvider, () -> skillDisplayNameProvider(BlocklingSkills.Woodcutting.EFFICIENCY));
+        woodcuttingSpeedSkillEfficiencyModifier = createFloatAttributeModifier("38a9d80c-4f96-4929-bd34-8c03156dec6d", "woodcutting_speed_skill_efficiency", woodcuttingSpeed, 1.1f, Operation.MULTIPLY_TOTAL, this::woodcuttingSpeedSkillEfficiencymodifierDisplayStringValueProvider, () -> skillDisplayNameProvider(BlocklingSkills.Woodcutting.EFFICIENCY));
 
         farmingSpeed = createModifiableFloatAttribute("f6c026b6-1fa9-432f-aca3-d97af784f6d0", "farming_speed", 0.0f, null, null);
         farmingSpeedBlocklingModifier = createModifiableFloatAttributeModifier("39548773-84ee-42ca-8ad6-681d64eaee54", "farming_speed_blockling", farmingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString());
@@ -214,7 +224,7 @@ public class BlocklingStats
         farmingSpeedLevelModifier = createFloatAttributeModifier("3b3079cf-8640-436b-bf0a-3aae4deb29be", "farming_speed_level", farmingSpeedBlocklingModifier, 0.0f, Operation.ADD, null, farmingLevel.displayStringNameSupplier);
         farmingSpeedMainHandModifier = createFloatAttributeModifier("5ece4240-17b3-4983-bd0d-67f962a0a838", "farming_speed_main_hand", farmingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString());
         farmingSpeedOffHandModifier = createFloatAttributeModifier("b4bb7131-f2ce-41cd-88ed-ee27e3837679", "farming_speed_off_hand", farmingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getOffhandItem().getHoverName().getString());
-        farmingSpeedSkillEfficiencyModifier = createFloatAttributeModifier("792be316-19cb-49ec-a24a-ee224312c60f", "farming_speed_skill_efficiency", farmingSpeed, 1.0f, Operation.MULTIPLY_TOTAL, this::farmingSpeedSkillEfficiencymodifierDisplayStringValueProvider, () -> skillDisplayNameProvider(BlocklingSkills.Farming.EFFICIENCY));
+        farmingSpeedSkillEfficiencyModifier = createFloatAttributeModifier("792be316-19cb-49ec-a24a-ee224312c60f", "farming_speed_skill_efficiency", farmingSpeed, 1.1f, Operation.MULTIPLY_TOTAL, this::farmingSpeedSkillEfficiencymodifierDisplayStringValueProvider, () -> skillDisplayNameProvider(BlocklingSkills.Farming.EFFICIENCY));
     }
 
     private String skillDisplayNameProvider(SkillInfo skillInfo)
@@ -393,7 +403,11 @@ public class BlocklingStats
 
         for (Attribute<?> attribute : attributes)
         {
-            attribute.writeToNBT(attributesNBT);
+            CompoundNBT attributeTag = new CompoundNBT();
+
+            attribute.writeToNBT(attributeTag);
+
+            attributesNBT.put(attribute.id.toString(), attributeTag);
         }
 
         c.put("attributes", attributesNBT);
@@ -405,7 +419,12 @@ public class BlocklingStats
 
         for (Attribute<?> attribute : attributes)
         {
-            attribute.readFromNBT(attributesNBT);
+            CompoundNBT attributeTag = (CompoundNBT) attributesNBT.get(attribute.id.toString());
+
+            if (attributeTag != null)
+            {
+                attribute.readFromNBT(attributeTag);
+            }
         }
 
         init();

@@ -110,7 +110,7 @@ public class StatsScreen extends TabbedScreen
     {
         for (IModifier<Float> modifier : attribute.getModifiers())
         {
-            if ((modifier.getValue() == 0.0f && modifier.getOperation() == Operation.ADD) || modifier.getValue() == 1.0f)
+            if (!modifier.isEnabled() || (modifier.getValue() == 0.0f && modifier.getOperation() == Operation.ADD) || modifier.getValue() == 1.0f)
             {
                 continue;
             }

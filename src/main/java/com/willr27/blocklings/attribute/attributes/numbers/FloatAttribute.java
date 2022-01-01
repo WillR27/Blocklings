@@ -24,35 +24,34 @@ public class FloatAttribute extends Attribute<Float>
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag)
+    public void writeToNBT(CompoundNBT attributeTag)
     {
-        CompoundNBT attributeTag = new CompoundNBT();
+        super.writeToNBT(attributeTag);
 
         attributeTag.putFloat("value", value);
-
-        tag.put(id.toString(), attributeTag);
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag)
+    public void readFromNBT(CompoundNBT attributeTag)
     {
-        CompoundNBT attributeTag = (CompoundNBT) tag.get(id.toString());
+        super.readFromNBT(attributeTag);
 
-        if (attributeTag != null)
-        {
-            value = attributeTag.getFloat("value");
-        }
+        value = attributeTag.getFloat("value");
     }
 
     @Override
     public void encode(PacketBuffer buf)
     {
+        super.encode(buf);
+
         buf.writeFloat(value);
     }
 
     @Override
     public void decode(PacketBuffer buf)
     {
+        super.decode(buf);
+
         value = buf.readFloat();
     }
 

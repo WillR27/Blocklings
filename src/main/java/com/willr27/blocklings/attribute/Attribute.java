@@ -1,11 +1,17 @@
 package com.willr27.blocklings.attribute;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.network.IMessage;
+import com.willr27.blocklings.network.NetworkHandler;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +30,8 @@ public abstract class Attribute<T>
 
     protected final List<Consumer<T>> updateCallbacks = new ArrayList<>();
 
+    private boolean isEnabled = true;
+
     public Attribute(String id, String key, BlocklingEntity blockling)
     {
         this(id, key, blockling, null, null);
@@ -39,13 +47,25 @@ public abstract class Attribute<T>
         this.displayStringNameSupplier = displayStringNameSupplier == null ? () -> createTranslation("name").getString() : displayStringNameSupplier;
     }
 
-    public abstract void writeToNBT(CompoundNBT tag);
+    public void writeToNBT(CompoundNBT attributeTag)
+    {
+        attributeTag.putBoolean("is_enabled", isEnabled);
+    }
 
-    public abstract void readFromNBT(CompoundNBT tag);
+    public void readFromNBT(CompoundNBT attributeTag)
+    {
+        setIsEnabled(attributeTag.getBoolean("is_enabled"), false);
+    }
 
-    public abstract void encode(PacketBuffer buf);
+    public void encode(PacketBuffer buf)
+    {
+        buf.writeBoolean(isEnabled);
+    }
 
-    public abstract void decode(PacketBuffer buf);
+    public void decode(PacketBuffer buf)
+    {
+        setIsEnabled(buf.readBoolean(), false);
+    }
 
     public abstract T getValue();
 
@@ -64,6 +84,26 @@ public abstract class Attribute<T>
         return String.format(format, getValue());
     }
 
+    public boolean isEnabled()
+    {
+        return isEnabled;
+    }
+
+    public void setIsEnabled(boolean isEnabled)
+    {
+        setIsEnabled(isEnabled);
+    }
+
+    public void setIsEnabled(boolean isEnabled, boolean sync)
+    {
+        this.isEnabled = isEnabled;
+
+        if (sync)
+        {
+            NetworkHandler.sync(world, new IsEnabledMessage(blockling.getStats().attributes.indexOf(this), isEnabled, blockling.getId()));
+        }
+    }
+
     public TranslationTextComponent createTranslation(String key, Object... objects)
     {
         return new AttributeTranslationTextComponent(this.key + "." + key, objects);
@@ -79,6 +119,53 @@ public abstract class Attribute<T>
         public AttributeTranslationTextComponent(String key, Object... objects)
         {
             super("attribute." + key, objects);
+        }
+    }
+
+    public static class IsEnabledMessage implements IMessage
+    {
+        private int index;
+        private boolean isEnabled;
+        private int entityId;
+
+        private IsEnabledMessage() {}
+        public IsEnabledMessage(int index, boolean isEnabled, int entityId)
+        {
+            this.index = index;
+            this.isEnabled = isEnabled;
+            this.entityId = entityId;
+        }
+
+        public static void encode(IsEnabledMessage msg, PacketBuffer buf)
+        {
+            buf.writeInt(msg.index);
+            buf.writeBoolean(msg.isEnabled);
+            buf.writeInt(msg.entityId);
+        }
+
+        public static IsEnabledMessage decode(PacketBuffer buf)
+        {
+            IsEnabledMessage msg = new IsEnabledMessage();
+            msg.index = buf.readInt();
+            msg.isEnabled = buf.readBoolean();
+            msg.entityId = buf.readInt();
+
+            return msg;
+        }
+
+        public void handle(Supplier<NetworkEvent.Context> ctx)
+        {
+            ctx.get().enqueueWork(() ->
+            {
+                NetworkEvent.Context context = ctx.get();
+                boolean isClient = context.getDirection() == NetworkDirection.PLAY_TO_CLIENT;
+
+                PlayerEntity player = isClient ? Minecraft.getInstance().player : ctx.get().getSender();
+                BlocklingEntity blockling = (BlocklingEntity) player.level.getEntity(entityId);
+
+                Attribute<?> attribute = blockling.getStats().attributes.get(index);
+                attribute.setIsEnabled(isEnabled, !isClient);
+            });
         }
     }
 }

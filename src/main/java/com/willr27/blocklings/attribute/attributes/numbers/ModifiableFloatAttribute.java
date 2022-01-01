@@ -23,35 +23,34 @@ public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag)
+    public void writeToNBT(CompoundNBT attributeTag)
     {
-        CompoundNBT attributeTag = new CompoundNBT();
+        super.writeToNBT(attributeTag);
 
         attributeTag.putFloat("base_value", baseValue);
-
-        tag.put(id.toString(), attributeTag);
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag)
+    public void readFromNBT(CompoundNBT attributeTag)
     {
-        CompoundNBT attributeTag = (CompoundNBT) tag.get(id.toString());
+        super.readFromNBT(attributeTag);
 
-        if (attributeTag != null)
-        {
-            baseValue = attributeTag.getFloat("base_value");
-        }
+        baseValue = attributeTag.getFloat("base_value");
     }
 
     @Override
     public void encode(PacketBuffer buf)
     {
+        super.encode(buf);
+
         buf.writeFloat(value);
     }
 
     @Override
     public void decode(PacketBuffer buf)
     {
+        super.decode(buf);
+
         value = buf.readFloat();
     }
 
@@ -62,7 +61,7 @@ public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
         float tempBase = baseValue;
         boolean end = false;
 
-        for (IModifier<Float> modifier : modifiers)
+        for (IModifier<Float> modifier : getEnabledModifiers())
         {
             if (modifier.getOperation() == Operation.ADD)
             {
@@ -113,9 +112,9 @@ public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
 
     public static class BaseValueMessage implements IMessage
     {
-        public int index;
-        public float baseValue;
-        public int entityId;
+        private int index;
+        private float baseValue;
+        private int entityId;
 
         private BaseValueMessage() {}
         public BaseValueMessage(int index, float baseValue, int entityId)

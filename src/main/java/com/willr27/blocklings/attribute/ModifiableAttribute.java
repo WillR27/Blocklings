@@ -7,6 +7,7 @@ import net.minecraft.network.PacketBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public abstract class ModifiableAttribute<T> extends Attribute<T> implements IModifiable<T>
 {
@@ -38,6 +39,12 @@ public abstract class ModifiableAttribute<T> extends Attribute<T> implements IMo
     public List<IModifier<T>> getModifiers()
     {
         return new ArrayList<>(modifiers);
+    }
+
+    @Override
+    public List<IModifier<T>> getEnabledModifiers()
+    {
+        return modifiers.stream().filter(IModifier::isEnabled).collect(Collectors.toList());
     }
 
     @Override
@@ -117,5 +124,13 @@ public abstract class ModifiableAttribute<T> extends Attribute<T> implements IMo
     public Supplier<String> getDisplayStringNameSupplier()
     {
         return displayStringNameSupplier;
+    }
+
+    @Override
+    public void setIsEnabled(boolean isEnabled, boolean sync)
+    {
+        super.setIsEnabled(isEnabled, sync);
+
+        calculate();
     }
 }

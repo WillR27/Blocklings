@@ -24,4 +24,6 @@ public interface IModifier<T>
     Supplier<String> getDisplayStringValueSupplier();
 
     Supplier<String> getDisplayStringNameSupplier();
+
+    boolean isEnabled();
 }
