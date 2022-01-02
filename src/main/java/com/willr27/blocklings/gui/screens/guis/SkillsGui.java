@@ -329,7 +329,7 @@ public class SkillsGui extends AbstractGui
                         Attribute<Integer> attribute = blockling.getStats().getLevelAttribute(level);
 
                         String colour = attribute.getValue() >= value ? "" + TextFormatting.GREEN : "" + TextFormatting.RED;
-                        description.add(colour + attribute.createTranslation("required", value).getString());
+                        description.add(colour + attribute.createTranslation("required", value).getString() + " " + TextFormatting.DARK_GRAY + "(" + blockling.getStats().getLevelAttribute(level).getValue() + ")");
                     }
                 }
             }
@@ -473,8 +473,6 @@ public class SkillsGui extends AbstractGui
 
                             if (abilityWidget.isMouseOver((int) mouseX, (int) mouseY, scale))
                             {
-//                                blockling.abilityManager.tryBuyAbility(abilityGroup, abilities);
-//                                resetSelectedAbility = true;
                                 String name = TextFormatting.LIGHT_PURPLE + skill.info.general.name.getString() + TextFormatting.WHITE;
                                 confirmGui = new SkillsConfirmationGui(scale, font, skill, GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("skill.buy_confirmation", name).getString(), width < 200 ? width - 10 : width - 50), windowWidth, windowHeight, width, height);
                                 resetSelectedAbility = false;
