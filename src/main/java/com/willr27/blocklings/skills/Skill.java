@@ -33,12 +33,7 @@ public class Skill
             return false;
         }
 
-        if (info.requirements.skillPoints > group.blockling.getStats().skillPoints.getValue())
-        {
-            return false;
-        }
-
-        if (info.requirements.levels.keySet().stream().filter(level -> group.blockling.getStats().getLevel(level).getValue() < info.requirements.levels.get(level)).findAny().isPresent())
+        if (info.requirements.levels.keySet().stream().anyMatch(level -> group.blockling.getStats().getLevelAttribute(level).getValue() < info.requirements.levels.get(level)))
         {
             return false;
         }
@@ -85,8 +80,6 @@ public class Skill
 
     private void buy()
     {
-        group.blockling.getStats().skillPoints.incValue(-info.requirements.skillPoints, false);
-
         setState(State.BOUGHT, false);
     }
 
@@ -143,7 +136,7 @@ public class Skill
 
     public boolean areParentsBought()
     {
-        return !parents().stream().filter(skill -> skill.getState() != State.BOUGHT).findAny().isPresent();
+        return parents().stream().noneMatch(skill -> skill.getState() != State.BOUGHT);
     }
 
     public List<Skill> conflicts()
@@ -153,7 +146,7 @@ public class Skill
 
     public boolean hasConflict()
     {
-        return conflicts().stream().filter(skill -> skill.getState() == State.BOUGHT).findAny().isPresent();
+        return conflicts().stream().anyMatch(skill -> skill.getState() == State.BOUGHT);
     }
 
     public enum Type

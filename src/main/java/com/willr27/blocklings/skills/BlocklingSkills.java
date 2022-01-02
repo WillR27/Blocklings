@@ -27,7 +27,7 @@ public class BlocklingSkills
     {
         private static final SkillGeneralInfo NOVICE_GUARD_GENERAL = new SkillGeneralInfo(Skill.Type.AI, "combat.novice_guard");
         private static final SkillDefaultsInfo NOVICE_GUARD_DEFAULTS = new SkillDefaultsInfo(Skill.State.UNLOCKED);
-        private static final SkillRequirementsInfo NOVICE_GUARD_REQUIREMENTS = new SkillRequirementsInfo(0, new HashMap<BlocklingStats.Level, Integer>() {{  }});
+        private static final SkillRequirementsInfo NOVICE_GUARD_REQUIREMENTS = new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{  }});
         private static final SkillCallbackInfo NOVICE_GUARD_CALLBACKS = new SkillCallbackInfo(skill -> { skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT_BY, true); skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT, true); return true; });
         private static final SkillGuiInfo.AbilityGuiTexture NOVICE_GUARD_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.COMBAT_ICONS, 0, 0);
         private static final SkillGuiInfo NOVICE_GUARD_GUI = new SkillGuiInfo(0, 0, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, NOVICE_GUARD_TEXTURE);
@@ -43,7 +43,7 @@ public class BlocklingSkills
     {
         private static final SkillGeneralInfo NOVICE_MINER_GENERAL = new SkillGeneralInfo(Skill.Type.AI, "mining.novice_miner");
         private static final SkillDefaultsInfo NOVICE_MINER_DEFAULTS = new SkillDefaultsInfo(Skill.State.UNLOCKED);
-        private static final SkillRequirementsInfo NOVICE_MINER_REQUIREMENTS = new SkillRequirementsInfo(0, new HashMap<BlocklingStats.Level, Integer>() {{  }});
+        private static final SkillRequirementsInfo NOVICE_MINER_REQUIREMENTS = new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{  }});
         private static final SkillCallbackInfo NOVICE_MINER_CALLBACKS = new SkillCallbackInfo(skill -> { skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.MINE, true); return true; });
         private static final SkillGuiInfo.AbilityGuiTexture NOVICE_MINER_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.MINING_ICONS, 0, 0);
         private static final SkillGuiInfo NOVICE_MINER_GUI = new SkillGuiInfo(0, 0, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, NOVICE_MINER_TEXTURE);
@@ -51,7 +51,7 @@ public class BlocklingSkills
 
         private static final SkillGeneralInfo WHITELIST_GENERAL = new SkillGeneralInfo(Skill.Type.OTHER, "mining.whitelist");
         private static final SkillDefaultsInfo WHITELIST_DEFAULTS = new SkillDefaultsInfo(Skill.State.LOCKED);
-        private static final SkillRequirementsInfo WHITELIST_REQUIREMENTS = new SkillRequirementsInfo(2, new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.MINING, 5); }});
+        private static final SkillRequirementsInfo WHITELIST_REQUIREMENTS = new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.MINING, 5); }});
         private static final SkillCallbackInfo WHITELIST_CALLBACKS = new SkillCallbackInfo(skill -> { unlockExistingWhitelists(skill, "24d7135e-607b-413b-a2a7-00d19119b9de"); return true; });
         private static final SkillGuiInfo.AbilityGuiTexture WHITELIST_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.MINING_ICONS, 1, 0);
         private static final SkillGuiInfo WHITELIST_GUI = new SkillGuiInfo(0, 70, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, WHITELIST_TEXTURE);
@@ -66,7 +66,7 @@ public class BlocklingSkills
 
         private static final SkillGeneralInfo EFFICIENCY_GENERAL = new SkillGeneralInfo(Skill.Type.STAT, "mining.efficiency");
         private static final SkillDefaultsInfo EFFICIENCY_DEFAULTS = new SkillDefaultsInfo(Skill.State.LOCKED);
-        private static final SkillRequirementsInfo EFFICIENCY_REQUIREMENTS = new SkillRequirementsInfo(1, new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.MINING, 10); }});
+        private static final SkillRequirementsInfo EFFICIENCY_REQUIREMENTS = new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.MINING, 10); }});
         private static final SkillCallbackInfo EFFICIENCY_CALLBACKS = new SkillCallbackInfo(skill -> { skill.blockling.getStats().miningSpeedSkillEfficiencyModifier.setIsEnabled(true, false); return true; });
         private static final SkillGuiInfo.AbilityGuiTexture EFFICIENCY_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.MINING_ICONS, 2, 0);
         private static final SkillGuiInfo EFFICIENCY_GUI = new SkillGuiInfo(70, 0, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xffd56d, EFFICIENCY_TEXTURE);
@@ -81,7 +81,7 @@ public class BlocklingSkills
 
         private static final SkillGeneralInfo ADRENALINE_GENERAL = new SkillGeneralInfo(Skill.Type.STAT, "mining.adrenaline");
         private static final SkillDefaultsInfo ADRENALINE_DEFAULTS = new SkillDefaultsInfo(Skill.State.LOCKED);
-        private static final SkillRequirementsInfo ADRENALINE_REQUIREMENTS = new SkillRequirementsInfo(5, new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.MINING, 25); }});
+        private static final SkillRequirementsInfo ADRENALINE_REQUIREMENTS = new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.MINING, 25); }});
         private static final SkillCallbackInfo ADRENALINE_CALLBACKS = new SkillCallbackInfo(skill -> { skill.blockling.getStats().miningSpeedSkillAdrenalineModifier.setIsEnabled(true, false); return true; });
         private static final SkillGuiInfo.AbilityGuiTexture ADRENALINE_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.MINING_ICONS, 3, 0);
         private static final SkillGuiInfo ADRENALINE_GUI = new SkillGuiInfo(140, -50, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xb72626, ADRENALINE_TEXTURE);
@@ -108,7 +108,7 @@ public class BlocklingSkills
 
         private static final SkillGeneralInfo MOMENTUM_GENERAL = new SkillGeneralInfo(Skill.Type.STAT, "mining.momentum");
         private static final SkillDefaultsInfo MOMENTUM_DEFAULTS = new SkillDefaultsInfo(Skill.State.LOCKED);
-        private static final SkillRequirementsInfo MOMENTUM_REQUIREMENTS = new SkillRequirementsInfo(5, new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.MINING, 25); }});
+        private static final SkillRequirementsInfo MOMENTUM_REQUIREMENTS = new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.MINING, 25); }});
         private static final SkillCallbackInfo MOMENTUM_CALLBACKS = new SkillCallbackInfo(skill -> { skill.blockling.getStats().miningSpeedSkillMomentumModifier.setIsEnabled(true, false); return true; });
         private static final SkillGuiInfo.AbilityGuiTexture MOMENTUM_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.MINING_ICONS, 4, 0);
         private static final SkillGuiInfo MOMENTUM_GUI = new SkillGuiInfo(140, 50, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xad79b5, MOMENTUM_TEXTURE);
@@ -129,7 +129,7 @@ public class BlocklingSkills
 
         private static final SkillGeneralInfo HASTY_GENERAL = new SkillGeneralInfo(Skill.Type.STAT, "mining.hasty");
         private static final SkillDefaultsInfo HASTY_DEFAULTS = new SkillDefaultsInfo(Skill.State.LOCKED);
-        private static final SkillRequirementsInfo HASTY_REQUIREMENTS = new SkillRequirementsInfo(5, new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.MINING, 25); }});
+        private static final SkillRequirementsInfo HASTY_REQUIREMENTS = new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.MINING, 25); }});
         private static final SkillCallbackInfo HASTY_CALLBACKS = new SkillCallbackInfo(skill -> { skill.blockling.getStats().miningSpeedSkillHastyModifier.setIsEnabled(true, false); return true; });
         private static final SkillGuiInfo.AbilityGuiTexture HASTY_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.MINING_ICONS, 5, 0);
         private static final SkillGuiInfo HASTY_GUI = new SkillGuiInfo(210, -50, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0x4eb2aa, HASTY_TEXTURE);
@@ -150,7 +150,7 @@ public class BlocklingSkills
 
         private static final SkillGeneralInfo NIGHT_OWL_GENERAL = new SkillGeneralInfo(Skill.Type.STAT, "mining.night_owl");
         private static final SkillDefaultsInfo NIGHT_OWL_DEFAULTS = new SkillDefaultsInfo(Skill.State.LOCKED);
-        private static final SkillRequirementsInfo NIGHT_OWL_REQUIREMENTS = new SkillRequirementsInfo(5, new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.MINING, 25); }});
+        private static final SkillRequirementsInfo NIGHT_OWL_REQUIREMENTS = new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.MINING, 25); }});
         private static final SkillCallbackInfo NIGHT_OWL_CALLBACKS = new SkillCallbackInfo(skill -> { skill.blockling.getStats().miningSpeedSkillNightOwlModifier.setIsEnabled(true, false); return true; });
         private static final SkillGuiInfo.AbilityGuiTexture NIGHT_OWL_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.MINING_ICONS, 6, 0);
         private static final SkillGuiInfo NIGHT_OWL_GUI = new SkillGuiInfo(210, 50, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0x2b2a3d, NIGHT_OWL_TEXTURE);
@@ -191,7 +191,7 @@ public class BlocklingSkills
     {
         private static final SkillGeneralInfo NOVICE_LUMBERJACK_GENERAL = new SkillGeneralInfo(Skill.Type.AI, "woodcutting.novice_lumberjack");
         private static final SkillDefaultsInfo NOVICE_LUMBERJACK_DEFAULTS = new SkillDefaultsInfo(Skill.State.UNLOCKED);
-        private static final SkillRequirementsInfo NOVICE_LUMBERJACK_REQUIREMENTS = new SkillRequirementsInfo(0, new HashMap<BlocklingStats.Level, Integer>() {{  }});
+        private static final SkillRequirementsInfo NOVICE_LUMBERJACK_REQUIREMENTS = new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{  }});
         private static final SkillCallbackInfo NOVICE_LUMBERJACK_CALLBACKS = new SkillCallbackInfo(skill -> { skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.WOODCUT, true, false); return true; });
         private static final SkillGuiInfo.AbilityGuiTexture NOVICE_LUMBERJACK_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.WOODCUTTING_ICONS, 0, 0);
         private static final SkillGuiInfo NOVICE_LUMBERJACK_GUI = new SkillGuiInfo(0, 0, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, NOVICE_LUMBERJACK_TEXTURE);
@@ -199,7 +199,7 @@ public class BlocklingSkills
 
         private static final SkillGeneralInfo WHITELIST_GENERAL = new SkillGeneralInfo(Skill.Type.OTHER, "woodcutting.whitelist");
         private static final SkillDefaultsInfo WHITELIST_DEFAULTS = new SkillDefaultsInfo(Skill.State.LOCKED);
-        private static final SkillRequirementsInfo WHITELIST_REQUIREMENTS = new SkillRequirementsInfo(2, new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.WOODCUTTING, 5); }});
+        private static final SkillRequirementsInfo WHITELIST_REQUIREMENTS = new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.WOODCUTTING, 5); }});
         private static final SkillCallbackInfo WHITELIST_CALLBACKS = new SkillCallbackInfo(skill -> { unlockExistingWhitelists(skill, "fbfbfd44-c1b0-4420-824a-270b34c866f7"); return true; });
         private static final SkillGuiInfo.AbilityGuiTexture WHITELIST_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.WOODCUTTING_ICONS, 1, 0);
         private static final SkillGuiInfo WHITELIST_GUI = new SkillGuiInfo(0, 70, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, WHITELIST_TEXTURE);
@@ -214,7 +214,7 @@ public class BlocklingSkills
 
         private static final SkillGeneralInfo EFFICIENCY_GENERAL = new SkillGeneralInfo(Skill.Type.STAT, "woodcutting.efficiency");
         private static final SkillDefaultsInfo EFFICIENCY_DEFAULTS = new SkillDefaultsInfo(Skill.State.LOCKED);
-        private static final SkillRequirementsInfo EFFICIENCY_REQUIREMENTS = new SkillRequirementsInfo(1, new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.WOODCUTTING, 10); }});
+        private static final SkillRequirementsInfo EFFICIENCY_REQUIREMENTS = new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.WOODCUTTING, 10); }});
         private static final SkillCallbackInfo EFFICIENCY_CALLBACKS = new SkillCallbackInfo(skill -> { skill.blockling.getStats().woodcuttingSpeedSkillEfficiencyModifier.setIsEnabled(true, false); return true; });
         private static final SkillGuiInfo.AbilityGuiTexture EFFICIENCY_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.WOODCUTTING_ICONS, 2, 0);
         private static final SkillGuiInfo EFFICIENCY_GUI = new SkillGuiInfo(70, 0, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xffd56d, EFFICIENCY_TEXTURE);
@@ -239,7 +239,7 @@ public class BlocklingSkills
     {
         private static final SkillGeneralInfo NOVICE_FARMER_GENERAL = new SkillGeneralInfo(Skill.Type.AI, "farming.novice_farmer");
         private static final SkillDefaultsInfo NOVICE_FARMER_DEFAULTS = new SkillDefaultsInfo(Skill.State.UNLOCKED);
-        private static final SkillRequirementsInfo NOVICE_FARMER_REQUIREMENTS = new SkillRequirementsInfo(0, new HashMap<BlocklingStats.Level, Integer>() {{  }});
+        private static final SkillRequirementsInfo NOVICE_FARMER_REQUIREMENTS = new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{  }});
         private static final SkillCallbackInfo NOVICE_FARMER_CALLBACKS = new SkillCallbackInfo(skill -> { skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.FARM, true, false); return true; });
         private static final SkillGuiInfo.AbilityGuiTexture NOVICE_FARMER_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.FARMING_ICONS, 0, 0);
         private static final SkillGuiInfo NOVICE_FARMER_GUI = new SkillGuiInfo(0, 0, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, NOVICE_FARMER_TEXTURE);
@@ -247,7 +247,7 @@ public class BlocklingSkills
 
         private static final SkillGeneralInfo CROP_WHITELIST_GENERAL = new SkillGeneralInfo(Skill.Type.OTHER, "farming.crop_whitelist");
         private static final SkillDefaultsInfo CROP_WHITELIST_DEFAULTS = new SkillDefaultsInfo(Skill.State.LOCKED);
-        private static final SkillRequirementsInfo CROP_WHITELIST_REQUIREMENTS = new SkillRequirementsInfo(2, new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.FARMING, 5); }});
+        private static final SkillRequirementsInfo CROP_WHITELIST_REQUIREMENTS = new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.FARMING, 5); }});
         private static final SkillCallbackInfo CROP_WHITELIST_CALLBACKS = new SkillCallbackInfo(skill -> { unlockExistingWhitelists(skill, "25140edf-f60e-459e-b1f0-9ff82108ec0b"); return true; });
         private static final SkillGuiInfo.AbilityGuiTexture CROP_WHITELIST_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.FARMING_ICONS, 1, 0);
         private static final SkillGuiInfo CROP_WHITELIST_GUI = new SkillGuiInfo(0, 70, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, CROP_WHITELIST_TEXTURE);
@@ -262,7 +262,7 @@ public class BlocklingSkills
 
         private static final SkillGeneralInfo EFFICIENCY_GENERAL = new SkillGeneralInfo(Skill.Type.STAT, "farming.efficiency");
         private static final SkillDefaultsInfo EFFICIENCY_DEFAULTS = new SkillDefaultsInfo(Skill.State.LOCKED);
-        private static final SkillRequirementsInfo EFFICIENCY_REQUIREMENTS = new SkillRequirementsInfo(1, new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.FARMING, 10); }});
+        private static final SkillRequirementsInfo EFFICIENCY_REQUIREMENTS = new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.FARMING, 10); }});
         private static final SkillCallbackInfo EFFICIENCY_CALLBACKS = new SkillCallbackInfo(skill -> { skill.blockling.getStats().farmingSpeedSkillEfficiencyModifier.setIsEnabled(true, false); return true; });
         private static final SkillGuiInfo.AbilityGuiTexture EFFICIENCY_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.FARMING_ICONS, 2, 0);
         private static final SkillGuiInfo EFFICIENCY_GUI = new SkillGuiInfo(70, 0, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xffd56d, EFFICIENCY_TEXTURE);
@@ -277,7 +277,7 @@ public class BlocklingSkills
 
         private static final SkillGeneralInfo REPLANTER_GENERAL = new SkillGeneralInfo(Skill.Type.AI, "farming.replanter");
         private static final SkillDefaultsInfo REPLANTER_DEFAULTS = new SkillDefaultsInfo(Skill.State.LOCKED);
-        private static final SkillRequirementsInfo REPLANTER_REQUIREMENTS = new SkillRequirementsInfo(2, new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.FARMING, 10); }});
+        private static final SkillRequirementsInfo REPLANTER_REQUIREMENTS = new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.FARMING, 10); }});
         private static final SkillCallbackInfo REPLANTER_CALLBACKS = new SkillCallbackInfo(skill -> true);
         private static final SkillGuiInfo.AbilityGuiTexture REPLANTER_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.FARMING_ICONS, 3, 0);
         private static final SkillGuiInfo REPLANTER_GUI = new SkillGuiInfo(-70, 0, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0x64de10, REPLANTER_TEXTURE);
@@ -292,7 +292,7 @@ public class BlocklingSkills
 
         private static final SkillGeneralInfo SEED_WHITELIST_GENERAL = new SkillGeneralInfo(Skill.Type.OTHER, "farming.seed_whitelist");
         private static final SkillDefaultsInfo SEED_WHITELIST_DEFAULTS = new SkillDefaultsInfo(Skill.State.LOCKED);
-        private static final SkillRequirementsInfo SEED_WHITELIST_REQUIREMENTS = new SkillRequirementsInfo(2, new HashMap<BlocklingStats.Level, Integer>() {  });
+        private static final SkillRequirementsInfo SEED_WHITELIST_REQUIREMENTS = new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{  }});
         private static final SkillCallbackInfo SEED_WHITELIST_CALLBACKS = new SkillCallbackInfo(skill -> { unlockExistingWhitelists(skill, "d77bf1c1-7718-4733-b763-298b03340eea"); return true; });
         private static final SkillGuiInfo.AbilityGuiTexture SEED_WHITELIST_TEXTURE = new SkillGuiInfo.AbilityGuiTexture(GuiUtil.FARMING_ICONS, 1, 0);
         private static final SkillGuiInfo SEED_WHITELIST_GUI = new SkillGuiInfo(-70, 70, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, SEED_WHITELIST_TEXTURE);

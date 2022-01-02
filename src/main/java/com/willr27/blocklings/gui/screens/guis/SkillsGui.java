@@ -4,7 +4,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.attribute.Attribute;
 import com.willr27.blocklings.attribute.attributes.numbers.IntAttribute;
-import com.willr27.blocklings.attribute.attributes.numbers.ModifiableIntAttribute;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingStats;
 import com.willr27.blocklings.gui.GuiUtil;
@@ -19,7 +18,6 @@ import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -318,23 +316,17 @@ public class SkillsGui extends AbstractGui
         else
         {
             Map<BlocklingStats.Level, Integer> levelRequirements = skill.info.requirements.levels;
-            if (skill.info.requirements.skillPoints > 0 || levelRequirements.size() > 0)
+            if (levelRequirements.size() > 0)
             {
                 description.add("");
                 description.add(new BlocklingsTranslationTextComponent("requirements").getString());
-
-                if (skill.info.requirements.skillPoints > 0)
-                {
-                    String colour = blockling.getStats().skillPoints.getValue() >= skill.info.requirements.skillPoints ? "" + TextFormatting.GREEN : "" + TextFormatting.RED;
-                    description.add(colour + new Attribute.AttributeTranslationTextComponent("skill_points.required", skill.info.requirements.skillPoints).getString());
-                }
 
                 if (levelRequirements.size() > 0)
                 {
                     for (BlocklingStats.Level level : levelRequirements.keySet())
                     {
-                        int value = levelRequirements.get(level).intValue();
-                        IntAttribute attribute = blockling.getStats().getLevel(level);
+                        int value = levelRequirements.get(level);
+                        Attribute<Integer> attribute = blockling.getStats().getLevelAttribute(level);
 
                         String colour = attribute.getValue() >= value ? "" + TextFormatting.GREEN : "" + TextFormatting.RED;
                         description.add(colour + attribute.createTranslation("required", value).getString());
@@ -484,7 +476,7 @@ public class SkillsGui extends AbstractGui
 //                                blockling.abilityManager.tryBuyAbility(abilityGroup, abilities);
 //                                resetSelectedAbility = true;
                                 String name = TextFormatting.LIGHT_PURPLE + skill.info.general.name.getString() + TextFormatting.WHITE;
-                                confirmGui = new SkillsConfirmationGui(scale, font, skill, GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("skill.buy_confirmation", name, "" + TextFormatting.AQUA + skill.info.requirements.skillPoints + TextFormatting.WHITE).getString(), width < 200 ? width - 10 : width - 50), windowWidth, windowHeight, width, height);
+                                confirmGui = new SkillsConfirmationGui(scale, font, skill, GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("skill.buy_confirmation", name).getString(), width < 200 ? width - 10 : width - 50), windowWidth, windowHeight, width, height);
                                 resetSelectedAbility = false;
                                 doneSomething = true;
                             }

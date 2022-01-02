@@ -21,20 +21,18 @@ import java.util.function.Supplier;
 public class BlocklingStats
 {
     public final List<Attribute<?>> attributes = new ArrayList<>();
-    public final List<IntAttribute> levels = new ArrayList<>();
     public final List<IModifier<?>> modifiers = new ArrayList<>();
 
     public final IntAttribute combatLevel;
     public final IntAttribute miningLevel;
     public final IntAttribute woodcuttingLevel;
     public final IntAttribute farmingLevel;
+    public final Attribute<Integer> totalLevel;
 
     public final IntAttribute combatXp;
     public final IntAttribute miningXp;
     public final IntAttribute woodcuttingXp;
     public final IntAttribute farmingXp;
-
-    public final IntAttribute skillPoints;
 
     public final EnumAttribute<BlocklingHand> hand;
 
@@ -124,20 +122,22 @@ public class BlocklingStats
         this.world = blockling.level;
 
         combatLevel = createIntAttribute("17beee8e-3fca-4601-a766-46f811ad6b69", "combat_level", blockling.getRandom().nextInt(5) + 1, null, null);
-        levels.add(combatLevel);
         miningLevel = createIntAttribute("a2a62308-0a6e-41bb-9844-4645eeb72fb7", "mining_level", blockling.getRandom().nextInt(5) + 1, null, null);
-        levels.add(miningLevel);
         woodcuttingLevel = createIntAttribute("c6d3ce7c-52af-44df-833b-fede277eec7f", "woodcutting_level", blockling.getRandom().nextInt(5) + 1, null, null);
-        levels.add(woodcuttingLevel);
         farmingLevel = createIntAttribute("ac1c6d1b-18bb-435a-ad93-c24d6fa90816", "farming_level", blockling.getRandom().nextInt(5) + 1, null, null);
-        levels.add(farmingLevel);
+        totalLevel = new Attribute<Integer>("ecd6a307-2f55-4d9b-96ab-f5efc82f8e5a", "total_level", blockling)
+        {
+            @Override
+            public Integer getValue()
+            {
+                return combatLevel.getValue() + miningLevel.getValue() + woodcuttingLevel.getValue() + farmingLevel.getValue();
+            }
+        };
 
         combatXp = createIntAttribute("ec56a177-2a08-4f43-b77a-b1d4544a8656", "combat_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(combatLevel.getValue())), null, null);
         miningXp = createIntAttribute("ce581807-3fad-45b1-9aec-43ed0cb53c8f", "mining_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(miningLevel.getValue())), null, null);
         woodcuttingXp = createIntAttribute("82165063-6d47-4534-acc9-db3543c3db74", "woodcutting_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(woodcuttingLevel.getValue())), null, null);
         farmingXp = createIntAttribute("1f1e4cbc-358e-4477-92d8-03e818d5272c", "farming_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(farmingLevel.getValue())), null, null);
-
-        skillPoints = createIntAttribute("a78f9d35-266e-4f86-836e-daaef073940e", "skill_points", combatLevel.getValue() + miningLevel.getValue() + woodcuttingLevel.getValue() + farmingLevel.getValue() + 4, null, null);
 
         hand = createEnumAttribute("f21fcbaa-f800-468e-8c22-ec4b4fd0fdc2", "hand", BlocklingHand.NONE, (i) -> BlocklingHand.values()[i], null, null);
 
@@ -490,7 +490,6 @@ public class BlocklingStats
             {
                 this.combatLevel.setValue(combatLevel + 1, sync);
                 this.combatXp.setValue(combatXp - combatXpReq, sync);
-                skillPoints.incValue(1, sync);
             }
         }
 
@@ -503,7 +502,6 @@ public class BlocklingStats
             {
                 this.miningLevel.setValue(miningLevel + 1, sync);
                 this.miningXp.setValue(miningXp - miningXpReq, sync);
-                skillPoints.incValue(1, sync);
             }
         }
 
@@ -516,7 +514,6 @@ public class BlocklingStats
             {
                 this.woodcuttingLevel.setValue(woodcuttingLevel + 1, sync);
                 this.woodcuttingXp.setValue(woodcuttingXp - woodcuttingXpReq, sync);
-                skillPoints.incValue(1, sync);
             }
         }
 
@@ -529,7 +526,6 @@ public class BlocklingStats
             {
                 this.farmingLevel.setValue(farmingLevel + 1, sync);
                 this.farmingXp.setValue(farmingXp - farmingXpReq, sync);
-                skillPoints.incValue(1, sync);
             }
         }
     }
@@ -627,7 +623,7 @@ public class BlocklingStats
         return blockling.getHealth() / blockling.getMaxHealth();
     }
 
-    public IntAttribute getLevel(Level level)
+    public Attribute<Integer> getLevelAttribute(Level level)
     {
         switch (level)
         {
@@ -635,6 +631,7 @@ public class BlocklingStats
             case MINING: return miningLevel;
             case WOODCUTTING: return woodcuttingLevel;
             case FARMING: return farmingLevel;
+            case TOTAL: return totalLevel;
         }
 
         return null;
@@ -642,11 +639,6 @@ public class BlocklingStats
 
     public enum Level
     {
-        COMBAT, MINING, WOODCUTTING, FARMING;
-
-        public String getDisplayName()
-        {
-            return name().charAt(0) + name().substring(1).toLowerCase();
-        }
+        COMBAT, MINING, WOODCUTTING, FARMING, TOTAL;
     }
 }

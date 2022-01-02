@@ -61,12 +61,10 @@ public class SkillsScreen extends TabbedScreen
 
         GuiUtil.bindTexture(GuiUtil.SKILLS);
 
-        String points = "" + blockling.getStats().skillPoints.getValue();
         if (!maximised)
         {
             blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedGui.CONTENT_WIDTH, TabbedGui.CONTENT_HEIGHT);
             super.render(matrixStack, mouseX, mouseY, partialTicks);
-            font.drawShadow(matrixStack, points, left + 184 - font.width(points), top + 7, 0xffffff);
             font.drawShadow(matrixStack, group.info.guiTitle.getString(), left + 36, top + 7, 0xffffff);
         }
         else
@@ -81,7 +79,6 @@ public class SkillsScreen extends TabbedScreen
             blit(matrixStack, right - 120 + 9, bottom - 108 + 13, 176 - 120, 166 - 108, 120, 108);
             blit(matrixStack, left + 111, top - 13, 30, 0, 78, 30);
             blit(matrixStack, left + 111, bottom - 30 + 13, 30, 166 - 30, 78, 30);
-            font.drawShadow(matrixStack, points, right - 11 - font.width(points), top - 6, 0xffffff);
             font.drawShadow(matrixStack, group.info.guiTitle.getString(), left, top - 6, 0xffffff);
         }
 

@@ -57,7 +57,7 @@
   "blocklings.skill_group.woodcutting.gui_title": "Woodcutting Skills",
   "blocklings.skill_group.farming.gui_title": "Farming Skills",
 
-  "blocklings.skill.buy_confirmation": "Are you sure you want to buy %1$s for %2$s skill point(s)?",
+  "blocklings.skill.buy_confirmation": "Are you sure you want to unlock %s?",
   "blocklings.skill.unknown": "???",
   "blocklings.skill.name": "Skill",
 
@@ -126,12 +126,13 @@
   "blocklings.attribute.mining_level.name": "Mining Level",
   "blocklings.attribute.woodcutting_level.name": "Woodcutting Level",
   "blocklings.attribute.farming_level.name": "Farming Level",
+  "blocklings.attribute.total_level.name": "Total Level",
 
-  "blocklings.attribute.skill_points.required": "Skill Points: %d",
   "blocklings.attribute.combat_level.required": "Combat Level: %d",
   "blocklings.attribute.mining_level.required": "Mining Level: %d",
   "blocklings.attribute.woodcutting_level.required": "Woodcutting Level: %d",
   "blocklings.attribute.farming_level.required": "Farming Level: %d",
+  "blocklings.attribute.total_level.required": "Total Level: %d",
   "blocklings.attribute.combat_xp.required": "XP: %1$d/%2$d",
   "blocklings.attribute.mining_xp.required": "XP: %1$d/%2$d",
   "blocklings.attribute.woodcutting_xp.required": "XP: %1$d/%2$d",

@@ -447,31 +447,17 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
             {
                 if (player.isCrouching())
                 {
-                    for (int i = 0; i < 99; i++)
-                    {
-                        stats.combatXp.setValue(BlocklingStats.getXpUntilNextLevel(stats.combatLevel.getValue()), false);
-                        stats.miningXp.setValue(BlocklingStats.getXpUntilNextLevel(stats.miningLevel.getValue()), false);
-                        stats.woodcuttingXp.setValue(BlocklingStats.getXpUntilNextLevel(stats.woodcuttingLevel.getValue()), false);
-                        stats.farmingXp.setValue(BlocklingStats.getXpUntilNextLevel(stats.farmingLevel.getValue()), false);
-                    }
+                    stats.combatLevel.setValue(99);
+                    stats.miningLevel.setValue(99);
+                    stats.woodcuttingLevel.setValue(99);
+                    stats.farmingLevel.setValue(99);
 
-                    stats.combatLevel.setValue(stats.combatLevel.getValue());
-                    stats.miningLevel.setValue(stats.miningLevel.getValue());
-                    stats.woodcuttingLevel.setValue(stats.woodcuttingLevel.getValue());
-                    stats.farmingLevel.setValue(stats.farmingLevel.getValue());
-                    stats.combatXp.setValue(stats.combatXp.getValue());
-                    stats.miningXp.setValue(stats.miningXp.getValue());
-                    stats.woodcuttingXp.setValue(stats.woodcuttingXp.getValue());
-                    stats.farmingXp.setValue(stats.farmingXp.getValue());
-                    stats.skillPoints.setValue(stats.skillPoints.getValue());
                 }
-                else
-                {
-                    stats.combatXp.setValue(BlocklingStats.getXpUntilNextLevel(stats.combatLevel.getValue()));
-                    stats.miningXp.setValue(BlocklingStats.getXpUntilNextLevel(stats.miningLevel.getValue()));
-                    stats.woodcuttingXp.setValue(BlocklingStats.getXpUntilNextLevel(stats.woodcuttingLevel.getValue()));
-                    stats.farmingXp.setValue(BlocklingStats.getXpUntilNextLevel(stats.farmingLevel.getValue()));
-                }
+
+                stats.combatXp.setValue(BlocklingStats.getXpUntilNextLevel(stats.combatLevel.getValue()));
+                stats.miningXp.setValue(BlocklingStats.getXpUntilNextLevel(stats.miningLevel.getValue()));
+                stats.woodcuttingXp.setValue(BlocklingStats.getXpUntilNextLevel(stats.woodcuttingLevel.getValue()));
+                stats.farmingXp.setValue(BlocklingStats.getXpUntilNextLevel(stats.farmingLevel.getValue()));
 
                 heal(Float.MAX_VALUE);
             }
