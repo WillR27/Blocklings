@@ -224,15 +224,17 @@ public class BlocklingFarmGoal extends BlocklingGoal implements IHasTargetGoal
                             blockling.dropItemStack(stack);
                         }
 
-                        if (mainStack.hurt(mainCanHarvest ? 1 : 0, blockling.getRandom(), null))
+                        if (mainStack.hurt(mainCanHarvest ? blockling.getSkills().getSkill(BlocklingSkills.Farming.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
                         {
                             mainStack.shrink(1);
                         }
 
-                        if (offStack.hurt(offCanHarvest ? 1 : 0, blockling.getRandom(), null))
+                        if (offStack.hurt(offCanHarvest ? blockling.getSkills().getSkill(BlocklingSkills.Farming.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
                         {
                             offStack.shrink(1);
                         }
+
+                        blockling.incCropsHarvestedRecently();
 
                         ItemStack seedStack = ItemStack.EMPTY;
 

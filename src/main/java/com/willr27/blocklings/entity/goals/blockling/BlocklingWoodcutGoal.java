@@ -202,7 +202,7 @@ public class BlocklingWoodcutGoal extends BlocklingGoal implements IHasTargetGoa
                     float offDestroySpeed = offCanHarvest ? ToolUtil.getToolWoodcuttingSpeedWithEnchantments(offStack) : 0.0f;
 
                     float destroySpeed = blocklingDestroySpeed + mainDestroySpeed + offDestroySpeed;
-                    float blockStrength = targetBlockState.getDestroySpeed(world, targetGoal.getTargetPos());
+                    float blockStrength = targetBlockState.getDestroySpeed(world, targetGoal.getTargetPos()) + 1.5f;
 
                     blockling.getStats().hand.setValue(BlocklingHand.fromBooleans(mainCanHarvest, offCanHarvest));
 
@@ -220,15 +220,17 @@ public class BlocklingWoodcutGoal extends BlocklingGoal implements IHasTargetGoa
                             blockling.dropItemStack(stack);
                         }
 
-                        if (mainStack.hurt(mainCanHarvest ? 1 : 0, blockling.getRandom(), null))
+                        if (mainStack.hurt(mainCanHarvest ? blockling.getSkills().getSkill(BlocklingSkills.Woodcutting.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
                         {
                             mainStack.shrink(1);
                         }
 
-                        if (offStack.hurt(offCanHarvest ? 1 : 0, blockling.getRandom(), null))
+                        if (offStack.hurt(offCanHarvest ? blockling.getSkills().getSkill(BlocklingSkills.Woodcutting.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
                         {
                             offStack.shrink(1);
                         }
+
+                        blockling.incLogsChoppedRecently();
 
                         world.destroyBlock(targetBlockPos, false);
                         world.destroyBlockProgress(blockling.getId(), targetBlockPos, 0);

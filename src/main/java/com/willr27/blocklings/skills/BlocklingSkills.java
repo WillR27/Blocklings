@@ -216,11 +216,107 @@ public class BlocklingSkills
             }
         };
 
+        public static final SkillInfo ADRENALINE = new SkillInfo("bdb58fa2-174e-4be6-880b-c355ee76aab6",
+                new SkillGeneralInfo(Skill.Type.STAT, "woodcutting.adrenaline"),
+                new SkillDefaultsInfo(Skill.State.LOCKED),
+                new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.WOODCUTTING, 25); }}),
+                new SkillCallbackInfo(skill -> { skill.blockling.getStats().woodcuttingSpeedSkillAdrenalineModifier.setIsEnabled(true, false); return true; }),
+                new SkillGuiInfo(140, -50, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xb72626, new SkillGuiInfo.SkillGuiTexture(GuiUtil.WOODCUTTING_ICONS, 3, 0)))
+        {
+            @Override
+            public List<SkillInfo> parents()
+            {
+                return Arrays.asList(EFFICIENCY);
+            }
+
+            @Override
+            public List<SkillInfo> conflicts()
+            {
+                return Arrays.asList(MOMENTUM, HASTY, NIGHT_OWL);
+            }
+
+            @Override
+            public void tick(Skill skill)
+            {
+                skill.blockling.getStats().woodcuttingSpeedSkillAdrenalineModifier.setValue(10.0f * (1.0f - ((Math.max(skill.blockling.getHealth() - 1.0f, 0.0f)) / (skill.blockling.getMaxHealth() - 1.0f))), false);
+            }
+        };
+
+        public static final SkillInfo MOMENTUM = new SkillInfo("7b7ce4aa-8f05-48b9-a2c1-f3b714ba339a",
+                new SkillGeneralInfo(Skill.Type.STAT, "woodcutting.momentum"),
+                new SkillDefaultsInfo(Skill.State.LOCKED),
+                new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.WOODCUTTING, 25); }}),
+                new SkillCallbackInfo(skill -> { skill.blockling.getStats().woodcuttingSpeedSkillMomentumModifier.setIsEnabled(true, false); return true; }),
+                new SkillGuiInfo(140, 50, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0x9f6a16, new SkillGuiInfo.SkillGuiTexture(GuiUtil.WOODCUTTING_ICONS, 4, 0)))
+        {
+            @Override
+            public List<SkillInfo> parents()
+            {
+                return Arrays.asList(EFFICIENCY);
+            }
+
+            @Override
+            public List<SkillInfo> conflicts()
+            {
+                return Arrays.asList(ADRENALINE, HASTY, NIGHT_OWL);
+            }
+        };
+
+        public static final SkillInfo HASTY = new SkillInfo("a7f1ab81-e057-4f6a-a978-f10e8ee98005",
+                new SkillGeneralInfo(Skill.Type.STAT, "woodcutting.hasty"),
+                new SkillDefaultsInfo(Skill.State.LOCKED),
+                new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.WOODCUTTING, 25); }}),
+                new SkillCallbackInfo(skill -> { skill.blockling.getStats().woodcuttingSpeedSkillHastyModifier.setIsEnabled(true, false); return true; }),
+                new SkillGuiInfo(210, -50, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0x4eb2aa, new SkillGuiInfo.SkillGuiTexture(GuiUtil.WOODCUTTING_ICONS, 5, 0)))
+        {
+            @Override
+            public List<SkillInfo> parents()
+            {
+                return Arrays.asList(EFFICIENCY);
+            }
+
+            @Override
+            public List<SkillInfo> conflicts()
+            {
+                return Arrays.asList(ADRENALINE, MOMENTUM, NIGHT_OWL);
+            }
+        };
+
+        public static final SkillInfo NIGHT_OWL = new SkillInfo("1476e2be-9d0f-40cf-901d-b5ba18dea16f",
+                new SkillGeneralInfo(Skill.Type.STAT, "woodcutting.night_owl"),
+                new SkillDefaultsInfo(Skill.State.LOCKED),
+                new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.WOODCUTTING, 25); }}),
+                new SkillCallbackInfo(skill -> { skill.blockling.getStats().woodcuttingSpeedSkillNightOwlModifier.setIsEnabled(true, false); return true; }),
+                new SkillGuiInfo(210, 50, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0x2b2a3d, new SkillGuiInfo.SkillGuiTexture(GuiUtil.WOODCUTTING_ICONS, 6, 0)))
+        {
+            @Override
+            public List<SkillInfo> parents()
+            {
+                return Arrays.asList(EFFICIENCY);
+            }
+
+            @Override
+            public List<SkillInfo> conflicts()
+            {
+                return Arrays.asList(ADRENALINE, MOMENTUM, HASTY);
+            }
+
+            @Override
+            public void tick(Skill skill)
+            {
+                skill.blockling.getStats().woodcuttingSpeedSkillNightOwlModifier.setValue(10.0f * (1.0f - skill.blockling.level.getBrightness(skill.blockling.blockPosition())), false);
+            }
+        };
+
         public static final List<Function<SkillGroup, Skill>> SKILLS = new ArrayList<Function<SkillGroup, Skill>>()
         {{
             add(group -> new Skill(NOVICE_LUMBERJACK, group));
             add(group -> new Skill(WHITELIST, group));
             add(group -> new Skill(EFFICIENCY, group));
+            add(group -> new Skill(ADRENALINE, group));
+            add(group -> new Skill(MOMENTUM, group));
+            add(group -> new Skill(HASTY, group));
+            add(group -> new Skill(NIGHT_OWL, group));
         }};
     }
 
@@ -289,6 +385,98 @@ public class BlocklingSkills
             }
         };
 
+        public static final SkillInfo ADRENALINE = new SkillInfo("51bb0230-e484-47ae-9c7f-8a4ec7868683",
+                new SkillGeneralInfo(Skill.Type.STAT, "farming.adrenaline"),
+                new SkillDefaultsInfo(Skill.State.LOCKED),
+                new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.FARMING, 25); }}),
+                new SkillCallbackInfo(skill -> { skill.blockling.getStats().farmingSpeedSkillAdrenalineModifier.setIsEnabled(true, false); return true; }),
+                new SkillGuiInfo(140, -50, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xb72626, new SkillGuiInfo.SkillGuiTexture(GuiUtil.FARMING_ICONS, 4, 0)))
+        {
+            @Override
+            public List<SkillInfo> parents()
+            {
+                return Arrays.asList(EFFICIENCY);
+            }
+
+            @Override
+            public List<SkillInfo> conflicts()
+            {
+                return Arrays.asList(MOMENTUM, HASTY, NIGHT_OWL);
+            }
+
+            @Override
+            public void tick(Skill skill)
+            {
+                skill.blockling.getStats().farmingSpeedSkillAdrenalineModifier.setValue(10.0f * (1.0f - ((Math.max(skill.blockling.getHealth() - 1.0f, 0.0f)) / (skill.blockling.getMaxHealth() - 1.0f))), false);
+            }
+        };
+
+        public static final SkillInfo MOMENTUM = new SkillInfo("e2c8db1a-bc32-482e-9225-54027196f7d2",
+                new SkillGeneralInfo(Skill.Type.STAT, "farming.momentum"),
+                new SkillDefaultsInfo(Skill.State.LOCKED),
+                new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.FARMING, 25); }}),
+                new SkillCallbackInfo(skill -> { skill.blockling.getStats().farmingSpeedSkillMomentumModifier.setIsEnabled(true, false); return true; }),
+                new SkillGuiInfo(140, 50, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0x39bb39, new SkillGuiInfo.SkillGuiTexture(GuiUtil.FARMING_ICONS, 5, 0)))
+        {
+            @Override
+            public List<SkillInfo> parents()
+            {
+                return Arrays.asList(EFFICIENCY);
+            }
+
+            @Override
+            public List<SkillInfo> conflicts()
+            {
+                return Arrays.asList(ADRENALINE, HASTY, NIGHT_OWL);
+            }
+        };
+
+        public static final SkillInfo HASTY = new SkillInfo("da1bd12f-044b-434c-a627-ef7146013d9a",
+                new SkillGeneralInfo(Skill.Type.STAT, "farming.hasty"),
+                new SkillDefaultsInfo(Skill.State.LOCKED),
+                new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.FARMING, 25); }}),
+                new SkillCallbackInfo(skill -> { skill.blockling.getStats().farmingSpeedSkillHastyModifier.setIsEnabled(true, false); return true; }),
+                new SkillGuiInfo(210, -50, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0x4eb2aa, new SkillGuiInfo.SkillGuiTexture(GuiUtil.FARMING_ICONS, 6, 0)))
+        {
+            @Override
+            public List<SkillInfo> parents()
+            {
+                return Arrays.asList(EFFICIENCY);
+            }
+
+            @Override
+            public List<SkillInfo> conflicts()
+            {
+                return Arrays.asList(ADRENALINE, MOMENTUM, NIGHT_OWL);
+            }
+        };
+
+        public static final SkillInfo NIGHT_OWL = new SkillInfo("b06bfa1b-8b01-4802-a980-cad92b537273",
+                new SkillGeneralInfo(Skill.Type.STAT, "farming.night_owl"),
+                new SkillDefaultsInfo(Skill.State.LOCKED),
+                new SkillRequirementsInfo(new HashMap<BlocklingStats.Level, Integer>() {{ put(BlocklingStats.Level.FARMING, 25); }}),
+                new SkillCallbackInfo(skill -> { skill.blockling.getStats().farmingSpeedSkillNightOwlModifier.setIsEnabled(true, false); return true; }),
+                new SkillGuiInfo(210, 50, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0x2b2a3d, new SkillGuiInfo.SkillGuiTexture(GuiUtil.FARMING_ICONS, 7, 0)))
+        {
+            @Override
+            public List<SkillInfo> parents()
+            {
+                return Arrays.asList(EFFICIENCY);
+            }
+
+            @Override
+            public List<SkillInfo> conflicts()
+            {
+                return Arrays.asList(ADRENALINE, MOMENTUM, HASTY);
+            }
+
+            @Override
+            public void tick(Skill skill)
+            {
+                skill.blockling.getStats().farmingSpeedSkillNightOwlModifier.setValue(10.0f * (1.0f - skill.blockling.level.getBrightness(skill.blockling.blockPosition())), false);
+            }
+        };
+
         public static final List<Function<SkillGroup, Skill>> SKILLS = new ArrayList<Function<SkillGroup, Skill>>()
         {{
             add(group -> new Skill(NOVICE_FARMER, group));
@@ -296,6 +484,10 @@ public class BlocklingSkills
             add(group -> new Skill(EFFICIENCY, group));
             add(group -> new Skill(REPLANTER, group));
             add(group -> new Skill(SEED_WHITELIST, group));
+            add(group -> new Skill(ADRENALINE, group));
+            add(group -> new Skill(MOMENTUM, group));
+            add(group -> new Skill(HASTY, group));
+            add(group -> new Skill(NIGHT_OWL, group));
         }};
     }
 

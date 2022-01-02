@@ -104,6 +104,10 @@ public class BlocklingStats
     public final FloatAttributeModifier woodcuttingSpeedMainHandModifier;
     public final FloatAttributeModifier woodcuttingSpeedOffHandModifier;
     public final FloatAttributeModifier woodcuttingSpeedSkillEfficiencyModifier;
+    public final FloatAttributeModifier woodcuttingSpeedSkillAdrenalineModifier;
+    public final FloatAttributeModifier woodcuttingSpeedSkillMomentumModifier;
+    public final FloatAttributeModifier woodcuttingSpeedSkillHastyModifier;
+    public final FloatAttributeModifier woodcuttingSpeedSkillNightOwlModifier;
 
     public final ModifiableFloatAttribute farmingSpeed;
     public final ModifiableFloatAttributeModifier farmingSpeedBlocklingModifier;
@@ -112,6 +116,10 @@ public class BlocklingStats
     public final FloatAttributeModifier farmingSpeedMainHandModifier;
     public final FloatAttributeModifier farmingSpeedOffHandModifier;
     public final FloatAttributeModifier farmingSpeedSkillEfficiencyModifier;
+    public final FloatAttributeModifier farmingSpeedSkillAdrenalineModifier;
+    public final FloatAttributeModifier farmingSpeedSkillMomentumModifier;
+    public final FloatAttributeModifier farmingSpeedSkillHastyModifier;
+    public final FloatAttributeModifier farmingSpeedSkillNightOwlModifier;
 
     public final BlocklingEntity blockling;
     public final World world;
@@ -217,6 +225,10 @@ public class BlocklingStats
         woodcuttingSpeedMainHandModifier = createFloatAttributeModifier("978f9dd4-3fbb-41ee-9bba-eddcfb42b6ff", "woodcutting_speed_main_hand", woodcuttingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString());
         woodcuttingSpeedOffHandModifier = createFloatAttributeModifier("80fd0028-a793-491c-bc9c-fe94071f91c7", "woodcutting_speed_off_hand", woodcuttingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getOffhandItem().getHoverName().getString());
         woodcuttingSpeedSkillEfficiencyModifier = createFloatAttributeModifier("38a9d80c-4f96-4929-bd34-8c03156dec6d", "woodcutting_speed_skill_efficiency", woodcuttingSpeed, 1.1f, Operation.MULTIPLY_TOTAL, this::woodcuttingSpeedSkillEfficiencymodifierDisplayStringValueProvider, () -> skillDisplayNameProvider(BlocklingSkills.Woodcutting.EFFICIENCY), false);
+        woodcuttingSpeedSkillAdrenalineModifier = createFloatAttributeModifier("e832c5da-0465-4a63-96b7-398eb32ba206", "woodcutting_speed_skill_adrenaline", woodcuttingSpeed, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Woodcutting.ADRENALINE), false);
+        woodcuttingSpeedSkillMomentumModifier = createFloatAttributeModifier("868bba90-a29c-4b70-b599-c3f56b00928e", "woodcutting_speed_skill_momentum", woodcuttingSpeed, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Woodcutting.MOMENTUM), false);
+        woodcuttingSpeedSkillHastyModifier = createFloatAttributeModifier("38709558-3da6-4f86-896f-195e84c18525", "woodcutting_speed_skill_hasty", woodcuttingSpeed, 10.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Woodcutting.HASTY), false);
+        woodcuttingSpeedSkillNightOwlModifier = createFloatAttributeModifier("adbe5ab0-4a08-4335-a68a-964b9126c40f", "woodcutting_speed_skill_night_owl", woodcuttingSpeed, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Woodcutting.NIGHT_OWL), false);
 
         farmingSpeed = createModifiableFloatAttribute("f6c026b6-1fa9-432f-aca3-d97af784f6d0", "farming_speed", 0.0f, null, null);
         farmingSpeedBlocklingModifier = createModifiableFloatAttributeModifier("39548773-84ee-42ca-8ad6-681d64eaee54", "farming_speed_blockling", farmingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString());
@@ -225,6 +237,10 @@ public class BlocklingStats
         farmingSpeedMainHandModifier = createFloatAttributeModifier("5ece4240-17b3-4983-bd0d-67f962a0a838", "farming_speed_main_hand", farmingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString());
         farmingSpeedOffHandModifier = createFloatAttributeModifier("b4bb7131-f2ce-41cd-88ed-ee27e3837679", "farming_speed_off_hand", farmingSpeed, 0.0f, Operation.ADD, null, () -> blockling.getOffhandItem().getHoverName().getString());
         farmingSpeedSkillEfficiencyModifier = createFloatAttributeModifier("792be316-19cb-49ec-a24a-ee224312c60f", "farming_speed_skill_efficiency", farmingSpeed, 1.1f, Operation.MULTIPLY_TOTAL, this::farmingSpeedSkillEfficiencymodifierDisplayStringValueProvider, () -> skillDisplayNameProvider(BlocklingSkills.Farming.EFFICIENCY), false);
+        farmingSpeedSkillAdrenalineModifier = createFloatAttributeModifier("79f7d5ff-2fd7-4385-a795-c281f984445b", "farming_speed_skill_adrenaline", farmingSpeed, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Farming.ADRENALINE), false);
+        farmingSpeedSkillMomentumModifier = createFloatAttributeModifier("d58d5336-d2fe-447d-a237-bb0bbff313d7", "farming_speed_skill_momentum", farmingSpeed, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Farming.MOMENTUM), false);
+        farmingSpeedSkillHastyModifier = createFloatAttributeModifier("3f045e39-8185-4d2c-8980-54e06f8d548b", "farming_speed_skill_hasty", farmingSpeed, 10.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Farming.HASTY), false);
+        farmingSpeedSkillNightOwlModifier = createFloatAttributeModifier("451f37a9-649e-44a3-a21f-d76e49f1afd0", "farming_speed_skill_night_owl", farmingSpeed, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Farming.NIGHT_OWL), false);
     }
 
     private String skillDisplayNameProvider(SkillInfo skillInfo)
