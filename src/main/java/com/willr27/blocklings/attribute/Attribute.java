@@ -54,7 +54,7 @@ public abstract class Attribute<T>
 
     public void readFromNBT(CompoundNBT attributeTag)
     {
-        setIsEnabled(attributeTag.getBoolean("is_enabled"), false);
+        isEnabled = attributeTag.getBoolean("is_enabled");
     }
 
     public void encode(PacketBuffer buf)
@@ -64,7 +64,7 @@ public abstract class Attribute<T>
 
     public void decode(PacketBuffer buf)
     {
-        setIsEnabled(buf.readBoolean(), false);
+        isEnabled = buf.readBoolean();
     }
 
     public abstract T getValue();

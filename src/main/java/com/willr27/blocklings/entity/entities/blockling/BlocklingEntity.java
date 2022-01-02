@@ -177,7 +177,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         blocklingTypeVariant = c.getInt("variant");
         originalBlocklingType = BlocklingType.TYPES.get(c.getInt("original_type"));
-        setBlocklingType(BlocklingType.TYPES.get(c.getInt("type")), false);
+        blocklingType = BlocklingType.TYPES.get(c.getInt("type"));
         setScale(c.getFloat("scale"), false);
 
         equipmentInv.readFromNBT(c);
@@ -186,6 +186,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         skills.readFromNBT(c);
 
         equipmentInv.updateToolAttributes();
+        stats.updateTypeBonuses(false);
     }
 
     @Override
@@ -206,7 +207,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     public void readSpawnData(PacketBuffer buf)
     {
         originalBlocklingType = BlocklingType.TYPES.get(buf.readInt());
-        setBlocklingType(BlocklingType.TYPES.get(buf.readInt()), false);
+        blocklingType = BlocklingType.TYPES.get(buf.readInt());
         blocklingTypeVariant = buf.readInt();
         setScale(buf.readFloat(), false);
 
@@ -216,6 +217,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         skills.decode(buf);
 
         equipmentInv.updateToolAttributes();
+        stats.updateTypeBonuses(false);
     }
 
     @Override
