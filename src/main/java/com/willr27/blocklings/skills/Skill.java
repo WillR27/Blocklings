@@ -133,12 +133,12 @@ public class Skill
 
     public List<Skill> children()
     {
-        return group.getSkills().stream().filter(skill -> skill.info.relationships.parents.contains(info)).collect(Collectors.toList());
+        return group.getSkills().stream().filter(skill -> skill.info.parents().contains(info)).collect(Collectors.toList());
     }
 
     public List<Skill> parents()
     {
-        return group.getSkills().stream().filter(skill -> info.relationships.parents.contains(skill.info)).collect(Collectors.toList());
+        return group.getSkills().stream().filter(skill -> info.parents().contains(skill.info)).collect(Collectors.toList());
     }
 
     public boolean areParentsBought()
@@ -148,7 +148,7 @@ public class Skill
 
     public List<Skill> conflicts()
     {
-        return group.getSkills().stream().filter(skill -> skill.info.relationships.conflicts.contains(skill)).collect(Collectors.toList());
+        return group.getSkills().stream().filter(skill -> info.conflicts().contains(skill.info)).collect(Collectors.toList());
     }
 
     public boolean hasConflict()
