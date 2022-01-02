@@ -11,10 +11,10 @@ public  class SkillGuiInfo
     public final int x;
     public final int y;
     public final SkillWidget.ConnectionType connectionType;
-    public final AbilityGuiTexture texture;
+    public final SkillGuiTexture texture;
     public final Color colour;
 
-    public SkillGuiInfo(int x, int y, SkillWidget.ConnectionType connectionType, int colour, AbilityGuiTexture texture)
+    public SkillGuiInfo(int x, int y, SkillWidget.ConnectionType connectionType, int colour, SkillGuiTexture texture)
     {
         this.x = x;
         this.y = y;
@@ -23,11 +23,11 @@ public  class SkillGuiInfo
         this.texture = texture;
     }
 
-    public static class AbilityGuiTexture extends GuiTexture
+    public static class SkillGuiTexture extends GuiTexture
     {
         public static final int ICON_SIZE = 24;
 
-        public AbilityGuiTexture(ResourceLocation texture, int x, int y)
+        public SkillGuiTexture(ResourceLocation texture, int x, int y)
         {
             super(texture, x * ICON_SIZE, y * ICON_SIZE, ICON_SIZE, ICON_SIZE);
         }

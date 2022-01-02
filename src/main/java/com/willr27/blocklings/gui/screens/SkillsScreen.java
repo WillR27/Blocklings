@@ -17,8 +17,6 @@ public class SkillsScreen extends TabbedScreen
     private static final int WINDOW_WIDTH = 158;
     private static final int WINDOW_HEIGHT = 138;
 
-    private static final int MAXIMISE_WIDTH = 300;
-    private static final int MAXIMISE_HEIGHT = 190;
     private static final int MAXIMISE_X = 180;
     private static final int MAXIMISE_Y = 142;
     private static final int MAXIMISE_TEXTURE_Y = 206;
@@ -45,7 +43,7 @@ public class SkillsScreen extends TabbedScreen
         super.init();
 
         skillsGui = new SkillsGui(blockling, group, font, WINDOW_WIDTH, WINDOW_HEIGHT, centerX, centerY + 5, width, height);
-        if (maximised) skillsGui.resize(MAXIMISE_WIDTH, MAXIMISE_HEIGHT, 1.0f);
+        if (maximised) skillsGui.resize(getMaximisedWidth(), getMaximisedHeight(), 1.0f);
         maximiseWidget = new TexturedWidget(font, left + MAXIMISE_X, top + MAXIMISE_Y, MAXIMISE_SIZE, MAXIMISE_SIZE, 0, MAXIMISE_TEXTURE_Y);
     }
 
@@ -69,10 +67,10 @@ public class SkillsScreen extends TabbedScreen
         }
         else
         { // TODO: MAKE DYNAMIC
-            int left = centerX - MAXIMISE_WIDTH / 2;
-            int top = centerY - MAXIMISE_HEIGHT / 2;
-            int right = left + MAXIMISE_WIDTH;
-            int bottom = top + MAXIMISE_HEIGHT;
+            int left = centerX - getMaximisedWidth() / 2;
+            int top = centerY - getMaximisedHeight() / 2;
+            int right = left + getMaximisedWidth();
+            int bottom = top + getMaximisedHeight();
             blit(matrixStack, left - 9, top - 13, 0, 0, 120, 108);
             blit(matrixStack, right - 120 + 9, top - 13, 176 - 120, 0, 120, 108);
             blit(matrixStack, left - 9, bottom - 108 + 13, 0, 166 - 108, 120, 108);
@@ -119,7 +117,7 @@ public class SkillsScreen extends TabbedScreen
 
         if (!maximised && !skillsGui.isDragging() && maximiseWidget.isMouseOver((int) mouseX, (int) mouseY))
         {
-            skillsGui.resize(MAXIMISE_WIDTH, MAXIMISE_HEIGHT, 1.0f);
+            skillsGui.resize(getMaximisedWidth(), getMaximisedHeight(), 1.0f);
             maximised = true;
             return true;
         }
@@ -173,5 +171,15 @@ public class SkillsScreen extends TabbedScreen
     public boolean isPauseScreen()
     {
         return false;
+    }
+
+    private int getMaximisedWidth()
+    {
+        return width + 20;
+    }
+
+    private int getMaximisedHeight()
+    {
+        return height + 20;
     }
 }
