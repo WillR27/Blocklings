@@ -154,7 +154,7 @@ public class BlocklingModel extends EntityModel<BlocklingEntity> implements IHas
             float attackSwing = (MathHelper.cos(percent * (float) Math.PI / 2.0f) * 2.0f);
             leftArmSwing -= blockling.getEquipment().getHandStack(Hand.OFF_HAND).isEmpty() ? -attackSwing : attackSwing;
         }
-        else if (blockling.getActions().mine.isRunning())
+        else if (blockling.getActions().gather.isRunning())
         {
             if (hand == BlocklingHand.MAIN || hand == BlocklingHand.BOTH)
             {

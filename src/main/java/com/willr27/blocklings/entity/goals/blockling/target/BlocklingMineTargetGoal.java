@@ -2,33 +2,38 @@ package com.willr27.blocklings.entity.goals.blockling.target;
 
 import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.entity.goals.blockling.BlocklingMineGoal;
-import com.willr27.blocklings.goal.BlocklingGoal;
-import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3i;
 
-import java.util.HashMap;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-public class BlocklingMineTargetGoal extends BlocklingTargetGoal<BlocklingMineGoal>
+public class BlocklingMineTargetGoal extends BlocklingGatherTargetGoal<BlocklingMineGoal>
 {
+    /**
+     * The x and z search radius.
+     */
     private static final int SEARCH_RADIUS_X = 8;
-    private static final int SEARCH_RADIUS_Y = 8;
-
-    private BlockPos targetPos = null;
-    private BlockPos prevTargetPos = null;
-
-    private Set<BlockPos> veinBlockPositions = new HashSet<>();
-    private Map<BlockPos, Integer> badBlockPositions = new HashMap<>();
 
     /**
-     * How many recalcs are called before a block is no longer bad.
+     * The y search radius.
      */
-    private final int recalcBadInterval = 20;
+    private static final int SEARCH_RADIUS_Y = 8;
 
-    public BlocklingMineTargetGoal(BlocklingMineGoal goal)
+    /**
+     * The set of block positions in the current vein.
+     */
+    @Nonnull
+    private final Set<BlockPos> veinBlockPositions = new HashSet<>();
+
+    /**
+     * @param goal The associated goal instance.
+     */
+    public BlocklingMineTargetGoal(@Nonnull BlocklingMineGoal goal)
     {
         super(goal);
     }
@@ -41,7 +46,7 @@ public class BlocklingMineTargetGoal extends BlocklingTargetGoal<BlocklingMineGo
             return false;
         }
 
-        veinBlockPositions = findVein();
+        veinBlockPositions.addAll(findVein());
 
         if (veinBlockPositions.isEmpty())
         {
@@ -52,90 +57,45 @@ public class BlocklingMineTargetGoal extends BlocklingTargetGoal<BlocklingMineGo
     }
 
     @Override
-    public boolean canContinueToUse()
-    {
-        if (!super.canContinueToUse())
-        {
-            return false;
-        }
-
-        if (!hasTarget())
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public void start()
-    {
-        findNextTarget();
-    }
-
-    @Override
     public void stop()
     {
+        super.stop();
+
         veinBlockPositions.clear();
     }
 
     @Override
-    public void tick()
+    public void recalcTarget()
     {
-        super.tick();
+        veinBlockPositions.remove(getTargetPos());
+
+        super.recalcTarget();
     }
 
     @Override
-    protected boolean isTargetValid()
+    protected BlockPos findNextTargetPos()
     {
-        if (!isValidOrePos(targetPos))
-        {
-            return false;
-        }
-
-        return true;
+        return veinBlockPositions.stream().max(Comparator.comparingInt(Vector3i::getY)).orElse(null);
     }
 
     @Override
-    protected void recalc()
+    protected boolean isValidTargetBlock(@Nullable Block block)
     {
-        updateBadPositions();
+        return block != null && goal.oreWhitelist.isEntryWhitelisted(block);
     }
 
     @Override
-    protected void recalcTarget()
+    public void markBad()
     {
-        veinBlockPositions.remove(targetPos);
-
-        findNextTarget();
+        veinBlockPositions.forEach(blockPos -> markPosBad(blockPos));
     }
 
-    private void updateBadPositions()
-    {
-        Set<BlockPos> freshBlockPositions = new HashSet<>();
-
-        badBlockPositions.forEach((blockPos, time) ->
-        {
-            if (time >= recalcBadInterval || time >= badBlockPositions.size())
-            {
-                freshBlockPositions.add(blockPos);
-            }
-
-            badBlockPositions.put(blockPos, time + 1);
-        });
-
-        freshBlockPositions.forEach(blockPos ->
-        {
-            badBlockPositions.remove(blockPos);
-        });
-    }
-
-    private void findNextTarget()
-    {
-        prevTargetPos = targetPos;
-        targetPos = veinBlockPositions.stream().max((o1, o2) -> o1.getY() > o2.getY() ? 1 : -1).orElse(null);
-    }
-
+    /**
+     * Attempts to find the nearest vein.
+     *
+     * @return a set of block positions for the nearest vein.
+     */
+    @Nonnull
     private Set<BlockPos> findVein()
     {
         BlockPos blocklingBlockPos = blockling.blockPosition();
@@ -158,10 +118,27 @@ public class BlocklingMineTargetGoal extends BlocklingTargetGoal<BlocklingMineGo
                         continue;
                     }
 
-                    if (isValidOrePos(testBlockPos))
+                    if (isValidTarget(testBlockPos))
                     {
                         Set<BlockPos> veinBlockPositionsToTest = findVeinFrom(testBlockPos);
                         testedBlockPositions.addAll(veinBlockPositionsToTest);
+
+                        boolean canSeeVein = false;
+
+                        for (BlockPos veinBlockPos : veinBlockPositionsToTest)
+                        {
+                            if (EntityUtil.canSee(blockling, veinBlockPos))
+                            {
+                                canSeeVein = true;
+
+                                break;
+                            }
+                        }
+
+                        if (!canSeeVein)
+                        {
+                            continue;
+                        }
 
                         for (BlockPos veinBlockPos : veinBlockPositionsToTest)
                         {
@@ -183,13 +160,20 @@ public class BlocklingMineTargetGoal extends BlocklingTargetGoal<BlocklingMineGo
         return veinBlockPositions;
     }
 
-    private Set<BlockPos> findVeinFrom(BlockPos blockPos)
+    /**
+     * Returns a vein from the given starting block pos.
+     *
+     * @param startingBlockPos the starting block pos.
+     * @return the set of block positions in the vein.
+     */
+    @Nonnull
+    private Set<BlockPos> findVeinFrom(@Nonnull BlockPos startingBlockPos)
     {
         Set<BlockPos> veinBlockPositionsToTest = new HashSet<>();
         Set<BlockPos> veinBlockPositions = new HashSet<>();
 
-        veinBlockPositionsToTest.add(blockPos);
-        veinBlockPositions.add(blockPos);
+        veinBlockPositionsToTest.add(startingBlockPos);
+        veinBlockPositions.add(startingBlockPos);
 
         while (!veinBlockPositionsToTest.isEmpty())
         {
@@ -207,7 +191,7 @@ public class BlocklingMineTargetGoal extends BlocklingTargetGoal<BlocklingMineGo
 
             for (BlockPos surroundingPos : surroundingBlockPositions)
             {
-                if (isValidOrePos(surroundingPos))
+                if (isValidTarget(surroundingPos))
                 {
                     if (veinBlockPositions.add(surroundingPos))
                     {
@@ -219,49 +203,6 @@ public class BlocklingMineTargetGoal extends BlocklingTargetGoal<BlocklingMineGo
             veinBlockPositionsToTest.remove(testBlockPos);
         }
 
-        for (BlockPos veinPos : veinBlockPositions)
-        {
-            if (EntityUtil.canSee(blockling, veinPos))
-            {
-                return veinBlockPositions;
-            }
-        }
-
-        return new HashSet<>();
-    }
-
-    private boolean isValidOrePos(BlockPos blockPos)
-    {
-        return isValidOre(world.getBlockState(blockPos).getBlock()) && !badBlockPositions.keySet().contains(blockPos);
-    }
-
-    private boolean isValidOre(Block block)
-    {
-        return goal.oreWhitelist.isEntryWhitelisted(block);
-    }
-
-    public void markTargetBad()
-    {
-        badBlockPositions.put(targetPos, 0);
-    }
-
-    public boolean hasTarget()
-    {
-        return targetPos != null;
-    }
-
-    public BlockPos getTargetPos()
-    {
-        return targetPos;
-    }
-
-    public boolean hasPrevTarget()
-    {
-        return prevTargetPos != null;
-    }
-
-    public BlockPos getPrevTargetPos()
-    {
-        return prevTargetPos;
+        return veinBlockPositions;
     }
 }

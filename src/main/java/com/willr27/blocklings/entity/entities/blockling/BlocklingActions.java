@@ -4,7 +4,6 @@ import com.willr27.blocklings.action.Action;
 import com.willr27.blocklings.action.actions.AttackAction;
 import com.willr27.blocklings.action.actions.KnownTargetAction;
 import com.willr27.blocklings.action.actions.UnknownTargetAction;
-import com.willr27.blocklings.item.ToolUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,7 @@ public class BlocklingActions
     public final List<Action> actions = new ArrayList<>();
 
     public final AttackAction attack;
-    public final KnownTargetAction mine;
+    public final KnownTargetAction gather;
     public final KnownTargetAction oresMinedCooldown;
     public final KnownTargetAction logsChoppedCooldown;
     public final KnownTargetAction cropsHarvestedCooldown;
@@ -32,7 +31,7 @@ public class BlocklingActions
         };
 
         attack = createAction(blockling, "attack", attackTargetSupplier, attackTargetSupplier);
-        mine = new KnownTargetAction(blockling, "mine", () -> 1.0f);
+        gather = new KnownTargetAction(blockling, "gather", () -> 1.0f);
         oresMinedCooldown = createAction(blockling, "ores_mined_cooldown", () -> 100.0f);
         logsChoppedCooldown = createAction(blockling, "logs_chopped_cooldown", () -> 100.0f);
         cropsHarvestedCooldown = createAction(blockling, "crops_harvested_cooldown", () -> 100.0f);

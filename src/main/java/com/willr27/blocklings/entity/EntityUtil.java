@@ -14,6 +14,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -84,5 +85,13 @@ public class EntityUtil
         }
 
         return false;
+    }
+
+    /**
+     * Returns true if the given entity is within range of the center of the given block pos.
+     */
+    public static boolean isInRange(@Nonnull LivingEntity entity, @Nonnull BlockPos blockPos, float rangeSq)
+    {
+        return (float) entity.distanceToSqr(blockPos.getX() + 0.5f, blockPos.getY() + 0.5f, blockPos.getZ() + 0.5f) < rangeSq;
     }
 }

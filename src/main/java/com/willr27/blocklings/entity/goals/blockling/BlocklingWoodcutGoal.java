@@ -6,46 +6,45 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import com.willr27.blocklings.entity.goals.blockling.target.BlocklingWoodcutTargetGoal;
 import com.willr27.blocklings.entity.goals.blockling.target.IHasTargetGoal;
-import com.willr27.blocklings.goal.BlocklingGoal;
-import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.item.DropUtil;
-import com.willr27.blocklings.item.ToolType;
 import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.skills.BlocklingSkills;
-import com.willr27.blocklings.skills.Skill;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
 import net.minecraft.block.BlockState;
-import net.minecraft.command.arguments.EntityAnchorArgument;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3i;
 
-import java.util.*;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class BlocklingWoodcutGoal extends BlocklingGoal implements IHasTargetGoal
+public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTargetGoal> implements IHasTargetGoal<BlocklingWoodcutTargetGoal>
 {
+    /**
+     * The log whitelist.
+     */
     public final GoalWhitelist logWhitelist;
 
+    /**
+     * The associated target goal.
+     */
     private final BlocklingWoodcutTargetGoal targetGoal;
 
-    private BlockPos trunkPos;
-    private Set<BlockPos> badTrunkBlockPositions = new HashSet<>();
-    private Path path = null;
-    private int recalc = 0;
-    private final int recalcInterval = 20;
-    private float prevMoveDist = 0.0f;
-
     /**
-     * How many recalcs are called before a block is no longer bad.
+     * @param id the id associated with the owning task of this goal.
+     * @param blockling the blockling the goal is assigned to.
+     * @param tasks the associated tasks.
      */
-    private final int recalcBadInterval = 20;
-
-    public BlocklingWoodcutGoal(UUID id, BlocklingEntity blockling, BlocklingTasks goals)
+    public BlocklingWoodcutGoal(UUID id, BlocklingEntity blockling, BlocklingTasks tasks)
     {
-        super(id, blockling, goals);
+        super(id, blockling, tasks);
 
         targetGoal = new BlocklingWoodcutTargetGoal(this);
 
@@ -58,7 +57,7 @@ public class BlocklingWoodcutGoal extends BlocklingGoal implements IHasTargetGoa
     }
 
     @Override
-    public BlocklingTargetGoal getTargetGoal()
+    public BlocklingWoodcutTargetGoal getTargetGoal()
     {
         return targetGoal;
     }
@@ -71,32 +70,13 @@ public class BlocklingWoodcutGoal extends BlocklingGoal implements IHasTargetGoa
             return false;
         }
 
-        if (!blockling.getEquipment().hasToolEquipped(ToolType.AXE))
+        calculatePathToTree();
+
+        if (isStuck())
         {
+            getTargetGoal().markBad();
+
             return false;
-        }
-
-        if (targetGoal.getTree().logs.isEmpty())
-        {
-            return false;
-        }
-
-        if (!blockling.getEquipment().canHarvestBlockWithEquippedTools(world.getBlockState(targetGoal.getTargetPos())))
-        {
-            return false;
-        }
-
-        calculateTrunkPosAndPath();
-
-        if (path == null)
-        {
-            if (trunkPos == null || !isInRange(trunkPos))
-            {
-                targetGoal.markTreeBad();
-                badTrunkBlockPositions.clear();
-
-                return false;
-            }
         }
 
         return true;
@@ -110,194 +90,157 @@ public class BlocklingWoodcutGoal extends BlocklingGoal implements IHasTargetGoa
             return false;
         }
 
-        if (!blockling.getEquipment().hasToolEquipped(ToolType.AXE))
+        if (isStuck())
         {
+            getTargetGoal().markBad();
+
             return false;
-        }
-
-        if (targetGoal.getTree().logs.isEmpty())
-        {
-            return false;
-        }
-
-        if (!blockling.getEquipment().canHarvestBlockWithEquippedTools(world.getBlockState(targetGoal.getTargetPos())))
-        {
-            return false;
-        }
-
-        if (path == null)
-        {
-            if (trunkPos == null || !isInRange(trunkPos))
-            {
-                targetGoal.markTreeBad();
-
-                return false;
-            }
         }
 
         return true;
     }
 
     @Override
-    public void start()
+    protected void tickGather()
     {
-        super.start();
+        super.tickGather();
 
-        blockling.getNavigation().moveTo(path, 1.0);
-    }
+        ItemStack mainStack = blockling.getMainHandItem();
+        ItemStack offStack = blockling.getOffhandItem();
 
-    @Override
-    public void stop()
-    {
-        super.stop();
+        BlockPos targetBlockPos = targetGoal.getTargetPos();
+        BlockState targetBlockState = world.getBlockState(targetBlockPos);
 
-        if (targetGoal.hasTarget())
+        boolean mainCanHarvest = ToolUtil.canToolHarvestBlock(mainStack, targetBlockState);
+        boolean offCanHarvest = ToolUtil.canToolHarvestBlock(offStack, targetBlockState);
+
+        if (mainCanHarvest || offCanHarvest)
         {
-            world.destroyBlockProgress(blockling.getId(), targetGoal.getTargetPos(), -1);
-        }
+            blockling.getActions().gather.tryStart();
 
-        if (targetGoal.hasPrevTarget())
-        {
-            world.destroyBlockProgress(blockling.getId(), targetGoal.getPrevTargetPos(), -1);
-        }
-
-        blockling.getNavigation().stop();
-        blockling.getActions().mine.stop();
-
-        badTrunkBlockPositions.clear();
-
-        trunkPos = null;
-        prevMoveDist = 0.0f;
-    }
-
-    @Override
-    public void tick()
-    {
-        super.tick();
-
-        // Tick to make sure isFinished is only true for a single tick
-        blockling.getActions().mine.tick(0.0f);
-
-        if (isInRange(trunkPos))
-        {
-            ItemStack mainStack = blockling.getMainHandItem();
-            ItemStack offStack = blockling.getOffhandItem();
-
-            BlockPos targetBlockPos = targetGoal.getTargetPos();
-            BlockState targetBlockState = world.getBlockState(targetBlockPos);
-
-            boolean mainCanHarvest = ToolUtil.canToolHarvestBlock(mainStack, targetBlockState);
-            boolean offCanHarvest = ToolUtil.canToolHarvestBlock(offStack, targetBlockState);
-
-            blockling.lookAt(EntityAnchorArgument.Type.EYES, new Vector3d(trunkPos.getX() + 0.5, trunkPos.getY() + 0.5, trunkPos.getZ() + 0.5));
-
-            if (mainCanHarvest || offCanHarvest)
+            if (blockling.getActions().gather.isRunning())
             {
-                blockling.getActions().mine.tryStart();
+                float blocklingDestroySpeed = blockling.getStats().woodcuttingSpeed.getValue();
+                float mainDestroySpeed = mainCanHarvest ? ToolUtil.getToolWoodcuttingSpeedWithEnchantments(mainStack) : 0.0f;
+                float offDestroySpeed = offCanHarvest ? ToolUtil.getToolWoodcuttingSpeedWithEnchantments(offStack) : 0.0f;
 
-                if (blockling.getActions().mine.isRunning())
+                float destroySpeed = blocklingDestroySpeed + mainDestroySpeed + offDestroySpeed;
+                float blockStrength = targetBlockState.getDestroySpeed(world, targetGoal.getTargetPos()) + 1.5f;
+
+                blockling.getStats().hand.setValue(BlocklingHand.fromBooleans(mainCanHarvest, offCanHarvest));
+
+                float progress = destroySpeed / blockStrength / 100.0f;
+                blockling.getActions().gather.tick(progress);
+
+                if (blockling.getActions().gather.isFinished())
                 {
-                    float blocklingDestroySpeed = blockling.getStats().woodcuttingSpeed.getValue();
-                    float mainDestroySpeed = mainCanHarvest ? ToolUtil.getToolWoodcuttingSpeedWithEnchantments(mainStack) : 0.0f;
-                    float offDestroySpeed = offCanHarvest ? ToolUtil.getToolWoodcuttingSpeedWithEnchantments(offStack) : 0.0f;
+                    blockling.getActions().gather.stop();
+                    blockling.getStats().woodcuttingXp.incValue((int) (blockStrength * 2.0f));
 
-                    float destroySpeed = blocklingDestroySpeed + mainDestroySpeed + offDestroySpeed;
-                    float blockStrength = targetBlockState.getDestroySpeed(world, targetGoal.getTargetPos()) + 1.5f;
-
-                    blockling.getStats().hand.setValue(BlocklingHand.fromBooleans(mainCanHarvest, offCanHarvest));
-
-                    float progress = destroySpeed / blockStrength / 100.0f;
-                    blockling.getActions().mine.tick(progress);
-
-                    if (blockling.getActions().mine.isFinished())
+                    for (ItemStack stack : DropUtil.getDrops(blockling, targetBlockPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
                     {
-                        blockling.getActions().mine.stop();
-                        blockling.getStats().woodcuttingXp.incValue((int) (blockStrength * 2.0f));
-
-                        for (ItemStack stack : DropUtil.getDrops(blockling, targetBlockPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
-                        {
-                            stack = blockling.getEquipment().addItem(stack);
-                            blockling.dropItemStack(stack);
-                        }
-
-                        if (mainStack.hurt(mainCanHarvest ? blockling.getSkills().getSkill(BlocklingSkills.Woodcutting.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
-                        {
-                            mainStack.shrink(1);
-                        }
-
-                        if (offStack.hurt(offCanHarvest ? blockling.getSkills().getSkill(BlocklingSkills.Woodcutting.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
-                        {
-                            offStack.shrink(1);
-                        }
-
-                        blockling.incLogsChoppedRecently();
-
-                        world.destroyBlock(targetBlockPos, false);
-                        world.destroyBlockProgress(blockling.getId(), targetBlockPos, 0);
-
-                        forceRecalc();
+                        stack = blockling.getEquipment().addItem(stack);
+                        blockling.dropItemStack(stack);
                     }
-                    else
+
+                    if (mainStack.hurt(mainCanHarvest ? blockling.getSkills().getSkill(BlocklingSkills.Woodcutting.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
                     {
-                        world.destroyBlockProgress(blockling.getId(), targetBlockPos, BlockUtil.calcBlockBreakProgress(blockling.getActions().mine.count()));
+                        mainStack.shrink(1);
                     }
+
+                    if (offStack.hurt(offCanHarvest ? blockling.getSkills().getSkill(BlocklingSkills.Woodcutting.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
+                    {
+                        offStack.shrink(1);
+                    }
+
+                    blockling.incLogsChoppedRecently();
+
+                    world.destroyBlock(targetBlockPos, false);
+                    world.destroyBlockProgress(blockling.getId(), targetBlockPos, 0);
+
+                    recalc();
                 }
-            }
-            else
-            {
-                world.destroyBlockProgress(blockling.getId(), targetBlockPos, -1);
-                blockling.getActions().mine.stop();
+                else
+                {
+                    world.destroyBlockProgress(blockling.getId(), targetBlockPos, BlockUtil.calcBlockBreakProgress(blockling.getActions().gather.count()));
+                }
             }
         }
         else
         {
-            world.destroyBlockProgress(blockling.getId(), targetGoal.getTargetPos(), -1);
-            blockling.getActions().mine.stop();
-        }
-
-        if (tickRecalc())
-        {
-            if ((path == null || path.isDone() || !hasMovedSinceLastRecalc() || blockling.getNavigation().isStuck()) && !isInRange(trunkPos))
-            {
-                badTrunkBlockPositions.add(trunkPos);
-            }
-
-            tryCalculatePath();
-
-            prevMoveDist = blockling.moveDist;
+            world.destroyBlockProgress(blockling.getId(), targetBlockPos, -1);
+            blockling.getActions().gather.stop();
         }
     }
 
-    private void calculateTrunkPosAndPath()
+    @Override
+    protected void recalc()
     {
-        List<BlockPos> sortedLogBlockPositions = targetGoal.getTree().logs.stream().sorted((o1, o2) -> o1.getY() > o2.getY() ? 1 : -1).collect(Collectors.toList());
-
-        for (BlockPos testTrunkPos : sortedLogBlockPositions)
+        if (isStuck())
         {
-            if (badTrunkBlockPositions.contains(testTrunkPos))
-            {
-                continue;
-            }
+            targetGoal.markBad();
+        }
 
-            path = createPath(testTrunkPos);
+        if (!getTargetGoal().isTargetValid())
+        {
+            getTargetGoal().recalcTarget();
+        }
 
-            if (path != null || isInRange(testTrunkPos))
-            {
-                trunkPos = testTrunkPos;
+        if (targetGoal.hasTarget())
+        {
+            calculatePathToTree();
+        }
+    }
 
-                return;
-            }
-            else
+    /**
+     * Finds a path towards the tree.
+     */
+    private void calculatePathToTree()
+    {
+        List<BlockPos> sortedLogBlockPositions = targetGoal.getTree().logs.stream().sorted(Comparator.comparingInt(Vector3i::getY)).collect(Collectors.toList());
+
+        BlockPos closestPos = null;
+        Path closestPath = null;
+        double closestDistanceSq = Double.MAX_VALUE;
+
+        for (BlockPos testPathTargetPos : sortedLogBlockPositions)
+        {
+            Path path = createPath(testPathTargetPos);
+
+            if (path != null)
             {
-                badTrunkBlockPositions.add(testTrunkPos);
+                if (isInRange(testPathTargetPos))
+                {
+                    setPathTargetPos(testPathTargetPos, path);
+
+                    return;
+                }
+
+                double distanceSq = testPathTargetPos.distSqr(path.getTarget());
+
+                if (distanceSq < closestDistanceSq)
+                {
+                    closestPos = testPathTargetPos;
+                    closestPath = path;
+                    closestDistanceSq = distanceSq;
+                }
             }
         }
 
-        path = null;
-        trunkPos = null;
+        if (closestPath != null)
+        {
+            setPathTargetPos(closestPos, closestPath);
+        }
     }
 
-    private Path createPath(BlockPos blockPos)
+    /**
+     * Creates a path to the given block or a surrounding block.
+     *
+     * @param blockPos the pos to create a path to.
+     * @return the path.
+     */
+    @Nullable
+    private Path createPath(@Nonnull BlockPos blockPos)
     {
         Path closestPath = null;
         double closestDistanceSq = Double.MAX_VALUE;
@@ -329,44 +272,9 @@ public class BlocklingWoodcutGoal extends BlocklingGoal implements IHasTargetGoa
         return closestPath;
     }
 
-    private void tryCalculatePath()
+    @Override
+    float getRangeSq()
     {
-        calculateTrunkPosAndPath();
-        blockling.getNavigation().moveTo(path, 1.0);
-    }
-
-    private boolean hasMovedSinceLastRecalc()
-    {
-        return blockling.moveDist - prevMoveDist > 0.01f;
-    }
-
-    private boolean isInRange(BlockPos blockPos)
-    {
-        float rangeSq = blockling.getStats().woodcuttingRangeSq.getValue();
-        float distanceSq = (float) blockling.distanceToSqr(blockPos.getX() + 0.5f, blockPos.getY() + 0.5f, blockPos.getZ() + 0.5f);
-
-        return distanceSq < rangeSq;
-    }
-
-    private void forceRecalc()
-    {
-        targetGoal.forceRecalc();
-        recalc = recalcInterval;
-    }
-
-    private boolean tickRecalc()
-    {
-        recalc++;
-
-        if (recalc < recalcInterval)
-        {
-            return false;
-        }
-        else
-        {
-            recalc = 0;
-        }
-
-        return true;
+        return blockling.getStats().woodcuttingRangeSq.getValue();
     }
 }

@@ -35,6 +35,8 @@ public abstract class BlocklingTargetGoal<T extends BlocklingGoal> extends Goal
             return false;
         }
 
+        recalc();
+
         if (goal.getState() == BlocklingGoal.State.DISABLED)
         {
             return false;
@@ -57,22 +59,19 @@ public abstract class BlocklingTargetGoal<T extends BlocklingGoal> extends Goal
     @Override
     public void tick()
     {
-        if (tickRecalc() && !isTargetValid())
+        if (tickRecalc())
         {
-            recalcTarget();
+            recalc();
+
+            if (!isTargetValid())
+            {
+                recalcTarget();
+            }
         }
     }
 
     /**
-     * Returns whether the current target is valid or not
-     */
-    protected boolean isTargetValid()
-    {
-        return true;
-    }
-
-    /**
-     * Called when recalc >= recalcInterval
+     * Called when recalc >= recalcInterval.
      */
     protected void recalc()
     {
@@ -80,16 +79,11 @@ public abstract class BlocklingTargetGoal<T extends BlocklingGoal> extends Goal
     }
 
     /**
-     * Called when recalc >= recalcInterval and the target is invalid
+     * Called when recalc >= recalcInterval and the target is invalid.
      */
-    protected void recalcTarget()
+    public void recalcTarget()
     {
 
-    }
-
-    public void forceRecalc()
-    {
-        recalc = recalcInterval;
     }
 
     private boolean tickRecalc()
@@ -102,11 +96,17 @@ public abstract class BlocklingTargetGoal<T extends BlocklingGoal> extends Goal
         }
         else
         {
-            recalc();
-
             recalc = 0;
         }
 
+        return true;
+    }
+
+    /**
+     * Returns whether the current target is valid or not.
+     */
+    protected boolean isTargetValid()
+    {
         return true;
     }
 }

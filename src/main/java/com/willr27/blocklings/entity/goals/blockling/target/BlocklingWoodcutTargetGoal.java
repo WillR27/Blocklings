@@ -1,40 +1,38 @@
 package com.willr27.blocklings.entity.goals.blockling.target;
 
 import com.willr27.blocklings.block.BlockUtil;
-import com.willr27.blocklings.entity.goals.blockling.BlocklingFarmGoal;
 import com.willr27.blocklings.entity.goals.blockling.BlocklingWoodcutGoal;
-import com.willr27.blocklings.goal.BlocklingGoal;
-import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3i;
 
-import java.util.HashMap;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-public class BlocklingWoodcutTargetGoal extends BlocklingTargetGoal<BlocklingWoodcutGoal>
+public class BlocklingWoodcutTargetGoal extends BlocklingGatherTargetGoal<BlocklingWoodcutGoal>
 {
+    /**
+     * The x and z search radius.
+     */
     private static final int SEARCH_RADIUS_X = 8;
+
+    /**
+     * The y search radius.
+     */
     private static final int SEARCH_RADIUS_Y = 8;
 
-    private BlockPos targetPos = null;
-    private BlockPos prevTargetPos = null;
-
+    /**
+     * The current target tree.
+     */
     private Tree tree = new Tree();
-    private Map<BlockPos, Integer> badBlockPositions = new HashMap<>();
 
     /**
-     * How many recalcs are called before a block is no longer bad.
+     * @param goal The associated goal instance.
      */
-    private final int recalcBadInterval = 20;
-
-    /**
-     * How many leaves we need per log for it to be a valid tree.
-     */
-    private final float leafToLogRatio = 1.0f;
-
-    public BlocklingWoodcutTargetGoal(BlocklingWoodcutGoal goal)
+    public BlocklingWoodcutTargetGoal(@Nonnull BlocklingWoodcutGoal goal)
     {
         super(goal);
     }
@@ -74,12 +72,6 @@ public class BlocklingWoodcutTargetGoal extends BlocklingTargetGoal<BlocklingWoo
     }
 
     @Override
-    public void start()
-    {
-        findNextTarget();
-    }
-
-    @Override
     public void stop()
     {
         tree.logs.clear();
@@ -87,62 +79,37 @@ public class BlocklingWoodcutTargetGoal extends BlocklingTargetGoal<BlocklingWoo
     }
 
     @Override
-    public void tick()
+    public void recalcTarget()
     {
-        super.tick();
+        tree.logs.remove(getTargetPos());
+
+        super.recalcTarget();
     }
 
     @Override
-    protected boolean isTargetValid()
+    protected BlockPos findNextTargetPos()
     {
-        if (!isValidLogPos(targetPos))
-        {
-            return false;
-        }
-
-        return true;
+        return tree.logs.stream().max(Comparator.comparingInt(Vector3i::getY)).orElse(null);
     }
 
     @Override
-    protected void recalc()
+    protected boolean isValidTargetBlock(@Nullable Block block)
     {
-        updateBadPositions();
+        return block != null && goal.logWhitelist.isEntryWhitelisted(block);
     }
 
     @Override
-    protected void recalcTarget()
+    public void markBad()
     {
-        tree.logs.remove(targetPos);
-
-        findNextTarget();
+        tree.logs.forEach(blockPos -> markPosBad(blockPos));
     }
 
-    private void updateBadPositions()
-    {
-        Set<BlockPos> freshBlockPositions = new HashSet<>();
-
-        badBlockPositions.forEach((blockPos, time) ->
-        {
-            if (time >= recalcBadInterval || time >= badBlockPositions.size())
-            {
-                freshBlockPositions.add(blockPos);
-            }
-
-            badBlockPositions.put(blockPos, time + 1);
-        });
-
-        freshBlockPositions.forEach(blockPos ->
-        {
-            badBlockPositions.remove(blockPos);
-        });
-    }
-
-    private void findNextTarget()
-    {
-        prevTargetPos = targetPos;
-        targetPos = tree.logs.stream().max((o1, o2) -> o1.getY() > o2.getY() ? 1 : -1).orElse(null);
-    }
-
+    /**
+     * Finds the nearest tree.
+     *
+     * @return the tree.
+     */
+    @Nonnull
     private Tree findTree()
     {
         BlockPos blocklingBlockPos = blockling.blockPosition();
@@ -165,11 +132,19 @@ public class BlocklingWoodcutTargetGoal extends BlocklingTargetGoal<BlocklingWoo
                         continue;
                     }
 
-                    if (isValidLogPos(testBlockPos))
+                    if (isValidTarget(testBlockPos))
                     {
                         Tree treeBlockPositionsToTest = findTreeFrom(testBlockPos);
                         testedBlockPositions.addAll(treeBlockPositionsToTest.logs);
                         testedBlockPositions.addAll(treeBlockPositionsToTest.leaves);
+
+                        if (treeBlockPositionsToTest.logs.stream().anyMatch(blockPos -> !isValidTargetPos(blockPos)))
+                        {
+                            continue;
+                        }
+
+                        // How many leaves we need per log for it to be a valid tree.
+                        float leafToLogRatio = 1.0f;
 
                         if (treeBlockPositionsToTest.logs.size() / (float) treeBlockPositionsToTest.leaves.size() > leafToLogRatio)
                         {
@@ -196,6 +171,13 @@ public class BlocklingWoodcutTargetGoal extends BlocklingTargetGoal<BlocklingWoo
         return tree;
     }
 
+    /**
+     * Finds the tree stemming from the given pos.
+     *
+     * @param blockPos the starting pos.
+     * @return the tree.
+     */
+    @Nonnull
     private Tree findTreeFrom(BlockPos blockPos)
     {
         Tree tree = new Tree();
@@ -210,7 +192,7 @@ public class BlocklingWoodcutTargetGoal extends BlocklingTargetGoal<BlocklingWoo
 
             for (BlockPos surroundingPos : BlockUtil.getSurroundingBlockPositions(testBlockPos))
             {
-                if (isValidLogPos(surroundingPos))
+                if (isValidTarget(surroundingPos))
                 {
                     if (tree.logs.add(surroundingPos))
                     {
@@ -229,58 +211,36 @@ public class BlocklingWoodcutTargetGoal extends BlocklingTargetGoal<BlocklingWoo
         return tree;
     }
 
-    private boolean isValidLogPos(BlockPos blockPos)
-    {
-        return isValidLog(world.getBlockState(blockPos).getBlock()) && !badBlockPositions.keySet().contains(blockPos);
-    }
-
+    /**
+     * @param blockPos the pos to check.
+     * @return true if the block at the pos is a leaf.
+     */
     private boolean isValidLeafPos(BlockPos blockPos)
     {
         return isValidLeaf(world.getBlockState(blockPos).getBlock());
     }
 
-    private boolean isValidLog(Block block)
-    {
-        return goal.logWhitelist.isEntryWhitelisted(block);
-    }
-
+    /**
+     * @param block the block to check.
+     * @return true if the block is a leaf.
+     */
     private boolean isValidLeaf(Block block)
     {
         return BlockUtil.isLeaf(block);
     }
 
-    public void markTreeBad()
-    {
-        tree.logs.forEach(blockPos -> badBlockPositions.put(blockPos, 0));
-        tree.logs.clear();
-        tree.leaves.clear();
-    }
-
-    public boolean hasTarget()
-    {
-        return targetPos != null;
-    }
-
-    public BlockPos getTargetPos()
-    {
-        return targetPos;
-    }
-
-    public boolean hasPrevTarget()
-    {
-        return prevTargetPos != null;
-    }
-
-    public BlockPos getPrevTargetPos()
-    {
-        return prevTargetPos;
-    }
-
+    /**
+     * @return the current tree.
+     */
+    @Nonnull
     public Tree getTree()
     {
         return tree;
     }
 
+    /**
+     * Class to represent a tree.
+     */
     public static class Tree
     {
         public final Set<BlockPos> logs = new HashSet<>();

@@ -90,6 +90,10 @@ public class BlockUtil
         add(Blocks.DARK_OAK_LEAVES);
     }};
 
+    /**
+     * @param block the block to test.
+     * @return true if the block is a leaf.
+     */
     public static boolean isLeaf(Block block)
     {
         return LEAVES.contains(block);

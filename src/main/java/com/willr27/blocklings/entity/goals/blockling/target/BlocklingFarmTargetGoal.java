@@ -1,34 +1,30 @@
 package com.willr27.blocklings.entity.goals.blockling.target;
 
 import com.willr27.blocklings.entity.goals.blockling.BlocklingFarmGoal;
-import com.willr27.blocklings.goal.BlocklingGoal;
-import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public class BlocklingFarmTargetGoal extends BlocklingTargetGoal<BlocklingFarmGoal>
+public class BlocklingFarmTargetGoal extends BlocklingGatherTargetGoal<BlocklingFarmGoal>
 {
+    /**
+     * The x and z search radius.
+     */
     private static final int SEARCH_RADIUS_X = 8;
-    private static final int SEARCH_RADIUS_Y = 8;
-
-    private BlockPos targetPos = null;
-    private BlockPos prevTargetPos = null;
-
-    private Map<BlockPos, Integer> badBlockPositions = new HashMap<>();
 
     /**
-     * How many recalcs are called before a block is no longer bad.
+     * The y search radius.
      */
-    private final int recalcBadInterval = 20;
+    private static final int SEARCH_RADIUS_Y = 8;
 
-    public BlocklingFarmTargetGoal(BlocklingFarmGoal goal)
+    /**
+     * @param goal The associated goal instance.
+     */
+    public BlocklingFarmTargetGoal(@Nonnull BlocklingFarmGoal goal)
     {
         super(goal);
     }
@@ -41,7 +37,7 @@ public class BlocklingFarmTargetGoal extends BlocklingTargetGoal<BlocklingFarmGo
             return false;
         }
 
-        targetPos = findTarget();
+        recalcTarget();
 
         if (!hasTarget())
         {
@@ -49,97 +45,38 @@ public class BlocklingFarmTargetGoal extends BlocklingTargetGoal<BlocklingFarmGo
         }
 
         return true;
-    }
-
-    @Override
-    public boolean canContinueToUse()
-    {
-        if (!super.canContinueToUse())
-        {
-            return false;
-        }
-
-        if (!hasTarget())
-        {
-            return false;
-        }
-
-        if (!isValidCropPos(targetPos))
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public void start()
-    {
-        findNextTarget();
     }
 
     @Override
     public void stop()
     {
-
+        setTargetPos(null);
     }
 
     @Override
-    public void tick()
+    protected BlockPos findNextTargetPos()
     {
-        super.tick();
+        return findTarget();
     }
 
     @Override
-    protected boolean isTargetValid()
+    protected boolean isValidTargetBlock(@Nullable Block block)
     {
-        if (!isValidCropPos(targetPos))
-        {
-            return false;
-        }
-
-        return true;
+        return block != null && goal.cropWhitelist.isEntryWhitelisted(block);
     }
 
     @Override
-    protected void recalc()
+    public void markBad()
     {
-        updateBadPositions();
+        markTargetBad();
     }
 
-    @Override
-    protected void recalcTarget()
-    {
-        findTarget();
-    }
-
-    private void findNextTarget()
-    {
-        prevTargetPos = targetPos;
-
-        findTarget();
-    }
-
-    private void updateBadPositions()
-    {
-        Set<BlockPos> freshBlockPositions = new HashSet<>();
-
-        badBlockPositions.forEach((blockPos, time) ->
-        {
-            if (time >= recalcBadInterval || time >= badBlockPositions.size())
-            {
-                freshBlockPositions.add(blockPos);
-            }
-
-            badBlockPositions.put(blockPos, time + 1);
-        });
-
-        freshBlockPositions.forEach(blockPos ->
-        {
-            badBlockPositions.remove(blockPos);
-        });
-    }
-
+    /**
+     * Finds the closest crop pos.
+     *
+     * @return the closest crop pos.
+     */
+    @Nullable
     private BlockPos findTarget()
     {
         BlockPos blocklingBlockPos = blockling.blockPosition();
@@ -155,7 +92,7 @@ public class BlocklingFarmTargetGoal extends BlocklingTargetGoal<BlocklingFarmGo
                 {
                     BlockPos testBlockPos = blocklingBlockPos.offset(i, j, k);
 
-                    if (isValidCropPos(testBlockPos))
+                    if (isValidTarget(testBlockPos))
                     {
                         float distanceSq = (float) blockling.distanceToSqr(testBlockPos.getX() + 0.5f, testBlockPos.getY() + 0.5f, testBlockPos.getZ() + 0.5f);
 
@@ -174,15 +111,16 @@ public class BlocklingFarmTargetGoal extends BlocklingTargetGoal<BlocklingFarmGo
         return closestPos;
     }
 
-    private boolean isValidCropPos(BlockPos blockPos)
+    @Override
+    public boolean isValidTarget(@Nullable BlockPos blockPos)
     {
-        BlockState blockState = world.getBlockState(blockPos);
-        Block block = blockState.getBlock();
-
-        if (!(isValidCrop(block) && !badBlockPositions.keySet().contains(blockPos)))
+        if (!super.isValidTarget(blockPos))
         {
             return false;
         }
+
+        BlockState blockState = world.getBlockState(blockPos);
+        Block block = blockState.getBlock();
 
         if (block instanceof CropsBlock)
         {
@@ -195,35 +133,5 @@ public class BlocklingFarmTargetGoal extends BlocklingTargetGoal<BlocklingFarmGo
         }
 
         return true;
-    }
-
-    private boolean isValidCrop(Block block)
-    {
-        return goal.cropWhitelist.isEntryWhitelisted(block);
-    }
-
-    public void markTargetBad()
-    {
-        badBlockPositions.put(targetPos, 0);
-    }
-
-    public boolean hasTarget()
-    {
-        return targetPos != null;
-    }
-
-    public BlockPos getTargetPos()
-    {
-        return targetPos;
-    }
-
-    public boolean hasPrevTarget()
-    {
-        return prevTargetPos != null;
-    }
-
-    public BlockPos getPrevTargetPos()
-    {
-        return prevTargetPos;
     }
 }
