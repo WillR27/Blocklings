@@ -57,6 +57,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTa
     }
 
     @Override
+    @Nonnull
     public BlocklingWoodcutTargetGoal getTargetGoal()
     {
         return targetGoal;

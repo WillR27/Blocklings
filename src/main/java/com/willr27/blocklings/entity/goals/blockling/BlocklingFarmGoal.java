@@ -18,6 +18,7 @@ import net.minecraft.block.CropsBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
+import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.UUID;
 
@@ -70,6 +71,7 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGo
     }
 
     @Override
+    @Nonnull
     public BlocklingFarmTargetGoal getTargetGoal()
     {
         return targetGoal;

@@ -56,7 +56,7 @@ public abstract class BlocklingGoal extends Goal
      * @param blockling the blockling.
      * @param tasks the blockling tasks.
      */
-    public BlocklingGoal(UUID id, BlocklingEntity blockling, BlocklingTasks tasks)
+    public BlocklingGoal(@Nonnull UUID id, @Nonnull BlocklingEntity blockling, @Nonnull BlocklingTasks tasks)
     {
         this.id = id;
         this.blockling = blockling;
@@ -118,7 +118,7 @@ public abstract class BlocklingGoal extends Goal
      *
      * @param state the new state.
      */
-    public void setState(State state)
+    public void setState(@Nonnull State state)
     {
        setState(state, true);
     }
@@ -129,7 +129,7 @@ public abstract class BlocklingGoal extends Goal
      * @param state the new state.
      * @param sync whether to sync to the client/server.
      */
-    public void setState(State state, boolean sync)
+    public void setState(@Nonnull State state, boolean sync)
     {
         this.state = state;
 

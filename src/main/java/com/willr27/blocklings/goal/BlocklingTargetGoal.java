@@ -46,7 +46,7 @@ public abstract class BlocklingTargetGoal<T extends BlocklingGoal> extends Goal
     /**
      * @param goal the associate goal instance.
      */
-    public BlocklingTargetGoal(T goal)
+    public BlocklingTargetGoal(@Nonnull T goal)
     {
         this.goal = goal;
         this.tasks = goal.tasks;

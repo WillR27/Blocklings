@@ -1,23 +1,33 @@
 package com.willr27.blocklings.entity.goals.blockling;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
+import com.willr27.blocklings.goal.BlocklingGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
 
+import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.UUID;
 
 public class BlocklingWanderGoal extends BlocklingGoal
 {
-    private WaterAvoidingRandomWalkingGoal vanillaGoal;
+    /**
+     * The instance of the vanilla wander goal.
+     */
+    @Nonnull
+    private final WaterAvoidingRandomWalkingGoal vanillaWanderGoal;
 
-    public BlocklingWanderGoal(UUID id, BlocklingEntity blockling, BlocklingTasks goals)
+    /**
+     * @param id the id associated with the goal's task.
+     * @param blockling the blockling.
+     * @param tasks the blockling tasks.
+     */
+    public BlocklingWanderGoal(@Nonnull UUID id, @Nonnull BlocklingEntity blockling, @Nonnull BlocklingTasks tasks)
     {
-        super(id, blockling, goals);
+        super(id, blockling, tasks);
 
-        this.vanillaGoal = new WaterAvoidingRandomWalkingGoal(blockling, 1.0);
+        vanillaWanderGoal = new WaterAvoidingRandomWalkingGoal(blockling, 1.0);
 
         setFlags(EnumSet.of(Goal.Flag.JUMP, Goal.Flag.MOVE));
     }
@@ -30,7 +40,7 @@ public class BlocklingWanderGoal extends BlocklingGoal
             return false;
         }
 
-        return vanillaGoal.canUse();
+        return vanillaWanderGoal.canUse();
     }
 
     @Override
@@ -41,7 +51,7 @@ public class BlocklingWanderGoal extends BlocklingGoal
             return false;
         }
 
-        return vanillaGoal.canContinueToUse();
+        return vanillaWanderGoal.canContinueToUse();
     }
 
     @Override
@@ -49,7 +59,7 @@ public class BlocklingWanderGoal extends BlocklingGoal
     {
         super.start();
 
-        vanillaGoal.start();
+        vanillaWanderGoal.start();
     }
 
     @Override
@@ -57,7 +67,7 @@ public class BlocklingWanderGoal extends BlocklingGoal
     {
         super.stop();
 
-        vanillaGoal.stop();
+        vanillaWanderGoal.stop();
     }
 
     @Override
@@ -65,6 +75,6 @@ public class BlocklingWanderGoal extends BlocklingGoal
     {
         super.tick();
 
-        vanillaGoal.tick();
+        vanillaWanderGoal.tick();
     }
 }
