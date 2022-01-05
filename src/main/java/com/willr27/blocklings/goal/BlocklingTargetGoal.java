@@ -5,24 +5,51 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
+
 public abstract class BlocklingTargetGoal<T extends BlocklingGoal> extends Goal
 {
-    public final T goal;
-    public final BlocklingTasks goals;
-    public final BlocklingEntity blockling;
-    public final World world;
-
-    private int recalc = 0;
+    /**
+     * The number of ticks between each recalc.
+     */
+    private static final int RECALC_INTERVAL = 20;
 
     /**
-     * The number of ticks between each attempted recalculation of the target.
+     * The associated goal instance.
      */
-    private final int recalcInterval = 20;
+    @Nonnull
+    public final T goal;
 
+    /**
+     * The blockling.
+     */
+    @Nonnull
+    public final BlocklingEntity blockling;
+
+    /**
+     * The world.
+     */
+    @Nonnull
+    public final World world;
+
+    /**
+     * The blockling tasks.
+     */
+    @Nonnull
+    public final BlocklingTasks tasks;
+
+    /**
+     * Counts the number of ticks since the last recalc.
+     */
+    private int recalcCounter = 0;
+
+    /**
+     * @param goal the associate goal instance.
+     */
     public BlocklingTargetGoal(T goal)
     {
         this.goal = goal;
-        this.goals = goal.tasks;
+        this.tasks = goal.tasks;
         this.blockling = goal.blockling;
         this.world = blockling.level;
     }
@@ -71,7 +98,7 @@ public abstract class BlocklingTargetGoal<T extends BlocklingGoal> extends Goal
     }
 
     /**
-     * Called when recalc >= recalcInterval.
+     * Recalculates the state of the target goal.
      */
     protected void recalc()
     {
@@ -79,24 +106,29 @@ public abstract class BlocklingTargetGoal<T extends BlocklingGoal> extends Goal
     }
 
     /**
-     * Called when recalc >= recalcInterval and the target is invalid.
+     * Recalculates the current target.
      */
     public void recalcTarget()
     {
 
     }
 
+    /**
+     * Increments the recalc counter and checks if it has reached the recalc interval.
+     *
+     * @return true if recalc counter has reached the recalc interval.
+     */
     private boolean tickRecalc()
     {
-        recalc++;
+        recalcCounter++;
 
-        if (recalc < recalcInterval)
+        if (recalcCounter < RECALC_INTERVAL)
         {
             return false;
         }
         else
         {
-            recalc = 0;
+            recalcCounter = 0;
         }
 
         return true;
