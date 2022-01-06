@@ -35,7 +35,7 @@ public class Blocklings
     public static final String MODID = "blocklings";
 
     // Directly reference a log4j logger.
-    private static final Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger();
 
     public Blocklings()
     {

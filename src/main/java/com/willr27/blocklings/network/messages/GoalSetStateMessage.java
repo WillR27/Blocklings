@@ -2,60 +2,74 @@ package com.willr27.blocklings.network.messages;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.goal.BlocklingGoal;
-import com.willr27.blocklings.goal.Task;
-import com.willr27.blocklings.network.IMessage;
-import net.minecraft.client.Minecraft;
+import com.willr27.blocklings.network.BlocklingMessage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.UUID;
-import java.util.function.Supplier;
 
-public class GoalSetStateMessage implements IMessage
+public class GoalSetStateMessage extends BlocklingMessage<GoalSetStateMessage>
 {
-    UUID goalId;
-    BlocklingGoal.State state;
-    int entityId;
+    /**
+     * The id of the goal.
+     */
+    @Nullable
+    private UUID goalId;
 
-    private GoalSetStateMessage() {}
-    public GoalSetStateMessage(UUID goalId, BlocklingGoal.State state, int entityId)
+    /**
+     * The new state of the goal.
+     */
+    @Nullable
+    private BlocklingGoal.State state;
+
+    /**
+     * Constructor used when decoding on the receiving side.
+     */
+    public GoalSetStateMessage()
     {
+        super(null);
+    }
+
+    /**
+     * @param blockling the blockling.
+     * @param goalId the id of the goal.
+     * @param state the new state of the goal.
+     */
+    public GoalSetStateMessage(@Nonnull BlocklingEntity blockling, @Nonnull UUID goalId, @Nonnull BlocklingGoal.State state)
+    {
+        super(blockling);
         this.goalId = goalId;
         this.state = state;
-        this.entityId = entityId;
     }
 
-    public static void encode(GoalSetStateMessage msg, PacketBuffer buf)
+    @Override
+    public void encode(@Nonnull PacketBuffer buf)
     {
-        buf.writeUUID(msg.goalId);
-        buf.writeEnum(msg.state);
-        buf.writeInt(msg.entityId);
+        buf.writeUUID(goalId);
+        buf.writeEnum(state);
+
+        super.encode(buf);
     }
 
-    public static GoalSetStateMessage decode(PacketBuffer buf)
+    @Override
+    @Nonnull
+    public GoalSetStateMessage decode(@Nonnull PacketBuffer buf)
     {
-        GoalSetStateMessage msg = new GoalSetStateMessage();
-        msg.goalId = buf.readUUID();
-        msg.state = buf.readEnum(BlocklingGoal.State.class);
-        msg.entityId = buf.readInt();
+        goalId = buf.readUUID();
+        state = buf.readEnum(BlocklingGoal.State.class);
 
-        return msg;
+        return super.decode(buf);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx)
+    @Override
+    protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling, boolean isClient)
     {
-        ctx.get().enqueueWork(() ->
-        {
-            NetworkEvent.Context context = ctx.get();
-            boolean isClient = context.getDirection() == NetworkDirection.PLAY_TO_CLIENT;
+        Objects.requireNonNull(goalId);
+        Objects.requireNonNull(state);
 
-            PlayerEntity player = isClient ? Minecraft.getInstance().player : ctx.get().getSender();
-            BlocklingEntity blockling = (BlocklingEntity) player.level.getEntity(entityId);
-
-            Task task = blockling.getTasks().getTask(goalId);
-            task.getGoal().setState(state, !isClient);
-        });
+        blockling.getTasks().getTask(goalId).getGoal().setState(state, false);
     }
 }

@@ -66,7 +66,7 @@ public class GuiHandler
 
             Container container = getContainer(guiId, windowId, blockling, player);
             if (container != null) player.containerMenu = container;
-            if (sync) NetworkHandler.sendTo(player, new OpenGuiMessage(guiId, windowId, blockling.getId()));
+            if (sync) NetworkHandler.sendToClient(player, new OpenGuiMessage(guiId, windowId, blockling.getId()));
 
             // Sync back to the client
             blockling.getGuiInfo().setCurrentGuiId(guiId, true);

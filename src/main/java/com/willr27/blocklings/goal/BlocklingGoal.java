@@ -135,7 +135,7 @@ public abstract class BlocklingGoal extends Goal
 
         if (sync)
         {
-            NetworkHandler.sync(blockling.level, new GoalSetStateMessage(id, state, blockling.getId()));
+            new GoalSetStateMessage(blockling, id, state).sync();
         }
     }
 
