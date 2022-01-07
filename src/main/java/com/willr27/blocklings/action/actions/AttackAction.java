@@ -1,27 +1,57 @@
 package com.willr27.blocklings.action.actions;
 
+import com.willr27.blocklings.action.BlocklingActions;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
-import com.willr27.blocklings.entity.entities.blockling.BlocklingActions;
 
+import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
+/**
+ * An action used when a blockling attacks a target.
+ */
 public class AttackAction extends KnownTargetAction
 {
+    /**
+     * The action for the left hand.
+     */
+    @Nonnull
     private final KnownTargetAction leftHandAction;
+
+    /**
+     * The action for the right hand.
+     */
+    @Nonnull
     private final KnownTargetAction rightHandAction;
 
+    /**
+     * Which hand was most recently used to attack.
+     */
     private BlocklingHand recentHand = BlocklingHand.BOTH;
 
-    public AttackAction(BlocklingActions actions, BlocklingEntity blockling, String key, Supplier<Float> targetTicksSupplier, Supplier<Float> handTargetTicksSupplier)
+    /**
+     * @param actions the blockling actions.
+     * @param blockling the blockling.
+     * @param key the key used to identify the action and for the underlying attribute.
+     * @param targetCountSupplier the supplier used to get the target count.
+     * @param handTargetCountSupplier the supplier used to get the target count for the hands.
+     */
+    public AttackAction(@Nonnull BlocklingActions actions, @Nonnull BlocklingEntity blockling, @Nonnull String key, @Nonnull Supplier<Float> targetCountSupplier, @Nonnull Supplier<Float> handTargetCountSupplier)
     {
-        super(blockling, key, targetTicksSupplier);
+        super(blockling, key, targetCountSupplier);
 
-        Supplier<Float> supplier = () -> handTargetTicksSupplier.get() < 10.0f ? handTargetTicksSupplier.get() : 10.0f;
-        leftHandAction = actions.createAction(blockling, key + "_left_hand", supplier);
-        rightHandAction = actions.createAction(blockling, key + "_right_hand", supplier);
+        // Cap the animation to a minimum of 10 ticks.
+        Supplier<Float> supplier = () -> handTargetCountSupplier.get() < 10.0f ? handTargetCountSupplier.get() : 10.0f;
+        leftHandAction = actions.createAction(key + "_left_hand", supplier);
+        rightHandAction = actions.createAction(key + "_right_hand", supplier);
     }
 
+    /**
+     * Starts the action if it is not already being performed.
+     *
+     * @param hand the hand to try start the action for.
+     * @return true if the action was started.
+     */
     public boolean tryStart(BlocklingHand hand)
     {
         if (super.tryStart())
@@ -36,15 +66,26 @@ public class AttackAction extends KnownTargetAction
         }
     }
 
+    /**
+     * Starts the action whether it's running or not.
+     * Also sets the recent hand to the one given.
+     *
+     * @param hand the hand to start the action for.
+     */
     public void start(BlocklingHand hand)
     {
         super.start();
 
-        if (hand == BlocklingHand.OFF || hand == BlocklingHand.BOTH)
+        if (hand == BlocklingHand.BOTH)
+        {
+            leftHandAction.start();
+            rightHandAction.start();
+        }
+        else if (hand == BlocklingHand.OFF)
         {
             leftHandAction.start();
         }
-        else if (hand == BlocklingHand.MAIN || hand == BlocklingHand.BOTH)
+        else if (hand == BlocklingHand.MAIN)
         {
             rightHandAction.start();
         }
@@ -88,6 +129,10 @@ public class AttackAction extends KnownTargetAction
         rightHandAction.stop();
     }
 
+    /**
+     * @param hand the hand to check.
+     * @return true if the given hand's action is running.
+     */
     public boolean isRunning(BlocklingHand hand)
     {
         if (hand == BlocklingHand.OFF)
@@ -100,6 +145,10 @@ public class AttackAction extends KnownTargetAction
         }
     }
 
+    /**
+     * @param hand the hand to check.
+     * @return true if the given hand's action has finished.
+     */
     public boolean isFinished(BlocklingHand hand)
     {
         if (hand == BlocklingHand.OFF)
@@ -112,6 +161,9 @@ public class AttackAction extends KnownTargetAction
         }
     }
 
+    /**
+     * @return the percent through the current hand's action.
+     */
     public float percentThroughHandAction()
     {
         if (leftHandAction.isRunning())
@@ -124,45 +176,28 @@ public class AttackAction extends KnownTargetAction
         }
     }
 
-    public float percentThroughHandActionSq()
+    /**
+     * @param targetCount the target count.
+     * @return the percent through the current hand's action.
+     */
+    public float percentThroughHandAction(float targetCount)
     {
         if (leftHandAction.isRunning())
         {
-            return leftHandAction.percentThroughActionSq();
+            return leftHandAction.percentThroughAction(targetCount);
         }
         else
         {
-            return rightHandAction.percentThroughActionSq();
+            return rightHandAction.percentThroughAction(targetCount);
         }
     }
 
-    public float percentThroughHandAction(int tickOffset)
-    {
-        if (leftHandAction.isRunning())
-        {
-            return leftHandAction.percentThroughAction(tickOffset);
-        }
-        else
-        {
-            return rightHandAction.percentThroughAction(tickOffset);
-        }
-    }
-
-    public float percentThroughHandActionSq(int tickOffset)
-    {
-        if (leftHandAction.isRunning())
-        {
-            return leftHandAction.percentThroughActionSq(tickOffset);
-        }
-        else
-        {
-            return rightHandAction.percentThroughActionSq(tickOffset);
-        }
-    }
-
+    /**
+     * @return the most recent hand used to attack.
+     */
+    @Nonnull
     public BlocklingHand getRecentHand()
     {
         return recentHand;
     }
-
 }

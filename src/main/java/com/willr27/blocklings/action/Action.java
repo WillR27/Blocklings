@@ -8,12 +8,22 @@ import java.util.UUID;
 
 public abstract class Action
 {
+    /**
+     * The blockling.
+     */
     @Nonnull
     public final BlocklingEntity blockling;
 
+    /**
+     * The counter used for the action.
+     */
     @Nonnull
     protected final ModifiableFloatAttribute count;
 
+    /**
+     * @param blockling the blockling.
+     * @param key the key used to identify the action and for the underlying attribute.
+     */
     public Action(@Nonnull BlocklingEntity blockling, @Nonnull String key)
     {
         this.blockling = blockling;
@@ -23,7 +33,8 @@ public abstract class Action
 
     /**
      * Starts the action if it is not already being performed.
-     * @return Returns true if the action was started.
+     *
+     * @return true if the action was started.
      */
     public boolean tryStart()
     {
@@ -78,7 +89,7 @@ public abstract class Action
     }
 
     /**
-     * Returns true if the action is currently running.
+     * @return true if the action is currently running.
      */
     public boolean isRunning()
     {
@@ -86,10 +97,19 @@ public abstract class Action
     }
 
     /**
-     * Returns the current value of the count attribute.
+     * @return the current value of the count attribute.
      */
     public float count()
     {
         return count.getValue();
+    }
+
+    /**
+     * @param targetCount the target counter value.
+     * @return the percentage towards the target count.
+     */
+    public float percentThroughAction(float targetCount)
+    {
+        return count() / (float) targetCount;
     }
 }

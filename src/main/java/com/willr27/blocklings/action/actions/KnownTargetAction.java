@@ -1,22 +1,36 @@
 package com.willr27.blocklings.action.actions;
 
-import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.action.Action;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
+/**
+ * An action where the target count is known/easy to supply.
+ */
 public class KnownTargetAction extends Action
 {
+    /**
+     * The supplier used to get target count.
+     */
     @Nonnull
     protected final Supplier<Float> targetCountSupplier;
 
+    /**
+     * Whether the action has finished in the last tick.
+     */
     protected boolean isFinished = false;
 
-    public KnownTargetAction(BlocklingEntity blockling, String key, @Nonnull Supplier<Float> targetTicksSupplier)
+    /**
+     * @param blockling the blockling.
+     * @param key the key used to identify the action and for the underlying attribute.
+     * @param targetCountSupplier the supplier used to get the target count.
+     */
+    public KnownTargetAction(@Nonnull BlocklingEntity blockling, @Nonnull String key, @Nonnull Supplier<Float> targetCountSupplier)
     {
         super(blockling, key);
-        this.targetCountSupplier = targetTicksSupplier;
+        this.targetCountSupplier = targetCountSupplier;
     }
 
     @Override
@@ -61,38 +75,30 @@ public class KnownTargetAction extends Action
         }
     }
 
+    /**
+     * @return true if the action has finished and hasn't ticked since finishing.
+     */
     public boolean isFinished()
     {
         return isFinished;
     }
 
+    /**
+     * @return the percentage towards the target count.
+     */
     public float percentThroughAction()
     {
         return percentThroughAction(0);
     }
 
-    public float percentThroughActionSq()
+    @Override
+    public float percentThroughAction(float targetCount)
     {
-        return percentThroughActionSq(0);
-    }
-
-    public float percentThroughAction(int tickOffset)
-    {
-        if (count() + tickOffset < 0)
+        if (count() + targetCount < 0)
         {
             return 1.0f;
         }
 
-        return (float) (count() + tickOffset) / (float) targetCountSupplier.get();
-    }
-
-    public float percentThroughActionSq(int tickOffset)
-    {
-        if (count() + tickOffset < 0)
-        {
-            return 1.0f;
-        }
-
-        return (float) ((count() + tickOffset) * (count() + tickOffset)) / (float) (targetCountSupplier.get() * targetCountSupplier.get());
+        return (count() + targetCount) / targetCountSupplier.get();
     }
 }

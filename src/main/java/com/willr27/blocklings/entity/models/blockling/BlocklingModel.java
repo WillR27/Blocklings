@@ -56,14 +56,14 @@ public class BlocklingModel extends EntityModel<BlocklingEntity> implements IHas
         this.leftLeg.visible = true;
         setRotation(this.leftLeg, -LEFT_LEG_BASE_ROT_X, 0.0F, 0.0F);
         this.rightArm = new ModelRenderer(this, 0, 12);
-        this.rightArm.addBox(0.0F, 2.0F, -7.0F, 2, 6, 6);
-        this.rightArm.setPos(-8.0F, -3.0F, 0.0F);
+        this.rightArm.addBox(0.0F, 0.0F, -7.0F, 2, 6, 6);
+        this.rightArm.setPos(-8.0F, 0.0F, 0.0F);
         this.rightArm.setTexSize(128, 64);
         this.rightArm.visible = true;
         setRotation(this.rightArm, RIGHT_ARM_BASE_ROT_X, 0.0F, 0.0F);
         this.leftArm = new ModelRenderer(this, 64, 12);
-        this.leftArm.addBox(-2.0F, 2.0F, -7.0F, 2, 6, 6);
-        this.leftArm.setPos(8.0F, -3.0F, 0.0F);
+        this.leftArm.addBox(-2.0F, 0.0F, -7.0F, 2, 6, 6);
+        this.leftArm.setPos(8.0F, 0.0F, 0.0F);
         this.leftArm.setTexSize(128, 64);
         this.leftArm.visible = true;
         setRotation(this.leftArm, LEFT_ARM_BASE_ROT_X, 0.0F, 0.0F);
@@ -148,13 +148,15 @@ public class BlocklingModel extends EntityModel<BlocklingEntity> implements IHas
             float attackSwing = (MathHelper.cos(percent * (float) Math.PI / 2.0f) * 2.0f);
             rightArmSwing += blockling.getEquipment().getHandStack(Hand.MAIN_HAND).isEmpty() ? -attackSwing : attackSwing;
         }
-        else if (blockling.getActions().attack.isRunning(BlocklingHand.OFF))
+
+        if (blockling.getActions().attack.isRunning(BlocklingHand.OFF))
         {
             float percent = blockling.getActions().attack.percentThroughHandAction(-1) + (blockling.getActions().attack.percentThroughHandAction() - blockling.getActions().attack.percentThroughHandAction(-1)) * partialTicks;
             float attackSwing = (MathHelper.cos(percent * (float) Math.PI / 2.0f) * 2.0f);
             leftArmSwing -= blockling.getEquipment().getHandStack(Hand.OFF_HAND).isEmpty() ? -attackSwing : attackSwing;
         }
-        else if (blockling.getActions().gather.isRunning())
+
+        if (blockling.getActions().gather.isRunning())
         {
             if (hand == BlocklingHand.MAIN || hand == BlocklingHand.BOTH)
             {

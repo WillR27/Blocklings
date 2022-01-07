@@ -1,12 +1,12 @@
 package com.willr27.blocklings.entity.entities.blockling;
 
 import com.google.common.collect.Iterables;
+import com.willr27.blocklings.action.BlocklingActions;
 import com.willr27.blocklings.goal.Task;
 import com.willr27.blocklings.gui.GuiHandler;
 import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
 import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.item.items.BlocklingItem;
-import com.willr27.blocklings.network.NetworkHandler;
 import com.willr27.blocklings.network.messages.BlocklingScaleMessage;
 import com.willr27.blocklings.network.messages.BlocklingAttackTargetMessage;
 import com.willr27.blocklings.network.messages.BlocklingTypeMessage;
