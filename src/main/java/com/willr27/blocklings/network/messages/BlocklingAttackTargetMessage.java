@@ -2,34 +2,36 @@ package com.willr27.blocklings.network.messages;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.network.BlocklingMessage;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public class BlocklingScaleMessage extends BlocklingMessage<BlocklingScaleMessage>
+public class BlocklingAttackTargetMessage extends BlocklingMessage<BlocklingAttackTargetMessage>
 {
     /**
-     * The blockling's scale.
+     * The id of the target entity. -1 if target is null.
      */
-    private float scale;
+    private int targetId;
 
     /**
      * Empty constructor used ONLY for decoding.
      */
-    public BlocklingScaleMessage()
+    public BlocklingAttackTargetMessage()
     {
         super(null);
     }
 
     /**
      * @param blockling the blockling.
-     * @param scale the blockling's scale.
+     * @param target the target.
      */
-    public BlocklingScaleMessage(BlocklingEntity blockling, float scale)
+    public BlocklingAttackTargetMessage(@Nonnull BlocklingEntity blockling, @Nullable LivingEntity target)
     {
         super(blockling);
-        this.scale = scale;
+        this.targetId = target != null ? target.getId() : -1;
     }
 
     @Override
@@ -37,7 +39,7 @@ public class BlocklingScaleMessage extends BlocklingMessage<BlocklingScaleMessag
     {
         super.encode(buf);
 
-        buf.writeFloat(scale);
+        buf.writeInt(targetId);
     }
 
     @Override
@@ -45,12 +47,12 @@ public class BlocklingScaleMessage extends BlocklingMessage<BlocklingScaleMessag
     {
         super.decode(buf);
 
-        scale = buf.readFloat();
+        targetId = buf.readInt();
     }
 
     @Override
     protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
     {
-        blockling.setScale(scale, false);
+        blockling.setTarget(targetId == -1 ? null : (LivingEntity) player.level.getEntity(targetId), false);
     }
 }

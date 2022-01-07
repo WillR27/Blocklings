@@ -2,15 +2,12 @@ package com.willr27.blocklings.attribute.attributes;
 
 import com.willr27.blocklings.attribute.Attribute;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.network.IMessage;
-import com.willr27.blocklings.network.NetworkHandler;
-import net.minecraft.client.Minecraft;
+import com.willr27.blocklings.network.BlocklingMessage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
 
+import javax.annotation.Nonnull;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -77,54 +74,65 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
 
         if (sync)
         {
-            NetworkHandler.sync(blockling.level, new Message<T>(blockling.getStats().attributes.indexOf(this), value, blockling.getId()));
+            new Message<T>(blockling, blockling.getStats().attributes.indexOf(this), value).sync();
         }
     }
 
-    public static class Message<T extends Enum<?>> implements IMessage
+    public static class Message<T extends Enum<?>> extends BlocklingMessage<Message<T>>
     {
-        public int index;
-        public int value;
-        public int entityId;
+        /**
+         * The index of the attribute.
+         */
+        private int index;
 
-        private Message() {}
-        public Message(int index, T value, int entityId)
+        /**
+         * The ordinal value of the enum.
+         */
+        private int value;
+
+        /**
+         * Empty constructor used ONLY for decoding.
+         */
+        public Message()
         {
+            super(null);
+        }
+
+        /**
+         * @param blockling the blockling.
+         * @param index the index of the attribute.
+         * @param value the enum value.
+         */
+        public Message(@Nonnull BlocklingEntity blockling, int index, @Nonnull T value)
+        {
+            super(blockling);
             this.index = index;
             this.value = value.ordinal();
-            this.entityId = entityId;
         }
 
-        public static void encode(Message<Enum<?>> msg, PacketBuffer buf)
+        @Override
+        public void encode(@Nonnull PacketBuffer buf)
         {
-            buf.writeInt(msg.index);
-            buf.writeInt(msg.value);
-            buf.writeInt(msg.entityId);
+            super.encode(buf);
+
+            buf.writeInt(index);
+            buf.writeInt(value);
         }
 
-        public static Message<Enum<?>> decode(PacketBuffer buf)
+        @Override
+        public void decode(@Nonnull PacketBuffer buf)
         {
-            Message<Enum<?>> msg = new Message<Enum<?>>();
-            msg.index = buf.readInt();
-            msg.value = buf.readInt();
-            msg.entityId = buf.readInt();
+            super.decode(buf);
 
-            return msg;
+            index = buf.readInt();
+            value = buf.readInt();
         }
 
-        public void handle(Supplier<NetworkEvent.Context> ctx)
+        @Override
+        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
         {
-            ctx.get().enqueueWork(() ->
-            {
-                NetworkEvent.Context context = ctx.get();
-                boolean isClient = context.getDirection() == NetworkDirection.PLAY_TO_CLIENT;
-
-                PlayerEntity player = isClient ? Minecraft.getInstance().player : ctx.get().getSender();
-                BlocklingEntity blockling = (BlocklingEntity) player.level.getEntity(entityId);
-
-                EnumAttribute<T> attribute = (EnumAttribute<T>) blockling.getStats().attributes.get(index);
-                attribute.setValue(attribute.ordinalConverter.apply(value), !isClient);
-            });
+            EnumAttribute<T> attribute = (EnumAttribute<T>) blockling.getStats().attributes.get(index);
+            attribute.setValue(attribute.ordinalConverter.apply(value), false);
         }
     }
 }

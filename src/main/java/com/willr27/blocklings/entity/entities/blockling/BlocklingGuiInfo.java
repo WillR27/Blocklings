@@ -1,6 +1,7 @@
 package com.willr27.blocklings.entity.entities.blockling;
 
 import com.willr27.blocklings.gui.GuiHandler;
+import com.willr27.blocklings.network.BlocklingMessage;
 import com.willr27.blocklings.network.IMessage;
 import com.willr27.blocklings.network.NetworkHandler;
 import net.minecraft.client.Minecraft;
@@ -10,6 +11,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 
+import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
 public class BlocklingGuiInfo
@@ -41,88 +43,56 @@ public class BlocklingGuiInfo
 
         if (sync)
         {
-            NetworkHandler.sync(world, new Message(this, blockling.getId()));
+            new Message(blockling, this).sync();
         }
     }
 
-    public static class Message implements IMessage
+    public static class Message extends BlocklingMessage<Message>
     {
-        int currentGuiId;
-        int entityId;
+        /**
+         * The current gui id.
+         */
+        private int currentGuiId;
 
-        private Message()
+        /**
+         * Empty constructor used ONLY for decoding.
+         */
+        public Message()
         {
-
+            super(null);
         }
 
-        public Message(BlocklingGuiInfo guiInfo, int entityId)
+        /**
+         * @param blockling the blockling.
+         * @param guiInfo the current gui info.
+         */
+        public Message(@Nonnull BlocklingEntity blockling, @Nonnull BlocklingGuiInfo guiInfo)
         {
+            super(blockling);
             this.currentGuiId = guiInfo.currentGuiId;
-            this.entityId = entityId;
         }
 
-        public static void encode(Message msg, PacketBuffer buf)
+        @Override
+        public void encode(@Nonnull PacketBuffer buf)
         {
-            buf.writeInt(msg.currentGuiId);
-            buf.writeInt(msg.entityId);
+            super.encode(buf);
+
+            buf.writeInt(currentGuiId);
         }
 
-        public static Message decode(PacketBuffer buf)
+        @Override
+        public void decode(@Nonnull PacketBuffer buf)
         {
-            Message msg = new Message();
-            msg.currentGuiId = buf.readInt();
-            msg.entityId = buf.readInt();
+            super.decode(buf);
 
-            return msg;
+            currentGuiId = buf.readInt();
         }
 
-        public void handle(Supplier<NetworkEvent.Context> ctx)
+        @Override
+        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
         {
-            ctx.get().enqueueWork(() ->
-            {
-                NetworkEvent.Context context = ctx.get();
-                boolean isClient = context.getDirection() == NetworkDirection.PLAY_TO_CLIENT;
-
-                PlayerEntity player = isClient ? Minecraft.getInstance().player : ctx.get().getSender();
-                if (player != null)
-                {
-                    BlocklingEntity blockling = (BlocklingEntity) player.level.getEntity(entityId);
-                    if (blockling != null)
-                    {
-                        blockling.getGuiInfo().currentGuiId = currentGuiId;
-                        blockling.setGuiInfo(blockling.getGuiInfo(), !isClient);
-                    }
-                }
-            });
+            blockling.getGuiInfo().currentGuiId = currentGuiId;
+            blockling.setGuiInfo(blockling.getGuiInfo(), false);
         }
     }
-
-//    public final int currentlyOpenGuiId;
-//    public final int mostRecentTabbedGuiId;
-//    public final int currentlySelectedGoalId;
-//    public final String abilityGroupId;
-//    public final int utility;
-//
-//    public BlocklingGuiInfo(int currentlyOpenGuiId, int mostRecentTabbedGuiId, int currentlySelectedGoalId, String abilityGroupId, int utility)
-//    {
-//        this.currentlyOpenGuiId = currentlyOpenGuiId;
-//        this.mostRecentTabbedGuiId = mostRecentTabbedGuiId;
-//        this.currentlySelectedGoalId = currentlySelectedGoalId;
-//        this.abilityGroupId = abilityGroupId;
-//        this.utility = utility;
-//    }
-//
-//    public void writeToBuf(PacketBuffer buf)
-//    {
-//        buf.writeInt(currentlyOpenGuiId);
-//        buf.writeInt(mostRecentTabbedGuiId);
-//        buf.writeInt(currentlySelectedGoalId);
-//        PacketBufferUtils.writeString(buf, abilityGroupId);
-//        buf.writeInt(utility);
-//    }
-//
-//    public static BlocklingGuiInfo readFromBuf(PacketBuffer buf)
-//    {
-//        return new BlocklingGuiInfo(buf.readInt(), buf.readInt(), buf.readInt(), PacketBufferUtils.readString(buf), buf.readInt());
-//    }
 }

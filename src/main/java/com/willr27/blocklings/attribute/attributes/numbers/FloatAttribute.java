@@ -2,15 +2,12 @@ package com.willr27.blocklings.attribute.attributes.numbers;
 
 import com.willr27.blocklings.attribute.Attribute;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.network.IMessage;
-import com.willr27.blocklings.network.NetworkHandler;
-import net.minecraft.client.Minecraft;
+import com.willr27.blocklings.network.BlocklingMessage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
 
+import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
 public class FloatAttribute extends Attribute<Float>
@@ -84,54 +81,64 @@ public class FloatAttribute extends Attribute<Float>
 
         if (sync)
         {
-            NetworkHandler.sync(blockling.level, new ValueMessage(blockling.getStats().attributes.indexOf(this), value, blockling.getId()));
+            new ValueMessage(blockling, blockling.getStats().attributes.indexOf(this), value).sync();
         }
     }
 
-    public static class ValueMessage implements IMessage
+    public static class ValueMessage extends BlocklingMessage<ValueMessage>
     {
-        public int index;
-        public float value;
-        public int entityId;
+        /**
+         * The index of the attribute.
+         */
+        private int index;
 
-        private ValueMessage() {}
-        public ValueMessage(int index, float value, int entityId)
+        /**
+         * The value of the attribute.
+         */
+        private float value;
+
+        /**
+         * Empty constructor used ONLY for decoding.
+         */
+        public ValueMessage()
         {
+            super(null);
+        }
+
+        /**
+         * @param blockling the blockling.
+         * @param index the index of the attribute.
+         * @param value the value of the attribute.
+         */
+        public ValueMessage(@Nonnull BlocklingEntity blockling, int index, float value)
+        {
+            super(blockling);
             this.index = index;
             this.value = value;
-            this.entityId = entityId;
         }
 
-        public static void encode(ValueMessage msg, PacketBuffer buf)
+        @Override
+        public void encode(@Nonnull PacketBuffer buf)
         {
-            buf.writeInt(msg.index);
-            buf.writeFloat(msg.value);
-            buf.writeInt(msg.entityId);
+            super.encode(buf);
+
+            buf.writeInt(index);
+            buf.writeFloat(value);
         }
 
-        public static ValueMessage decode(PacketBuffer buf)
+        @Override
+        public void decode(@Nonnull PacketBuffer buf)
         {
-            ValueMessage msg = new ValueMessage();
-            msg.index = buf.readInt();
-            msg.value = buf.readFloat();
-            msg.entityId = buf.readInt();
+            super.decode(buf);
 
-            return msg;
+            index = buf.readInt();
+            value = buf.readFloat();
         }
 
-        public void handle(Supplier<NetworkEvent.Context> ctx)
+        @Override
+        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
         {
-            ctx.get().enqueueWork(() ->
-            {
-                NetworkEvent.Context context = ctx.get();
-                boolean isClient = context.getDirection() == NetworkDirection.PLAY_TO_CLIENT;
-
-                PlayerEntity player = isClient ? Minecraft.getInstance().player : ctx.get().getSender();
-                BlocklingEntity blockling = (BlocklingEntity) player.level.getEntity(entityId);
-
-                FloatAttribute attribute = (FloatAttribute) blockling.getStats().attributes.get(index);
-                attribute.setValue(value, !isClient);
-            });
+            ((FloatAttribute) blockling.getStats().attributes.get(index)).setValue(value, false);
         }
     }
 }

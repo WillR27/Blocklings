@@ -2,69 +2,85 @@ package com.willr27.blocklings.network.messages;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.GuiHandler;
-import com.willr27.blocklings.network.IMessage;
-import net.minecraft.client.Minecraft;
+import com.willr27.blocklings.network.BlocklingMessage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
 
-import java.util.function.Supplier;
+import javax.annotation.Nonnull;
 
-public class OpenGuiMessage implements IMessage
+public class OpenGuiMessage extends BlocklingMessage<OpenGuiMessage>
 {
-    int guiId;
-    int windowId;
-    int entityId;
-    boolean openContainerFromClient = false;
+    /**
+     * The gui id.
+     */
+    private int guiId;
 
-    private OpenGuiMessage() {}
-    public OpenGuiMessage(int guiId, int windowId, int entityId)
+    /**
+     * The window id.
+     */
+    private int windowId;
+
+    /**
+     * Whether to open the container on the client.
+     */
+    private boolean openContainerFromClient = false;
+
+    /**
+     * Empty constructor used ONLY for decoding.
+     */
+    public OpenGuiMessage()
     {
-        this.guiId = guiId;
-        this.windowId = windowId;
-        this.entityId = entityId;
+        super(null);
     }
 
-    public OpenGuiMessage(int guiId, int windowId, int entityId, boolean openContainerFromClient)
+    /**
+     * @param blockling the blockling.
+     * @param guiId the guid id.
+     * @param windowId the window id.
+     */
+    public OpenGuiMessage(@Nonnull BlocklingEntity blockling, int guiId, int windowId)
     {
+        super(blockling);
         this.guiId = guiId;
         this.windowId = windowId;
-        this.entityId = entityId;
+    }
+
+    /**
+     * @param blockling the blockling.
+     * @param guiId the guid id.
+     * @param windowId the window id.
+     * @param openContainerFromClient whether to open the container on the client.
+     */
+    public OpenGuiMessage(@Nonnull BlocklingEntity blockling, int guiId, int windowId, boolean openContainerFromClient)
+    {
+        this(blockling, guiId, windowId);
         this.openContainerFromClient = openContainerFromClient;
     }
 
-    public static void encode(OpenGuiMessage msg, PacketBuffer buf)
+    @Override
+    public void encode(@Nonnull PacketBuffer buf)
     {
-        buf.writeInt(msg.guiId);
-        buf.writeInt(msg.windowId);
-        buf.writeInt(msg.entityId);
-        buf.writeBoolean(msg.openContainerFromClient);
+        super.encode(buf);
+
+        buf.writeInt(guiId);
+        buf.writeInt(windowId);
+        buf.writeBoolean(openContainerFromClient);
     }
 
-    public static OpenGuiMessage decode(PacketBuffer buf)
+    @Override
+    public void decode(@Nonnull PacketBuffer buf)
     {
-        OpenGuiMessage msg = new OpenGuiMessage();
-        msg.guiId = buf.readInt();
-        msg.windowId = buf.readInt();
-        msg.entityId = buf.readInt();
-        msg.openContainerFromClient = buf.readBoolean();
+        super.decode(buf);
 
-        return msg;
+        guiId = buf.readInt();
+        windowId = buf.readInt();
+        openContainerFromClient = buf.readBoolean();
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx)
+    @Override
+    protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
     {
-        ctx.get().enqueueWork(() ->
-        {
-            NetworkEvent.Context context = ctx.get();
-            boolean isClient = context.getDirection() == NetworkDirection.PLAY_TO_CLIENT;
-
-            PlayerEntity player = isClient ? Minecraft.getInstance().player : ctx.get().getSender();
-            BlocklingEntity blockling = (BlocklingEntity) player.level.getEntity(entityId);
-
-            if (openContainerFromClient) GuiHandler.openGui(guiId, blockling, player);
-            else GuiHandler.openGui(guiId, windowId, blockling, player, false);
-        });
+        if (openContainerFromClient) GuiHandler.openGui(guiId, blockling, player);
+        else GuiHandler.openGui(guiId, windowId, blockling, player, false);
     }
 }

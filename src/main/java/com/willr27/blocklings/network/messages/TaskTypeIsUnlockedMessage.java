@@ -1,61 +1,68 @@
 package com.willr27.blocklings.network.messages;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.goal.TaskType;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
-import com.willr27.blocklings.network.IMessage;
-import net.minecraft.client.Minecraft;
+import com.willr27.blocklings.goal.TaskType;
+import com.willr27.blocklings.network.BlocklingMessage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
-import java.util.function.Supplier;
 
-public class TaskTypeIsUnlockedMessage implements IMessage
+public class TaskTypeIsUnlockedMessage extends BlocklingMessage<TaskTypeIsUnlockedMessage>
 {
-    UUID goalInfoId;
-    boolean isUnlocked;
-    int entityId;
+    /**
+     * The task info id.
+     */
+    private UUID taskInfoId;
 
-    private TaskTypeIsUnlockedMessage() {}
-    public TaskTypeIsUnlockedMessage(TaskType goalInfo, boolean isUnlocked, int entityId)
+    /**
+     * Whether the task type is unlocked.
+     */
+    private boolean isUnlocked;
+
+    /**
+     * Empty constructor used ONLY for decoding.
+     */
+    public TaskTypeIsUnlockedMessage()
     {
-        this.goalInfoId = goalInfo.id;
+        super(null);
+    }
+
+    /**
+     * @param blockling the blockling,
+     * @param taskInfo the task info.
+     * @param isUnlocked whether the task type is unlocked.
+     */
+    public TaskTypeIsUnlockedMessage(@Nonnull BlocklingEntity blockling, @Nonnull TaskType taskInfo, boolean isUnlocked)
+    {
+        super(blockling);
+        this.taskInfoId = taskInfo.id;
         this.isUnlocked = isUnlocked;
-        this.entityId = entityId;
     }
 
-    public static void encode(TaskTypeIsUnlockedMessage msg, PacketBuffer buf)
+    @Override
+    public void encode(@Nonnull PacketBuffer buf)
     {
-        buf.writeUUID(msg.goalInfoId);
-        buf.writeBoolean(msg.isUnlocked);
-        buf.writeInt(msg.entityId);
+        super.encode(buf);
+
+        buf.writeUUID(taskInfoId);
+        buf.writeBoolean(isUnlocked);
     }
 
-    public static TaskTypeIsUnlockedMessage decode(PacketBuffer buf)
+    @Override
+    public void decode(@Nonnull PacketBuffer buf)
     {
-        TaskTypeIsUnlockedMessage msg = new TaskTypeIsUnlockedMessage();
-        msg.goalInfoId = buf.readUUID();
-        msg.isUnlocked = buf.readBoolean();
-        msg.entityId = buf.readInt();
+        super.decode(buf);
 
-        return msg;
+        taskInfoId = buf.readUUID();
+        isUnlocked = buf.readBoolean();
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx)
+    @Override
+    protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
     {
-        ctx.get().enqueueWork(() ->
-        {
-            NetworkEvent.Context context = ctx.get();
-            boolean isClient = context.getDirection() == NetworkDirection.PLAY_TO_CLIENT;
-
-            PlayerEntity player = isClient ? Minecraft.getInstance().player : ctx.get().getSender();
-            BlocklingEntity blockling = (BlocklingEntity) player.level.getEntity(entityId);
-
-            TaskType goalInfo = BlocklingTasks.getTaskType(goalInfoId);
-            blockling.getTasks().setIsUnlocked(goalInfo, isUnlocked, !isClient);
-        });
+        blockling.getTasks().setIsUnlocked(BlocklingTasks.getTaskType(taskInfoId), isUnlocked, false);
     }
 }

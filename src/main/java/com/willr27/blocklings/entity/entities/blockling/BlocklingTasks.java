@@ -292,7 +292,7 @@ public class BlocklingTasks
 
         if (sync)
         {
-            NetworkHandler.sync(blockling.level, new TaskCreateMessage(type.id, taskId == null ? UUID.randomUUID() : taskId, blockling.getId()));
+            new TaskCreateMessage(blockling, type.id, taskId == null ? UUID.randomUUID() : taskId).sync();
         }
     }
 
@@ -311,7 +311,7 @@ public class BlocklingTasks
 
         if (sync)
         {
-            NetworkHandler.sync(blockling.level, new TaskRemoveMessage(id, blockling.getId()));
+            new TaskRemoveMessage(blockling, id).sync();
         }
     }
 
@@ -331,7 +331,7 @@ public class BlocklingTasks
 
         if (sync)
         {
-            NetworkHandler.sync(blockling.level, new TaskTypeIsUnlockedMessage(type, isUnlocked, blockling.getId()));
+            new TaskTypeIsUnlockedMessage(blockling, type, isUnlocked).sync();
         }
     }
 

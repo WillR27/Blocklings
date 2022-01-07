@@ -1,64 +1,75 @@
 package com.willr27.blocklings.network.messages;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.network.IMessage;
-import com.willr27.blocklings.util.PacketBufferUtils;
-import net.minecraft.client.Minecraft;
+import com.willr27.blocklings.network.BlocklingMessage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
-import java.util.function.Supplier;
 
-public class WhitelistIsUnlockedMessage implements IMessage
+public class WhitelistIsUnlockedMessage extends BlocklingMessage<WhitelistIsUnlockedMessage>
 {
-    UUID taskId;
-    int whitelistId;
-    boolean isUnlocked;
-    int entityId;
+    /**
+     * The associated task id.
+     */
+    private UUID taskId;
 
-    private WhitelistIsUnlockedMessage() {}
-    public WhitelistIsUnlockedMessage(UUID taskId, int whitelistId, boolean isUnlocked, int entityId)
+    /**
+     * The whitelist id.
+     */
+    private int whitelistId;
+
+    /**
+     * Whether the whitelist is unlocked.
+     */
+    private boolean isUnlocked;
+
+    /**
+     * Empty constructor used ONLY for decoding.
+     */
+    public WhitelistIsUnlockedMessage()
     {
+        super(null);
+    }
+
+    /**
+     * @param blockling the blockling.
+     * @param taskId the task id.
+     * @param whitelistId the whitelist id.
+     * @param isUnlocked whether the whitelist is unlocked.
+     */
+    public WhitelistIsUnlockedMessage(@Nonnull BlocklingEntity blockling, @Nonnull UUID taskId, int whitelistId, boolean isUnlocked)
+    {
+        super(blockling);
         this.taskId = taskId;
         this.whitelistId = whitelistId;
         this.isUnlocked = isUnlocked;
-        this.entityId = entityId;
     }
 
-    public static void encode(WhitelistIsUnlockedMessage msg, PacketBuffer buf)
+    @Override
+    public void encode(@Nonnull PacketBuffer buf)
     {
-        buf.writeUUID(msg.taskId);
-        buf.writeInt(msg.whitelistId);
-        buf.writeBoolean(msg.isUnlocked);
-        buf.writeInt(msg.entityId);
+        super.encode(buf);
+
+        buf.writeUUID(taskId);
+        buf.writeInt(whitelistId);
+        buf.writeBoolean(isUnlocked);
     }
 
-    public static WhitelistIsUnlockedMessage decode(PacketBuffer buf)
+    @Override
+    public void decode(@Nonnull PacketBuffer buf)
     {
-        WhitelistIsUnlockedMessage msg = new WhitelistIsUnlockedMessage();
-        msg.taskId = buf.readUUID();
-        msg.whitelistId = buf.readInt();
-        msg.isUnlocked = buf.readBoolean();
-        msg.entityId = buf.readInt();
+        super.decode(buf);
 
-        return msg;
+        taskId = buf.readUUID();
+        whitelistId = buf.readInt();
+        isUnlocked = buf.readBoolean();
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx)
+    @Override
+    protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
     {
-        ctx.get().enqueueWork(() ->
-        {
-            NetworkEvent.Context context = ctx.get();
-            boolean isClient = context.getDirection() == NetworkDirection.PLAY_TO_CLIENT;
-
-            PlayerEntity player = isClient ? Minecraft.getInstance().player : ctx.get().getSender();
-            BlocklingEntity blockling = (BlocklingEntity) player.level.getEntity(entityId);
-
-            blockling.getTasks().getTask(taskId).getGoal().whitelists.get(whitelistId).setIsUnlocked(isUnlocked, !isClient);
-        });
+        blockling.getTasks().getTask(taskId).getGoal().whitelists.get(whitelistId).setIsUnlocked(isUnlocked, false);
     }
 }

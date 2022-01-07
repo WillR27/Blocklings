@@ -1,64 +1,74 @@
 package com.willr27.blocklings.network.messages;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.network.IMessage;
+import com.willr27.blocklings.network.BlocklingMessage;
 import com.willr27.blocklings.skills.Skill;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
-import java.util.function.Supplier;
 
-public class SkillStateMessage implements IMessage
+public class SkillStateMessage extends BlocklingMessage<SkillStateMessage>
 {
-    UUID skillId;
-    UUID groupId;
-    Skill.State state;
-    int entityId;
+    /**
+     * The skill id.
+     */
+    private UUID skillId;
 
-    private SkillStateMessage() {}
-    public SkillStateMessage(Skill skill, int entityId)
+    /**
+     * The skill group id.
+     */
+    private UUID groupId;
+
+    /**
+     * The state of skill.
+     */
+    private Skill.State state;
+
+    /**
+     * Empty constructor used ONLY for decoding.
+     */
+    public SkillStateMessage()
     {
+        super(null);
+    }
+
+    /**
+     * @param blockling the blockling.
+     * @param skill the skill.
+     */
+    public SkillStateMessage(@Nonnull BlocklingEntity blockling, @Nonnull Skill skill)
+    {
+        super(blockling);
         this.skillId = skill.info.id;
-        this.groupId = skill.group.info.id;;
+        this.groupId = skill.group.info.id;
         this.state = skill.getState();
-        this.entityId = entityId;
     }
 
-    public static void encode(SkillStateMessage msg, PacketBuffer buf)
+    @Override
+    public void encode(@Nonnull PacketBuffer buf)
     {
-        buf.writeUUID(msg.skillId);
-        buf.writeUUID(msg.groupId);
-        buf.writeEnum(msg.state);
-        buf.writeInt(msg.entityId);
+        super.encode(buf);
+
+        buf.writeUUID(skillId);
+        buf.writeUUID(groupId);
+        buf.writeEnum(state);
     }
 
-    public static SkillStateMessage decode(PacketBuffer buf)
+    @Override
+    public void decode(@Nonnull PacketBuffer buf)
     {
-        SkillStateMessage msg = new SkillStateMessage();
-        msg.skillId = buf.readUUID();
-        msg.groupId = buf.readUUID();
-        msg.state = buf.readEnum(Skill.State.class);
-        msg.entityId = buf.readInt();
+        super.decode(buf);
 
-        return msg;
+        skillId = buf.readUUID();
+        groupId = buf.readUUID();
+        state = buf.readEnum(Skill.State.class);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx)
+    @Override
+    protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
     {
-        ctx.get().enqueueWork(() ->
-        {
-            NetworkEvent.Context context = ctx.get();
-            boolean isClient = context.getDirection() == NetworkDirection.PLAY_TO_CLIENT;
-
-            PlayerEntity player = isClient ? Minecraft.getInstance().player : ctx.get().getSender();
-            BlocklingEntity blockling = (BlocklingEntity) player.level.getEntity(entityId);
-
-            Skill skill = blockling.getSkills().getGroup(groupId).getSkill(skillId);
-            skill.setState(state, !isClient);
-        });
+        blockling.getSkills().getGroup(groupId).getSkill(skillId).setState(state, false);
     }
 }

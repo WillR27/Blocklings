@@ -2,34 +2,43 @@ package com.willr27.blocklings.network.messages;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.network.BlocklingMessage;
+import com.willr27.blocklings.util.PacketBufferUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nonnull;
+import java.util.UUID;
 
-public class BlocklingScaleMessage extends BlocklingMessage<BlocklingScaleMessage>
+public class TaskCustomNameMessage extends BlocklingMessage<TaskCustomNameMessage>
 {
     /**
-     * The blockling's scale.
+     * The task id.
      */
-    private float scale;
+    private UUID taskId;
+
+    /**
+     * The custom task name.
+     */
+    private String customName;
 
     /**
      * Empty constructor used ONLY for decoding.
      */
-    public BlocklingScaleMessage()
+    public TaskCustomNameMessage()
     {
         super(null);
     }
 
     /**
      * @param blockling the blockling.
-     * @param scale the blockling's scale.
+     * @param taskId the task id.
+     * @param customName the custom task name.
      */
-    public BlocklingScaleMessage(BlocklingEntity blockling, float scale)
+    public TaskCustomNameMessage(@Nonnull BlocklingEntity blockling, @Nonnull UUID taskId, @Nonnull String customName)
     {
         super(blockling);
-        this.scale = scale;
+        this.taskId = taskId;
+        this.customName = customName;
     }
 
     @Override
@@ -37,7 +46,8 @@ public class BlocklingScaleMessage extends BlocklingMessage<BlocklingScaleMessag
     {
         super.encode(buf);
 
-        buf.writeFloat(scale);
+        buf.writeUUID(taskId);
+        PacketBufferUtils.writeString(buf, customName);
     }
 
     @Override
@@ -45,12 +55,13 @@ public class BlocklingScaleMessage extends BlocklingMessage<BlocklingScaleMessag
     {
         super.decode(buf);
 
-        scale = buf.readFloat();
+        taskId = buf.readUUID();
+        customName = PacketBufferUtils.readString(buf);
     }
 
     @Override
     protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
     {
-        blockling.setScale(scale, false);
+        blockling.getTasks().getTask(taskId).setCustomName(customName, false);
     }
 }

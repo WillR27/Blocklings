@@ -2,59 +2,78 @@ package com.willr27.blocklings.network.messages;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
-import com.willr27.blocklings.network.IMessage;
-import net.minecraft.client.Minecraft;
+import com.willr27.blocklings.network.BlocklingMessage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.UUID;
-import java.util.function.Supplier;
 
-public class TaskCreateMessage implements IMessage
+public class TaskCreateMessage extends BlocklingMessage<TaskCreateMessage>
 {
-    UUID taskTypeId;
-    UUID taskId = null;
-    int entityId;
+    /**
+     * The task type id.
+     */
+    private UUID taskTypeId;
 
-    private TaskCreateMessage() {}
-    public TaskCreateMessage(UUID taskTypeId, UUID taskId, int entityId)
+    /**
+     * The task id, null to create a new task id on the server.
+     */
+    private UUID taskId;
+
+    /**
+     * Empty constructor used ONLY for decoding.
+     */
+    public TaskCreateMessage()
     {
+        super(null);
+    }
+
+    /**
+     * @param blockling the blockling.
+     * @param taskTypeId the task type id.
+     * @param taskId the task id, null tp create a new task id on the server.
+     */
+    public TaskCreateMessage(@Nonnull BlocklingEntity blockling, @Nonnull UUID taskTypeId, @Nullable UUID taskId)
+    {
+        // Don't automatically sync back to clients and handle it manually in the handle method
+        super(blockling, false);
         this.taskTypeId = taskTypeId;
         this.taskId = taskId;
-        this.entityId = entityId;
     }
 
-    public static void encode(TaskCreateMessage msg, PacketBuffer buf)
+    @Override
+    public void encode(@Nonnull PacketBuffer buf)
     {
-        buf.writeUUID(msg.taskTypeId);
-        buf.writeBoolean(msg.taskId != null);
-        if (msg.taskId != null) buf.writeUUID(msg.taskId);
-        buf.writeInt(msg.entityId);
-    }
+        super.encode(buf);
 
-    public static TaskCreateMessage decode(PacketBuffer buf)
-    {
-        TaskCreateMessage msg = new TaskCreateMessage();
-        msg.taskTypeId = buf.readUUID();
-        if (buf.readBoolean()) msg.taskId = buf.readUUID();
-        msg.entityId = buf.readInt();
+        buf.writeUUID(taskTypeId);
+        buf.writeBoolean(taskId != null);
 
-        return msg;
-    }
-
-    public void handle(Supplier<NetworkEvent.Context> ctx)
-    {
-        ctx.get().enqueueWork(() ->
+        if (taskId != null)
         {
-            NetworkEvent.Context context = ctx.get();
-            boolean isClient = context.getDirection() == NetworkDirection.PLAY_TO_CLIENT;
+            buf.writeUUID(taskId);
+        }
+    }
 
-            PlayerEntity player = isClient ? Minecraft.getInstance().player : ctx.get().getSender();
-            BlocklingEntity blockling = (BlocklingEntity) player.level.getEntity(entityId);
+    @Override
+    public void decode(@Nonnull PacketBuffer buf)
+    {
+        super.decode(buf);
 
-            blockling.getTasks().createTask(BlocklingTasks.getTaskType(taskTypeId), taskId, !isClient);
-        });
+        taskTypeId = buf.readUUID();
+
+        if (buf.readBoolean())
+        {
+            taskId = buf.readUUID();
+        }
+    }
+
+    @Override
+    protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
+    {
+        // Make sure sync back to all the clients, including the one the original message might have come from
+        blockling.getTasks().createTask(BlocklingTasks.getTaskType(taskTypeId), taskId, !blockling.level.isClientSide);
     }
 }

@@ -2,53 +2,56 @@ package com.willr27.blocklings.network.messages;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingType;
-import com.willr27.blocklings.network.IMessage;
-import net.minecraft.client.Minecraft;
+import com.willr27.blocklings.network.BlocklingMessage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
 
-import java.util.function.Supplier;
+import javax.annotation.Nonnull;
 
-public class BlocklingTypeMessage implements IMessage
+public class BlocklingTypeMessage extends BlocklingMessage<BlocklingTypeMessage>
 {
-    BlocklingType type;
-    int entityId;
+    /**
+     * The blockling type.
+     */
+    private BlocklingType type;
 
-    private BlocklingTypeMessage() {}
-    public BlocklingTypeMessage(BlocklingType type, int entityId)
+    /**
+     * Empty constructor used ONLY for decoding.
+     */
+    public BlocklingTypeMessage()
     {
+        super(null);
+    }
+
+    /**
+     * @param blockling the blockling.
+     * @param type the blockling type.
+     */
+    public BlocklingTypeMessage(@Nonnull BlocklingEntity blockling, @Nonnull BlocklingType type)
+    {
+        super(blockling);
         this.type = type;
-        this.entityId = entityId;
     }
 
-    public static void encode(BlocklingTypeMessage msg, PacketBuffer buf)
+    @Override
+    public void encode(@Nonnull PacketBuffer buf)
     {
-        buf.writeInt(BlocklingType.TYPES.indexOf(msg.type));
-        buf.writeInt(msg.entityId);
+        super.encode(buf);
+
+        buf.writeInt(BlocklingType.TYPES.indexOf(type));
     }
 
-    public static BlocklingTypeMessage decode(PacketBuffer buf)
+    @Override
+    public void decode(@Nonnull PacketBuffer buf)
     {
-        BlocklingTypeMessage msg = new BlocklingTypeMessage();
-        msg.type = BlocklingType.TYPES.get(buf.readInt());
-        msg.entityId = buf.readInt();
+        super.decode(buf);
 
-        return msg;
+        type = BlocklingType.TYPES.get(buf.readInt());
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx)
+    @Override
+    protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
     {
-        ctx.get().enqueueWork(() ->
-        {
-            NetworkEvent.Context context = ctx.get();
-            boolean isClient = context.getDirection() == NetworkDirection.PLAY_TO_CLIENT;
-
-            PlayerEntity player = isClient ? Minecraft.getInstance().player : ctx.get().getSender();
-            BlocklingEntity blockling = (BlocklingEntity) player.level.getEntity(entityId);
-
-            blockling.setBlocklingType(type, !isClient);
-        });
+        blockling.setBlocklingType(type, false);
     }
 }

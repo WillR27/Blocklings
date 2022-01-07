@@ -1,60 +1,66 @@
 package com.willr27.blocklings.network.messages;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.network.IMessage;
+import com.willr27.blocklings.network.BlocklingMessage;
 import com.willr27.blocklings.skills.Skill;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
-import java.util.function.Supplier;
 
-public class SkillTryBuyMessage implements IMessage
+public class SkillTryBuyMessage extends BlocklingMessage<SkillTryBuyMessage>
 {
-    UUID skillId;
-    UUID groupId;
-    int entityId;
+    /**
+     * The skill id.
+     */
+    private UUID skillId;
 
-    private SkillTryBuyMessage() {}
-    public SkillTryBuyMessage(Skill skill, int entityId)
+    /**
+     * The skill group id.
+     */
+    private UUID groupId;
+
+    /**
+     * Empty constructor used ONLY for decoding.
+     */
+    public SkillTryBuyMessage()
     {
+        super(null);
+    }
+
+    /**
+     * @param blockling the blockling.
+     * @param skill the skill.
+     */
+    public SkillTryBuyMessage(@Nonnull BlocklingEntity blockling, @Nonnull Skill skill)
+    {
+        super(blockling);
         this.skillId = skill.info.id;
-        this.groupId = skill.group.info.id;;
-        this.entityId = entityId;
+        this.groupId = skill.group.info.id;
     }
 
-    public static void encode(SkillTryBuyMessage msg, PacketBuffer buf)
+    @Override
+    public void encode(@Nonnull PacketBuffer buf)
     {
-        buf.writeUUID(msg.skillId);
-        buf.writeUUID(msg.groupId);
-        buf.writeInt(msg.entityId);
+        super.encode(buf);
+
+        buf.writeUUID(skillId);
+        buf.writeUUID(groupId);
     }
 
-    public static SkillTryBuyMessage decode(PacketBuffer buf)
+    @Override
+    public void decode(@Nonnull PacketBuffer buf)
     {
-        SkillTryBuyMessage msg = new SkillTryBuyMessage();
-        msg.skillId = buf.readUUID();
-        msg.groupId = buf.readUUID();
-        msg.entityId = buf.readInt();
+        super.decode(buf);
 
-        return msg;
+        skillId = buf.readUUID();
+        groupId = buf.readUUID();
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx)
+    @Override
+    protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
     {
-        ctx.get().enqueueWork(() ->
-        {
-            NetworkEvent.Context context = ctx.get();
-            boolean isClient = context.getDirection() == NetworkDirection.PLAY_TO_CLIENT;
-
-            PlayerEntity player = isClient ? Minecraft.getInstance().player : ctx.get().getSender();
-            BlocklingEntity blockling = (BlocklingEntity) player.level.getEntity(entityId);
-
-            Skill skill = blockling.getSkills().getGroup(groupId).getSkill(skillId);
-            skill.tryBuy(!isClient);
-        });
+        blockling.getSkills().getGroup(groupId).getSkill(skillId).tryBuy(false);
     }
 }

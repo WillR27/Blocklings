@@ -72,7 +72,7 @@ public class Skill
 
         if (sync)
         {
-            NetworkHandler.sync(group.blockling.level, new SkillTryBuyMessage(this, group.blockling.getId()));
+            new SkillTryBuyMessage(blockling, this).sync();
         }
 
         return true;
@@ -104,7 +104,7 @@ public class Skill
 
         if (sync)
         {
-            NetworkHandler.sync(group.blockling.level, new SkillStateMessage(this, group.blockling.getId()));
+            new SkillStateMessage(blockling, this).sync();
         }
 
         if (state == State.BOUGHT)
@@ -116,7 +116,7 @@ public class Skill
                     continue;
                 }
 
-                if (!child.parents().stream().filter(skill -> skill.state == State.LOCKED).findAny().isPresent())
+                if (child.parents().stream().noneMatch(skill -> skill.state == State.LOCKED))
                 {
                     child.setState(State.UNLOCKED, sync);
                 }

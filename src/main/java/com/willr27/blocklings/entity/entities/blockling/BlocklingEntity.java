@@ -8,7 +8,7 @@ import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.item.items.BlocklingItem;
 import com.willr27.blocklings.network.NetworkHandler;
 import com.willr27.blocklings.network.messages.BlocklingScaleMessage;
-import com.willr27.blocklings.network.messages.BlocklingTargetMessage;
+import com.willr27.blocklings.network.messages.BlocklingAttackTargetMessage;
 import com.willr27.blocklings.network.messages.BlocklingTypeMessage;
 import com.willr27.blocklings.skills.BlocklingSkills;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
@@ -685,7 +685,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         if (sync)
         {
-            NetworkHandler.sync(level, new BlocklingTargetMessage(target, getId()));
+            new BlocklingAttackTargetMessage(this, target).sync();
         }
     }
 
@@ -717,7 +717,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         if (sync)
         {
-            NetworkHandler.sync(level, new BlocklingTypeMessage(blocklingType, getId()));
+            new BlocklingTypeMessage(this, blocklingType).sync();
         }
     }
 
@@ -759,7 +759,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         if (sync)
         {
-            NetworkHandler.sync(level, new BlocklingGuiInfo.Message(guiInfo, getId()));
+            new BlocklingGuiInfo.Message(this, guiInfo).sync();
         }
     }
 
@@ -787,7 +787,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         if (sync)
         {
-            NetworkHandler.sync(level, new BlocklingScaleMessage(scale, getId()));
+            new BlocklingScaleMessage(this, scale).sync();
         }
     }
 

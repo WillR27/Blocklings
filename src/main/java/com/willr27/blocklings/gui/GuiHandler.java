@@ -52,7 +52,7 @@ public class GuiHandler
             }
             else
             {
-                NetworkHandler.sendToServer(new OpenGuiMessage(guiId, 0, blockling.getId(), true));
+                new OpenGuiMessage(blockling, guiId, 0, true).sendToServer();
             }
 //        }
     }
@@ -66,7 +66,7 @@ public class GuiHandler
 
             Container container = getContainer(guiId, windowId, blockling, player);
             if (container != null) player.containerMenu = container;
-            if (sync) NetworkHandler.sendToClient(player, new OpenGuiMessage(guiId, windowId, blockling.getId()));
+            if (sync) new OpenGuiMessage(blockling, guiId, windowId).sendToClient(player);
 
             // Sync back to the client
             blockling.getGuiInfo().setCurrentGuiId(guiId, true);
@@ -83,7 +83,7 @@ public class GuiHandler
                 if (container != null) player.containerMenu = container;
                 Screen screen = getScreen(guiId, container, blockling, player);
                 if (screen != null) Minecraft.getInstance().setScreen(screen);
-                if (sync) NetworkHandler.sendToServer(new OpenGuiMessage(guiId, windowId, blockling.getId()));
+                if (sync) new OpenGuiMessage(blockling, guiId, windowId).sendToServer();
 
                 // Don't sync back to the server
                 blockling.getGuiInfo().setCurrentGuiId(guiId, false);

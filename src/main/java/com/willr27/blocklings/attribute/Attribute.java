@@ -1,6 +1,7 @@
 package com.willr27.blocklings.attribute;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.network.BlocklingMessage;
 import com.willr27.blocklings.network.IMessage;
 import com.willr27.blocklings.network.NetworkHandler;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
@@ -13,6 +14,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -100,7 +102,7 @@ public abstract class Attribute<T>
 
         if (sync)
         {
-            NetworkHandler.sync(world, new IsEnabledMessage(blockling.getStats().attributes.indexOf(this), isEnabled, blockling.getId()));
+            new IsEnabledMessage(blockling, blockling.getStats().attributes.indexOf(this), isEnabled).sync();
         }
     }
 
@@ -122,50 +124,60 @@ public abstract class Attribute<T>
         }
     }
 
-    public static class IsEnabledMessage implements IMessage
+    public static class IsEnabledMessage extends BlocklingMessage<IsEnabledMessage>
     {
+        /**
+         * The index of the attribute.
+         */
         private int index;
-        private boolean isEnabled;
-        private int entityId;
 
-        private IsEnabledMessage() {}
-        public IsEnabledMessage(int index, boolean isEnabled, int entityId)
+        /**
+         * Whether the attribute is enabled.
+         */
+        private boolean isEnabled;
+
+        /**
+         * Empty constructor used ONLY for decoding.
+         */
+        public IsEnabledMessage()
         {
+            super(null);
+        }
+
+        /**
+         * @param blockling the blockling.
+         * @param index the index of the attribute.
+         * @param isEnabled whether the attribute is enabled.
+         */
+        public IsEnabledMessage(@Nonnull BlocklingEntity blockling, int index, boolean isEnabled)
+        {
+            super(blockling);
             this.index = index;
             this.isEnabled = isEnabled;
-            this.entityId = entityId;
         }
 
-        public static void encode(IsEnabledMessage msg, PacketBuffer buf)
+        @Override
+        public void encode(@Nonnull PacketBuffer buf)
         {
-            buf.writeInt(msg.index);
-            buf.writeBoolean(msg.isEnabled);
-            buf.writeInt(msg.entityId);
+            super.encode(buf);
+
+            buf.writeInt(index);
+            buf.writeBoolean(isEnabled);
         }
 
-        public static IsEnabledMessage decode(PacketBuffer buf)
+        @Override
+        public void decode(@Nonnull PacketBuffer buf)
         {
-            IsEnabledMessage msg = new IsEnabledMessage();
-            msg.index = buf.readInt();
-            msg.isEnabled = buf.readBoolean();
-            msg.entityId = buf.readInt();
+            super.decode(buf);
 
-            return msg;
+            index = buf.readInt();
+            isEnabled = buf.readBoolean();
         }
 
-        public void handle(Supplier<NetworkEvent.Context> ctx)
+        @Override
+        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
         {
-            ctx.get().enqueueWork(() ->
-            {
-                NetworkEvent.Context context = ctx.get();
-                boolean isClient = context.getDirection() == NetworkDirection.PLAY_TO_CLIENT;
-
-                PlayerEntity player = isClient ? Minecraft.getInstance().player : ctx.get().getSender();
-                BlocklingEntity blockling = (BlocklingEntity) player.level.getEntity(entityId);
-
-                Attribute<?> attribute = blockling.getStats().attributes.get(index);
-                attribute.setIsEnabled(isEnabled, !isClient);
-            });
+            blockling.getStats().attributes.get(index).setIsEnabled(isEnabled, false);
         }
     }
 }

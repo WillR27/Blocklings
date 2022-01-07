@@ -289,7 +289,7 @@ public class EquipmentInventory extends AbstractInventory
                     }
                     else
                     {
-                        NetworkHandler.sync(blockling.level, new EquipmentInventoryMessage(i, newStack, blockling.getId()));
+                        new EquipmentInventoryMessage(blockling, i, newStack).sync();
                         stacksCopy[i] = newStack.copy();
                     }
                 }

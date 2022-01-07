@@ -4,8 +4,8 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import com.willr27.blocklings.network.NetworkHandler;
 import com.willr27.blocklings.network.messages.TaskPriorityMessage;
-import com.willr27.blocklings.network.messages.TaskSetCustomNameMessage;
-import com.willr27.blocklings.network.messages.TaskSetTypeMessage;
+import com.willr27.blocklings.network.messages.TaskCustomNameMessage;
+import com.willr27.blocklings.network.messages.TaskTypeMessage;
 import com.willr27.blocklings.network.messages.TaskSwapPriorityMessage;
 
 import java.util.UUID;
@@ -60,7 +60,7 @@ public class Task
 
         if (sync)
         {
-            NetworkHandler.sync(blockling.level, new TaskSetTypeMessage(id, type.id, blockling.getId()));
+            new TaskTypeMessage(blockling, id, type.id).sync();
         }
     }
 
@@ -85,7 +85,7 @@ public class Task
 
         if (sync)
         {
-            NetworkHandler.sync(blockling.level, new TaskSetCustomNameMessage(id, customName, blockling.getId()));
+            new TaskCustomNameMessage(blockling, id, customName).sync();
         }
     }
 
@@ -110,7 +110,7 @@ public class Task
 
         if (sync)
         {
-            NetworkHandler.sync(blockling.level, new TaskSwapPriorityMessage(id, task.id, blockling.getId()));
+            new TaskSwapPriorityMessage(blockling, id, task.id).sync();
         }
     }
 
@@ -125,7 +125,7 @@ public class Task
 
         if (sync)
         {
-            NetworkHandler.sync(blockling.level, new TaskPriorityMessage(id, priority, blockling.getId()));
+            new TaskPriorityMessage(blockling, id, priority).sync();
         }
     }
 }

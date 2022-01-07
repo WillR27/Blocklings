@@ -55,7 +55,7 @@ public class GoalWhitelist extends Whitelist<ResourceLocation>
 
         if (sync)
         {
-            NetworkHandler.sync(blockling.level, new WhitelistAllMessage(goal.id, goal.whitelists.indexOf(this), this, blockling.getId()));
+            new WhitelistAllMessage(blockling, goal.id, goal.whitelists.indexOf(this), this).sync();
         }
     }
 
@@ -143,7 +143,7 @@ public class GoalWhitelist extends Whitelist<ResourceLocation>
 
         if (sync)
         {
-            NetworkHandler.sync(blockling.level, new WhitelistSingleMessage(goal.id, goal.whitelists.indexOf(this), entry, value, blockling.getId()));
+            new WhitelistSingleMessage(blockling, goal.id, goal.whitelists.indexOf(this), entry, value).sync();
         }
     }
 
@@ -173,7 +173,7 @@ public class GoalWhitelist extends Whitelist<ResourceLocation>
 
         if (sync)
         {
-            NetworkHandler.sync(blockling.level, new WhitelistAllMessage(goal.id, goal.whitelists.indexOf(this), this, blockling.getId()));
+            new WhitelistAllMessage(blockling, goal.id, goal.whitelists.indexOf(this), this).sync();
         }
     }
 
@@ -192,7 +192,7 @@ public class GoalWhitelist extends Whitelist<ResourceLocation>
 
         if (sync)
         {
-            NetworkHandler.sync(blockling.level, new WhitelistAllMessage(goal.id, goal.whitelists.indexOf(this), this, blockling.getId()));
+            new WhitelistAllMessage(blockling, goal.id, goal.whitelists.indexOf(this), this).sync();
         }
     }
 
@@ -212,7 +212,7 @@ public class GoalWhitelist extends Whitelist<ResourceLocation>
 
         if (sync)
         {
-            NetworkHandler.sync(blockling.level, new WhitelistIsUnlockedMessage(goal.id, goal.whitelists.indexOf(this), isUnlocked, blockling.getId()));
+            new WhitelistIsUnlockedMessage(blockling, goal.id, goal.whitelists.indexOf(this), isUnlocked).sync();
         }
     }
 }

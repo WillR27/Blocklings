@@ -38,7 +38,7 @@ public abstract class BlocklingMessage<T extends BlocklingMessage<T>> implements
     /**
      * Determines whether messages received on the server should be synced back to all other clients.
      */
-    protected boolean syncBackToClients = true;
+    private boolean syncBackToClients = true;
 
     /**
      * @param blockling the blockling.
@@ -56,6 +56,16 @@ public abstract class BlocklingMessage<T extends BlocklingMessage<T>> implements
                 clientPlayerId = Minecraft.getInstance().player.getUUID();
             }
         }
+    }
+
+    /**
+     * @param blockling the blockling.
+     * @param syncBackToClients determines whether messages received on the server should be synced back to all other clients.
+     */
+    protected BlocklingMessage(@Nullable BlocklingEntity blockling, boolean syncBackToClients)
+    {
+        this(blockling);
+        this.syncBackToClients = syncBackToClients;
     }
 
     /**
@@ -77,13 +87,11 @@ public abstract class BlocklingMessage<T extends BlocklingMessage<T>> implements
      * @return the instance of this message.
      */
     @Nonnull
-    public T decode(@Nonnull PacketBuffer buf)
+    public void decode(@Nonnull PacketBuffer buf)
     {
         blocklingId = buf.readInt();
         clientPlayerId = buf.readUUID();
         syncBackToClients = buf.readBoolean();
-
-        return (T) this;
     }
 
     /**
@@ -105,7 +113,7 @@ public abstract class BlocklingMessage<T extends BlocklingMessage<T>> implements
             blockling = (BlocklingEntity) player.level.getEntity(blocklingId);
             Objects.requireNonNull(blockling, String.format("No blockling entity found when handling message with id: %d.", blocklingId));
 
-            handle(player, blockling, isClient);
+            handle(player, blockling);
 
             if (!isClient && syncBackToClients)
             {
@@ -119,27 +127,14 @@ public abstract class BlocklingMessage<T extends BlocklingMessage<T>> implements
      *
      * @param player the player.
      * @param blockling the blockling.
-     * @param isClient true if on a client.
      */
-    protected abstract void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling, boolean isClient);
+    protected abstract void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling);
 
     /**
      * Sends the message either to the server or all player's clients.
      */
     public void sync()
     {
-        sync(syncBackToClients);
-    }
-
-    /**
-     * Sends the message either to the server or all player's clients.
-     *
-     * @param syncBackToClients true if the message should be synced back to clients when received on the server.
-     */
-    public void sync(boolean syncBackToClients)
-    {
-        this.syncBackToClients = syncBackToClients;
-
         NetworkHandler.sync(blockling.level, this);
     }
 

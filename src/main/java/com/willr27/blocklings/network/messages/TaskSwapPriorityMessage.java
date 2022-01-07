@@ -2,60 +2,68 @@ package com.willr27.blocklings.network.messages;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.goal.Task;
-import com.willr27.blocklings.network.IMessage;
-import net.minecraft.client.Minecraft;
+import com.willr27.blocklings.network.BlocklingMessage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
-import java.util.function.Supplier;
 
-public class TaskSwapPriorityMessage implements IMessage
+public class TaskSwapPriorityMessage extends BlocklingMessage<TaskSwapPriorityMessage>
 {
-    UUID taskId1;
-    UUID taskId2;
-    int entityId;
+    /**
+     * The first task id.
+     */
+    private UUID taskId1;
 
-    private TaskSwapPriorityMessage() {}
-    public TaskSwapPriorityMessage(UUID taskId1, UUID taskId2, int entityId)
+    /**
+     * The second task id.
+     */
+    private UUID taskId2;
+
+    /**
+     * Empty constructor used ONLY for decoding.
+     */
+    public TaskSwapPriorityMessage()
     {
+        super(null);
+    }
+
+    /**
+     * @param blockling the blockling.
+     * @param taskId1 the first task id.
+     * @param taskId2 the second task id.
+     */
+    public TaskSwapPriorityMessage(@Nonnull BlocklingEntity blockling, @Nonnull UUID taskId1, @Nonnull UUID taskId2)
+    {
+        super(blockling);
         this.taskId1 = taskId1;
         this.taskId2 = taskId2;
-        this.entityId = entityId;
     }
 
-    public static void encode(TaskSwapPriorityMessage msg, PacketBuffer buf)
+    @Override
+    public void encode(@Nonnull PacketBuffer buf)
     {
-        buf.writeUUID(msg.taskId1);
-        buf.writeUUID(msg.taskId2);
-        buf.writeInt(msg.entityId);
+        super.encode(buf);
+
+        buf.writeUUID(taskId1);
+        buf.writeUUID(taskId2);
     }
 
-    public static TaskSwapPriorityMessage decode(PacketBuffer buf)
+    @Override
+    public void decode(@Nonnull PacketBuffer buf)
     {
-        TaskSwapPriorityMessage msg = new TaskSwapPriorityMessage();
-        msg.taskId1 = buf.readUUID();
-        msg.taskId2 = buf.readUUID();
-        msg.entityId = buf.readInt();
+        super.decode(buf);
 
-        return msg;
+        taskId1 = buf.readUUID();
+        taskId2 = buf.readUUID();
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx)
+    @Override
+    protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
     {
-        ctx.get().enqueueWork(() ->
-        {
-            NetworkEvent.Context context = ctx.get();
-            boolean isClient = context.getDirection() == NetworkDirection.PLAY_TO_CLIENT;
-
-            PlayerEntity player = isClient ? Minecraft.getInstance().player : ctx.get().getSender();
-            BlocklingEntity blockling = (BlocklingEntity) player.level.getEntity(entityId);
-
-            Task task1 = blockling.getTasks().getTask(taskId1);
-            Task task2 = blockling.getTasks().getTask(taskId2);
-            task1.swapPriority(task2, false); // TODO: Sync back to all clients
-        });
+        Task task1 = blockling.getTasks().getTask(taskId1);
+        Task task2 = blockling.getTasks().getTask(taskId2);
+        task1.swapPriority(task2, false);
     }
 }
