@@ -1,40 +1,38 @@
 package com.willr27.blocklings.action.actions;
 
 import com.willr27.blocklings.action.BlocklingActions;
+import com.willr27.blocklings.attribute.attributes.EnumAttribute;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 
 import javax.annotation.Nonnull;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 /**
  * An action used when a blockling attacks a target.
+ * The target count for the hand(s) can be different to that of the attack action itself.
  */
 public class AttackAction extends KnownTargetAction
 {
     /**
-     * The action for the left hand.
+     * The action for the hand(s).
      */
     @Nonnull
-    private final KnownTargetAction leftHandAction;
-
-    /**
-     * The action for the right hand.
-     */
-    @Nonnull
-    private final KnownTargetAction rightHandAction;
+    private final KnownTargetAction handAction;
 
     /**
      * Which hand was most recently used to attack.
      */
-    private BlocklingHand recentHand = BlocklingHand.BOTH;
+    @Nonnull
+    private final EnumAttribute<BlocklingHand> recentHand;
 
     /**
      * @param actions the blockling actions.
      * @param blockling the blockling.
      * @param key the key used to identify the action and for the underlying attribute.
      * @param targetCountSupplier the supplier used to get the target count.
-     * @param handTargetCountSupplier the supplier used to get the target count for the hands.
+     * @param handTargetCountSupplier the supplier used to get the target count for the hand(s).
      */
     public AttackAction(@Nonnull BlocklingActions actions, @Nonnull BlocklingEntity blockling, @Nonnull String key, @Nonnull Supplier<Float> targetCountSupplier, @Nonnull Supplier<Float> handTargetCountSupplier)
     {
@@ -42,8 +40,9 @@ public class AttackAction extends KnownTargetAction
 
         // Cap the animation to a minimum of 10 ticks.
         Supplier<Float> supplier = () -> handTargetCountSupplier.get() < 10.0f ? handTargetCountSupplier.get() : 10.0f;
-        leftHandAction = actions.createAction(key + "_left_hand", supplier);
-        rightHandAction = actions.createAction(key + "_right_hand", supplier);
+        handAction = actions.createAction(key + "_hand", supplier);
+
+        recentHand = blockling.getStats().createEnumAttribute(UUID.randomUUID().toString(), key + "_recent_hand", BlocklingHand.BOTH, i -> BlocklingHand.values()[i], null, null);
     }
 
     /**
@@ -76,21 +75,12 @@ public class AttackAction extends KnownTargetAction
     {
         super.start();
 
-        if (hand == BlocklingHand.BOTH)
+        if (hand != BlocklingHand.NONE)
         {
-            leftHandAction.start();
-            rightHandAction.start();
-        }
-        else if (hand == BlocklingHand.OFF)
-        {
-            leftHandAction.start();
-        }
-        else if (hand == BlocklingHand.MAIN)
-        {
-            rightHandAction.start();
+            handAction.start();
         }
 
-        recentHand = hand;
+        recentHand.setValue(hand);
     }
 
     @Override
@@ -102,31 +92,11 @@ public class AttackAction extends KnownTargetAction
     }
 
     @Override
-    public void tick()
-    {
-        super.tick();
-
-        if (leftHandAction.isRunning() && rightHandAction.isRunning())
-        {
-            recentHand = BlocklingHand.BOTH;
-        }
-        else if (leftHandAction.isRunning())
-        {
-            recentHand = BlocklingHand.OFF;
-        }
-        else if (rightHandAction.isRunning())
-        {
-            recentHand = BlocklingHand.MAIN;
-        }
-    }
-
-    @Override
     public void stop()
     {
         super.stop();
 
-        leftHandAction.stop();
-        rightHandAction.stop();
+        handAction.stop();
     }
 
     /**
@@ -135,14 +105,13 @@ public class AttackAction extends KnownTargetAction
      */
     public boolean isRunning(BlocklingHand hand)
     {
-        if (hand == BlocklingHand.OFF)
+        if ((hand == BlocklingHand.MAIN && (getRecentHand() == BlocklingHand.MAIN || getRecentHand() == BlocklingHand.BOTH))
+         || (hand == BlocklingHand.OFF && (getRecentHand() == BlocklingHand.OFF || getRecentHand() == BlocklingHand.BOTH)))
         {
-            return leftHandAction.isRunning();
+            return handAction.isRunning();
         }
-        else
-        {
-            return rightHandAction.isRunning();
-        }
+
+        return false;
     }
 
     /**
@@ -151,14 +120,13 @@ public class AttackAction extends KnownTargetAction
      */
     public boolean isFinished(BlocklingHand hand)
     {
-        if (hand == BlocklingHand.OFF)
+        if ((hand == BlocklingHand.MAIN && (getRecentHand() == BlocklingHand.MAIN || getRecentHand() == BlocklingHand.BOTH))
+         || (hand == BlocklingHand.OFF && (getRecentHand() == BlocklingHand.OFF || getRecentHand() == BlocklingHand.BOTH)))
         {
-            return leftHandAction.isFinished();
+            return handAction.isFinished();
         }
-        else
-        {
-            return rightHandAction.isFinished();
-        }
+
+        return false;
     }
 
     /**
@@ -166,14 +134,7 @@ public class AttackAction extends KnownTargetAction
      */
     public float percentThroughHandAction()
     {
-        if (leftHandAction.isRunning())
-        {
-            return leftHandAction.percentThroughAction();
-        }
-        else
-        {
-            return rightHandAction.percentThroughAction();
-        }
+        return handAction.percentThroughAction();
     }
 
     /**
@@ -182,14 +143,7 @@ public class AttackAction extends KnownTargetAction
      */
     public float percentThroughHandAction(float targetCount)
     {
-        if (leftHandAction.isRunning())
-        {
-            return leftHandAction.percentThroughAction(targetCount);
-        }
-        else
-        {
-            return rightHandAction.percentThroughAction(targetCount);
-        }
+        return handAction.percentThroughAction(targetCount);
     }
 
     /**
@@ -198,6 +152,6 @@ public class AttackAction extends KnownTargetAction
     @Nonnull
     public BlocklingHand getRecentHand()
     {
-        return recentHand;
+        return recentHand.getValue();
     }
 }
