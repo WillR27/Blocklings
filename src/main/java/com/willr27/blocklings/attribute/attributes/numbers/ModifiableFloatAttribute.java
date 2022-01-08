@@ -4,23 +4,33 @@ import com.willr27.blocklings.attribute.IModifier;
 import com.willr27.blocklings.attribute.ModifiableAttribute;
 import com.willr27.blocklings.attribute.Operation;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.network.BlocklingMessage;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
+/**
+ * A modifiable float attribute.
+ */
 public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
 {
-    public ModifiableFloatAttribute(String id, String key, BlocklingEntity blockling, float baseValue, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
+    /**
+     * @param id the id of the attribute.
+     * @param key the key used to identify the attribute (for things like translation text components).
+     * @param blockling the blockling.
+     * @param initialBaseValue the initial base value.
+     * @param displayStringValueSupplier the supplier used to provide the string representation of the value.
+     * @param displayStringNameSupplier the supplier used to provide the string representation of display name.
+     */
+    public ModifiableFloatAttribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, float initialBaseValue, @Nullable Supplier<String> displayStringValueSupplier, @Nullable Supplier<String> displayStringNameSupplier)
     {
-        super(id, key, blockling, baseValue, displayStringValueSupplier, displayStringNameSupplier);
+        super(id, key, blockling, initialBaseValue, displayStringValueSupplier, displayStringNameSupplier);
     }
 
     @Override
-    public void writeToNBT(CompoundNBT attributeTag)
+    public void writeToNBT(@Nonnull CompoundNBT attributeTag)
     {
         super.writeToNBT(attributeTag);
 
@@ -28,7 +38,7 @@ public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
     }
 
     @Override
-    public void readFromNBT(CompoundNBT attributeTag)
+    public void readFromNBT(@Nonnull CompoundNBT attributeTag)
     {
         super.readFromNBT(attributeTag);
 
@@ -36,7 +46,7 @@ public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
     }
 
     @Override
-    public void encode(PacketBuffer buf)
+    public void encode(@Nonnull PacketBuffer buf)
     {
         super.encode(buf);
 
@@ -44,7 +54,7 @@ public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
     }
 
     @Override
-    public void decode(PacketBuffer buf)
+    public void decode(@Nonnull PacketBuffer buf)
     {
         super.decode(buf);
 
@@ -89,7 +99,13 @@ public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
     }
 
     @Override
-    public void incBaseValue(Float amount, boolean sync)
+    protected void setValue(Float value, boolean sync)
+    {
+        // Let calculate handle setting the value on client/sever
+    }
+
+    @Override
+    public void incrementBaseValue(Float amount, boolean sync)
     {
         setBaseValue(baseValue + amount, sync);
     }
@@ -107,60 +123,39 @@ public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
         }
     }
 
-    public static class BaseValueMessage extends BlocklingMessage<BaseValueMessage>
+    /**
+     * The message used to sync the base value of the attribute to the client/server.
+     */
+    public static class BaseValueMessage extends ModifiableAttribute.BaseValueMessage<Float, BaseValueMessage>
     {
-        /**
-         * The index of the attribute.
-         */
-        private int index;
-
-        /**
-         * The base value of the attribute.
-         */
-        private float baseValue;
-
         /**
          * Empty constructor used ONLY for decoding.
          */
         public BaseValueMessage()
         {
-            super(null);
+            super();
         }
 
         /**
          * @param blockling the blockling.
          * @param index the index of the attribute.
-         * @param baseValue the base value of the attribute.
+         * @param value the base value of the attribute.
          */
-        public BaseValueMessage(@Nonnull BlocklingEntity blockling, int index, float baseValue)
+        public BaseValueMessage(@Nonnull BlocklingEntity blockling, int index, float value)
         {
-            super(blockling);
-            this.index = index;
-            this.baseValue = baseValue;
+            super(blockling, index, value);
         }
 
         @Override
-        public void encode(@Nonnull PacketBuffer buf)
+        protected void encodeValue(@Nonnull PacketBuffer buf)
         {
-            super.encode(buf);
-
-            buf.writeInt(index);
-            buf.writeFloat(baseValue);
+            buf.writeFloat(value);
         }
 
         @Override
-        public void decode(@Nonnull PacketBuffer buf)
+        protected void decodeValue(@Nonnull PacketBuffer buf)
         {
-            super.decode(buf);
-
-            index = buf.readInt();
-            baseValue = buf.readFloat();
-        }
-
-        @Override
-        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
-        {
-            ((ModifiableFloatAttribute) blockling.getStats().attributes.get(index)).setBaseValue(baseValue, false);
+            value = buf.readFloat();
         }
     }
 }

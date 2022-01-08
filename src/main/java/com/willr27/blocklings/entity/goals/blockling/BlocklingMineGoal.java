@@ -131,7 +131,7 @@ public class BlocklingMineGoal extends BlocklingGatherGoal<BlocklingMineTargetGo
                 if (blockling.getActions().gather.isFinished())
                 {
                     blockling.getActions().gather.stop();
-                    blockling.getStats().miningXp.incValue((int) (blockStrength * 2.0f));
+                    blockling.getStats().miningXp.incrementValue((int) (blockStrength * 2.0f));
 
                     for (ItemStack stack : DropUtil.getDrops(blockling, targetBlockPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
                     {

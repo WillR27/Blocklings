@@ -2,58 +2,145 @@ package com.willr27.blocklings.attribute;
 
 import net.minecraft.util.text.TranslationTextComponent;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.function.Supplier;
 
+/**
+ * An attribute that can have attribute modifiers applied to it.
+ *
+ * @param <T> the type of the value of the attribute.
+ */
 public interface IModifiable<T>
 {
+    /**
+     * Calculates the attribute using the associated modifiers and base value.
+     */
     void calculate();
 
+    /**
+     * @return the underlying attribute value.
+     */
     T getValue();
 
-    default String formatValue(String format)
-    {
-        return String.format(format, getValue());
-    }
+    /**
+     * @param format the format string.
+     * @return the attribute value formatted into the given string.
+     */
+    @Nonnull
+    String formatValue(@Nonnull String format);
 
+    /**
+     * @return the underlying attribute base value.
+     */
     T getBaseValue();
 
-    default void incBaseValue(T amount)
+    /**
+     * Increments the base value by the given amount.
+     * Syncs to the client/server.
+     *
+     * @param amount the amount to increment the base value by.
+     */
+    default void incrementBaseValue(T amount)
     {
-        incBaseValue(amount, true);
+        incrementBaseValue(amount, true);
     }
 
-    void incBaseValue(T amount, boolean sync);
+    /**
+     * Increments the base value by the given amount.
+     * Syncs to the client/server if sync is true.
+     *
+     * @param amount the amount to increment the base value by.
+     * @param sync whether to sync to the client/server.
+     */
+    void incrementBaseValue(T amount, boolean sync);
 
+    /**
+     * Sets the base value to the given value.
+     * Syncs to the client/server.
+     *
+     * @param baseValue the value to set the base value to.
+     */
     default void setBaseValue(T baseValue)
     {
         setBaseValue(baseValue, true);
     }
 
+    /**
+     * Sets the base value to the given value.
+     * Syncs to the client/server if sync is true.
+     *
+     * @param baseValue the value to set the base value to.
+     * @param sync whether to sync to the client/server.
+     */
     void setBaseValue(T baseValue, boolean sync);
 
-    default String formatBaseValue(String format)
+    /**
+     * @param format the format string.
+     * @return the attribute base value formatted into the given string.
+     */
+    @Nonnull
+    default String formatBaseValue(@Nonnull String format)
     {
         return String.format(format, getBaseValue());
     }
 
+    /**
+     * @return the list of modifiers applied to the attribute.
+     */
+    @Nonnull
     List<IModifier<T>> getModifiers();
 
+    /**
+     * @return the list of enabled modifiers applied to the attribute.
+     */
+    @Nonnull
     List<IModifier<T>> getEnabledModifiers();
 
-    IModifier<T> findModifier(int index);
-
-    int indexOf(IModifier<T> modifier);
-
+    /**
+     * @param index the index to retrieve from.
+     * @return the modifier at the given index of the modifiers list.
+     */
+    @Nonnull
     IModifier<T> getModifier(int index);
 
-    void addModifier(IModifier<T> modifier);
+    /**
+     * @param modifier the modifier to find the index of.
+     * @return the index of the modifier in the modifiers list.
+     */
+    int indexOf(@Nonnull IModifier<T> modifier);
 
-    void removeModifier(IModifier<T> modifier);
+    /**
+     * Adds the given modifier to the list of modifiers on the attribute.
+     *
+     * @param modifier the modifier to add.
+     */
+    void addModifier(@Nonnull IModifier<T> modifier);
 
+    /**
+     * Removes the given modifier from the list of modifiers on the attribute if it exists.
+     *
+     * @param modifier the modifier to remove.
+     */
+    void removeModifier(@Nonnull IModifier<T> modifier);
+
+    /**
+     * @return the supplier used to provide the string representation of the value.
+     */
+    @Nonnull
     Supplier<String> getDisplayStringValueSupplier();
 
+    /**
+     * @return the supplier used to provide the string representation of display name.
+     */
+    @Nonnull
     Supplier<String> getDisplayStringNameSupplier();
 
-    TranslationTextComponent createTranslation(String key, Object... objects);
+    /**
+     * @param key the key to prefix to the attribute key.
+     * @param objects the objects to be passed on to the string format.
+     * @return a translation text component for the attribute.
+     */
+    @Nonnull
+    TranslationTextComponent createTranslation(@Nonnull String key, @Nonnull Object... objects);
 }

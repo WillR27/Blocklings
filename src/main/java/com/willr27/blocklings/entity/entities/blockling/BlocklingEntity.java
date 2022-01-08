@@ -244,19 +244,19 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         if (actions.oresMinedCooldown.isFinished())
         {
             oresMinedRecently = 0;
-            stats.miningSpeedSkillMomentumModifier.setValue(0);
+            stats.miningSpeedSkillMomentumModifier.setValue(0.0f);
         }
 
         if (actions.logsChoppedCooldown.isFinished())
         {
             logsChoppedRecently = 0;
-            stats.woodcuttingSpeedSkillMomentumModifier.setValue(0);
+            stats.woodcuttingSpeedSkillMomentumModifier.setValue(0.0f);
         }
 
         if (actions.cropsHarvestedCooldown.isFinished())
         {
             cropsHarvestedRecently = 0;
-            stats.farmingSpeedSkillMomentumModifier.setValue(0);
+            stats.farmingSpeedSkillMomentumModifier.setValue(0.0f);
         }
     }
 
@@ -301,7 +301,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         if (hasHurt)
         {
-            stats.combatXp.incValue((int) damage + 1);
+            stats.combatXp.incrementValue((int) damage + 1);
 
             if (knockback > 0.0f && target instanceof LivingEntity)
             {
@@ -802,7 +802,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         if (skills.getSkill(BlocklingSkills.Mining.MOMENTUM).isBought())
         {
             int cappedCount = Math.min(oresMinedRecently, 20);
-            stats.miningSpeedSkillMomentumModifier.setValue(cappedCount);
+            stats.miningSpeedSkillMomentumModifier.setValue((float) cappedCount);
         }
     }
 
@@ -817,7 +817,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         if (skills.getSkill(BlocklingSkills.Woodcutting.MOMENTUM).isBought())
         {
             int cappedCount = Math.min(logsChoppedRecently, 20);
-            stats.woodcuttingSpeedSkillMomentumModifier.setValue(cappedCount);
+            stats.woodcuttingSpeedSkillMomentumModifier.setValue((float) cappedCount);
         }
     }
 
@@ -832,7 +832,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         if (skills.getSkill(BlocklingSkills.Farming.MOMENTUM).isBought())
         {
             int cappedCount = Math.min(cropsHarvestedRecently, 20);
-            stats.farmingSpeedSkillMomentumModifier.setValue(cappedCount);
+            stats.farmingSpeedSkillMomentumModifier.setValue((float) cappedCount);
         }
     }
 }

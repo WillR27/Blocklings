@@ -1,7 +1,7 @@
 package com.willr27.blocklings.entity.entities.blockling;
 
 import com.willr27.blocklings.attribute.*;
-import com.willr27.blocklings.attribute.attributes.AveragedAttribute;
+import com.willr27.blocklings.attribute.attributes.numbers.AveragedAttribute;
 import com.willr27.blocklings.attribute.attributes.EnumAttribute;
 import com.willr27.blocklings.attribute.attributes.numbers.*;
 import com.willr27.blocklings.skills.BlocklingSkills;
@@ -15,7 +15,6 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class BlocklingStats
@@ -140,6 +139,12 @@ public class BlocklingStats
             {
                 return combatLevel.getValue() + miningLevel.getValue() + woodcuttingLevel.getValue() + farmingLevel.getValue();
             }
+
+            @Override
+            protected void setValue(Integer value, boolean sync)
+            {
+                // Don't need to do anything here
+            }
         };
 
         combatXp = createIntAttribute("ec56a177-2a08-4f43-b77a-b1d4544a8656", "combat_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(combatLevel.getValue())), null, null);
@@ -147,7 +152,7 @@ public class BlocklingStats
         woodcuttingXp = createIntAttribute("82165063-6d47-4534-acc9-db3543c3db74", "woodcutting_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(woodcuttingLevel.getValue())), null, null);
         farmingXp = createIntAttribute("1f1e4cbc-358e-4477-92d8-03e818d5272c", "farming_xp", blockling.getRandom().nextInt(getXpUntilNextLevel(farmingLevel.getValue())), null, null);
 
-        hand = createEnumAttribute("f21fcbaa-f800-468e-8c22-ec4b4fd0fdc2", "hand", BlocklingHand.NONE, (i) -> BlocklingHand.values()[i], null, null);
+        hand = createEnumAttribute("f21fcbaa-f800-468e-8c22-ec4b4fd0fdc2", "hand", BlocklingHand.class, BlocklingHand.NONE, null, null);
 
         maxHealth = createModifiableFloatAttribute("9c6eb101-f025-4f8f-895b-10868b7d06b2", "max_health",10.0f, null, null);
         maxHealthCombatLevelModifier = createFloatAttributeModifier("a78160fa-7bc3-493e-b74b-27af4206d111", "max_health_combat_level", maxHealth, 0.0f, Operation.ADD, null, null);
@@ -323,9 +328,9 @@ public class BlocklingStats
         return attribute;
     }
 
-    public <T extends Enum<?>> EnumAttribute<T> createEnumAttribute(String id, String key, T value, Function<Integer, T> ordinalConverter, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
+    public <T extends Enum<?>> EnumAttribute<T> createEnumAttribute(String id, String key, Class<T> enumClass, T value, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
     {
-        EnumAttribute<T> attribute = new EnumAttribute<>(id, key, blockling, value, ordinalConverter, displayStringValueSupplier, displayStringNameSupplier);
+        EnumAttribute<T> attribute = new EnumAttribute<>(id, key, blockling, enumClass, value, displayStringValueSupplier, displayStringNameSupplier);
         attributes.add(attribute);
 
         return attribute;

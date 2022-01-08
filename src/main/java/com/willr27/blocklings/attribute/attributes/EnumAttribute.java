@@ -8,23 +8,41 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * An attribute where the value is an enum.
+ *
+ * @param <T> the type of the enum of the attribute.
+ */
 public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
 {
-    private T value;
+    /**
+     * The function used to convert from an ordinal back to the enum.
+     */
+    @Nonnull
     private final Function<Integer, T> ordinalConverter;
 
-    public EnumAttribute(String id, String key, BlocklingEntity blockling, T value, Function<Integer, T> ordinalConverter, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
+    /**
+     * @param id the id of the attribute.
+     * @param key the key used to identify the attribute (for things like translation text components).
+     * @param blockling the blockling.
+     * @param enumClass the class of the enum.
+     * @param initialValue the initial value of the attribute.
+     * @param displayStringValueSupplier the supplier used to provide the string representation of the value.
+     * @param displayStringNameSupplier the supplier used to provide the string representation of display name.
+     */
+    public EnumAttribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, @Nonnull Class<T> enumClass, @Nonnull T initialValue, @Nullable Supplier<String> displayStringValueSupplier, @Nullable Supplier<String> displayStringNameSupplier)
     {
         super(id, key, blockling, displayStringValueSupplier, displayStringNameSupplier);
-        this.value = value;
-        this.ordinalConverter = ordinalConverter;
+        this.value = initialValue;
+        this.ordinalConverter = (ordinal) -> enumClass.getEnumConstants()[ordinal];
     }
 
     @Override
-    public void writeToNBT(CompoundNBT attributeTag)
+    public void writeToNBT(@Nonnull CompoundNBT attributeTag)
     {
         super.writeToNBT(attributeTag);
 
@@ -32,7 +50,7 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
     }
 
     @Override
-    public void readFromNBT(CompoundNBT attributeTag)
+    public void readFromNBT(@Nonnull CompoundNBT attributeTag)
     {
         super.readFromNBT(attributeTag);
 
@@ -40,7 +58,7 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
     }
 
     @Override
-    public void encode(PacketBuffer buf)
+    public void encode(@Nonnull PacketBuffer buf)
     {
         super.encode(buf);
 
@@ -48,7 +66,7 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
     }
 
     @Override
-    public void decode(PacketBuffer buf)
+    public void decode(@Nonnull PacketBuffer buf)
     {
         super.decode(buf);
 
@@ -56,16 +74,12 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
     }
 
     @Override
-    public T getValue()
-    {
-        return value;
-    }
-
     public void setValue(T value)
     {
-        setValue(value, true);
+        super.setValue(value);
     }
 
+    @Override
     public void setValue(T value, boolean sync)
     {
         this.value = value;
@@ -78,6 +92,11 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
         }
     }
 
+    /**
+     * The message used to sync the attribute value to the client/server.
+     *
+     * @param <T> the type of the enum of the attribute.
+     */
     public static class Message<T extends Enum<?>> extends BlocklingMessage<Message<T>>
     {
         /**
@@ -88,7 +107,7 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
         /**
          * The ordinal value of the enum.
          */
-        private int value;
+        private int ordinal;
 
         /**
          * Empty constructor used ONLY for decoding.
@@ -107,7 +126,7 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
         {
             super(blockling);
             this.index = index;
-            this.value = value.ordinal();
+            this.ordinal = value.ordinal();
         }
 
         @Override
@@ -116,7 +135,7 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
             super.encode(buf);
 
             buf.writeInt(index);
-            buf.writeInt(value);
+            buf.writeInt(ordinal);
         }
 
         @Override
@@ -125,14 +144,14 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
             super.decode(buf);
 
             index = buf.readInt();
-            value = buf.readInt();
+            ordinal = buf.readInt();
         }
 
         @Override
         protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
         {
             EnumAttribute<T> attribute = (EnumAttribute<T>) blockling.getStats().attributes.get(index);
-            attribute.setValue(attribute.ordinalConverter.apply(value), false);
+            attribute.setValue(attribute.ordinalConverter.apply(ordinal), false);
         }
     }
 }

@@ -1,7 +1,6 @@
-package com.willr27.blocklings.attribute.attributes;
+package com.willr27.blocklings.attribute.attributes.numbers;
 
 import com.willr27.blocklings.attribute.IModifier;
-import com.willr27.blocklings.attribute.attributes.numbers.ModifiableFloatAttribute;
 import com.willr27.blocklings.attribute.Operation;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 

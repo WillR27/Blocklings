@@ -2,26 +2,34 @@ package com.willr27.blocklings.attribute.attributes.numbers;
 
 import com.willr27.blocklings.attribute.Attribute;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.network.BlocklingMessage;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
+/**
+ * A simple int attribute.
+ */
 public class IntAttribute extends Attribute<Integer>
 {
-    protected int value;
-
-    public IntAttribute(String id, String key, BlocklingEntity blockling, int value, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
+    /**
+     * @param id the id of the attribute.
+     * @param key the key used to identify the attribute (for things like translation text components).
+     * @param blockling the blockling.
+     * @param initialValue the initial value of the attribute.
+     * @param displayStringValueSupplier the supplier used to provide the string representation of the value.
+     * @param displayStringNameSupplier the supplier used to provide the string representation of display name.
+     */
+    public IntAttribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, int initialValue, @Nullable Supplier<String> displayStringValueSupplier, @Nullable Supplier<String> displayStringNameSupplier)
     {
         super(id, key, blockling, displayStringValueSupplier, displayStringNameSupplier);
-        this.value = value;
+        this.value = initialValue;
     }
 
     @Override
-    public void writeToNBT(CompoundNBT attributeTag)
+    public void writeToNBT(@Nonnull CompoundNBT attributeTag)
     {
         super.writeToNBT(attributeTag);
 
@@ -29,7 +37,7 @@ public class IntAttribute extends Attribute<Integer>
     }
 
     @Override
-    public void readFromNBT(CompoundNBT attributeTag)
+    public void readFromNBT(@Nonnull CompoundNBT attributeTag)
     {
         super.readFromNBT(attributeTag);
 
@@ -37,7 +45,7 @@ public class IntAttribute extends Attribute<Integer>
     }
 
     @Override
-    public void encode(PacketBuffer buf)
+    public void encode(@Nonnull PacketBuffer buf)
     {
         super.encode(buf);
 
@@ -45,7 +53,7 @@ public class IntAttribute extends Attribute<Integer>
     }
 
     @Override
-    public void decode(PacketBuffer buf)
+    public void decode(@Nonnull PacketBuffer buf)
     {
         super.decode(buf);
 
@@ -58,22 +66,37 @@ public class IntAttribute extends Attribute<Integer>
         return value;
     }
 
-    public void incValue(int amount)
+    /**
+     * Increments the value by the given amount.
+     * Syncs to the client/server.
+     *
+     * @param amount the amount to increment the value by.
+     */
+    public void incrementValue(int amount)
     {
-        incValue(amount, true);
+        incrementValue(amount, true);
     }
 
-    public void incValue(int amount, boolean sync)
+    /**
+     * Increments the value by the given amount.
+     * Syncs to the client/server if sync is true.
+     *
+     * @param amount the amount to increment the value by.
+     * @param sync whether to sync to the client/server.
+     */
+    public void incrementValue(int amount, boolean sync)
     {
         setValue(value + amount, sync);
     }
 
-    public void setValue(int value)
+    @Override
+    public void setValue(Integer value)
     {
         setValue(value, true);
     }
 
-    public void setValue(int value, boolean sync)
+    @Override
+    public void setValue(Integer value, boolean sync)
     {
         this.value = value;
 
@@ -81,28 +104,21 @@ public class IntAttribute extends Attribute<Integer>
 
         if (sync)
         {
-            new IntAttribute.ValueMessage(blockling, blockling.getStats().attributes.indexOf(this), value).sync();
+            new ValueMessage(blockling, blockling.getStats().attributes.indexOf(this), value).sync();
         }
     }
 
-    public static class ValueMessage extends BlocklingMessage<ValueMessage>
+    /**
+     * The message used to sync the attribute value to the client/server.
+     */
+    public static class ValueMessage extends Attribute.ValueMessage<Integer, IntAttribute.ValueMessage>
     {
-        /**
-         * The index of the attribute.
-         */
-        private int index;
-
-        /**
-         * The value of the attribute.
-         */
-        private int value;
-
         /**
          * Empty constructor used ONLY for decoding.
          */
         public ValueMessage()
         {
-            super(null);
+            super();
         }
 
         /**
@@ -112,33 +128,19 @@ public class IntAttribute extends Attribute<Integer>
          */
         public ValueMessage(@Nonnull BlocklingEntity blockling, int index, int value)
         {
-            super(blockling);
-            this.index = index;
-            this.value = value;
+            super(blockling, index, value);
         }
 
         @Override
-        public void encode(@Nonnull PacketBuffer buf)
+        protected void encodeValue(@Nonnull PacketBuffer buf)
         {
-            super.encode(buf);
-
-            buf.writeInt(index);
             buf.writeInt(value);
         }
 
         @Override
-        public void decode(@Nonnull PacketBuffer buf)
+        protected void decodeValue(@Nonnull PacketBuffer buf)
         {
-            super.decode(buf);
-
-            index = buf.readInt();
             value = buf.readInt();
-        }
-
-        @Override
-        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
-        {
-            ((IntAttribute) blockling.getStats().attributes.get(index)).setValue(value, false);
         }
     }
 }

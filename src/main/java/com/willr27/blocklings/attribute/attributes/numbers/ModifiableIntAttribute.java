@@ -4,8 +4,6 @@ import com.willr27.blocklings.attribute.IModifier;
 import com.willr27.blocklings.attribute.ModifiableAttribute;
 import com.willr27.blocklings.attribute.Operation;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.network.BlocklingMessage;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 
@@ -89,7 +87,13 @@ public class ModifiableIntAttribute extends ModifiableAttribute<Integer>
     }
 
     @Override
-    public void incBaseValue(Integer amount, boolean sync)
+    protected void setValue(Integer value, boolean sync)
+    {
+        // Let calculate handle setting the value on client/sever
+    }
+
+    @Override
+    public void incrementBaseValue(Integer amount, boolean sync)
     {
         setBaseValue(baseValue + amount, sync);
     }
@@ -113,60 +117,39 @@ public class ModifiableIntAttribute extends ModifiableAttribute<Integer>
         }
     }
 
-    public static class BaseValueMessage extends BlocklingMessage<BaseValueMessage>
+    /**
+     * The message used to sync the base value of the attribute to the client/server.
+     */
+    public static class BaseValueMessage extends ModifiableAttribute.BaseValueMessage<Integer, ModifiableIntAttribute.BaseValueMessage>
     {
-        /**
-         * The index of the attribute.
-         */
-        private int index;
-
-        /**
-         * The base value of the attribute.
-         */
-        private int baseValue;
-
         /**
          * Empty constructor used ONLY for decoding.
          */
         public BaseValueMessage()
         {
-            super(null);
+            super();
         }
 
         /**
          * @param blockling the blockling.
          * @param index the index of the attribute.
-         * @param baseValue the base value of the attribute.
+         * @param value the base value of the attribute.
          */
-        public BaseValueMessage(@Nonnull BlocklingEntity blockling, int index, int baseValue)
+        public BaseValueMessage(@Nonnull BlocklingEntity blockling, int index, int value)
         {
-            super(blockling);
-            this.index = index;
-            this.baseValue = baseValue;
+            super(blockling, index, value);
         }
 
         @Override
-        public void encode(@Nonnull PacketBuffer buf)
+        protected void encodeValue(@Nonnull PacketBuffer buf)
         {
-            super.encode(buf);
-
-            buf.writeInt(index);
-            buf.writeInt(baseValue);
+            buf.writeInt(value);
         }
 
         @Override
-        public void decode(@Nonnull PacketBuffer buf)
+        protected void decodeValue(@Nonnull PacketBuffer buf)
         {
-            super.decode(buf);
-
-            index = buf.readInt();
-            baseValue = buf.readInt();
-        }
-
-        @Override
-        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
-        {
-            ((ModifiableIntAttribute) blockling.getStats().attributes.get(index)).setBaseValue(baseValue, false);
+            value = buf.readInt();
         }
     }
 }

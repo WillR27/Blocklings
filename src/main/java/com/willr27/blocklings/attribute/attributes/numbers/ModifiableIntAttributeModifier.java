@@ -5,16 +5,41 @@ import com.willr27.blocklings.attribute.IModifier;
 import com.willr27.blocklings.attribute.Operation;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
+/**
+ * A modifiable float attribute modifier.
+ * Used to create trees of modifiers with a single root attribute.
+ */
 public class ModifiableIntAttributeModifier extends ModifiableIntAttribute implements IModifier<Integer>
 {
+    /**
+     * The attribute the modifier is associated with.
+     */
+    @Nonnull
     public final IModifiable<Integer> attribute;
+
+    /**
+     * The operation to be performed on the associated attribute and the modifier.
+     */
+    @Nonnull
     public final Operation operation;
 
-    public ModifiableIntAttributeModifier(String id, String key, IModifiable<Integer> attribute, BlocklingEntity blockling, int value, Operation operation, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
+    /**
+     * @param id the id of the attribute.
+     * @param key the key used to identify the attribute (for things like translation text components).
+     * @param attribute the attribute the modifier is associated with.
+     * @param blockling the blockling.
+     * @param initialValue the initial value of the attribute.
+     * @param operation the operation to be performed on the associated attribute and the modifier.
+     * @param displayStringValueSupplier the supplier used to provide the string representation of the value.
+     * @param displayStringNameSupplier the supplier used to provide the string representation of display name.
+     */
+    public ModifiableIntAttributeModifier(@Nonnull String id, @Nonnull String key, @Nonnull IModifiable<Integer> attribute, @Nonnull BlocklingEntity blockling, int initialValue, @Nonnull Operation operation, @Nullable Supplier<String> displayStringValueSupplier, @Nullable Supplier<String> displayStringNameSupplier)
     {
-        super(id, key, blockling, value, displayStringValueSupplier, displayStringNameSupplier);
+        super(id, key, blockling, initialValue, displayStringValueSupplier, displayStringNameSupplier);
         this.attribute = attribute;
         this.operation = operation;
     }
@@ -36,6 +61,7 @@ public class ModifiableIntAttributeModifier extends ModifiableIntAttribute imple
     }
 
     @Override
+    @Nonnull
     public Operation getOperation()
     {
         return operation;

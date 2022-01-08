@@ -42,7 +42,7 @@ public class AttackAction extends KnownTargetAction
         Supplier<Float> supplier = () -> handTargetCountSupplier.get() < 10.0f ? handTargetCountSupplier.get() : 10.0f;
         handAction = actions.createAction(key + "_hand", supplier);
 
-        recentHand = blockling.getStats().createEnumAttribute(UUID.randomUUID().toString(), key + "_recent_hand", BlocklingHand.BOTH, i -> BlocklingHand.values()[i], null, null);
+        recentHand = blockling.getStats().createEnumAttribute(UUID.randomUUID().toString(), key + "_recent_hand", BlocklingHand.class, BlocklingHand.BOTH, null, null);
     }
 
     /**
