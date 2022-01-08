@@ -35,12 +35,15 @@ public class IntAttributeModifier extends IntAttribute implements IModifier<Inte
      * @param operation the operation to be performed on the associated attribute and the modifier.
      * @param displayStringValueSupplier the supplier used to provide the string representation of the value.
      * @param displayStringNameSupplier the supplier used to provide the string representation of display name.
+     * @param isEnabled whether the attribute is currently enabled.
      */
-    public IntAttributeModifier(@Nonnull String id, @Nonnull String key, @Nonnull IModifiable<Integer> attribute, @Nonnull BlocklingEntity blockling, int initialValue, @Nonnull Operation operation, @Nullable Supplier<String> displayStringValueSupplier, @Nullable Supplier<String> displayStringNameSupplier)
+    public IntAttributeModifier(@Nonnull String id, @Nonnull String key, @Nonnull IModifiable<Integer> attribute, @Nonnull BlocklingEntity blockling, int initialValue, @Nonnull Operation operation, @Nullable Supplier<String> displayStringValueSupplier, @Nullable Supplier<String> displayStringNameSupplier, boolean isEnabled)
     {
-        super(id, key, blockling, initialValue, displayStringValueSupplier, displayStringNameSupplier);
+        super(id, key, blockling, initialValue, displayStringValueSupplier, displayStringNameSupplier, isEnabled);
         this.attribute = attribute;
         this.operation = operation;
+
+        attribute.addModifier(this);
     }
 
     @Override
@@ -51,13 +54,22 @@ public class IntAttributeModifier extends IntAttribute implements IModifier<Inte
         attribute.calculate();
     }
 
+
+    @Override
+    @Nonnull
+    public IModifiable<Integer> getAttribute()
+    {
+        return attribute;
+    }
+
+
     @Override
     @Nonnull
     public Operation getOperation()
     {
         return operation;
     }
-    
+
     @Override
     public void setIsEnabled(boolean isEnabled, boolean sync)
     {

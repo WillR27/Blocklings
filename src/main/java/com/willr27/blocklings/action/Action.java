@@ -28,7 +28,7 @@ public abstract class Action
     {
         this.blockling = blockling;
 
-        count = blockling.getStats().createModifiableFloatAttribute(UUID.randomUUID().toString(), key + "_action", -1.0f, null, null);
+        blockling.getStats().addAttribute(count = new ModifiableFloatAttribute(UUID.randomUUID().toString(), key + "_action", blockling, -1.0f, null, null, true));
     }
 
     /**

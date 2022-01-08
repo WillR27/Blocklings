@@ -21,10 +21,11 @@ public class IntAttribute extends Attribute<Integer>
      * @param initialValue the initial value of the attribute.
      * @param displayStringValueSupplier the supplier used to provide the string representation of the value.
      * @param displayStringNameSupplier the supplier used to provide the string representation of display name.
+     * @param isEnabled whether the attribute is currently enabled.
      */
-    public IntAttribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, int initialValue, @Nullable Supplier<String> displayStringValueSupplier, @Nullable Supplier<String> displayStringNameSupplier)
+    public IntAttribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, int initialValue, @Nullable Supplier<String> displayStringValueSupplier, @Nullable Supplier<String> displayStringNameSupplier, boolean isEnabled)
     {
-        super(id, key, blockling, displayStringValueSupplier, displayStringNameSupplier);
+        super(id, key, blockling, displayStringValueSupplier, displayStringNameSupplier, isEnabled);
         this.value = initialValue;
     }
 

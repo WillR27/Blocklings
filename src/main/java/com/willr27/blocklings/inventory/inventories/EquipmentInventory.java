@@ -2,10 +2,9 @@ package com.willr27.blocklings.inventory.inventories;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
-import com.willr27.blocklings.entity.entities.blockling.BlocklingStats;
+import com.willr27.blocklings.attribute.BlocklingAttributes;
 import com.willr27.blocklings.item.ToolType;
 import com.willr27.blocklings.item.ToolUtil;
-import com.willr27.blocklings.network.NetworkHandler;
 import com.willr27.blocklings.network.messages.EquipmentInventoryMessage;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
@@ -218,7 +217,7 @@ public class EquipmentInventory extends AbstractInventory
 
     public void updateToolAttributes()
     {
-        BlocklingStats stats = blockling.getStats();
+        BlocklingAttributes stats = blockling.getStats();
 
         stats.mainHandAttackDamageToolModifier.setValue(0.0f, false);
         stats.offHandAttackDamageToolModifier.setValue(0.0f, false);

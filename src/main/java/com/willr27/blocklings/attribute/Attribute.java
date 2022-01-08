@@ -1,6 +1,5 @@
 package com.willr27.blocklings.attribute;
 
-import com.willr27.blocklings.attribute.attributes.numbers.FloatAttribute;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.network.BlocklingMessage;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
@@ -82,10 +81,11 @@ public abstract class Attribute<T>
      * @param id the id of the attribute.
      * @param key the key used to identify the attribute (for things like translation text components).
      * @param blockling the blockling.
+     * @param isEnabled whether the attribute is currently enabled.
      */
-    public Attribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling)
+    public Attribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, boolean isEnabled)
     {
-        this(id, key, blockling, null, null);
+        this(id, key, blockling, null, null, isEnabled);
     }
 
     /**
@@ -94,8 +94,9 @@ public abstract class Attribute<T>
      * @param blockling the blockling.
      * @param displayStringValueSupplier the supplier used to provide the string representation of the value.
      * @param displayStringNameSupplier the supplier used to provide the string representation of display name.
+     * @param isEnabled whether the attribute is currently enabled.
      */
-    public Attribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, @Nullable Supplier<String> displayStringValueSupplier, @Nullable Supplier<String> displayStringNameSupplier)
+    public Attribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, @Nullable Supplier<String> displayStringValueSupplier, @Nullable Supplier<String> displayStringNameSupplier, boolean isEnabled)
     {
         this.id = UUID.fromString(id);
         this.key = key;
@@ -103,6 +104,7 @@ public abstract class Attribute<T>
         this.world = blockling.level;
         this.displayStringValueSupplier = displayStringValueSupplier == null ? () -> formatValue("%.1f") : displayStringValueSupplier;
         this.displayStringNameSupplier = displayStringNameSupplier == null ? () -> createTranslation("name").getString() : displayStringNameSupplier;
+        this.isEnabled = isEnabled;
     }
 
     /**

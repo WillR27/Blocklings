@@ -10,15 +10,27 @@ import net.minecraft.network.PacketBuffer;
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
+/**
+ * A modifiable int attribute.
+ */
 public class ModifiableIntAttribute extends ModifiableAttribute<Integer>
 {
-    public ModifiableIntAttribute(String id, String key, BlocklingEntity blockling, int baseValue, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
+    /**
+     * @param id the id of the attribute.
+     * @param key the key used to identify the attribute (for things like translation text components).
+     * @param blockling the blockling.
+     * @param initialBaseValue the initial base value.
+     * @param displayStringValueSupplier the supplier used to provide the string representation of the value.
+     * @param displayStringNameSupplier the supplier used to provide the string representation of display name.
+     * @param isEnabled whether the attribute is currently enabled.
+     */
+    public ModifiableIntAttribute(String id, String key, BlocklingEntity blockling, int initialBaseValue, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier, boolean isEnabled)
     {
-        super(id, key, blockling, baseValue, displayStringValueSupplier, displayStringNameSupplier);
+        super(id, key, blockling, initialBaseValue, displayStringValueSupplier, displayStringNameSupplier, isEnabled);
     }
 
     @Override
-    public void writeToNBT(CompoundNBT attributeTag)
+    public void writeToNBT(@Nonnull CompoundNBT attributeTag)
     {
         super.writeToNBT(attributeTag);
 
@@ -26,7 +38,7 @@ public class ModifiableIntAttribute extends ModifiableAttribute<Integer>
     }
 
     @Override
-    public void readFromNBT(CompoundNBT attributeTag)
+    public void readFromNBT(@Nonnull CompoundNBT attributeTag)
     {
         super.readFromNBT(attributeTag);
 
@@ -34,7 +46,7 @@ public class ModifiableIntAttribute extends ModifiableAttribute<Integer>
     }
 
     @Override
-    public void encode(PacketBuffer buf)
+    public void encode(@Nonnull PacketBuffer buf)
     {
         super.encode(buf);
 
@@ -42,7 +54,7 @@ public class ModifiableIntAttribute extends ModifiableAttribute<Integer>
     }
 
     @Override
-    public void decode(PacketBuffer buf)
+    public void decode(@Nonnull PacketBuffer buf)
     {
         super.decode(buf);
 

@@ -3,9 +3,8 @@ package com.willr27.blocklings.gui.screens.guis;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.attribute.Attribute;
-import com.willr27.blocklings.attribute.attributes.numbers.IntAttribute;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.entity.entities.blockling.BlocklingStats;
+import com.willr27.blocklings.attribute.BlocklingAttributes;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.widgets.SkillWidget;
 import com.willr27.blocklings.gui.widgets.TexturedWidget;
@@ -315,7 +314,7 @@ public class SkillsGui extends AbstractGui
         }
         else
         {
-            Map<BlocklingStats.Level, Integer> levelRequirements = skill.info.requirements.levels;
+            Map<BlocklingAttributes.Level, Integer> levelRequirements = skill.info.requirements.levels;
             if (levelRequirements.size() > 0)
             {
                 description.add("");
@@ -323,7 +322,7 @@ public class SkillsGui extends AbstractGui
 
                 if (levelRequirements.size() > 0)
                 {
-                    for (BlocklingStats.Level level : levelRequirements.keySet())
+                    for (BlocklingAttributes.Level level : levelRequirements.keySet())
                     {
                         int value = levelRequirements.get(level);
                         Attribute<Integer> attribute = blockling.getStats().getLevelAttribute(level);

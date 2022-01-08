@@ -2,6 +2,7 @@ package com.willr27.blocklings.entity.entities.blockling;
 
 import com.google.common.collect.Iterables;
 import com.willr27.blocklings.action.BlocklingActions;
+import com.willr27.blocklings.attribute.BlocklingAttributes;
 import com.willr27.blocklings.goal.Task;
 import com.willr27.blocklings.gui.GuiHandler;
 import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
@@ -54,7 +55,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     private BlocklingType blocklingType = BlocklingType.GRASS;
     private int blocklingTypeVariant = 0;
 
-    private final BlocklingStats stats = new BlocklingStats(this);
+    private final BlocklingAttributes stats = new BlocklingAttributes(this);
     private final BlocklingTasks tasks = new BlocklingTasks(this);
     private final BlocklingSkills skills = new BlocklingSkills(this);
     private final BlocklingActions actions = new BlocklingActions(this);
@@ -456,10 +457,10 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
                 }
 
-                stats.combatXp.setValue(BlocklingStats.getXpUntilNextLevel(stats.combatLevel.getValue()));
-                stats.miningXp.setValue(BlocklingStats.getXpUntilNextLevel(stats.miningLevel.getValue()));
-                stats.woodcuttingXp.setValue(BlocklingStats.getXpUntilNextLevel(stats.woodcuttingLevel.getValue()));
-                stats.farmingXp.setValue(BlocklingStats.getXpUntilNextLevel(stats.farmingLevel.getValue()));
+                stats.combatXp.setValue(BlocklingAttributes.getXpUntilNextLevel(stats.combatLevel.getValue()));
+                stats.miningXp.setValue(BlocklingAttributes.getXpUntilNextLevel(stats.miningLevel.getValue()));
+                stats.woodcuttingXp.setValue(BlocklingAttributes.getXpUntilNextLevel(stats.woodcuttingLevel.getValue()));
+                stats.farmingXp.setValue(BlocklingAttributes.getXpUntilNextLevel(stats.farmingLevel.getValue()));
 
                 heal(Float.MAX_VALUE);
             }
@@ -726,7 +727,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         return blocklingTypeVariant;
     }
 
-    public BlocklingStats getStats()
+    public BlocklingAttributes getStats()
     {
         return stats;
     }

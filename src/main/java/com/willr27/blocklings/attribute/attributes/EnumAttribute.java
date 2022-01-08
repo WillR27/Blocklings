@@ -33,10 +33,11 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
      * @param initialValue the initial value of the attribute.
      * @param displayStringValueSupplier the supplier used to provide the string representation of the value.
      * @param displayStringNameSupplier the supplier used to provide the string representation of display name.
+     * @param isEnabled whether the attribute is currently enabled.
      */
-    public EnumAttribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, @Nonnull Class<T> enumClass, @Nonnull T initialValue, @Nullable Supplier<String> displayStringValueSupplier, @Nullable Supplier<String> displayStringNameSupplier)
+    public EnumAttribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, @Nonnull Class<T> enumClass, @Nonnull T initialValue, @Nullable Supplier<String> displayStringValueSupplier, @Nullable Supplier<String> displayStringNameSupplier, boolean isEnabled)
     {
-        super(id, key, blockling, displayStringValueSupplier, displayStringNameSupplier);
+        super(id, key, blockling, displayStringValueSupplier, displayStringNameSupplier, isEnabled);
         this.value = initialValue;
         this.ordinalConverter = (ordinal) -> enumClass.getEnumConstants()[ordinal];
     }

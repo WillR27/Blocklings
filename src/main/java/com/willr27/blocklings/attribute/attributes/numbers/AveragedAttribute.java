@@ -6,11 +6,23 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 
 import java.util.function.Supplier;
 
+/**
+ * An attribute where the final value is divided by the number of modifiers on calculation.
+ */
 public class AveragedAttribute extends ModifiableFloatAttribute
 {
-    public AveragedAttribute(String id, String key, BlocklingEntity blockling, float baseValue, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier)
+    /**
+     * @param id the id of the attribute.
+     * @param key the key used to identify the attribute (for things like translation text components).
+     * @param blockling the blockling.
+     * @param initialBaseValue the initial base value.
+     * @param displayStringValueSupplier the supplier used to provide the string representation of the value.
+     * @param displayStringNameSupplier the supplier used to provide the string representation of display name.
+     * @param isEnabled whether the attribute is currently enabled.
+     */
+    public AveragedAttribute(String id, String key, BlocklingEntity blockling, float initialBaseValue, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier, boolean isEnabled)
     {
-        super(id, key, blockling, baseValue, displayStringValueSupplier, displayStringNameSupplier);
+        super(id, key, blockling, initialBaseValue, displayStringValueSupplier, displayStringNameSupplier, isEnabled);
     }
 
     @Override

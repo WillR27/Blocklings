@@ -7,7 +7,7 @@ import com.willr27.blocklings.attribute.IModifier;
 import com.willr27.blocklings.attribute.Operation;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
-import com.willr27.blocklings.entity.entities.blockling.BlocklingStats;
+import com.willr27.blocklings.attribute.BlocklingAttributes;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.screens.guis.TabbedGui;
@@ -23,7 +23,6 @@ import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import org.jline.utils.Log;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
@@ -68,7 +67,7 @@ public class StatsScreen extends TabbedScreen
     private static final int WOODCUTTING_XP_BAR_Y = COMBAT_XP_BAR_Y + LEVEL_XP_GAP * 2;
     private static final int FARMING_XP_BAR_Y = COMBAT_XP_BAR_Y + LEVEL_XP_GAP * 3;
 
-    private final BlocklingStats stats;
+    private final BlocklingAttributes stats;
 
     private HealthBar healthBar;
 
@@ -228,10 +227,10 @@ public class StatsScreen extends TabbedScreen
 
         List<IReorderingProcessor> tooltip = new ArrayList<>();
 
-        if (combatXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().combatXp.createTranslation("required", blockling.getStats().combatXp.getValue(), BlocklingStats.getXpUntilNextLevel(blockling.getStats().combatLevel.getValue())), mouseX, mouseY);
-        else if (miningXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().miningXp.createTranslation("required", blockling.getStats().miningXp.getValue(), BlocklingStats.getXpUntilNextLevel(blockling.getStats().miningLevel.getValue())), mouseX, mouseY);
-        else if (woodcuttingXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().woodcuttingXp.createTranslation("required", blockling.getStats().woodcuttingXp.getValue(), BlocklingStats.getXpUntilNextLevel(blockling.getStats().woodcuttingLevel.getValue())), mouseX, mouseY);
-        else if (farmingXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().farmingXp.createTranslation("required", blockling.getStats().farmingXp.getValue(), BlocklingStats.getXpUntilNextLevel(blockling.getStats().farmingLevel.getValue())), mouseX, mouseY);
+        if (combatXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().combatXp.createTranslation("required", blockling.getStats().combatXp.getValue(), BlocklingAttributes.getXpUntilNextLevel(blockling.getStats().combatLevel.getValue())), mouseX, mouseY);
+        else if (miningXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().miningXp.createTranslation("required", blockling.getStats().miningXp.getValue(), BlocklingAttributes.getXpUntilNextLevel(blockling.getStats().miningLevel.getValue())), mouseX, mouseY);
+        else if (woodcuttingXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().woodcuttingXp.createTranslation("required", blockling.getStats().woodcuttingXp.getValue(), BlocklingAttributes.getXpUntilNextLevel(blockling.getStats().woodcuttingLevel.getValue())), mouseX, mouseY);
+        else if (farmingXpBar.isMouseOver(mouseX, mouseY)) renderTooltip(matrixStack, blockling.getStats().farmingXp.createTranslation("required", blockling.getStats().farmingXp.getValue(), BlocklingAttributes.getXpUntilNextLevel(blockling.getStats().farmingLevel.getValue())), mouseX, mouseY);
 
         renderTooltip(matrixStack, tooltip, mouseX, mouseY);
     }
@@ -351,7 +350,7 @@ public class StatsScreen extends TabbedScreen
 
         public void render(MatrixStack matrixStack, int mouseX, int mouseY, int xp, int level)
         {
-            double percentage = xp / (double) BlocklingStats.getXpUntilNextLevel(level);
+            double percentage = xp / (double) BlocklingAttributes.getXpUntilNextLevel(level);
             int middle = (int)(width * percentage);
 
             blit(matrixStack, x, y, textureX, textureY + height, width, height);

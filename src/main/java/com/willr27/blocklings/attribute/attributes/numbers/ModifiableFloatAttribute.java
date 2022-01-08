@@ -23,10 +23,11 @@ public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
      * @param initialBaseValue the initial base value.
      * @param displayStringValueSupplier the supplier used to provide the string representation of the value.
      * @param displayStringNameSupplier the supplier used to provide the string representation of display name.
+     * @param isEnabled whether the attribute is currently enabled.
      */
-    public ModifiableFloatAttribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, float initialBaseValue, @Nullable Supplier<String> displayStringValueSupplier, @Nullable Supplier<String> displayStringNameSupplier)
+    public ModifiableFloatAttribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, float initialBaseValue, @Nullable Supplier<String> displayStringValueSupplier, @Nullable Supplier<String> displayStringNameSupplier, boolean isEnabled)
     {
-        super(id, key, blockling, initialBaseValue, displayStringValueSupplier, displayStringNameSupplier);
+        super(id, key, blockling, initialBaseValue, displayStringValueSupplier, displayStringNameSupplier, isEnabled);
     }
 
     @Override

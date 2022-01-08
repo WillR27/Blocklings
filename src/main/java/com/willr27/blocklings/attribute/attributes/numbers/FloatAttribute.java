@@ -21,10 +21,11 @@ public class FloatAttribute extends Attribute<Float>
      * @param initialValue the initial value of the attribute.
      * @param displayStringValueSupplier the supplier used to provide the string representation of the value.
      * @param displayStringNameSupplier the supplier used to provide the string representation of display name.
+     * @param isEnabled whether the attribute is currently enabled.
      */
-    public FloatAttribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, float initialValue, @Nullable Supplier<String> displayStringValueSupplier, @Nullable Supplier<String> displayStringNameSupplier)
+    public FloatAttribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, float initialValue, @Nullable Supplier<String> displayStringValueSupplier, @Nullable Supplier<String> displayStringNameSupplier, boolean isEnabled)
     {
-        super(id, key, blockling, displayStringValueSupplier, displayStringNameSupplier);
+        super(id, key, blockling, displayStringValueSupplier, displayStringNameSupplier, isEnabled);
         this.value = initialValue;
     }
 

@@ -16,6 +16,12 @@ public interface IModifier<T>
     T getValue();
 
     /**
+     * @return the attribute associated with the modifier.
+     */
+    @Nonnull
+    IModifiable<T> getAttribute();
+
+    /**
      * @return the operation to perform on the attribute and modifier.
      */
     @Nonnull
