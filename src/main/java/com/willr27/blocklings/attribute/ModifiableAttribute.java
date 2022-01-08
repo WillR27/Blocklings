@@ -1,15 +1,14 @@
 package com.willr27.blocklings.attribute;
 
-import com.willr27.blocklings.attribute.attributes.numbers.FloatAttribute;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.network.BlocklingMessage;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -36,13 +35,13 @@ public abstract class ModifiableAttribute<T> extends Attribute<T> implements IMo
      * @param key the key used to identify the attribute (for things like translation text components).
      * @param blockling the blockling.
      * @param initialBaseValue the initial base value.
-     * @param displayStringValueSupplier the supplier used to provide the string representation of the value.
+     * @param displayStringValueFunction the function used to provide the string representation of the value.
      * @param displayStringNameSupplier the supplier used to provide the string representation of display name.
      * @param isEnabled whether the attribute is currently enabled.
      */
-    public ModifiableAttribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, T initialBaseValue, @Nullable Supplier<String> displayStringValueSupplier, @Nullable Supplier<String> displayStringNameSupplier, boolean isEnabled)
+    public ModifiableAttribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, T initialBaseValue, @Nullable Function<T, String> displayStringValueFunction, @Nullable Supplier<String> displayStringNameSupplier, boolean isEnabled)
     {
-        super(id, key, blockling, displayStringValueSupplier, displayStringNameSupplier, isEnabled);
+        super(id, key, blockling, displayStringValueFunction, displayStringNameSupplier, isEnabled);
         this.baseValue = initialBaseValue;
         this.value = initialBaseValue;
     }
@@ -131,9 +130,9 @@ public abstract class ModifiableAttribute<T> extends Attribute<T> implements IMo
 
     @Override
     @Nonnull
-    public Supplier<String> getDisplayStringValueSupplier()
+    public Function<T, String> getDisplayStringValueFunction()
     {
-        return displayStringValueSupplier;
+        return displayStringValueFunction;
     }
 
     @Override

@@ -89,7 +89,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         setCustomName(new StringTextComponent("Blockling"));
 
-        stats.initCallbacks();
+        stats.initUpdateCallbacks();
 
         // Set up any values that are determined randomly here
         // So that we can sync them up using read/writeSpawnData

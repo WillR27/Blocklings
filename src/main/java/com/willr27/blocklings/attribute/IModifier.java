@@ -1,6 +1,7 @@
 package com.willr27.blocklings.attribute;
 
 import javax.annotation.Nonnull;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -28,10 +29,10 @@ public interface IModifier<T>
     Operation getOperation();
 
     /**
-     * @return the supplier used to provide the string representation of the value.
+     * @return the function used to provide the string representation of the value.
      */
     @Nonnull
-    Supplier<String> getDisplayStringValueSupplier();
+    Function<T, String> getDisplayStringValueFunction();
 
     /**
      * @return the supplier used to provide the string representation of display name.

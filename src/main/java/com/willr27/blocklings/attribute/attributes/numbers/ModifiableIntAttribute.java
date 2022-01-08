@@ -8,6 +8,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nonnull;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -20,13 +21,13 @@ public class ModifiableIntAttribute extends ModifiableAttribute<Integer>
      * @param key the key used to identify the attribute (for things like translation text components).
      * @param blockling the blockling.
      * @param initialBaseValue the initial base value.
-     * @param displayStringValueSupplier the supplier used to provide the string representation of the value.
+     * @param displayStringValueFunction the function used to provide the string representation of the value.
      * @param displayStringNameSupplier the supplier used to provide the string representation of display name.
      * @param isEnabled whether the attribute is currently enabled.
      */
-    public ModifiableIntAttribute(String id, String key, BlocklingEntity blockling, int initialBaseValue, Supplier<String> displayStringValueSupplier, Supplier<String> displayStringNameSupplier, boolean isEnabled)
+    public ModifiableIntAttribute(String id, String key, BlocklingEntity blockling, int initialBaseValue, Function<Integer, String> displayStringValueFunction, Supplier<String> displayStringNameSupplier, boolean isEnabled)
     {
-        super(id, key, blockling, initialBaseValue, displayStringValueSupplier, displayStringNameSupplier, isEnabled);
+        super(id, key, blockling, initialBaseValue, displayStringValueFunction, displayStringNameSupplier, isEnabled);
     }
 
     @Override

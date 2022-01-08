@@ -7,6 +7,7 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -34,13 +35,13 @@ public class ModifiableIntAttributeModifier extends ModifiableIntAttribute imple
      * @param blockling the blockling.
      * @param initialValue the initial value of the attribute.
      * @param operation the operation to be performed on the associated attribute and the modifier.
-     * @param displayStringValueSupplier the supplier used to provide the string representation of the value.
+     * @param displayStringValueFunction the function used to provide the string representation of the value.
      * @param displayStringNameSupplier the supplier used to provide the string representation of display name.
      * @param isEnabled whether the attribute is currently enabled.
      */
-    public ModifiableIntAttributeModifier(@Nonnull String id, @Nonnull String key, @Nonnull IModifiable<Integer> attribute, @Nonnull BlocklingEntity blockling, int initialValue, @Nonnull Operation operation, @Nullable Supplier<String> displayStringValueSupplier, @Nullable Supplier<String> displayStringNameSupplier, boolean isEnabled)
+    public ModifiableIntAttributeModifier(@Nonnull String id, @Nonnull String key, @Nonnull IModifiable<Integer> attribute, @Nonnull BlocklingEntity blockling, int initialValue, @Nonnull Operation operation, @Nullable Function<Integer, String> displayStringValueFunction, @Nullable Supplier<String> displayStringNameSupplier, boolean isEnabled)
     {
-        super(id, key, blockling, initialValue, displayStringValueSupplier, displayStringNameSupplier, isEnabled);
+        super(id, key, blockling, initialValue, displayStringValueFunction, displayStringNameSupplier, isEnabled);
         this.attribute = attribute;
         this.operation = operation;
 

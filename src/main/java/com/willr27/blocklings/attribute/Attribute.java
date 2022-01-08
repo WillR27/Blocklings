@@ -1,5 +1,6 @@
 package com.willr27.blocklings.attribute;
 
+import com.mojang.datafixers.types.Func;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.network.BlocklingMessage;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -50,10 +52,10 @@ public abstract class Attribute<T>
     public final World world;
 
     /**
-     * The supplier used to provide the string representation of the value.
+     * The function used to provide the string representation of the value.
      */
     @Nonnull
-    public final Supplier<String> displayStringValueSupplier;
+    public final Function<T, String> displayStringValueFunction;
 
     /**
      * The supplier used to provide the string representation of display name.
@@ -92,17 +94,17 @@ public abstract class Attribute<T>
      * @param id the id of the attribute.
      * @param key the key used to identify the attribute (for things like translation text components).
      * @param blockling the blockling.
-     * @param displayStringValueSupplier the supplier used to provide the string representation of the value.
+     * @param displayStringValueFunction the supplier used to provide the string representation of the value.
      * @param displayStringNameSupplier the supplier used to provide the string representation of display name.
      * @param isEnabled whether the attribute is currently enabled.
      */
-    public Attribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, @Nullable Supplier<String> displayStringValueSupplier, @Nullable Supplier<String> displayStringNameSupplier, boolean isEnabled)
+    public Attribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, @Nullable Function<T, String> displayStringValueFunction, @Nullable Supplier<String> displayStringNameSupplier, boolean isEnabled)
     {
         this.id = UUID.fromString(id);
         this.key = key;
         this.blockling = blockling;
         this.world = blockling.level;
-        this.displayStringValueSupplier = displayStringValueSupplier == null ? () -> formatValue("%.1f") : displayStringValueSupplier;
+        this.displayStringValueFunction = displayStringValueFunction == null ? (v) -> formatValue("%.1f") : displayStringValueFunction;
         this.displayStringNameSupplier = displayStringNameSupplier == null ? () -> createTranslation("name").getString() : displayStringNameSupplier;
         this.isEnabled = isEnabled;
     }
@@ -240,12 +242,12 @@ public abstract class Attribute<T>
     }
 
     /**
-     * @return the supplier used to provide the string representation of the value.
+     * @return the function used to provide the string representation of the value.
      */
     @Nonnull
-    public Supplier<String> getDisplayStringValueSupplier()
+    public Function<T, String> getDisplayStringValueFunction()
     {
-        return displayStringValueSupplier;
+        return displayStringValueFunction;
     }
 
     /**

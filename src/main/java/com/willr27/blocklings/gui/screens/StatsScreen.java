@@ -98,7 +98,7 @@ public class StatsScreen extends TabbedScreen
     {
         List<ITextComponent> tooltip = new ArrayList<>();
 
-        tooltip.add(new StringTextComponent(colour + attribute.getDisplayStringValueSupplier().get() + " " + TextFormatting.GRAY + attribute.createTranslation("name").getString()));
+        tooltip.add(new StringTextComponent(colour + attribute.getDisplayStringValueFunction().apply(attribute.getValue()) + " " + TextFormatting.GRAY + attribute.createTranslation("name").getString()));
 
         appendModifiableFloatAttributeToTooltip(attribute, tooltip, 1);
 
@@ -115,7 +115,7 @@ public class StatsScreen extends TabbedScreen
             }
 
             String sign = modifier.getValue() < 0.0f && modifier.getOperation() == Operation.ADD ? "" : modifier.getValue() < 1.0f && modifier.getOperation() != Operation.ADD ? "" : "+";
-            tooltip.add(new StringTextComponent(TextFormatting.GRAY + generate(() -> " ").limit(depth).collect(joining()) + sign + modifier.getDisplayStringValueSupplier().get() + " " + TextFormatting.DARK_GRAY + modifier.getDisplayStringNameSupplier().get()));
+            tooltip.add(new StringTextComponent(TextFormatting.GRAY + generate(() -> " ").limit(depth).collect(joining()) + sign + modifier.getDisplayStringValueFunction().apply(modifier.getValue()) + " " + TextFormatting.DARK_GRAY + modifier.getDisplayStringNameSupplier().get()));
 
             if (modifier instanceof IModifiable<?>)
             {
@@ -132,22 +132,22 @@ public class StatsScreen extends TabbedScreen
         healthBar = new HealthBar(blockling, font, contentLeft + 20, contentTop + 36);
 
         attackWidget = new EnumeratingWidget(new BlocklingsTranslationTextComponent("stats.attack.name"), font, contentLeft + LEFT_ICON_X, contentTop + TOP_ICON_Y, ICON_SIZE, ICON_SIZE, false, 60, true, blockling);
-        attackWidget.addEnumeration(() -> blockling.getEquipment().isAttackingWith(BlocklingHand.MAIN), stats.mainHandAttackDamage.displayStringValueSupplier, () -> createModifiableFloatAttributeTooltip(stats.mainHandAttackDamage, TextFormatting.DARK_RED), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 10, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
-        attackWidget.addEnumeration(() -> blockling.getEquipment().isAttackingWith(BlocklingHand.OFF), stats.offHandAttackDamage.displayStringValueSupplier, () -> createModifiableFloatAttributeTooltip(stats.offHandAttackDamage, TextFormatting.DARK_RED), new GuiTexture(GuiUtil.STATS, 0, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
-        attackWidget.addEnumeration(() -> true, stats.attackSpeed.displayStringValueSupplier, () -> createModifiableFloatAttributeTooltip(stats.attackSpeed, TextFormatting.DARK_PURPLE), new GuiTexture(GuiUtil.STATS, 0, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE), Color.PINK);
+        attackWidget.addEnumeration(() -> blockling.getEquipment().isAttackingWith(BlocklingHand.MAIN), () -> stats.mainHandAttackDamage.displayStringValueFunction.apply(stats.mainHandAttackDamage.getValue()), () -> createModifiableFloatAttributeTooltip(stats.mainHandAttackDamage, TextFormatting.DARK_RED), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 10, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        attackWidget.addEnumeration(() -> blockling.getEquipment().isAttackingWith(BlocklingHand.OFF), () -> stats.offHandAttackDamage.displayStringValueFunction.apply(stats.offHandAttackDamage.getValue()), () -> createModifiableFloatAttributeTooltip(stats.offHandAttackDamage, TextFormatting.DARK_RED), new GuiTexture(GuiUtil.STATS, 0, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        attackWidget.addEnumeration(() -> true, () -> stats.attackSpeed.displayStringValueFunction.apply(stats.attackSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.attackSpeed, TextFormatting.DARK_PURPLE), new GuiTexture(GuiUtil.STATS, 0, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE), Color.PINK);
 
         defenceWidget = new EnumeratingWidget(new BlocklingsTranslationTextComponent("stats.defence.name"), font, contentLeft + LEFT_ICON_X, contentTop + BOTTOM_ICON_Y, ICON_SIZE, ICON_SIZE, false, 60, true, blockling);
-        defenceWidget.addEnumeration(() -> true, stats.armour.displayStringValueSupplier, () -> createModifiableFloatAttributeTooltip(stats.armour, TextFormatting.DARK_AQUA), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 5, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
-        defenceWidget.addEnumeration(() -> true, stats.armourToughness.displayStringValueSupplier, () -> createModifiableFloatAttributeTooltip(stats.armourToughness, TextFormatting.AQUA), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 6, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
-        defenceWidget.addEnumeration(() -> true, stats.knockbackResistance.displayStringValueSupplier, () -> createModifiableFloatAttributeTooltip(stats.knockbackResistance, TextFormatting.YELLOW), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 7, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        defenceWidget.addEnumeration(() -> true, () -> stats.armour.displayStringValueFunction.apply(stats.armour.getValue()), () -> createModifiableFloatAttributeTooltip(stats.armour, TextFormatting.DARK_AQUA), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 5, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        defenceWidget.addEnumeration(() -> true, () -> stats.armourToughness.displayStringValueFunction.apply(stats.armourToughness.getValue()), () -> createModifiableFloatAttributeTooltip(stats.armourToughness, TextFormatting.AQUA), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 6, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        defenceWidget.addEnumeration(() -> true, () -> stats.knockbackResistance.displayStringValueFunction.apply(stats.knockbackResistance.getValue()), () -> createModifiableFloatAttributeTooltip(stats.knockbackResistance, TextFormatting.YELLOW), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 7, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
 
         gatherWidget = new EnumeratingWidget(new BlocklingsTranslationTextComponent("stats.gather.name"), font, contentRight - LEFT_ICON_X - ICON_SIZE, contentTop + TOP_ICON_Y, ICON_SIZE, ICON_SIZE, true, 60, true, blockling);
-        gatherWidget.addEnumeration(() -> true, stats.miningSpeed.displayStringValueSupplier, () -> createModifiableFloatAttributeTooltip(stats.miningSpeed, TextFormatting.BLUE), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 1, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
-        gatherWidget.addEnumeration(() -> true, stats.woodcuttingSpeed.displayStringValueSupplier, () -> createModifiableFloatAttributeTooltip(stats.woodcuttingSpeed, TextFormatting.DARK_GREEN), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 2, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
-        gatherWidget.addEnumeration(() -> true, stats.farmingSpeed.displayStringValueSupplier, () -> createModifiableFloatAttributeTooltip(stats.farmingSpeed, TextFormatting.YELLOW), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 3, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        gatherWidget.addEnumeration(() -> true, () -> stats.miningSpeed.displayStringValueFunction.apply(stats.miningSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.miningSpeed, TextFormatting.BLUE), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 1, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        gatherWidget.addEnumeration(() -> true, () -> stats.woodcuttingSpeed.displayStringValueFunction.apply(stats.woodcuttingSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.woodcuttingSpeed, TextFormatting.DARK_GREEN), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 2, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        gatherWidget.addEnumeration(() -> true, () -> stats.farmingSpeed.displayStringValueFunction.apply(stats.farmingSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.farmingSpeed, TextFormatting.YELLOW), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 3, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
 
         movementWidget = new EnumeratingWidget(new BlocklingsTranslationTextComponent("stats.movement.name"), font, contentRight - LEFT_ICON_X - ICON_SIZE, contentTop + BOTTOM_ICON_Y, ICON_SIZE, ICON_SIZE, true, 60, true, blockling);
-        movementWidget.addEnumeration(() -> true, stats.moveSpeed.displayStringValueSupplier, () -> createModifiableFloatAttributeTooltip(stats.moveSpeed, TextFormatting.BLUE), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 8, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
+        movementWidget.addEnumeration(() -> true, () -> stats.moveSpeed.displayStringValueFunction.apply(stats.moveSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.moveSpeed, TextFormatting.BLUE), new GuiTexture(GuiUtil.STATS, ICON_SIZE * 8, STAT_ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE));
 
         combatIcon = new TexturedWidget(font, contentLeft + LEVEL_ICON_X, contentTop + COMBAT_ICON_Y, ICON_SIZE, ICON_SIZE, COMBAT_ICON_TEXTURE_X, LEVEL_ICON_TEXTURE_Y);
         miningIcon = new TexturedWidget(font, contentLeft + LEVEL_ICON_X, contentTop + MINING_ICON_Y, ICON_SIZE, ICON_SIZE, MINING_ICON_TEXTURE_X, LEVEL_ICON_TEXTURE_Y);

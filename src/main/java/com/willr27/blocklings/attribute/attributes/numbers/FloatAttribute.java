@@ -7,6 +7,7 @@ import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -19,13 +20,13 @@ public class FloatAttribute extends Attribute<Float>
      * @param key the key used to identify the attribute (for things like translation text components).
      * @param blockling the blockling.
      * @param initialValue the initial value of the attribute.
-     * @param displayStringValueSupplier the supplier used to provide the string representation of the value.
+     * @param displayStringValueFunction the function used to provide the string representation of the value.
      * @param displayStringNameSupplier the supplier used to provide the string representation of display name.
      * @param isEnabled whether the attribute is currently enabled.
      */
-    public FloatAttribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, float initialValue, @Nullable Supplier<String> displayStringValueSupplier, @Nullable Supplier<String> displayStringNameSupplier, boolean isEnabled)
+    public FloatAttribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, float initialValue, @Nullable Function<Float, String> displayStringValueFunction, @Nullable Supplier<String> displayStringNameSupplier, boolean isEnabled)
     {
-        super(id, key, blockling, displayStringValueSupplier, displayStringNameSupplier, isEnabled);
+        super(id, key, blockling, displayStringValueFunction, displayStringNameSupplier, isEnabled);
         this.value = initialValue;
     }
 

@@ -13,6 +13,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -22,111 +23,217 @@ import java.util.Objects;
  */
 public class BlocklingAttributes
 {
+    /**
+     * The list of attributes added via add attribute.
+     * Used to save/load nbt data and sync to client/server.
+     */
+    @Nonnull
     public final List<Attribute<?>> attributes = new ArrayList<>();
+
+    /**
+     * The list of attributes added via add modifier.
+     * Used to save/load nbt data and sync to client/server.
+     */
+    @Nonnull
     public final List<IModifier<?>> modifiers = new ArrayList<>();
 
+    @Nonnull
     public final IntAttribute combatLevel;
+    @Nonnull
     public final IntAttribute miningLevel;
+    @Nonnull
     public final IntAttribute woodcuttingLevel;
+    @Nonnull
     public final IntAttribute farmingLevel;
+    @Nonnull
     public final Attribute<Integer> totalLevel;
 
+    @Nonnull
     public final IntAttribute combatXp;
+    @Nonnull
     public final IntAttribute miningXp;
+    @Nonnull
     public final IntAttribute woodcuttingXp;
+    @Nonnull
     public final IntAttribute farmingXp;
 
+    @Nonnull
     public final EnumAttribute<BlocklingHand> hand;
 
+    @Nonnull
     public final ModifiableFloatAttribute maxHealth;
+    @Nonnull
     public final FloatAttributeModifier maxHealthCombatLevelModifier;
+    @Nonnull
     public final FloatAttributeModifier maxHealthTypeModifier;
 
+    @Nonnull
     public final ModifiableFloatAttribute mainHandAttackDamage;
+    @Nonnull
     public final ModifiableFloatAttributeModifier mainHandAttackDamageBlocklingModifier;
+    @Nonnull
     public final FloatAttributeModifier mainHandAttackDamageTypeModifier;
+    @Nonnull
     public final FloatAttributeModifier mainHandAttackDamageCombatLevelModifier;
+    @Nonnull
     public final FloatAttributeModifier mainHandAttackDamageToolModifier;
 
+    @Nonnull
     public final ModifiableFloatAttribute offHandAttackDamage;
+    @Nonnull
     public final ModifiableFloatAttributeModifier offHandAttackDamageBlocklingModifier;
+    @Nonnull
     public final FloatAttributeModifier offHandAttackDamageTypeModifier;
+    @Nonnull
     public final FloatAttributeModifier offHandAttackDamageCombatLevelModifier;
+    @Nonnull
     public final FloatAttributeModifier offHandAttackDamageToolModifier;
 
+    @Nonnull
     public final AveragedAttribute attackSpeed;
+    @Nonnull
     public final ModifiableFloatAttributeModifier attackSpeedBlocklingModifier;
+    @Nonnull
     public final FloatAttributeModifier attackSpeedTypeModifier;
+    @Nonnull
     public final FloatAttributeModifier attackSpeedLevelModifier;
+    @Nonnull
     public final FloatAttributeModifier attackSpeedMainHandModifier;
+    @Nonnull
     public final FloatAttributeModifier attackSpeedOffHandModifier;
 
+    @Nonnull
     public final ModifiableFloatAttribute armour;
+    @Nonnull
     public final ModifiableFloatAttributeModifier armourBlocklingModifier;
+    @Nonnull
     public final FloatAttributeModifier armourCombatLevelModifier;
+    @Nonnull
     public final FloatAttributeModifier armourTypeModifier;
 
+    @Nonnull
     public final ModifiableFloatAttribute armourToughness;
+    @Nonnull
     public final ModifiableFloatAttributeModifier armourToughnessBlocklingModifier;
+    @Nonnull
     public final FloatAttributeModifier armourToughnessCombatLevelModifier;
+    @Nonnull
     public final FloatAttributeModifier armourToughnessTypeModifier;
 
+    @Nonnull
     public final ModifiableFloatAttribute knockbackResistance;
+    @Nonnull
     public final ModifiableFloatAttributeModifier knockbackResistanceBlocklingModifier;
+    @Nonnull
     public final FloatAttributeModifier knockbackResistanceCombatLevelModifier;
+    @Nonnull
     public final FloatAttributeModifier knockbackResistanceTypeModifier;
 
+    @Nonnull
     public final ModifiableFloatAttribute moveSpeed;
+    @Nonnull
     public final ModifiableFloatAttributeModifier moveSpeedBlocklingModifier;
+    @Nonnull
     public final FloatAttributeModifier moveSpeedTypeModifier;
 
+    @Nonnull
     public final ModifiableFloatAttribute miningRange;
+    @Nonnull
     public final ModifiableFloatAttribute miningRangeSq;
+    @Nonnull
     public final ModifiableFloatAttribute woodcuttingRange;
+    @Nonnull
     public final ModifiableFloatAttribute woodcuttingRangeSq;
+    @Nonnull
     public final ModifiableFloatAttribute farmingRange;
+    @Nonnull
     public final ModifiableFloatAttribute farmingRangeSq;
 
+    @Nonnull
     public final ModifiableFloatAttribute miningSpeed;
+    @Nonnull
     public final ModifiableFloatAttributeModifier miningSpeedBlocklingModifier;
+    @Nonnull
     public final FloatAttributeModifier miningSpeedTypeModifier;
+    @Nonnull
     public final FloatAttributeModifier miningSpeedLevelModifier;
+    @Nonnull
     public final FloatAttributeModifier miningSpeedMainHandModifier;
+    @Nonnull
     public final FloatAttributeModifier miningSpeedOffHandModifier;
+    @Nonnull
     public final FloatAttributeModifier miningSpeedSkillEfficiencyModifier;
+    @Nonnull
     public final FloatAttributeModifier miningSpeedSkillAdrenalineModifier;
+    @Nonnull
     public final FloatAttributeModifier miningSpeedSkillMomentumModifier;
+    @Nonnull
     public final FloatAttributeModifier miningSpeedSkillHastyModifier;
+    @Nonnull
     public final FloatAttributeModifier miningSpeedSkillNightOwlModifier;
 
+    @Nonnull
     public final ModifiableFloatAttribute woodcuttingSpeed;
+    @Nonnull
     public final ModifiableFloatAttributeModifier woodcuttingSpeedBlocklingModifier;
+    @Nonnull
     public final FloatAttributeModifier woodcuttingSpeedTypeModifier;
+    @Nonnull
     public final FloatAttributeModifier woodcuttingSpeedLevelModifier;
+    @Nonnull
     public final FloatAttributeModifier woodcuttingSpeedMainHandModifier;
+    @Nonnull
     public final FloatAttributeModifier woodcuttingSpeedOffHandModifier;
+    @Nonnull
     public final FloatAttributeModifier woodcuttingSpeedSkillEfficiencyModifier;
+    @Nonnull
     public final FloatAttributeModifier woodcuttingSpeedSkillAdrenalineModifier;
+    @Nonnull
     public final FloatAttributeModifier woodcuttingSpeedSkillMomentumModifier;
+    @Nonnull
     public final FloatAttributeModifier woodcuttingSpeedSkillHastyModifier;
+    @Nonnull
     public final FloatAttributeModifier woodcuttingSpeedSkillNightOwlModifier;
 
+    @Nonnull
     public final ModifiableFloatAttribute farmingSpeed;
+    @Nonnull
     public final ModifiableFloatAttributeModifier farmingSpeedBlocklingModifier;
+    @Nonnull
     public final FloatAttributeModifier farmingSpeedTypeModifier;
+    @Nonnull
     public final FloatAttributeModifier farmingSpeedLevelModifier;
+    @Nonnull
     public final FloatAttributeModifier farmingSpeedMainHandModifier;
+    @Nonnull
     public final FloatAttributeModifier farmingSpeedOffHandModifier;
+    @Nonnull
     public final FloatAttributeModifier farmingSpeedSkillEfficiencyModifier;
+    @Nonnull
     public final FloatAttributeModifier farmingSpeedSkillAdrenalineModifier;
+    @Nonnull
     public final FloatAttributeModifier farmingSpeedSkillMomentumModifier;
+    @Nonnull
     public final FloatAttributeModifier farmingSpeedSkillHastyModifier;
+    @Nonnull
     public final FloatAttributeModifier farmingSpeedSkillNightOwlModifier;
 
+    /**
+     * The associated blockling.
+     */
+    @Nonnull
     public final BlocklingEntity blockling;
+
+    /**
+     * The world the associated blockling is in.
+     */
+    @Nonnull
     public final World world;
 
-    public BlocklingAttributes(BlocklingEntity blockling)
+    /**
+     * @param blockling the associated blockling.
+     */
+    public BlocklingAttributes(@Nonnull BlocklingEntity blockling)
     {
         this.blockling = blockling;
         this.world = blockling.level;
@@ -194,10 +301,10 @@ public class BlocklingAttributes
         addModifier(armourToughnessTypeModifier = new FloatAttributeModifier("4f806fa7-1ebe-4426-99c6-5c0d0f41be25", "armour_toughness_type", armourToughnessBlocklingModifier, blockling, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString(), true));
         addModifier(armourToughnessCombatLevelModifier = new FloatAttributeModifier("0f438ab0-2e72-4555-840f-3b3dc2335014", "armour_toughness_combat_level", armourToughnessBlocklingModifier, blockling, 0.0f, Operation.ADD, null, combatLevel.displayStringNameSupplier, true));
 
-        addAttribute(knockbackResistance = new ModifiableFloatAttribute("ddc90fc2-4a68-4c30-8701-d2d9dbe8b94a", "knockback_resistance", blockling, 0.0f, this::knockbackResistanceDisplayStringValueProvider, null, true));
-        addModifier(knockbackResistanceBlocklingModifier = new ModifiableFloatAttributeModifier("3b6bf894-3beb-42f5-b516-759bacf9acab", "knockback_resistance_blockling", knockbackResistance, blockling, 0.0f, Operation.ADD, this::knockbackResistanceBlocklingModifierDisplayStringValueProvider, () -> blockling.getCustomName().getString(), true));
-        addModifier(knockbackResistanceTypeModifier = new FloatAttributeModifier("eb217d5e-6e7d-4ef0-9ca1-153a7bc18593", "knockback_resistance_type", knockbackResistanceBlocklingModifier, blockling, 0.0f, Operation.ADD, this::knockbackResistanceTypeModifierDisplayStringValueProvider, () -> blockling.getBlocklingType().name.getString(), true));
-        addModifier(knockbackResistanceCombatLevelModifier = new FloatAttributeModifier("711cf234-2f57-413c-be3d-ce4c5f809b86", "knockback_resistance_combat_level", knockbackResistanceBlocklingModifier, blockling, 0.0f, Operation.ADD, this::knockbackResistanceCombatLevelModifierDisplayStringValueProvider, combatLevel.displayStringNameSupplier, true));
+        addAttribute(knockbackResistance = new ModifiableFloatAttribute("ddc90fc2-4a68-4c30-8701-d2d9dbe8b94a", "knockback_resistance", blockling, 0.0f, (v) -> String.format("%.0f%%", v * 100.0f), null, true));
+        addModifier(knockbackResistanceBlocklingModifier = new ModifiableFloatAttributeModifier("3b6bf894-3beb-42f5-b516-759bacf9acab", "knockback_resistance_blockling", knockbackResistance, blockling, 0.0f, Operation.ADD, (v) -> String.format("%.0f%%", v * 100.0f), () -> blockling.getCustomName().getString(), true));
+        addModifier(knockbackResistanceTypeModifier = new FloatAttributeModifier("eb217d5e-6e7d-4ef0-9ca1-153a7bc18593", "knockback_resistance_type", knockbackResistanceBlocklingModifier, blockling, 0.0f, Operation.ADD, (v) -> String.format("%.0f%%", v * 100.0f), () -> blockling.getBlocklingType().name.getString(), true));
+        addModifier(knockbackResistanceCombatLevelModifier = new FloatAttributeModifier("711cf234-2f57-413c-be3d-ce4c5f809b86", "knockback_resistance_combat_level", knockbackResistanceBlocklingModifier, blockling, 0.0f, Operation.ADD, (v) -> String.format("%.0f%%", v * 100.0f), combatLevel.displayStringNameSupplier, true));
 
         addAttribute(moveSpeed = new ModifiableFloatAttribute("9a0bb639-8543-4725-9be1-8a8ce688da70", "move_speed", blockling, 0.0f, null, null, true));
         addModifier(moveSpeedBlocklingModifier = new ModifiableFloatAttributeModifier("f4300b1a-ee93-4d36-a457-4d71c349a4ab", "move_speed_blockling", moveSpeed, blockling, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString(), true));
@@ -220,7 +327,7 @@ public class BlocklingAttributes
         addModifier(miningSpeedLevelModifier = new FloatAttributeModifier("f0914966-d53a-4292-b48c-5595f944f5d2", "mining_speed_level", miningSpeedBlocklingModifier, blockling, 0.0f, Operation.ADD, null, miningLevel.displayStringNameSupplier, true));
         addModifier(miningSpeedMainHandModifier = new FloatAttributeModifier("fc0dd885-273b-4465-a9ff-e801dcaf07e2", "mining_speed_main_hand", miningSpeed, blockling, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString(), true));
         addModifier(miningSpeedOffHandModifier = new FloatAttributeModifier("aada86a0-4233-47cf-b5ab-aa208a216bb5", "mining_speed_off_hand", miningSpeed, blockling, 0.0f, Operation.ADD, null, () -> blockling.getOffhandItem().getHoverName().getString(), true));
-        addModifier(miningSpeedSkillEfficiencyModifier = new FloatAttributeModifier("9464fc16-0f3c-438f-ac0b-8715a3542aaa", "mining_speed_skill_efficiency", miningSpeed, blockling, 1.1f, Operation.MULTIPLY_TOTAL, this::miningSpeedSkillEfficiencymodifierDisplayStringValueProvider, () -> skillDisplayNameProvider(BlocklingSkills.Mining.EFFICIENCY), false));
+        addModifier(miningSpeedSkillEfficiencyModifier = new FloatAttributeModifier("9464fc16-0f3c-438f-ac0b-8715a3542aaa", "mining_speed_skill_efficiency", miningSpeed, blockling, 1.1f, Operation.MULTIPLY_TOTAL, (v) -> String.format("%.0f%%", (v - 1.0f) * 100.0f), () -> skillDisplayNameProvider(BlocklingSkills.Mining.EFFICIENCY), false));
         addModifier(miningSpeedSkillAdrenalineModifier = new FloatAttributeModifier("1543fadc-3a9e-412b-819b-a6379a0911ca", "mining_speed_skill_adrenaline", miningSpeed, blockling, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Mining.ADRENALINE), false));
         addModifier(miningSpeedSkillMomentumModifier = new FloatAttributeModifier("1ca4d69f-05b8-4598-97c5-95f6bc750b7a", "mining_speed_skill_momentum", miningSpeed, blockling, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Mining.MOMENTUM), false));
         addModifier(miningSpeedSkillHastyModifier = new FloatAttributeModifier("035c4e96-a628-4b20-9699-28ade0fa5a80", "mining_speed_skill_hasty", miningSpeed, blockling, 10.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Mining.HASTY), false));
@@ -232,7 +339,7 @@ public class BlocklingAttributes
         addModifier(woodcuttingSpeedLevelModifier = new FloatAttributeModifier("6b71ee16-7d04-442e-9d49-9373833f5539", "woodcutting_speed_level", woodcuttingSpeedBlocklingModifier, blockling, 0.0f, Operation.ADD, null, woodcuttingLevel.displayStringNameSupplier, true));
         addModifier(woodcuttingSpeedMainHandModifier = new FloatAttributeModifier("978f9dd4-3fbb-41ee-9bba-eddcfb42b6ff", "woodcutting_speed_main_hand", woodcuttingSpeed, blockling, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString(), true));
         addModifier(woodcuttingSpeedOffHandModifier = new FloatAttributeModifier("80fd0028-a793-491c-bc9c-fe94071f91c7", "woodcutting_speed_off_hand", woodcuttingSpeed, blockling, 0.0f, Operation.ADD, null, () -> blockling.getOffhandItem().getHoverName().getString(), true));
-        addModifier(woodcuttingSpeedSkillEfficiencyModifier = new FloatAttributeModifier("38a9d80c-4f96-4929-bd34-8c03156dec6d", "woodcutting_speed_skill_efficiency", woodcuttingSpeed, blockling, 1.1f, Operation.MULTIPLY_TOTAL, this::woodcuttingSpeedSkillEfficiencymodifierDisplayStringValueProvider, () -> skillDisplayNameProvider(BlocklingSkills.Woodcutting.EFFICIENCY), false));
+        addModifier(woodcuttingSpeedSkillEfficiencyModifier = new FloatAttributeModifier("38a9d80c-4f96-4929-bd34-8c03156dec6d", "woodcutting_speed_skill_efficiency", woodcuttingSpeed, blockling, 1.1f, Operation.MULTIPLY_TOTAL, (v) -> String.format("%.0f%%", (v - 1.0f) * 100.0f), () -> skillDisplayNameProvider(BlocklingSkills.Woodcutting.EFFICIENCY), false));
         addModifier(woodcuttingSpeedSkillAdrenalineModifier = new FloatAttributeModifier("e832c5da-0465-4a63-96b7-398eb32ba206", "woodcutting_speed_skill_adrenaline", woodcuttingSpeed, blockling, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Woodcutting.ADRENALINE), false));
         addModifier(woodcuttingSpeedSkillMomentumModifier = new FloatAttributeModifier("868bba90-a29c-4b70-b599-c3f56b00928e", "woodcutting_speed_skill_momentum", woodcuttingSpeed, blockling, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Woodcutting.MOMENTUM), false));
         addModifier(woodcuttingSpeedSkillHastyModifier = new FloatAttributeModifier("38709558-3da6-4f86-896f-195e84c18525", "woodcutting_speed_skill_hasty", woodcuttingSpeed, blockling, 10.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Woodcutting.HASTY), false));
@@ -244,64 +351,49 @@ public class BlocklingAttributes
         addModifier(farmingSpeedLevelModifier = new FloatAttributeModifier("3b3079cf-8640-436b-bf0a-3aae4deb29be", "farming_speed_level", farmingSpeedBlocklingModifier, blockling, 0.0f, Operation.ADD, null, farmingLevel.displayStringNameSupplier, true));
         addModifier(farmingSpeedMainHandModifier = new FloatAttributeModifier("5ece4240-17b3-4983-bd0d-67f962a0a838", "farming_speed_main_hand", farmingSpeed, blockling, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString(), true));
         addModifier(farmingSpeedOffHandModifier = new FloatAttributeModifier("b4bb7131-f2ce-41cd-88ed-ee27e3837679", "farming_speed_off_hand", farmingSpeed, blockling, 0.0f, Operation.ADD, null, () -> blockling.getOffhandItem().getHoverName().getString(), true));
-        addModifier(farmingSpeedSkillEfficiencyModifier = new FloatAttributeModifier("792be316-19cb-49ec-a24a-ee224312c60f", "farming_speed_skill_efficiency", farmingSpeed, blockling, 1.1f, Operation.MULTIPLY_TOTAL, this::farmingSpeedSkillEfficiencymodifierDisplayStringValueProvider, () -> skillDisplayNameProvider(BlocklingSkills.Farming.EFFICIENCY), false));
+        addModifier(farmingSpeedSkillEfficiencyModifier = new FloatAttributeModifier("792be316-19cb-49ec-a24a-ee224312c60f", "farming_speed_skill_efficiency", farmingSpeed, blockling, 1.1f, Operation.MULTIPLY_TOTAL, (v) -> String.format("%.0f%%", (v - 1.0f) * 100.0f), () -> skillDisplayNameProvider(BlocklingSkills.Farming.EFFICIENCY), false));
         addModifier(farmingSpeedSkillAdrenalineModifier = new FloatAttributeModifier("79f7d5ff-2fd7-4385-a795-c281f984445b", "farming_speed_skill_adrenaline", farmingSpeed, blockling, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Farming.ADRENALINE), false));
         addModifier(farmingSpeedSkillMomentumModifier = new FloatAttributeModifier("d58d5336-d2fe-447d-a237-bb0bbff313d7", "farming_speed_skill_momentum", farmingSpeed, blockling, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Farming.MOMENTUM), false));
         addModifier(farmingSpeedSkillHastyModifier = new FloatAttributeModifier("3f045e39-8185-4d2c-8980-54e06f8d548b", "farming_speed_skill_hasty", farmingSpeed, blockling, 10.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Farming.HASTY), false));
         addModifier(farmingSpeedSkillNightOwlModifier = new FloatAttributeModifier("451f37a9-649e-44a3-a21f-d76e49f1afd0", "farming_speed_skill_night_owl", farmingSpeed, blockling, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Farming.NIGHT_OWL), false));
     }
 
-    private String skillDisplayNameProvider(SkillInfo skillInfo)
+    /**
+     * Used to produce a display name for an attribute relating to a skill.
+     *
+     * @param skillInfo the relate skill.
+     * @return the display string.
+     */
+    @Nonnull
+    private String skillDisplayNameProvider(@Nonnull SkillInfo skillInfo)
     {
         return skillInfo.general.name.getString() + " ("+ new BlocklingsTranslationTextComponent("skill.name").getString() +")";
     }
 
-    private String knockbackResistanceDisplayStringValueProvider()
-    {
-        return String.format("%.0f%%", knockbackResistance.getValue() * 100.0f);
-    }
-
-    private String knockbackResistanceBlocklingModifierDisplayStringValueProvider()
-    {
-        return String.format("%.0f%%", knockbackResistanceBlocklingModifier.getValue() * 100.0f);
-    }
-
-    private String knockbackResistanceTypeModifierDisplayStringValueProvider()
-    {
-        return String.format("%.0f%%", knockbackResistanceTypeModifier.getValue() * 100.0f);
-    }
-
-    private String knockbackResistanceCombatLevelModifierDisplayStringValueProvider()
-    {
-        return String.format("%.0f%%", knockbackResistanceCombatLevelModifier.getValue() * 100.0f);
-    }
-
-    private String miningSpeedSkillEfficiencymodifierDisplayStringValueProvider()
-    {
-        return String.format("%.0f%%", (miningSpeedSkillEfficiencyModifier.getValue() - 1.0f) * 100.0f);
-    }
-
-    private String woodcuttingSpeedSkillEfficiencymodifierDisplayStringValueProvider()
-    {
-        return String.format("%.0f%%", (woodcuttingSpeedSkillEfficiencyModifier.getValue() - 1.0f) * 100.0f);
-    }
-
-    private String farmingSpeedSkillEfficiencymodifierDisplayStringValueProvider()
-    {
-        return String.format("%.0f%%", (farmingSpeedSkillEfficiencyModifier.getValue() - 1.0f) * 100.0f);
-    }
-
-    public void addAttribute(Attribute<?> attribute)
+    /**
+     * Adds the given attribute to the attributes list.
+     *
+     * @param attribute the attribute to add.
+     */
+    public void addAttribute(@Nonnull Attribute<?> attribute)
     {
         attributes.add(attribute);
     }
 
-    public <V, T extends Attribute<V> & IModifier<V>> void addModifier(T modifier)
+    /**
+     * Adds the given modifier to the attributes and modifiers lists.
+     *
+     * @param modifier the modifier to add.
+     */
+    public <V, T extends Attribute<V> & IModifier<V>> void addModifier(@Nonnull T modifier)
     {
         attributes.add(modifier);
         modifiers.add(modifier);
     }
 
+    /**
+     * Initialised the attributes by calling any calculate methods and update callbacks.
+     */
     public void init()
     {
         for (Attribute<?> attribute : attributes)
@@ -321,21 +413,24 @@ public class BlocklingAttributes
         updateTypeBonuses(false);
     }
 
-    public void initCallbacks()
+    /**
+     * Initialises any update callbacks for attributes.
+     */
+    public void initUpdateCallbacks()
     {
         combatLevel.addUpdateCallback((i) -> { updateCombatLevelBonuses(false); });
         attackSpeed.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.ATTACK_SPEED)).setBaseValue(f));
-        miningLevel.addUpdateCallback((i) -> { miningSpeedLevelModifier.setValue(calcBreakSpeedFromLevel(i), false); });
-        woodcuttingLevel.addUpdateCallback((i) -> { woodcuttingSpeedLevelModifier.setValue(calcBreakSpeedFromLevel(i), false); });
-        farmingLevel.addUpdateCallback((i) -> { farmingSpeedLevelModifier.setValue(calcBreakSpeedFromLevel(i), false); });
-        combatXp.addUpdateCallback((i) -> checkForLevelUp(false));
-        miningXp.addUpdateCallback((i) -> checkForLevelUp(false));
-        woodcuttingXp.addUpdateCallback((i) -> checkForLevelUp(false));
-        farmingXp.addUpdateCallback((i) -> checkForLevelUp(false));
+        miningLevel.addUpdateCallback((i) -> { miningSpeedLevelModifier.setValue(calcBlockBreakSpeedFromLevel(i), false); });
+        woodcuttingLevel.addUpdateCallback((i) -> { woodcuttingSpeedLevelModifier.setValue(calcBlockBreakSpeedFromLevel(i), false); });
+        farmingLevel.addUpdateCallback((i) -> { farmingSpeedLevelModifier.setValue(calcBlockBreakSpeedFromLevel(i), false); });
+        combatXp.addUpdateCallback((i) -> checkForLevelUpAndUpdate(false));
+        miningXp.addUpdateCallback((i) -> checkForLevelUpAndUpdate(false));
+        woodcuttingXp.addUpdateCallback((i) -> checkForLevelUpAndUpdate(false));
+        farmingXp.addUpdateCallback((i) -> checkForLevelUpAndUpdate(false));
         miningRange.addUpdateCallback((f) -> miningRangeSq.setBaseValue(miningRange.getValue() * miningRange.getValue(), false));
         woodcuttingRange.addUpdateCallback((f) -> woodcuttingRangeSq.setBaseValue(woodcuttingRange.getValue() * woodcuttingRange.getValue(), false));
         farmingRange.addUpdateCallback((f) -> farmingRangeSq.setBaseValue(farmingRange.getValue() * farmingRange.getValue(), false));
-        maxHealth.addUpdateCallback((f) -> { Objects.requireNonNull(blockling.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(f); updateHealth(); });
+        maxHealth.addUpdateCallback((f) -> { Objects.requireNonNull(blockling.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(f); checkAndCapHealth(); });
         mainHandAttackDamage.addUpdateCallback((f) -> setVanillaAttackDamageAttribute());
         offHandAttackDamage.addUpdateCallback((f) -> setVanillaAttackDamageAttribute());
         armour.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.ARMOR)).setBaseValue(f));
@@ -344,7 +439,12 @@ public class BlocklingAttributes
         moveSpeed.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.MOVEMENT_SPEED)).setBaseValue(f / 10.0f));
     }
 
-    public void writeToNBT(CompoundNBT c)
+    /**
+     * Writes all the attributes' information to an attributes tag and adds it to the given tag.
+     *
+     * @param tag the tag to add the attributes tag to.
+     */
+    public void writeToNBT(@Nonnull CompoundNBT tag)
     {
         CompoundNBT attributesNBT = new CompoundNBT();
 
@@ -357,12 +457,17 @@ public class BlocklingAttributes
             attributesNBT.put(attribute.id.toString(), attributeTag);
         }
 
-        c.put("attributes", attributesNBT);
+        tag.put("attributes", attributesNBT);
     }
 
-    public void readFromNBT(CompoundNBT c)
+    /**
+     * Reads all the attributes' information from the given tag.
+     *
+     * @param tag the tag to read the attributes' information from.
+     */
+    public void readFromNBT(@Nonnull CompoundNBT tag)
     {
-        CompoundNBT attributesNBT = (CompoundNBT) c.get("attributes");
+        CompoundNBT attributesNBT = (CompoundNBT) tag.get("attributes");
 
         for (Attribute<?> attribute : attributes)
         {
@@ -377,7 +482,12 @@ public class BlocklingAttributes
         init();
     }
 
-    public void encode(PacketBuffer buf)
+    /**
+     * Writes all the attributes to the given buffer.
+     *
+     * @param buf the buffer to write to.
+     */
+    public void encode(@Nonnull PacketBuffer buf)
     {
         for (Attribute<?> attribute : attributes)
         {
@@ -385,7 +495,12 @@ public class BlocklingAttributes
         }
     }
 
-    public void decode(PacketBuffer buf)
+    /**
+     * Reads all the attributes from the given buffer.
+     *
+     * @param buf the buffer to read from.
+     */
+    public void decode(@Nonnull PacketBuffer buf)
     {
         for (Attribute<?> attribute : attributes)
         {
@@ -395,11 +510,18 @@ public class BlocklingAttributes
         init();
     }
 
+    /**
+     * @param level the level to enquire about.
+     * @return the xp needed to reach the next level.
+     */
     public static int getXpUntilNextLevel(int level)
     {
         return (int) (Math.exp(level / 25.0) * 40) - 30;
     }
 
+    /**
+     * Sets the matching vanilla attributes in case any vanilla code needs to use them.
+     */
     private void setVanillaAttackDamageAttribute()
     {
         if (blockling.getEquipment().isAttackingWith(BlocklingHand.MAIN))
@@ -420,7 +542,12 @@ public class BlocklingAttributes
         }
     }
 
-    public void checkForLevelUp(boolean sync)
+    /**
+     * Checks each level to see if the target xp has been reached and updates the state accordingly.
+     *
+     * @param sync whether to sync any resulting changes to the client/server.
+     */
+    public void checkForLevelUpAndUpdate(boolean sync)
     {
         if (combatLevel.getValue() < 99)
         {
@@ -471,17 +598,27 @@ public class BlocklingAttributes
         }
     }
 
+    /**
+     * Updates the bonuses provided by the combat level.
+     *
+     * @param sync whether to sync the changes to the client/server.
+     */
     public void updateCombatLevelBonuses(boolean sync)
     {
         maxHealthCombatLevelModifier.setValue(calcBonusHealthFromCombatLevel(), sync);
         mainHandAttackDamageCombatLevelModifier.setValue(calcBonusDamageFromCombatLevel(), sync);
         offHandAttackDamageCombatLevelModifier.setValue(calcBonusDamageFromCombatLevel(), sync);
-        attackSpeedLevelModifier.setValue(calcBreakSpeedFromLevel(combatLevel.getValue()), sync);
-        armourCombatLevelModifier.setValue(calcBonusArmorFromCombatLevel(), sync);
-        armourToughnessCombatLevelModifier.setValue(calcBonusArmorToughnessFromCombatLevel(), sync);
+        attackSpeedLevelModifier.setValue(calcBlockBreakSpeedFromLevel(combatLevel.getValue()), sync);
+        armourCombatLevelModifier.setValue(calcBonusArmourFromCombatLevel(), sync);
+        armourToughnessCombatLevelModifier.setValue(calcBonusArmourToughnessFromCombatLevel(), sync);
         knockbackResistanceCombatLevelModifier.setValue(calcBonusKnockbackResistanceFromCombatLevel(), sync);
     }
 
+    /**
+     * Updates the bonuses provided by the blockling type.
+     *
+     * @param sync whether to sync the changes to the client/server.
+     */
     public void updateTypeBonuses(boolean sync)
     {
         BlocklingType type = blockling.getBlocklingType();
@@ -498,37 +635,60 @@ public class BlocklingAttributes
         farmingSpeedTypeModifier.setValue(type.getFarmingSpeed(), sync);
     }
 
-    private float calcBreakSpeedFromLevel(int level)
+    /**
+     * @param level the level to enquire about.
+     * @return the block break speed for that level.
+     */
+    private float calcBlockBreakSpeedFromLevel(int level)
     {
         return (float) (10.0f * Math.tan((level / 99.0) * (Math.PI / 4.0)));
     }
 
+    /**
+     * @return the bonus health provided by the current combat level.
+     */
     private float calcBonusHealthFromCombatLevel()
     {
         return (float) (50.0f * Math.tan((combatLevel.getValue() / 99.0) * (Math.PI / 4.0)));
     }
 
+    /**
+     * @return the bonus damage provided by the current combat level.
+     */
     private float calcBonusDamageFromCombatLevel()
     {
         return (float) (20.0f * Math.tan((combatLevel.getValue() / 99.0) * (Math.PI / 4.0)));
     }
 
-    private float calcBonusArmorFromCombatLevel()
+    /**
+     * @return the bonus armour provided by the current combat level.
+     */
+    private float calcBonusArmourFromCombatLevel()
     {
         return (float) (10.0f * Math.tan((combatLevel.getValue() / 99.0) * (Math.PI / 4.0)));
     }
 
-    private float calcBonusArmorToughnessFromCombatLevel()
+    /**
+     * @return the bonus armour toughness provided by the current combat level.
+     */
+    private float calcBonusArmourToughnessFromCombatLevel()
     {
         return (float) (5.0f * Math.tan((combatLevel.getValue() / 99.0) * (Math.PI / 4.0)));
     }
 
+    /**
+     * @return the bonus knockback resistance provided by the current combat level.
+     */
     private float calcBonusKnockbackResistanceFromCombatLevel()
     {
         return (float) (0.5f * Math.tan((combatLevel.getValue() / 99.0) * (Math.PI / 4.0)));
     }
 
-    public void updateHealth()
+    /**
+     * Ensures the blockling's health doesn't exceed its max health.
+     * Can happen the max health is lowered below the current health.
+     */
+    public void checkAndCapHealth()
     {
         if (blockling.getHealth() > blockling.getMaxHealth())
         {
@@ -536,35 +696,36 @@ public class BlocklingAttributes
         }
     }
 
-    public Attribute<?> getAttribute(String key)
-    {
-        for (Attribute<?> attribute : attributes)
-        {
-            if (attribute.key.equals(key))
-            {
-                return attribute;
-            }
-        }
-
-        return null;
-    }
-
+    /**
+     * @return the blockling's health as an integer rounded up.
+     */
     public int getHealth()
     {
         return (int) Math.ceil(blockling.getHealth());
     }
 
+    /**
+     * @return the blockling's max health as an integer rounded up.
+     */
     public int getMaxHealth()
     {
         return (int) Math.ceil(blockling.getMaxHealth());
     }
 
+    /**
+     * @return the blockling's health as a percentage of its max health.
+     */
     public float getHealthPercentage()
     {
         return blockling.getHealth() / blockling.getMaxHealth();
     }
 
-    public Attribute<Integer> getLevelAttribute(Level level)
+    /**
+     * @param level the level to enquire about.
+     * @return the corresponding attribute for that level.
+     */
+    @Nonnull
+    public Attribute<Integer> getLevelAttribute(@Nonnull Level level)
     {
         switch (level)
         {
@@ -572,12 +733,13 @@ public class BlocklingAttributes
             case MINING: return miningLevel;
             case WOODCUTTING: return woodcuttingLevel;
             case FARMING: return farmingLevel;
-            case TOTAL: return totalLevel;
+            default: return totalLevel;
         }
-
-        return null;
     }
 
+    /**
+     * An enum used to identify each level.
+     */
     public enum Level
     {
         COMBAT, MINING, WOODCUTTING, FARMING, TOTAL;
