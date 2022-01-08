@@ -2,14 +2,11 @@ package com.willr27.blocklings.gui.screens.guis;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.entity.entities.blockling.BlocklingGuiInfo;
-import com.willr27.blocklings.gui.GuiHandler;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.Tab;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.text.StringTextComponent;
 
 public class TabbedGui extends AbstractGui
 {
@@ -189,7 +186,7 @@ public class TabbedGui extends AbstractGui
 //                utility = 2;
 //            }
 
-            GuiHandler.openGui(guiId, blockling, player);
+            blockling.guiHandler.openGui(guiId, player);
 
             return true;
         }
@@ -225,13 +222,11 @@ public class TabbedGui extends AbstractGui
 
     private Tab getActiveTab()
     {
-        BlocklingGuiInfo guiInfo = blockling.getGuiInfo();
-
 //        if (guiInfo.utility == -1)
 //        {
             for (Tab tab : Tab.values())
             {
-                if (tab.guiId == guiInfo.getCurrentGuiId())
+                if (tab.guiId == blockling.guiHandler.getRecentGuiId())
                 {
                     return tab;
                 }

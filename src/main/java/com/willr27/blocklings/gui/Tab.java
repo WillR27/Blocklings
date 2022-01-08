@@ -10,16 +10,16 @@ import java.util.List;
 
 public enum Tab
 {
-    STATS("stats", GuiHandler.STATS_ID, null, 0, 0, true),
-    TASKS("tasks", GuiHandler.TASKS_ID, null, 1, 0, true),
-    EQUIPMENT("equipment", GuiHandler.EQUIPMENT_ID, null, 2, 0, true),
+    STATS("stats", BlocklingGuiHandler.STATS_ID, null, 0, 0, true),
+    TASKS("tasks", BlocklingGuiHandler.TASKS_ID, null, 1, 0, true),
+    EQUIPMENT("equipment", BlocklingGuiHandler.EQUIPMENT_ID, null, 2, 0, true),
 //    UTILITY_1("utility_1", GuiHandler.UTILITY_ID, "", 3, 0, true),
 //    UTILITY_2("utility_2", GuiHandler.UTILITY_ID, "", 3, 0, true);
-    GENERAL("general", GuiHandler.GENERAL_ID, BlocklingSkillGroups.GENERAL, 0, 1, false),
-    COMBAT("combat", GuiHandler.COMBAT_ID, BlocklingSkillGroups.COMBAT, 1, 1, false),
-    MINING("mining", GuiHandler.MINING_ID, BlocklingSkillGroups.MINING, 2, 1, false),
-    WOODCUTTING("woodcutting", GuiHandler.WOODCUTTING_ID, BlocklingSkillGroups.WOODCUTTING, 3, 1, false),
-    FARMING("farming", GuiHandler.FARMING_ID, BlocklingSkillGroups.FARMING, 4, 1, false);
+    GENERAL("general", BlocklingGuiHandler.GENERAL_ID, BlocklingSkillGroups.GENERAL, 0, 1, false),
+    COMBAT("combat", BlocklingGuiHandler.COMBAT_ID, BlocklingSkillGroups.COMBAT, 1, 1, false),
+    MINING("mining", BlocklingGuiHandler.MINING_ID, BlocklingSkillGroups.MINING, 2, 1, false),
+    WOODCUTTING("woodcutting", BlocklingGuiHandler.WOODCUTTING_ID, BlocklingSkillGroups.WOODCUTTING, 3, 1, false),
+    FARMING("farming", BlocklingGuiHandler.FARMING_ID, BlocklingSkillGroups.FARMING, 4, 1, false);
 
     public final TranslationTextComponent name;
     public final int guiId;

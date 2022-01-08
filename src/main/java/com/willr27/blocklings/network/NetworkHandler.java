@@ -7,7 +7,7 @@ import com.willr27.blocklings.attribute.attributes.numbers.FloatAttribute;
 import com.willr27.blocklings.attribute.attributes.numbers.IntAttribute;
 import com.willr27.blocklings.attribute.attributes.numbers.ModifiableFloatAttribute;
 import com.willr27.blocklings.attribute.attributes.numbers.ModifiableIntAttribute;
-import com.willr27.blocklings.entity.entities.blockling.BlocklingGuiInfo;
+import com.willr27.blocklings.gui.BlocklingGuiHandler;
 import com.willr27.blocklings.network.messages.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -52,7 +52,7 @@ public class NetworkHandler
     public static void init()
     {
         registerMessage(Attribute.IsEnabledMessage.class);
-        registerMessage(BlocklingGuiInfo.Message.class);
+        registerMessage(BlocklingGuiHandler.OpenMessage.class);
         registerMessage(BlocklingScaleMessage.class);
         registerMessage(BlocklingAttackTargetMessage.class);
         registerMessage(BlocklingTypeMessage.class);
@@ -63,7 +63,6 @@ public class NetworkHandler
         registerMessage(ModifiableFloatAttribute.BaseValueMessage.class);
         registerMessage(IntAttribute.ValueMessage.class);
         registerMessage(ModifiableIntAttribute.BaseValueMessage.class);
-        registerMessage(OpenGuiMessage.class);
         registerMessage(SkillStateMessage.class);
         registerMessage(SkillTryBuyMessage.class);
         registerMessage(TaskCreateMessage.class);

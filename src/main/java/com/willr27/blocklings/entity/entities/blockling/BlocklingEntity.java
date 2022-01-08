@@ -4,7 +4,7 @@ import com.google.common.collect.Iterables;
 import com.willr27.blocklings.action.BlocklingActions;
 import com.willr27.blocklings.attribute.BlocklingAttributes;
 import com.willr27.blocklings.goal.Task;
-import com.willr27.blocklings.gui.GuiHandler;
+import com.willr27.blocklings.gui.BlocklingGuiHandler;
 import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
 import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.item.items.BlocklingItem;
@@ -49,6 +49,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.BiPredicate;
 
+/**
+ * The blockling entity.
+ */
 public class BlocklingEntity extends TameableEntity implements IEntityAdditionalSpawnData
 {
     /**
@@ -93,16 +96,16 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     private final BlocklingActions actions = new BlocklingActions(this);
 
     /**
-     * The current gui info.
-     */
-    @Nonnull
-    private BlocklingGuiInfo guiInfo = new BlocklingGuiInfo(this);
-
-    /**
      * The blockling's equipment inventory.
      */
     @Nonnull
     private final EquipmentInventory equipmentInv = new EquipmentInventory(this);
+
+    /**
+     * Handles opening screens and containers.
+     */
+    @Nonnull
+    public final BlocklingGuiHandler guiHandler = new BlocklingGuiHandler(this);
 
     /**
      *
@@ -434,9 +437,9 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         {
             if (item != Items.EXPERIENCE_BOTTLE && (!BlocklingType.isFood(item) || !player.isCrouching()) && (!blocklingType.isFoodForType(item) || getHealth() >= getMaxHealth()))
             {
-                if (level.isClientSide())
+                if (!level.isClientSide())
                 {
-                    openGui(player);
+                    guiHandler.openGui(player);
                 }
 
                 return ActionResultType.CONSUME;
@@ -785,16 +788,6 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     }
 
     /**
-     * Opens the gui.
-     *
-     * @param player the player opening the gui.
-     */
-    private void openGui(@Nonnull PlayerEntity player)
-    {
-        GuiHandler.openGui(guiInfo.getCurrentGuiId(), this, player);
-    }
-
-    /**
      * @return the original blockling type.
      */
     @Nonnull
@@ -884,43 +877,6 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     public BlocklingActions getActions ()
     {
         return actions;
-    }
-
-    /**
-     * @return the blockling's gui info.
-     */
-    @Nonnull
-    public BlocklingGuiInfo getGuiInfo()
-    {
-        return guiInfo;
-    }
-
-    /**
-     * Sets the current gui info.
-     * Syncs to the client/server.
-     *
-     * @param guiInfo the new gui info.
-     */
-    public void setGuiInfo(@Nonnull BlocklingGuiInfo guiInfo)
-    {
-        setGuiInfo(guiInfo, true);
-    }
-
-    /**
-     * Sets the current gui info.
-     * Syncs to the client/server if sync is true.
-     *
-     * @param guiInfo the new gui info.
-     * @param sync whether to sync to the client/server.
-     */
-    public void setGuiInfo(@Nonnull BlocklingGuiInfo guiInfo, boolean sync)
-    {
-        this.guiInfo = guiInfo;
-
-        if (sync)
-        {
-            new BlocklingGuiInfo.Message(this, guiInfo).sync();
-        }
     }
 
     /**

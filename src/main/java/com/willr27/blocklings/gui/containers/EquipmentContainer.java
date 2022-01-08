@@ -1,5 +1,6 @@
 package com.willr27.blocklings.gui.containers;
 
+import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.containers.slots.ToolSlot;
 import com.willr27.blocklings.gui.containers.slots.UtilitySlot;
 import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
@@ -14,7 +15,7 @@ public class EquipmentContainer extends Container
     private static final int PLAYER_INV_X = 8;
     private static final int PLAYER_INV_Y = 74;
 
-    public EquipmentContainer(int id, PlayerEntity player, EquipmentInventory blocklingInv)
+    public EquipmentContainer(int id, PlayerEntity player, BlocklingEntity blockling)
     {
         super(null, id);
 
@@ -22,6 +23,8 @@ public class EquipmentContainer extends Container
         {
             addSlotListener((IContainerListener) player);
         }
+
+        EquipmentInventory blocklingInv = blockling.getEquipment();
 
         addSlot(new UtilitySlot(blocklingInv, EquipmentInventory.UTILITY_1, 12, -2));
         addSlot(new UtilitySlot(blocklingInv, EquipmentInventory.UTILITY_2, 32, -2));

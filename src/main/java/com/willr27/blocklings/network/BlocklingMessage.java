@@ -86,7 +86,6 @@ public abstract class BlocklingMessage<T extends BlocklingMessage<T>> implements
      * @param buf the buffer to decode from.
      * @return the instance of this message.
      */
-    @Nonnull
     public void decode(@Nonnull PacketBuffer buf)
     {
         blocklingId = buf.readInt();
