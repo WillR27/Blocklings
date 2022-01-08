@@ -6,11 +6,17 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BlockUtil
 {
+    /**
+     * The list of blocks that are considered ores.
+     */
+    @Nonnull
     public static List<Block> ORES = new ArrayList<Block>()
     {{
         add(Blocks.COAL_ORE);
@@ -24,21 +30,36 @@ public class BlockUtil
         add(Blocks.ANCIENT_DEBRIS);
     }};
 
-    public static boolean isOre(Block block)
+    /**
+     * @param block the block to check.
+     * @return true if the block is an ore.
+     */
+    public static boolean isOre(@Nonnull Block block)
     {
         return ORES.contains(block);
     }
 
-    public static boolean isOre(Item item)
+    /**
+     * @param blockItem a block in item form.
+     * @return true if the block item is an ore.
+     */
+    public static boolean isOre(@Nonnull Item blockItem)
     {
-        return getOre(item) != null;
+        return getOre(blockItem) != null;
     }
 
-    public static Block getOre(Item item)
+    /**
+     * Gets the block of the given block item.
+     *
+     * @param blockItem a block in item form.
+     * @return the block if it is an ore else null.
+     */
+    @Nullable
+    public static Block getOre(@Nonnull Item blockItem)
     {
         for (Block ore : ORES)
         {
-            if (new ItemStack(ore).getItem() == item) // TODO: CACHE THESE ITEMS
+            if (new ItemStack(ore).getItem() == blockItem)
             {
                 return ore;
             }
@@ -47,6 +68,10 @@ public class BlockUtil
         return null;
     }
 
+    /**
+     * The list of blocks that are considered logs.
+     */
+    @Nonnull
     public static List<Block> LOGS = new ArrayList<Block>()
     {{
         add(Blocks.OAK_LOG);
@@ -57,21 +82,36 @@ public class BlockUtil
         add(Blocks.DARK_OAK_LOG);
     }};
 
-    public static boolean isLog(Block block)
+    /**
+     * @param block the block to check.
+     * @return true if the block is a log.
+     */
+    public static boolean isLog(@Nonnull Block block)
     {
         return LOGS.contains(block);
     }
 
-    public static boolean isLog(Item item)
+    /**
+     * @param blockItem a block in item form.
+     * @return true if the block item is a log.
+     */
+    public static boolean isLog(@Nonnull Item blockItem)
     {
-        return getLog(item) != null;
+        return getLog(blockItem) != null;
     }
 
-    public static Block getLog(Item item)
+    /**
+     * Gets the block of the given block item.
+     *
+     * @param blockItem a block in item form.
+     * @return the block if it is a log else null.
+     */
+    @Nullable
+    public static Block getLog(@Nonnull Item blockItem)
     {
         for (Block log : LOGS)
         {
-            if (new ItemStack(log).getItem() == item) // TODO: CACHE THESE ITEMS
+            if (new ItemStack(log).getItem() == blockItem)
             {
                 return log;
             }
@@ -80,6 +120,10 @@ public class BlockUtil
         return null;
     }
 
+    /**
+     * The list of blocks that are considered leaves.
+     */
+    @Nonnull
     public static List<Block> LEAVES = new ArrayList<Block>()
     {{
         add(Blocks.OAK_LEAVES);
@@ -91,24 +135,35 @@ public class BlockUtil
     }};
 
     /**
-     * @param block the block to test.
+     * @param block the block to check.
      * @return true if the block is a leaf.
      */
-    public static boolean isLeaf(Block block)
+    public static boolean isLeaf(@Nonnull Block block)
     {
         return LEAVES.contains(block);
     }
 
-    public static boolean isLeaf(Item item)
+    /**
+     * @param blockItem a block in item form.
+     * @return true if the block item is a leaf.
+     */
+    public static boolean isLeaf(@Nonnull Item blockItem)
     {
-        return getLeaf(item) != null;
+        return getLeaf(blockItem) != null;
     }
 
-    public static Block getLeaf(Item item)
+    /**
+     * Gets the block of the given block item.
+     *
+     * @param blockItem a block in item form.
+     * @return the block if it is a leaf else null.
+     */
+    @Nullable
+    public static Block getLeaf(@Nonnull Item blockItem)
     {
         for (Block leaf : LEAVES)
         {
-            if (new ItemStack(leaf).getItem() == item) // TODO: CACHE THESE ITEMS
+            if (new ItemStack(leaf).getItem() == blockItem)
             {
                 return leaf;
             }
@@ -117,6 +172,10 @@ public class BlockUtil
         return null;
     }
 
+    /**
+     * The list of blocks that are considered crops.
+     */
+    @Nonnull
     public static List<Block> CROPS = new ArrayList<Block>()
     {{
         add(Blocks.WHEAT);
@@ -127,21 +186,36 @@ public class BlockUtil
         add(Blocks.MELON);
     }};
 
-    public static boolean isCrop(Block block)
+    /**
+     * @param block the block to check.
+     * @return true if the block is a crop.
+     */
+    public static boolean isCrop(@Nonnull Block block)
     {
         return CROPS.contains(block);
     }
 
-    public static boolean isCrop(Item item)
+    /**
+     * @param blockItem a block in item form.
+     * @return true if the block item is a crop.
+     */
+    public static boolean isCrop(@Nonnull Item blockItem)
     {
-        return getLeaf(item) != null;
+        return getLeaf(blockItem) != null;
     }
 
-    public static Block getCrop(Item item)
+    /**
+     * Gets the block of the given block item.
+     *
+     * @param blockItem a block in item form.
+     * @return the block if it is a crop else null.
+     */
+    @Nullable
+    public static Block getCrop(@Nonnull Item blockItem)
     {
         for (Block crop : CROPS)
         {
-            if (new ItemStack(crop).getItem() == item) // TODO: CACHE THESE ITEMS
+            if (new ItemStack(crop).getItem() == blockItem)
             {
                 return crop;
             }
@@ -150,12 +224,24 @@ public class BlockUtil
         return null;
     }
 
+    /**
+     * @param percentage the percentage to convert to block break progress.
+     * @return the block break progress.
+     */
     public static int calcBlockBreakProgress(float percentage)
     {
         return (int) (10 * percentage);
     }
 
-    public static BlockPos[] getAdjacentBlockPositions(BlockPos blockPos)
+    /**
+     * Gets the positions adjacent to the given block pos.
+     * Does not include diagonals.
+     *
+     * @param blockPos the position to get the adjacent positions of.
+     * @return an array of the adjacent block positions.
+     */
+    @Nonnull
+    public static BlockPos[] getAdjacentBlockPositions(@Nonnull BlockPos blockPos)
     {
         return new BlockPos[]
         {
@@ -168,7 +254,15 @@ public class BlockUtil
         };
     }
 
-    public static BlockPos[] getSurroundingBlockPositions(BlockPos blockPos)
+    /**
+     * Gets the positions surrounding the given block pos.
+     * Includes diagonals.
+     *
+     * @param blockPos the position to get the surrounding positions of.
+     * @return an array of the surrounding block positions.
+     */
+    @Nonnull
+    public static BlockPos[] getSurroundingBlockPositions(@Nonnull BlockPos blockPos)
     {
         return new BlockPos[]
         {
