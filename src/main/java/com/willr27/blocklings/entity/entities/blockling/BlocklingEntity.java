@@ -723,7 +723,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 return false;
             }
 
-            for (BiPredicate<BlocklingEntity, IWorld> predicate : getBlocklingType().predicates)
+            for (BiPredicate<BlocklingEntity, IWorld> predicate : getBlocklingType().spawnPredicates)
             {
                 if (!predicate.test(this, world))
                 {
