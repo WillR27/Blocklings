@@ -8,8 +8,8 @@ import com.willr27.blocklings.gui.GuiHandler;
 import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
 import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.item.items.BlocklingItem;
-import com.willr27.blocklings.network.messages.BlocklingScaleMessage;
 import com.willr27.blocklings.network.messages.BlocklingAttackTargetMessage;
+import com.willr27.blocklings.network.messages.BlocklingScaleMessage;
 import com.willr27.blocklings.network.messages.BlocklingTypeMessage;
 import com.willr27.blocklings.skills.BlocklingSkills;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
@@ -51,18 +51,62 @@ import java.util.function.BiPredicate;
 
 public class BlocklingEntity extends TameableEntity implements IEntityAdditionalSpawnData
 {
+    /**
+     * The blockling type the blockling spawned as.
+     */
+    @Nonnull
     private BlocklingType originalBlocklingType = BlocklingType.GRASS;
+
+    /**
+     * The blockling type the blockling has been changed to.
+     */
+    @Nonnull
     private BlocklingType blocklingType = BlocklingType.GRASS;
+
+    /**
+     * The variant used to determine how a blockling blends with its original blockling type.
+     */
     private int blocklingTypeVariant = 0;
 
+    /**
+     * The blockling's attribute manager (called stats because attributes is already thing in vanilla).
+     */
+    @Nonnull
     private final BlocklingAttributes stats = new BlocklingAttributes(this);
+
+    /**
+     * The blockling's task manager.
+     */
+    @Nonnull
     private final BlocklingTasks tasks = new BlocklingTasks(this);
+
+    /**
+     * The blockling's skills manager.
+     */
+    @Nonnull
     private final BlocklingSkills skills = new BlocklingSkills(this);
+
+    /**
+     * The blockling's action manager.
+     */
+    @Nonnull
     private final BlocklingActions actions = new BlocklingActions(this);
+
+    /**
+     * The current gui info.
+     */
+    @Nonnull
     private BlocklingGuiInfo guiInfo = new BlocklingGuiInfo(this);
 
+    /**
+     * The blockling's equipment inventory.
+     */
+    @Nonnull
     private final EquipmentInventory equipmentInv = new EquipmentInventory(this);
 
+    /**
+     *
+     */
     private float scale;
 
     /**
@@ -83,7 +127,11 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
      */
     private int cropsHarvestedRecently = 0;
 
-    public BlocklingEntity(EntityType<? extends BlocklingEntity> type, World world)
+    /**
+     * @param type the blockling entity type.
+     * @param world the world the blockling is in.
+     */
+    public BlocklingEntity(@Nonnull EntityType<? extends BlocklingEntity> type, @Nonnull World world)
     {
         super(type, world);
 
@@ -93,7 +141,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         // Set up any values that are determined randomly here
         // So that we can sync them up using read/writeSpawnData
-        if (!level.isClientSide)
+        if (!level.isClientSide())
         {
             blocklingTypeVariant = getRandom().nextInt(3);
             originalBlocklingType = BlocklingType.TYPES.get(getRandom().nextInt(BlocklingType.TYPES.size()));
@@ -109,6 +157,9 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         setHealth(getMaxHealth());
     }
 
+    /**
+     * @return the additional attributes to add to the entity.
+     */
     public static AttributeModifierMap.MutableAttribute createAttributes()
     {
         return MobEntity.createMobAttributes().add(Attributes.ATTACK_DAMAGE, 0.0).add(Attributes.ATTACK_SPEED, 0.0);
@@ -139,29 +190,35 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         c.put("blockling", writeBlocklingToNBT());
     }
 
+    /**
+     * Writes all the blockling's data to a tag.
+     *
+     * @return the tag with all the blockling's data.
+     */
+    @Nonnull
     public CompoundNBT writeBlocklingToNBT()
     {
-        CompoundNBT c = new CompoundNBT();
+        CompoundNBT tag = new CompoundNBT();
 
-        c.putInt("original_type", BlocklingType.TYPES.indexOf(originalBlocklingType));
-        c.putInt("type", BlocklingType.TYPES.indexOf(blocklingType));
-        c.putInt("variant", blocklingTypeVariant);
-        c.putFloat("scale", scale);
+        tag.putInt("original_type", BlocklingType.TYPES.indexOf(originalBlocklingType));
+        tag.putInt("type", BlocklingType.TYPES.indexOf(blocklingType));
+        tag.putInt("variant", blocklingTypeVariant);
+        tag.putFloat("scale", scale);
 
-        equipmentInv.writeToNBT(c);
-        stats.writeToNBT(c);
-        tasks.writeToNBT(c);
-        skills.writeToNBT(c);
+        equipmentInv.writeToNBT(tag);
+        stats.writeToNBT(tag);
+        tasks.writeToNBT(tag);
+        skills.writeToNBT(tag);
 
-        return c;
+        return tag;
     }
 
     @Override
-    public void readAdditionalSaveData(@Nonnull CompoundNBT c)
+    public void readAdditionalSaveData(@Nonnull CompoundNBT tag)
     {
-        super.readAdditionalSaveData(c);
+        super.readAdditionalSaveData(tag);
 
-        CompoundNBT blocklingTag = (CompoundNBT) c.get("blockling");
+        CompoundNBT blocklingTag = (CompoundNBT) tag.get("blockling");
 
         if (blocklingTag != null)
         {
@@ -169,29 +226,29 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         }
     }
 
-    public void readBlocklingFromNBT(CompoundNBT c)
+    /**
+     * Reads all the blockling's data from the given tag.
+     *
+     * @param tag the tag containing all the blockling's data.
+     */
+    public void readBlocklingFromNBT(@Nonnull CompoundNBT tag)
     {
-        if (c == null)
-        {
-            return;
-        }
+        blocklingTypeVariant = tag.getInt("variant");
+        originalBlocklingType = BlocklingType.TYPES.get(tag.getInt("original_type"));
+        blocklingType = BlocklingType.TYPES.get(tag.getInt("type"));
+        setScale(tag.getFloat("scale"), false);
 
-        blocklingTypeVariant = c.getInt("variant");
-        originalBlocklingType = BlocklingType.TYPES.get(c.getInt("original_type"));
-        blocklingType = BlocklingType.TYPES.get(c.getInt("type"));
-        setScale(c.getFloat("scale"), false);
-
-        equipmentInv.readFromNBT(c);
-        stats.readFromNBT(c);
-        tasks.readFromNBT(c);
-        skills.readFromNBT(c);
+        equipmentInv.readFromNBT(tag);
+        stats.readFromNBT(tag);
+        tasks.readFromNBT(tag);
+        skills.readFromNBT(tag);
 
         equipmentInv.updateToolAttributes();
         stats.updateTypeBonuses(false);
     }
 
     @Override
-    public void writeSpawnData(PacketBuffer buf)
+    public void writeSpawnData(@Nonnull PacketBuffer buf)
     {
         buf.writeInt(BlocklingType.TYPES.indexOf(originalBlocklingType));
         buf.writeInt(BlocklingType.TYPES.indexOf(blocklingType));
@@ -205,7 +262,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     }
 
     @Override
-    public void readSpawnData(PacketBuffer buf)
+    public void readSpawnData(@Nonnull PacketBuffer buf)
     {
         originalBlocklingType = BlocklingType.TYPES.get(buf.readInt());
         blocklingType = BlocklingType.TYPES.get(buf.readInt());
@@ -235,12 +292,15 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         skills.tick();
         actions.tick();
 
-        checkCooldowns();
+        checkAndUpdateCooldowns();
 
         equipmentInv.detectAndSendChanges();
     }
 
-    private void checkCooldowns()
+    /**
+     * Checks and updates any cooldowns if required.
+     */
+    private void checkAndUpdateCooldowns()
     {
         if (actions.oresMinedCooldown.isFinished())
         {
@@ -323,6 +383,9 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         return hasHurt;
     }
 
+    /**
+     * Copied from MobEntity as we need to run custom hurt target code but still need this functionality.
+     */
     private void maybeDisableShield(PlayerEntity p_233655_1_, ItemStack p_233655_2_, ItemStack p_233655_3_) {
         if (!p_233655_2_.isEmpty() && !p_233655_3_.isEmpty() && p_233655_2_.getItem() instanceof AxeItem && p_233655_3_.getItem() == Items.SHIELD) {
             float f = 0.25F + (float)EnchantmentHelper.getBlockEfficiency(this) * 0.05F;
@@ -336,45 +399,33 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     @Override
     public @Nonnull ActionResultType mobInteract(@Nonnull PlayerEntity player, @Nonnull Hand hand)
     {
-        ActionResultType result = ActionResultType.PASS;
+        ActionResultType result;
 
         if (hand == Hand.MAIN_HAND)
         {
-            if (level.isClientSide)
-            {
-                result = mobInteractMainHandClient((ClientPlayerEntity) player);
-            }
-            else
-            {
-                result = mobInteractMainHandServer((ServerPlayerEntity) player);
-            }
-
-            if (result != ActionResultType.PASS)
-            {
-                return result;
-            }
+            result = mobInteractMainHand(player);
         }
         else
         {
-            if (level.isClientSide)
-            {
-                result = mobInteractOffHandClient((ClientPlayerEntity) player);
-            }
-            else
-            {
-                result = mobInteractOffHandServer((ServerPlayerEntity) player);
-            }
+            result = mobInteractOffHand((ClientPlayerEntity) player);
+        }
 
-            if (result != ActionResultType.PASS)
-            {
-                return result;
-            }
+        if (result != ActionResultType.PASS)
+        {
+            return result;
         }
 
         return super.mobInteract(player, hand);
     }
 
-    private ActionResultType mobInteractMainHandClient(ClientPlayerEntity player)
+    /**
+     * Handles the player interacting with their main hand.
+     *
+     * @param player the interacting player.
+     * @return the result of the interaction.
+     */
+    @Nonnull
+    private ActionResultType mobInteractMainHand(@Nonnull PlayerEntity player)
     {
         ItemStack stack = player.getItemInHand(Hand.MAIN_HAND);
         Item item = stack.getItem();
@@ -383,59 +434,45 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         {
             if (item != Items.EXPERIENCE_BOTTLE && (!BlocklingType.isFood(item) || !player.isCrouching()) && (!blocklingType.isFoodForType(item) || getHealth() >= getMaxHealth()))
             {
-                OpenGui(player);
+                if (level.isClientSide())
+                {
+                    openGui(player);
+                }
+
+                return ActionResultType.CONSUME;
             }
         }
-
-        return ActionResultType.PASS;
-    }
-
-    private ActionResultType mobInteractMainHandServer(ServerPlayerEntity player)
-    {
-        ItemStack stack = player.getItemInHand(Hand.MAIN_HAND);
-        Item item = stack.getItem();
 
         if (blocklingType.isFoodForType(item))
         {
-            if (!isTame())
+            if (!level.isClientSide())
             {
-                tryTame(player, stack);
-            }
-            else
-            {
-                if (player.isCrouching())
+                if (!isTame())
                 {
-                    ItemStack blocklingStack = BlocklingItem.create(this);
-
-                    if (!player.inventory.add(blocklingStack))
-                    {
-                        dropItemStack(blocklingStack);
-                    }
-
-                    remove();
+                    tryTame((ServerPlayerEntity) player, stack);
                 }
                 else
                 {
-                    if (getHealth() < getMaxHealth())
+                    if (player.isCrouching())
                     {
-                        heal(random.nextInt(3) + 3);
+                        ItemStack blocklingStack = BlocklingItem.create(this);
 
-                        level.broadcastEntityEvent(this, (byte) 7);
+                        if (!player.inventory.add(blocklingStack))
+                        {
+                            dropItemStack(blocklingStack);
+                        }
+
+                        remove();
                     }
-                }
-            }
-        }
-        else if (BlocklingType.isFood(item))
-        {
-            if (player.isCrouching())
-            {
-                if (random.nextInt(4) == 0)
-                {
-                    setBlocklingType(BlocklingType.findTypeForFood(item));
-                }
-                else
-                {
-                    level.broadcastEntityEvent(this, (byte) 6);
+                    else
+                    {
+                        if (getHealth() < getMaxHealth())
+                        {
+                            heal(random.nextInt(3) + 3);
+
+                            level.broadcastEntityEvent(this, (byte) 7);
+                        }
+                    }
                 }
 
                 if (!player.abilities.instabuild)
@@ -443,33 +480,71 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                     stack.shrink(1);
                 }
             }
+
+            return ActionResultType.SUCCESS;
+        }
+        else if (BlocklingType.isFood(item))
+        {
+            if (player.isCrouching())
+            {
+                if (!level.isClientSide())
+                {
+                    if (random.nextInt(4) == 0)
+                    {
+                        setBlocklingType(BlocklingType.findTypeForFood(item));
+                    }
+                    else
+                    {
+                        level.broadcastEntityEvent(this, (byte) 6);
+                    }
+
+                    if (!player.abilities.instabuild)
+                    {
+                        stack.shrink(1);
+                    }
+                }
+
+                return ActionResultType.SUCCESS;
+            }
         }
         else if (item == Items.EXPERIENCE_BOTTLE)
         {
             if (player.abilities.instabuild)
             {
-                if (player.isCrouching())
+                if (!level.isClientSide())
                 {
-                    stats.combatLevel.setValue(99);
-                    stats.miningLevel.setValue(99);
-                    stats.woodcuttingLevel.setValue(99);
-                    stats.farmingLevel.setValue(99);
+                    if (player.isCrouching())
+                    {
+                        stats.combatLevel.setValue(99);
+                        stats.miningLevel.setValue(99);
+                        stats.woodcuttingLevel.setValue(99);
+                        stats.farmingLevel.setValue(99);
 
+                    }
+
+                    stats.combatXp.setValue(BlocklingAttributes.getXpUntilNextLevel(stats.combatLevel.getValue()));
+                    stats.miningXp.setValue(BlocklingAttributes.getXpUntilNextLevel(stats.miningLevel.getValue()));
+                    stats.woodcuttingXp.setValue(BlocklingAttributes.getXpUntilNextLevel(stats.woodcuttingLevel.getValue()));
+                    stats.farmingXp.setValue(BlocklingAttributes.getXpUntilNextLevel(stats.farmingLevel.getValue()));
+
+                    heal(Float.MAX_VALUE);
                 }
 
-                stats.combatXp.setValue(BlocklingAttributes.getXpUntilNextLevel(stats.combatLevel.getValue()));
-                stats.miningXp.setValue(BlocklingAttributes.getXpUntilNextLevel(stats.miningLevel.getValue()));
-                stats.woodcuttingXp.setValue(BlocklingAttributes.getXpUntilNextLevel(stats.woodcuttingLevel.getValue()));
-                stats.farmingXp.setValue(BlocklingAttributes.getXpUntilNextLevel(stats.farmingLevel.getValue()));
-
-                heal(Float.MAX_VALUE);
+                return ActionResultType.SUCCESS;
             }
         }
 
         return ActionResultType.PASS;
     }
 
-    private ActionResultType mobInteractOffHandClient(ClientPlayerEntity player)
+    /**
+     * Handles the player interacting with their off hand.
+     *
+     * @param player the interacting player.
+     * @return the result of the interaction.
+     */
+    @Nonnull
+    private ActionResultType mobInteractOffHand(@Nonnull PlayerEntity player)
     {
         ItemStack stack = player.getItemInHand(Hand.OFF_HAND);
         Item item = stack.getItem();
@@ -477,12 +552,38 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         return ActionResultType.PASS;
     }
 
-    private ActionResultType mobInteractOffHandServer(ServerPlayerEntity player)
+    /**
+     * Attempts to tame the blockling with a 1 in 3 chance.
+     *
+     * @param player the player interacting with the blockling.
+     * @param stack the stack involved in the interaction.
+     * @return true if the blockling is successfully tamed.
+     */
+    private boolean tryTame(@Nonnull ServerPlayerEntity player, @Nonnull ItemStack stack)
     {
-        ItemStack stack = player.getItemInHand(Hand.OFF_HAND);
-        Item item = stack.getItem();
+        if (random.nextInt(3) == 0 && !ForgeEventFactory.onAnimalTame(this, player))
+        {
+            tame(player);
 
-        return ActionResultType.PASS;
+            for (Task task : getTasks().getPrioritisedTasks())
+            {
+                if (task.isConfigured() && task.getType() == BlocklingTasks.WANDER)
+                {
+                    task.setType(BlocklingTasks.FOLLOW);
+                }
+            }
+
+            navigation.stop();
+            level.broadcastEntityEvent(this, (byte) 7);
+
+            return true;
+        }
+        else
+        {
+            level.broadcastEntityEvent(this, (byte) 6);
+        }
+
+        return false;
     }
 
     @Override
@@ -501,48 +602,23 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         }
     }
 
-    private void tryTame(ServerPlayerEntity player, ItemStack stack)
-    {
-        if (random.nextInt(3) == 0 && !ForgeEventFactory.onAnimalTame(this, player))
-        {
-            tame(player);
-
-            for (Task task : getTasks().getPrioritisedTasks())
-            {
-                if (task.isConfigured() && task.getType() == BlocklingTasks.WANDER)
-                {
-                    task.setType(BlocklingTasks.FOLLOW);
-                }
-            }
-
-            navigation.stop();
-            level.broadcastEntityEvent(this, (byte) 7);
-        }
-        else
-        {
-            level.broadcastEntityEvent(this, (byte) 6);
-        }
-
-        if (!player.abilities.instabuild)
-        {
-            stack.shrink(1);
-        }
-    }
-
     @Override
-    public @Nonnull ItemStack getMainHandItem()
+    @Nonnull
+    public ItemStack getMainHandItem()
     {
         return getItemInHand(Hand.MAIN_HAND);
     }
 
     @Override
-    public @Nonnull ItemStack getOffhandItem()
+    @Nonnull
+    public ItemStack getOffhandItem()
     {
         return getItemInHand(Hand.OFF_HAND);
     }
 
     @Override
-    public @Nonnull ItemStack getItemInHand(@Nonnull Hand hand)
+    @Nonnull
+    public ItemStack getItemInHand(@Nonnull Hand hand)
     {
         return equipmentInv.getHandStack(hand);
     }
@@ -657,7 +733,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     }
 
     @Override
-    public float getEyeHeightAccess(Pose pose, EntitySize size)
+    public float getEyeHeightAccess(@Nonnull Pose pose, @Nonnull EntitySize size)
     {
         return size.height * 0.45f;
     }
@@ -669,17 +745,35 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         return null;
     }
 
-    public void dropItemStack(ItemStack stack)
+    /**
+     * Drops the given stack at the blockling's location.
+     *
+     * @param stack the stack to drop.
+     */
+    public void dropItemStack(@Nonnull ItemStack stack)
     {
         level.addFreshEntity(new ItemEntity(level, getX(), getY() + 0.2f, getZ(), stack));
     }
 
+    /**
+     * Sets the current target to the given entity.
+     * Syncs to the client/server.
+     *
+     * @param target the new target.
+     */
     @Override
     public void setTarget(@Nullable LivingEntity target)
     {
         setTarget(target, true);
     }
 
+    /**
+     * Sets the current target to the given entity.
+     * Syncs to the client/server if sync is true.
+     *
+     * @param target the new target.
+     * @param sync whether to sync to the client/server.
+     */
     public void setTarget(@Nullable LivingEntity target, boolean sync)
     {
         super.setTarget(target);
@@ -690,27 +784,53 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         }
     }
 
-    private void OpenGui(PlayerEntity player)
+    /**
+     * Opens the gui.
+     *
+     * @param player the player opening the gui.
+     */
+    private void openGui(@Nonnull PlayerEntity player)
     {
         GuiHandler.openGui(guiInfo.getCurrentGuiId(), this, player);
     }
 
+    /**
+     * @return the original blockling type.
+     */
+    @Nonnull
     public BlocklingType getOriginalBlocklingType()
     {
         return originalBlocklingType;
     }
 
+    /**
+     * @return the current blockling type.
+     */
+    @Nonnull
     public BlocklingType getBlocklingType()
     {
         return blocklingType;
     }
 
-    public void setBlocklingType(BlocklingType blocklingType)
+    /**
+     * Sets the current blockling type to the given blockling type.
+     * Syncs to the client/server.
+     *
+     * @param blocklingType the new blockling type.
+     */
+    public void setBlocklingType(@Nonnull BlocklingType blocklingType)
     {
         setBlocklingType(blocklingType, true);
     }
 
-    public void setBlocklingType(BlocklingType blocklingType, boolean sync)
+    /**
+     * Sets the current blockling type to the given blockling type.
+     * Syncs to the client/server if sync is true.
+     *
+     * @param blocklingType the new blockling type.
+     * @param sync whether to sync to the client/server.
+     */
+    public void setBlocklingType(@Nonnull BlocklingType blocklingType, boolean sync)
     {
         this.blocklingType = blocklingType;
 
@@ -722,39 +842,78 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         }
     }
 
+    /**
+     * @return the current variant.
+     */
     public int getBlocklingTypeVariant()
     {
         return blocklingTypeVariant;
     }
 
+    /**
+     * @return the blockling's attribute manager.
+     */
+    @Nonnull
     public BlocklingAttributes getStats()
     {
         return stats;
     }
 
-    public BlocklingTasks getTasks() { return tasks; }
+    /**
+     * @return the blockling's task manager.
+     */
+    @Nonnull
+    public BlocklingTasks getTasks()
+    {
+        return tasks;
+    }
 
+    /**
+     * @return the blockling's skill manager.
+     */
+    @Nonnull
     public BlocklingSkills getSkills()
     {
         return skills;
     }
 
+    /**
+     * @return the blockling's action manager.
+     */
+    @Nonnull
     public BlocklingActions getActions ()
     {
         return actions;
     }
 
+    /**
+     * @return the blockling's gui info.
+     */
+    @Nonnull
     public BlocklingGuiInfo getGuiInfo()
     {
         return guiInfo;
     }
 
-    public void setGuiInfo(BlocklingGuiInfo guiInfo)
+    /**
+     * Sets the current gui info.
+     * Syncs to the client/server.
+     *
+     * @param guiInfo the new gui info.
+     */
+    public void setGuiInfo(@Nonnull BlocklingGuiInfo guiInfo)
     {
         setGuiInfo(guiInfo, true);
     }
 
-    public void setGuiInfo(BlocklingGuiInfo guiInfo, boolean sync)
+    /**
+     * Sets the current gui info.
+     * Syncs to the client/server if sync is true.
+     *
+     * @param guiInfo the new gui info.
+     * @param sync whether to sync to the client/server.
+     */
+    public void setGuiInfo(@Nonnull BlocklingGuiInfo guiInfo, boolean sync)
     {
         this.guiInfo = guiInfo;
 
@@ -764,22 +923,41 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         }
     }
 
+    /**
+     * @return the blockling's equipment inventory.
+     */
     public EquipmentInventory getEquipment()
     {
         return equipmentInv;
     }
 
+    /**
+     * @return the blockling's scale.
+     */
     @Override
     public float getScale()
     {
         return scale;
     }
 
+    /**
+     * Sets the blockling's scale.
+     * Syncs to the client/server.
+     *
+     * @param scale the new scale.
+     */
     public void setScale(float scale)
     {
         setScale(scale, true);
     }
 
+    /**
+     * Sets the blockling's scale.
+     * Syncs to the client/server if sync is true.
+     *
+     * @param scale the new scale.
+     * @param sync whether to sync to the client/server.
+     */
     public void setScale(float scale, boolean sync)
     {
         this.scale = scale;

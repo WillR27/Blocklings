@@ -63,8 +63,6 @@ public class Blocklings
     private void setup(final FMLCommonSetupEvent event)
     {
         NetworkHandler.init();
-
-        event.enqueueWork(() -> GlobalEntityTypeAttributes.put(EntityTypes.BLOCKLING_ENTITY.get(), BlocklingEntity.createAttributes().build()));
     }
 
     private void doClientStuff(final FMLClientSetupEvent event)
