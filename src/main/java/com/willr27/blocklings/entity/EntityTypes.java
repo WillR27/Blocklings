@@ -10,17 +10,32 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import javax.annotation.Nonnull;
+
+/**
+ * Handles all the added entity types.
+ */
 public class EntityTypes
 {
+    /**
+     * The deferred register to register the entity type.
+     */
     public static DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.ENTITIES, Blocklings.MODID);
 
-    public static final RegistryObject<EntityType<BlocklingEntity>> BLOCKLING_ENTITY =
-            ENTITY_TYPES.register("blockling",
-                    () -> EntityType.Builder.of(BlocklingEntity::new, EntityClassification.AMBIENT)
-                            .sized(1.0f, 1.0f)
-                            .build(new ResourceLocation(Blocklings.MODID, "blockling").toString()));
+    /**
+     * The blockling entity type.
+     */
+    public static final RegistryObject<EntityType<BlocklingEntity>> BLOCKLING_ENTITY = ENTITY_TYPES.register("blockling",
+        () -> EntityType.Builder.of(BlocklingEntity::new, EntityClassification.AMBIENT)
+                                .sized(1.0f, 1.0f)
+                                .build(new ResourceLocation(Blocklings.MODID, "blockling").toString()));
 
-    public static void register(IEventBus modEventBus)
+    /**
+     * Registers the entity types.
+     *
+     * @param modEventBus the mod event bus.
+     */
+    public static void register(@Nonnull IEventBus modEventBus)
     {
         ENTITY_TYPES.register(modEventBus);
     }

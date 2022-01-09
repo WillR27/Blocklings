@@ -16,17 +16,31 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
+/**
+ * Contains utility methods pertinent to entities.
+ */
 public class EntityUtil
 {
-    public static final Map<ResourceLocation, Entity> VALID_ATTACK_TARGETS = new TreeMap();
+    /**
+     * A map of entities that should be deemed attackable by a blockling in game.
+     */
+    @Nonnull
+    public static final Map<ResourceLocation, Entity> VALID_ATTACK_TARGETS = new TreeMap<>();
 
-    public static void init(World world)
+    /**
+     * Initialises the valid attack targets when the world loads.
+     *
+     * @param world the loading world.
+     */
+    public static void init(@Nonnull World world)
     {
         for (ResourceLocation entry : Registry.ENTITY_TYPE.keySet())
         {
             Entity entity = Registry.ENTITY_TYPE.get(entry).create(world);
+
             if (isValidAttackTarget(entity))
             {
                 VALID_ATTACK_TARGETS.put(entry, entity);
@@ -34,12 +48,22 @@ public class EntityUtil
         }
     }
 
-    public static Entity create(ResourceLocation type, World world)
+    /**
+     * @param type the entity type to create an instance of.
+     * @param world the world to create the entity in.
+     * @return an instance of the given entity type.
+     */
+    @Nonnull
+    public static Entity create(@Nonnull ResourceLocation type, @Nonnull World world)
     {
-        return Registry.ENTITY_TYPE.get(type).create(world);
+        return Objects.requireNonNull(Registry.ENTITY_TYPE.get(type).create(world));
     }
 
-    public static boolean isValidAttackTarget(Entity entity)
+    /**
+     * @param entity the entity to check.
+     * @return true if the entity is deemed attackable by a blockling in game.
+     */
+    public static boolean isValidAttackTarget(@Nonnull Entity entity)
     {
         if (!(entity instanceof MobEntity))
         {
@@ -58,12 +82,13 @@ public class EntityUtil
     }
 
     /**
-     * Returns true if the given entity can see the given block pos.
+     * @return true if the given entity can see the given block pos.
      */
-    public static boolean canSee(LivingEntity entity, BlockPos blockPos)
+    public static boolean canSee(@Nonnull LivingEntity entity, @Nonnull BlockPos blockPos)
     {
         Vector3d entityPos = new Vector3d(entity.getX(), entity.getEyeY(), entity.getZ());
 
+        // Check each corner of the block for a more robust result.
         for (double x = 0.05; x < 1.0; x += 0.9)
         {
             for (double y = 0.05; y < 1.0; y += 0.9)
@@ -88,7 +113,7 @@ public class EntityUtil
     }
 
     /**
-     * Returns true if the given entity is within range of the center of the given block pos.
+     * @return true if the given entity is within range of the center of the given block pos.
      */
     public static boolean isInRange(@Nonnull LivingEntity entity, @Nonnull BlockPos blockPos, float rangeSq)
     {
