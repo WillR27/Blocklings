@@ -15,89 +15,149 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import javax.annotation.Nonnull;
+
+/**
+ * The model for the blockling.
+ */
 @OnlyIn(Dist.CLIENT)
 public class BlocklingModel extends EntityModel<BlocklingEntity> implements IHasArm
 {
+    /**
+     * The initial x rotation for the body.
+     */
     public static final float BODY_BASE_ROT_X = 0.0872665f;
+
+    /**
+     * The initial x rotation for the right leg.
+     */
     public static final float RIGHT_LEG_BASE_ROT_X = -BODY_BASE_ROT_X;
+
+    /**
+     * The initial x rotation for the left leg.
+     */
     public static final float LEFT_LEG_BASE_ROT_X = -BODY_BASE_ROT_X;
+
+    /**
+     * The initial x rotation for the right arm.
+     */
     public static final float RIGHT_ARM_BASE_ROT_X = 0.785398f - BODY_BASE_ROT_X;
+
+    /**
+     * The initial x rotation for the left arm.
+     */
     public static final float LEFT_ARM_BASE_ROT_X =  0.785398f - BODY_BASE_ROT_X;
 
+    /**
+     * The model rendered for the body.
+     */
     private final ModelRenderer body;
+
+    /**
+     * The model rendered for the right leg.
+     */
     private final ModelRenderer rightLeg;
+
+    /**
+     * The model rendered for the left leg.
+     */
     private final ModelRenderer leftLeg;
+
+    /**
+     * The model rendered for the right arm.
+     */
     private final ModelRenderer rightArm;
+
+    /**
+     * The model rendered for the left arm.
+     */
     private final ModelRenderer leftArm;
+
+    /**
+     * The model rendered for the right eye.
+     */
     private final ModelRenderer rightEye;
+
+    /**
+     * The model rendered for the left eye.
+     */
     private final ModelRenderer leftEye;
 
+    /**
+     * The blockling's x scale.
+     */
+    private float scaleX = 1.0f;
+
+    /**
+     * The blockling's y scale.
+     */
+    private float scaleY = 1.0f;
+
+    /**
+     * Constructor.
+     */
     public BlocklingModel()
     {
-        this.texWidth = 128;
-        this.texHeight = 64;
+        texWidth = 128;
+        texHeight = 64;
 
-        this.body = new ModelRenderer(this, 16, 0);
-        this.body.addBox(-6.0F, -3.0F, -6.0F, 12, 12, 12);
-        this.body.setPos(0.0F, 13.0F, 0.0F);
-        this.body.setTexSize(128, 64);
-        this.body.visible = true;
-        setRotation(this.body, BODY_BASE_ROT_X, 0.0F, 0.0F);
-        this.rightLeg = new ModelRenderer(this, 16, 24);
-        this.rightLeg.addBox(-1.5F, 1.0F, -3.5F, 5, 6, 6);
-        this.rightLeg.setPos(-4.0F, 4.0F, 0.5F);
-        this.rightLeg.setTexSize(128, 64);
-        this.rightLeg.visible = true;
-        setRotation(this.rightLeg, -RIGHT_LEG_BASE_ROT_X, 0.0F, 0.0F);
-        this.leftLeg = new ModelRenderer(this, 42, 24);
-        this.leftLeg.addBox(-3.5F, 1.0F, -3.5F, 5, 6, 6);
-        this.leftLeg.setPos(4.0F, 4.0F, 0.5F);
-        this.leftLeg.setTexSize(128, 64);
-        this.leftLeg.visible = true;
-        setRotation(this.leftLeg, -LEFT_LEG_BASE_ROT_X, 0.0F, 0.0F);
-        this.rightArm = new ModelRenderer(this, 0, 12);
-        this.rightArm.addBox(0.0F, 0.0F, -7.0F, 2, 6, 6);
-        this.rightArm.setPos(-8.0F, 0.0F, 0.0F);
-        this.rightArm.setTexSize(128, 64);
-        this.rightArm.visible = true;
-        setRotation(this.rightArm, RIGHT_ARM_BASE_ROT_X, 0.0F, 0.0F);
-        this.leftArm = new ModelRenderer(this, 64, 12);
-        this.leftArm.addBox(-2.0F, 0.0F, -7.0F, 2, 6, 6);
-        this.leftArm.setPos(8.0F, 0.0F, 0.0F);
-        this.leftArm.setTexSize(128, 64);
-        this.leftArm.visible = true;
-        setRotation(this.leftArm, LEFT_ARM_BASE_ROT_X, 0.0F, 0.0F);
-        this.rightEye = new ModelRenderer(this, 22, 8);
-        this.rightEye.addBox(-1.0F, -0.2F, 1.5F, 2, 3, 1);
-        this.rightEye.setPos(-2.0F, 3.0F, -8.0F);
-        this.rightEye.setTexSize(128, 64);
-        this.rightEye.visible = true;
-        setRotation(this.rightEye, 0.0F, 0.0F, 0.0F);
-        this.leftEye = new ModelRenderer(this, 52, 8);
-        this.leftEye.addBox(-1.0F, -0.2F, 1.5F, 2, 3, 1);
-        this.leftEye.setPos(2.0F, 3.0F, -8.0F);
-        this.leftEye.setTexSize(128, 64);
-        this.leftEye.visible = true;
-        setRotation(this.leftEye, 0.0F, 0.0F, 0.0F);
+        body = new ModelRenderer(this, 16, 0);
+        body.addBox(-6.0f, -3.0f, -6.0f, 12, 12, 12);
+        body.setPos(0.0f, 13.0f, 0.0f);
+        body.setTexSize(128, 64);
+        body.visible = true;
+        setRotation(this.body, BODY_BASE_ROT_X, 0.0f, 0.0f);
+        rightLeg = new ModelRenderer(this, 16, 24);
+        rightLeg.addBox(-1.5f, 1.0f, -3.5f, 5, 6, 6);
+        rightLeg.setPos(-4.0f, 4.0f, 0.5f);
+        rightLeg.setTexSize(128, 64);
+        rightLeg.visible = true;
+        setRotation(this.rightLeg, -RIGHT_LEG_BASE_ROT_X, 0.0f, 0.0f);
+        leftLeg = new ModelRenderer(this, 42, 24);
+        leftLeg.addBox(-3.5f, 1.0f, -3.5f, 5, 6, 6);
+        leftLeg.setPos(4.0f, 4.0f, 0.5f);
+        leftLeg.setTexSize(128, 64);
+        leftLeg.visible = true;
+        setRotation(this.leftLeg, -LEFT_LEG_BASE_ROT_X, 0.0f, 0.0f);
+        rightArm = new ModelRenderer(this, 0, 12);
+        rightArm.addBox(0.0f, 0.0f, -7.0f, 2, 6, 6);
+        rightArm.setPos(-8.0f, 0.0f, 0.0f);
+        rightArm.setTexSize(128, 64);
+        rightArm.visible = true;
+        setRotation(this.rightArm, RIGHT_ARM_BASE_ROT_X, 0.0f, 0.0f);
+        leftArm = new ModelRenderer(this, 64, 12);
+        leftArm.addBox(-2.0f, 0.0f, -7.0f, 2, 6, 6);
+        leftArm.setPos(8.0f, 0.0f, 0.0f);
+        leftArm.setTexSize(128, 64);
+        leftArm.visible = true;
+        setRotation(this.leftArm, LEFT_ARM_BASE_ROT_X, 0.0f, 0.0f);
+        rightEye = new ModelRenderer(this, 22, 8);
+        rightEye.addBox(-1.0f, -0.2f, 1.5f, 2, 3, 1);
+        rightEye.setPos(-2.0f, 3.0f, -8.0f);
+        rightEye.setTexSize(128, 64);
+        rightEye.visible = true;
+        setRotation(this.rightEye, 0.0f, 0.0f, 0.0f);
+        leftEye = new ModelRenderer(this, 52, 8);
+        leftEye.addBox(-1.0f, -0.2f, 1.5f, 2, 3, 1);
+        leftEye.setPos(2.0f, 3.0f, -8.0f);
+        leftEye.setTexSize(128, 64);
+        leftEye.visible = true;
+        setRotation(this.leftEye, 0.0f, 0.0f, 0.0f);
 
-        this.body.addChild(this.rightLeg);
-        this.body.addChild(this.leftLeg);
-        this.body.addChild(this.rightArm);
-        this.body.addChild(this.leftArm);
-        this.body.addChild(this.rightEye);
-        this.body.addChild(this.leftEye);
+        body.addChild(this.rightLeg);
+        body.addChild(this.leftLeg);
+        body.addChild(this.rightArm);
+        body.addChild(this.leftArm);
+        body.addChild(this.rightEye);
+        body.addChild(this.leftEye);
     }
 
-    private float scaleX = 1.0f, scaleY = 1.0f;
-    private boolean hasOriginalBlocklingType = false;
-
     @Override
-    public void setupAnim(BlocklingEntity blockling, float limbSwing, float limbSwingAmount, float ageInTicks, float headYaw, float headPitch)
+    public void setupAnim(@Nonnull BlocklingEntity blockling, float limbSwing, float limbSwingAmount, float ageInTicks, float headYaw, float headPitch)
     {
         EntitySize size = blockling.getDimensions(Pose.STANDING);
         scaleX = size.width;
         scaleY = size.height;
-        hasOriginalBlocklingType = blockling.getOriginalBlocklingType() == blockling.getBlocklingType();
 
         float partialTicks = ageInTicks % 1.0f;
 
@@ -186,34 +246,20 @@ public class BlocklingModel extends EntityModel<BlocklingEntity> implements IHas
     }
 
     @Override
-    public void renderToBuffer(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float r, float g, float b, float a)
+    public void renderToBuffer(@Nonnull MatrixStack matrixStack, @Nonnull IVertexBuilder buffer, int packedLight, int packedOverlay, float r, float g, float b, float a)
     {
         matrixStack.pushPose();
         matrixStack.translate(0.0, 1.501, 0.0); // There is a random 1.501 translation in render that messes up scales
         matrixStack.scale(scaleX, scaleY, scaleX);
         matrixStack.translate(0.0, -1.501, 0.0);
 
-        if (!hasOriginalBlocklingType)
-        {
-            r *= 0.7f;
-            g *= 0.7f;
-            b *= 0.7f;
-        }
-
         body.render(matrixStack, buffer, packedLight, packedOverlay, r, g, b, a);
 
         matrixStack.popPose();
     }
 
-    private static void setRotation(ModelRenderer model, float x, float y, float z)
-    {
-        model.xRot = x;
-        model.yRot = y;
-        model.zRot = z;
-    }
-
     @Override
-    public void translateToHand(HandSide hand, MatrixStack matrixStack)
+    public void translateToHand(@Nonnull HandSide hand, @Nonnull MatrixStack matrixStack)
     {
         body.translateAndRotate(matrixStack);
 
@@ -225,5 +271,20 @@ public class BlocklingModel extends EntityModel<BlocklingEntity> implements IHas
         {
             rightArm.translateAndRotate(matrixStack);
         }
+    }
+
+    /**
+     * Helper to set all rotations in one go.
+     *
+     * @param model the model to set the rotations for.
+     * @param x the x rotation.
+     * @param y the y rotation.
+     * @param z the z rotation.
+     */
+    private static void setRotation(@Nonnull ModelRenderer model, float x, float y, float z)
+    {
+        model.xRot = x;
+        model.yRot = y;
+        model.zRot = z;
     }
 }

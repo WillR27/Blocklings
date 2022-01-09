@@ -3,15 +3,22 @@ package com.willr27.blocklings.entity.renderers.blockling;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.models.blockling.BlocklingModel;
-import com.willr27.blocklings.util.BlocklingsResourceLocation;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nonnull;
+
+/**
+ * The renderer for the blockling.
+ */
 public class BlocklingRenderer extends MobRenderer<BlocklingEntity, BlocklingModel>
 {
-    public BlocklingRenderer(EntityRendererManager rendererManager)
+    /**
+     * @param rendererManager the entity render manager.
+     */
+    public BlocklingRenderer(@Nonnull EntityRendererManager rendererManager)
     {
         super(rendererManager, new BlocklingModel(), 1.0f);
 
@@ -19,7 +26,7 @@ public class BlocklingRenderer extends MobRenderer<BlocklingEntity, BlocklingMod
     }
 
     @Override
-    public void render(BlocklingEntity blockling, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_)
+    public void render(@Nonnull BlocklingEntity blockling, float p_225623_2_, float p_225623_3_, @Nonnull MatrixStack p_225623_4_, @Nonnull IRenderTypeBuffer p_225623_5_, int p_225623_6_)
     {
         shadowRadius = blockling.getScale() * 0.5f;
 
@@ -27,7 +34,8 @@ public class BlocklingRenderer extends MobRenderer<BlocklingEntity, BlocklingMod
     }
 
     @Override
-    public ResourceLocation getTextureLocation(BlocklingEntity blockling)
+    @Nonnull
+    public ResourceLocation getTextureLocation(@Nonnull BlocklingEntity blockling)
     {
         return blockling.getBlocklingType() == blockling.getOriginalBlocklingType() ? blockling.getBlocklingType().entityTexture : blockling.getOriginalBlocklingType().getCombinedTexture(blockling.getBlocklingType(), blockling.getBlocklingTypeVariant());
     }
