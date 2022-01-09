@@ -78,6 +78,8 @@
   "blocklings.skill.mining.hasty.desc": "Your blockling mines faster but their pickaxes use 2x the durability.",
   "blocklings.skill.mining.night_owl.name": "Night Owl",
   "blocklings.skill.mining.night_owl.desc": "Your blockling mines faster the lower the light level.",
+  "blocklings.skill.mining.hot_hands.name": "Hot Hands",
+  "blocklings.skill.mining.hot_hands.desc": "Your blockling's hands are so hot they seem to smelt the ores they mine.",
 
   "blocklings.skill.woodcutting.novice_lumberjack.name": "Novice Lumberjack",
   "blocklings.skill.woodcutting.novice_lumberjack.desc": "Unlocks the \"Chop Trees\" task.",

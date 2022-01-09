@@ -57,6 +57,11 @@ public class BlocklingHurtByTargetGoal extends BlocklingTargetGoal<BlocklingGoal
             return false;
         }
 
+        if (attacker == blockling)
+        {
+            return false;
+        }
+
         for (GoalWhitelist whitelist : goal.whitelists)
         {
             if (whitelist.isEntryBlacklisted(attacker))

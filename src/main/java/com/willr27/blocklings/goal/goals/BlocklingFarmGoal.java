@@ -156,7 +156,7 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGo
                     blockling.getActions().gather.stop();
                     blockling.getStats().farmingXp.incrementValue((int) ((blockStrength + 1.0f) * 3.0f));
 
-                    for (ItemStack stack : DropUtil.getDrops(blockling, targetBlockPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
+                    for (ItemStack stack : DropUtil.getDrops(DropUtil.Context.FARMING, blockling, targetBlockPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
                     {
                         stack = blockling.getEquipment().addItem(stack);
                         blockling.dropItemStack(stack);

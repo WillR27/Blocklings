@@ -53,6 +53,11 @@ public class BlocklingOwnerHurtTargetGoal extends BlocklingTargetGoal<BlocklingG
             return false;
         }
 
+        if (ownersTarget == blockling)
+        {
+            return false;
+        }
+
         for (GoalWhitelist whitelist : goal.whitelists)
         {
             if (whitelist.isEntryBlacklisted(ownersTarget))

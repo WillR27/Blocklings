@@ -141,7 +141,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTa
                     blockling.getActions().gather.stop();
                     blockling.getStats().woodcuttingXp.incrementValue((int) (blockStrength * 2.0f));
 
-                    for (ItemStack stack : DropUtil.getDrops(blockling, targetBlockPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
+                    for (ItemStack stack : DropUtil.getDrops(DropUtil.Context.WOODCUTTING, blockling, targetBlockPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
                     {
                         stack = blockling.getEquipment().addItem(stack);
                         blockling.dropItemStack(stack);

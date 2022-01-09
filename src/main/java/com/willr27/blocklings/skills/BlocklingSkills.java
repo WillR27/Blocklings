@@ -175,6 +175,20 @@ public class BlocklingSkills
             }
         };
 
+        public static final SkillInfo HOT_HANDS = new SkillInfo("6ddccec1-af7b-4e8a-90a0-3962ef422858",
+                new SkillGeneralInfo(Skill.Type.OTHER, "mining.hot_hands"),
+                new SkillDefaultsInfo(Skill.State.LOCKED),
+                new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.MINING, 40); }}),
+                new SkillCallbackInfo(skill -> true),
+                new SkillGuiInfo(0, -70, SkillWidget.ConnectionType.SINGLE_LONGEST_FIRST, 0xdd3355, new SkillGuiInfo.SkillGuiTexture(GuiUtil.MINING_ICONS, 7, 0)))
+        {
+            @Override
+            public List<SkillInfo> parents()
+            {
+                return Arrays.asList(NOVICE_MINER);
+            }
+        };
+
         public static final List<Function<SkillGroup, Skill>> SKILLS = new ArrayList<Function<SkillGroup, Skill>>()
         {{
             add(group -> new Skill(NOVICE_MINER, group));
@@ -184,6 +198,7 @@ public class BlocklingSkills
             add(group -> new Skill(MOMENTUM, group));
             add(group -> new Skill(HASTY, group));
             add(group -> new Skill(NIGHT_OWL, group));
+            add(group -> new Skill(HOT_HANDS, group));
         }};
     }
 
