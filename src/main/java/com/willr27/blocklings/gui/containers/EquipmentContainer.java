@@ -9,14 +9,31 @@ import net.minecraft.inventory.container.IContainerListener;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nonnull;
+
+/**
+ * The container for the blockling's equipment.
+ */
 public class EquipmentContainer extends Container
 {
+    /**
+     * The starting x location of the player's slots.
+     */
     private static final int PLAYER_INV_X = 8;
+
+    /**
+     * The starting y location of the player's slots.
+     */
     private static final int PLAYER_INV_Y = 74;
 
-    public EquipmentContainer(int id, PlayerEntity player, BlocklingEntity blockling)
+    /**
+     * @param windowId the window id.
+     * @param player the player opening the container.
+     * @param blockling the blockling.
+     */
+    public EquipmentContainer(int windowId, @Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
     {
-        super(null, id);
+        super(null, windowId);
 
         if (!player.level.isClientSide)
         {
@@ -50,13 +67,14 @@ public class EquipmentContainer extends Container
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player)
+    public boolean stillValid(@Nonnull PlayerEntity player)
     {
         return true;
     }
 
     @Override
-    public ItemStack quickMoveStack(PlayerEntity player, int clickedSlotIndex)
+    @Nonnull
+    public ItemStack quickMoveStack(@Nonnull PlayerEntity player, int clickedSlotIndex)
     {
         Slot clickedSlot = this.slots.get(clickedSlotIndex);
 

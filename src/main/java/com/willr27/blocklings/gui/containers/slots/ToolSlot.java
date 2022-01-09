@@ -5,14 +5,26 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nonnull;
+
+/**
+ * A container slot for a tool.
+ */
 public class ToolSlot extends Slot
 {
-    public ToolSlot(IInventory inventory, int inventoryIndex, int x, int y)
+    /**
+     * @param inventory the corresponding inventory.
+     * @param inventoryIndex the inventory index represented by the slot.
+     * @param x x location in the gui.
+     * @param y y location in the gui.
+     */
+    public ToolSlot(@Nonnull IInventory inventory, int inventoryIndex, int x, int y)
     {
         super(inventory, inventoryIndex, x, y);
     }
 
-    public boolean mayPlace(ItemStack stack)
+    @Override
+    public boolean mayPlace(@Nonnull ItemStack stack)
     {
         return ToolUtil.isTool(stack);
     }
