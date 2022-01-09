@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.entity.EntityType;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -19,37 +20,79 @@ import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Resource;
 import java.io.IOException;
 
+/**
+ * Handles any mod event.s
+ */
 @Mod.EventBusSubscriber(modid = Blocklings.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModEventBusEvents
 {
+    /**
+     * Adds the additional attributes a blockling needs to function.
+     */
     @SubscribeEvent
-    public static void addEntityAttributes(EntityAttributeCreationEvent event)
+    public static void addEntityAttributes(@Nonnull EntityAttributeCreationEvent event)
     {
         event.put(EntityTypes.BLOCKLING_ENTITY.get(), BlocklingEntity.createAttributes().build());
     }
 
-    @SubscribeEvent
-    public static void onRegisterEntities(RegistryEvent.Register<EntityType<?>> event)
-    {
-        BlocklingSpawnEgg.initSpawnEggs();
-    }
-
+    /**
+     * Creates merged blockling type textures for each blockling type and each variant.
+     */
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
-    public static void onTextureStitch(TextureStitchEvent.Post event) throws IOException
+    public static void onTextureStitch(@Nonnull TextureStitchEvent.Post event)
     {
+        ResourceLocation texture = null;
+
         for (int mask = 0; mask < 3; mask++)
         {
-            final NativeImage maskNativeImage = SimpleTexture.TextureData.load(Minecraft.getInstance().getResourceManager(), new BlocklingsResourceLocation("textures/entity/blockling/blockling_mask_" + mask + ".png")).getImage();
+            final NativeImage maskNativeImage;
+
+            try
+            {
+                texture = new BlocklingsResourceLocation("textures/entity/blockling/blockling_mask_" + mask + ".png");
+                maskNativeImage = SimpleTexture.TextureData.load(Minecraft.getInstance().getResourceManager(), texture).getImage();
+            }
+            catch (IOException e)
+            {
+                Blocklings.LOGGER.warn("Couldn't find texture: " + texture);
+
+                continue;
+            }
 
             for (BlocklingType baseBlocklingType : BlocklingType.TYPES)
             {
+                final NativeImage baseNativeImage;
+
+                try
+                {
+                    baseNativeImage = SimpleTexture.TextureData.load(Minecraft.getInstance().getResourceManager(), baseBlocklingType.entityTexture).getImage();
+                }
+                catch (IOException e)
+                {
+                    Blocklings.LOGGER.warn("Couldn't find texture: " + baseBlocklingType.entityTexture);
+
+                    continue;
+                }
+
                 for (BlocklingType outerBlocklingType : BlocklingType.TYPES)
                 {
-                    NativeImage baseNativeImage = SimpleTexture.TextureData.load(Minecraft.getInstance().getResourceManager(), baseBlocklingType.entityTexture).getImage();
-                    NativeImage outerNativeImage = SimpleTexture.TextureData.load(Minecraft.getInstance().getResourceManager(), outerBlocklingType.entityTexture).getImage();
+                    final NativeImage outerNativeImage;
+
+                    try
+                    {
+                        outerNativeImage = SimpleTexture.TextureData.load(Minecraft.getInstance().getResourceManager(), outerBlocklingType.entityTexture).getImage();
+                    }
+                    catch (IOException e)
+                    {
+                        Blocklings.LOGGER.warn("Couldn't find texture: " + outerBlocklingType.entityTexture);
+
+                        continue;
+                    }
 
                     for (int i = 0; i < baseNativeImage.getWidth(); i++)
                     {
@@ -73,11 +116,11 @@ public class ModEventBusEvents
                             int r = (int) ((baseRed * maskAlpha) + (outerRed * (1.0f - maskAlpha)));
                             int colour = (a << 24) + (b << 16) + (g << 8) + r;
 
-                            baseNativeImage.setPixelRGBA(i, j, colour);
+                            outerNativeImage.setPixelRGBA(i, j, colour);
                         }
                     }
 
-                    Minecraft.getInstance().textureManager.register(baseBlocklingType.getCombinedTexture(outerBlocklingType, mask), new DynamicTexture(baseNativeImage));
+                    Minecraft.getInstance().textureManager.register(baseBlocklingType.getCombinedTexture(outerBlocklingType, mask), new DynamicTexture(outerNativeImage));
                 }
             }
         }
