@@ -2,6 +2,7 @@ package com.willr27.blocklings.gui.screens.guis;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.Tab;
 import net.minecraft.client.gui.AbstractGui;
@@ -57,7 +58,7 @@ public class TabbedGui extends AbstractGui
 
     public void drawTabs(MatrixStack matrixStack)
     {
-        GuiUtil.bindTexture(GuiUtil.TABS);
+        GuiUtil.bindTexture(GuiTextures.TABS);
 
         int i = 0;
         for (Tab tab : Tab.leftTabs)

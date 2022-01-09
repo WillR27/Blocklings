@@ -36,7 +36,7 @@ public class GuiTexture
 
         public GoalGuiTexture(int x, int y)
         {
-            super(GuiUtil.TASKS, x * ICON_SIZE, y * ICON_SIZE + ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE);
+            super(GuiTextures.TASKS, x * ICON_SIZE, y * ICON_SIZE + ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE);
         }
     }
 }

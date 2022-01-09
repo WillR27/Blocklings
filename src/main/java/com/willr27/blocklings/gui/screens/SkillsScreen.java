@@ -3,6 +3,7 @@ package com.willr27.blocklings.gui.screens;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.skills.SkillGroup;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.GuiUtil;
@@ -57,7 +58,7 @@ public class SkillsScreen extends TabbedScreen
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-        GuiUtil.bindTexture(GuiUtil.SKILLS);
+        GuiUtil.bindTexture(GuiTextures.SKILLS);
 
         if (!maximised)
         {
@@ -80,7 +81,7 @@ public class SkillsScreen extends TabbedScreen
             font.drawShadow(matrixStack, group.info.guiTitle.getString(), left, top - 6, 0xffffff);
         }
 
-        GuiUtil.bindTexture(GuiUtil.SKILLS);
+        GuiUtil.bindTexture(GuiTextures.SKILLS);
 
         RenderSystem.enableDepthTest();
         matrixStack.pushPose();

@@ -4,6 +4,8 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -53,7 +55,7 @@ public abstract class BlocklingMessage<T extends BlocklingMessage<T>> implements
 
             if (blockling.level.isClientSide())
             {
-                clientPlayerId = Minecraft.getInstance().player.getUUID();
+                clientPlayerId = getClientPlayerId();
             }
         }
     }
@@ -106,7 +108,7 @@ public abstract class BlocklingMessage<T extends BlocklingMessage<T>> implements
         {
             boolean isClient = context.getDirection() == NetworkDirection.PLAY_TO_CLIENT;
 
-            PlayerEntity player = isClient ? Minecraft.getInstance().player : context.getSender();
+            PlayerEntity player = isClient ? getClientPlayer() : context.getSender();
             Objects.requireNonNull(player, "No player entity found when handling message.");
 
             blockling = (BlocklingEntity) player.level.getEntity(blocklingId);
@@ -119,6 +121,26 @@ public abstract class BlocklingMessage<T extends BlocklingMessage<T>> implements
                 sendToAllClients(blockling.level.players().stream().filter(serverPlayer -> serverPlayer.getUUID().equals(clientPlayerId)).collect(Collectors.toList()));
             }
         });
+    }
+
+    /**
+     * @return the uuid of the client player.
+     */
+    @OnlyIn(Dist.CLIENT)
+    @Nonnull
+    private static UUID getClientPlayerId()
+    {
+        return Minecraft.getInstance().player.getUUID();
+    }
+
+    /**
+     * @return the client player.
+     */
+    @OnlyIn(Dist.CLIENT)
+    @Nonnull
+    private static PlayerEntity getClientPlayer()
+    {
+        return Minecraft.getInstance().player;
     }
 
     /**

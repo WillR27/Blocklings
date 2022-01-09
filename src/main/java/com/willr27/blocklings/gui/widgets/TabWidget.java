@@ -1,6 +1,7 @@
 package com.willr27.blocklings.gui.widgets;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiUtil;
@@ -17,10 +18,10 @@ public class TabWidget extends Widget
     public static final int UNSELECTED_HEIGHT = 15;
     public static final int OVERLAP = 1;
 
-    public static final GuiTexture SELECTED_LEFT = new GuiTexture(GuiUtil.COMMON_WIDGETS, 0, 15, 4, SELECTED_HEIGHT);
-    public static final GuiTexture SELECTED_RIGHT = new GuiTexture(GuiUtil.COMMON_WIDGETS, 252, 15, 4, SELECTED_HEIGHT);
-    public static final GuiTexture UNSELECTED_LEFT = new GuiTexture(GuiUtil.COMMON_WIDGETS, 0, 33, 4, UNSELECTED_HEIGHT);
-    public static final GuiTexture UNSELECTED_RIGHT = new GuiTexture(GuiUtil.COMMON_WIDGETS, 252, 33, 4, UNSELECTED_HEIGHT);
+    public static final GuiTexture SELECTED_LEFT = new GuiTexture(GuiTextures.COMMON_WIDGETS, 0, 15, 4, SELECTED_HEIGHT);
+    public static final GuiTexture SELECTED_RIGHT = new GuiTexture(GuiTextures.COMMON_WIDGETS, 252, 15, 4, SELECTED_HEIGHT);
+    public static final GuiTexture UNSELECTED_LEFT = new GuiTexture(GuiTextures.COMMON_WIDGETS, 0, 33, 4, UNSELECTED_HEIGHT);
+    public static final GuiTexture UNSELECTED_RIGHT = new GuiTexture(GuiTextures.COMMON_WIDGETS, 252, 33, 4, UNSELECTED_HEIGHT);
 
     private int selectedTabIndex = 0;
     List<Tab> tabs = new ArrayList<>();
@@ -59,7 +60,7 @@ public class TabWidget extends Widget
                 continue;
             }
 
-            GuiTexture unselectedLeft = new GuiTexture(GuiUtil.COMMON_WIDGETS, UNSELECTED_LEFT.x, UNSELECTED_LEFT.y, tab.width - UNSELECTED_RIGHT.width, UNSELECTED_HEIGHT);
+            GuiTexture unselectedLeft = new GuiTexture(GuiTextures.COMMON_WIDGETS, UNSELECTED_LEFT.x, UNSELECTED_LEFT.y, tab.width - UNSELECTED_RIGHT.width, UNSELECTED_HEIGHT);
             unselectedLeft = i == 0 ? unselectedLeft.shift(4, 0).resize(-edgePadding, 0) : unselectedLeft;
             renderTexture(matrixStack, unselectedLeft, tab.x + (i == 0 ? edgePadding : 0), y);
 
@@ -72,7 +73,7 @@ public class TabWidget extends Widget
 
         Tab tab = tabs.get(selectedTabIndex);
 
-        GuiTexture selectedLeft = new GuiTexture(GuiUtil.COMMON_WIDGETS, SELECTED_LEFT.x, SELECTED_LEFT.y, tab.width - SELECTED_RIGHT.width, SELECTED_HEIGHT);
+        GuiTexture selectedLeft = new GuiTexture(GuiTextures.COMMON_WIDGETS, SELECTED_LEFT.x, SELECTED_LEFT.y, tab.width - SELECTED_RIGHT.width, SELECTED_HEIGHT);
         selectedLeft = selectedTabIndex == 0 ? selectedLeft.shift(4, 0).resize(-edgePadding + 1, 0) : selectedLeft;
         renderTexture(matrixStack, selectedLeft, selectedTabIndex == 0 ? tab.x + edgePadding - 1 : tab.x, y - 1);
 

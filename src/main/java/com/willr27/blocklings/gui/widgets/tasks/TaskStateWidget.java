@@ -4,7 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.gui.GuiTexture;
-import com.willr27.blocklings.gui.GuiUtil;
+import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.widgets.Widget;
 import net.minecraft.client.gui.FontRenderer;
 
@@ -13,8 +13,8 @@ public class TaskStateWidget extends Widget
     public static final int GOAL_STATE_WIDTH = 20;
     public static final int GOAL_STATE_HEIGHT = 20;
 
-    private static final GuiTexture STATE_TEXTURE = new GuiTexture(GuiUtil.TASKS, 196, 166, GOAL_STATE_WIDTH, GOAL_STATE_HEIGHT);
-    private static final GuiTexture STATE_PRESSED_TEXTURE = new GuiTexture(GuiUtil.TASKS, 216, 166, GOAL_STATE_WIDTH, GOAL_STATE_HEIGHT);
+    private static final GuiTexture STATE_TEXTURE = new GuiTexture(GuiTextures.TASKS, 196, 166, GOAL_STATE_WIDTH, GOAL_STATE_HEIGHT);
+    private static final GuiTexture STATE_PRESSED_TEXTURE = new GuiTexture(GuiTextures.TASKS, 216, 166, GOAL_STATE_WIDTH, GOAL_STATE_HEIGHT);
 
     public final TaskWidget taskWidget;
 

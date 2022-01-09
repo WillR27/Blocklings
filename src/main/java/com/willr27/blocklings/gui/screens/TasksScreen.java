@@ -3,6 +3,7 @@ package com.willr27.blocklings.gui.screens;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
+import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.screens.guis.TabbedGui;
@@ -72,7 +73,7 @@ public class TasksScreen extends TabbedScreen
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
-        GuiUtil.bindTexture(GuiUtil.TASKS);
+        GuiUtil.bindTexture(GuiTextures.TASKS);
         blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedGui.CONTENT_WIDTH, TabbedGui.CONTENT_HEIGHT);
 
         if (taskConfigGui != null)

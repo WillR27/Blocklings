@@ -2,6 +2,7 @@ package com.willr27.blocklings.gui.widgets;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.gui.GuiTexture;
+import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
 import net.minecraft.client.gui.FontRenderer;
 
@@ -25,7 +26,7 @@ public class ScrollbarWidget extends TexturedWidget
 
     public ScrollbarWidget(FontRenderer font, int x, int y, int width, int height)
     {
-        super(font, x, y, width, height, new GuiTexture(GuiUtil.COMMON_WIDGETS, 0, 0, 12, 15));
+        super(font, x, y, width, height, new GuiTexture(GuiTextures.COMMON_WIDGETS, 0, 0, 12, 15));
     }
 
     @Override

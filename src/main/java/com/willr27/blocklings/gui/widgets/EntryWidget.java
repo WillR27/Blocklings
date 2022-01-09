@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.gui.GuiTexture;
+import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
@@ -22,7 +23,7 @@ import java.util.Map;
 
 public class EntryWidget extends Widget
 {
-    public static final GuiTexture ENTRY_UNSELECTED = new GuiTexture(GuiUtil.WHITELIST, 0, 166, 30, 30);
+    public static final GuiTexture ENTRY_UNSELECTED = new GuiTexture(GuiTextures.WHITELIST, 0, 166, 30, 30);
     public static final GuiTexture ENTRY_SELECTED = ENTRY_UNSELECTED.shift(30, 0);
 
     private final GoalWhitelist whitelist;

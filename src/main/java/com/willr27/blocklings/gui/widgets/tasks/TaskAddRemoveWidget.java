@@ -3,7 +3,7 @@ package com.willr27.blocklings.gui.widgets.tasks;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import com.willr27.blocklings.gui.GuiTexture;
-import com.willr27.blocklings.gui.GuiUtil;
+import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.widgets.Widget;
 import net.minecraft.client.gui.FontRenderer;
 
@@ -12,8 +12,8 @@ public class TaskAddRemoveWidget extends Widget
     public static final int GOAL_ADD_REMOVE_WIDTH = 20;
     public static final int GOAL_ADD_REMOVE_HEIGHT = 20;
 
-    private static final GuiTexture ADD_TEXTURE = new GuiTexture(GuiUtil.TASKS, 136, 166, GOAL_ADD_REMOVE_WIDTH, GOAL_ADD_REMOVE_HEIGHT);
-    private static final GuiTexture REMOVE_TEXTURE = new GuiTexture(GuiUtil.TASKS, 156, 166, GOAL_ADD_REMOVE_WIDTH, GOAL_ADD_REMOVE_HEIGHT);
+    private static final GuiTexture ADD_TEXTURE = new GuiTexture(GuiTextures.TASKS, 136, 166, GOAL_ADD_REMOVE_WIDTH, GOAL_ADD_REMOVE_HEIGHT);
+    private static final GuiTexture REMOVE_TEXTURE = new GuiTexture(GuiTextures.TASKS, 156, 166, GOAL_ADD_REMOVE_WIDTH, GOAL_ADD_REMOVE_HEIGHT);
 
     public final TaskWidget taskWidget;
     public final boolean isCreateWidget;

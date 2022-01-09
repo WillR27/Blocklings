@@ -2,6 +2,7 @@ package com.willr27.blocklings.gui.widgets.tasks;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiUtil;
@@ -37,7 +38,7 @@ public class TaskWidget extends Widget
         this.taskWidgets = taskWidgets;
         this.isCreateWidget = isCreateWidget;
 
-        titleWidget = new TexturedWidget(font, x + 20, y, new GuiTexture(GuiUtil.TASKS, 40, 166, 96, HEIGHT));
+        titleWidget = new TexturedWidget(font, x + 20, y, new GuiTexture(GuiTextures.TASKS, 40, 166, 96, HEIGHT));
         iconWidget = new TaskIconWidget(this, font, isCreateWidget, onConfigure);
         stateWidget = new TaskStateWidget(this, font);
         addRemoveWidget = new TaskAddRemoveWidget(this, font, isCreateWidget);

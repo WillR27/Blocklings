@@ -3,7 +3,6 @@ package com.willr27.blocklings.entity.entities.blockling;
 import com.google.common.collect.Iterables;
 import com.willr27.blocklings.action.BlocklingActions;
 import com.willr27.blocklings.attribute.BlocklingAttributes;
-import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.gui.BlocklingGuiHandler;
 import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
 import com.willr27.blocklings.item.ToolUtil;
@@ -12,7 +11,7 @@ import com.willr27.blocklings.network.messages.BlocklingAttackTargetMessage;
 import com.willr27.blocklings.network.messages.BlocklingScaleMessage;
 import com.willr27.blocklings.network.messages.BlocklingTypeMessage;
 import com.willr27.blocklings.skills.BlocklingSkills;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
+import com.willr27.blocklings.task.Task;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -410,7 +409,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         }
         else
         {
-            result = mobInteractOffHand((ClientPlayerEntity) player);
+            result = mobInteractOffHand(player);
         }
 
         if (result != ActionResultType.PASS)

@@ -126,7 +126,7 @@ public class NetworkHandler
     {
         Log.info("Sending to client: " + message.getClass());
 
-        HANDLER.sendTo(message, ((ServerPlayerEntity)player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+        HANDLER.sendTo(message, ((ServerPlayerEntity) player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
     }
 
     /**

@@ -2,6 +2,7 @@ package com.willr27.blocklings.gui.screens.guis;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.widgets.ScrollbarWidget;
@@ -99,7 +100,7 @@ public class TaskConfigGui extends AbstractGui
 
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
-        GuiUtil.bindTexture(GuiUtil.TASK_CONFIGURE);
+        GuiUtil.bindTexture(GuiTextures.TASK_CONFIGURE);
         blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedGui.CONTENT_WIDTH, TabbedGui.CONTENT_HEIGHT);
 
         contentWidget.enableScissor();

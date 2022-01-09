@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.attribute.Attribute;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.attribute.BlocklingAttributes;
+import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.widgets.SkillWidget;
 import com.willr27.blocklings.gui.widgets.TexturedWidget;
@@ -185,7 +186,7 @@ public class SkillsGui extends AbstractGui
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GuiUtil.scissor(left, top, width, height);
 
-        GuiUtil.bindTexture(GuiUtil.SKILLS_WIDGETS);
+        GuiUtil.bindTexture(GuiTextures.SKILLS_WIDGETS);
 
         int x = (int) (left / scale) + moveX;
         int y = (int) (top / scale) + moveY;
@@ -246,7 +247,7 @@ public class SkillsGui extends AbstractGui
                 GL11.glDisable(GL11.GL_SCISSOR_TEST);
             }
 
-            GuiUtil.bindTexture(GuiUtil.SKILLS_WIDGETS);
+            GuiUtil.bindTexture(GuiTextures.SKILLS_WIDGETS);
 
             Skill.State state = skill.getState();
             Color colour = state.colour;
@@ -297,7 +298,7 @@ public class SkillsGui extends AbstractGui
     {
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
 
-        GuiUtil.bindTexture(GuiUtil.SKILLS);
+        GuiUtil.bindTexture(GuiTextures.SKILLS);
         matrixStack.pushPose();
         matrixStack.translate(0.0f, 0.0f, 10.0f);
 
@@ -367,14 +368,14 @@ public class SkillsGui extends AbstractGui
         int i = 0;
         for (String str : description)
         {
-            GuiUtil.bindTexture(GuiUtil.SKILLS);
+            GuiUtil.bindTexture(GuiTextures.SKILLS);
             TexturedWidget lineWidget = new TexturedWidget(font, startX, descY + i * gap, maxWidth, gap, 0, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH);
             lineWidget.render(matrixStack, 0, 0);
             new TexturedWidget(font, endX, descY + i * gap, OUTER_WIDTH, gap, HOVER_BOX_WIDTH - OUTER_WIDTH, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH).render(matrixStack, 0, 0);
             lineWidget.renderText(matrixStack, str, -font.width(str) - HOVER_PADDING, 0, true, 0xffffffff);
             i++;
         }
-        GuiUtil.bindTexture(GuiUtil.SKILLS);
+        GuiUtil.bindTexture(GuiTextures.SKILLS);
         new TexturedWidget(font, startX, descY + i * gap - 1, maxWidth, OUTER_WIDTH + 1, 0, DESCRIPTION_TEXTURE_Y + (HOVER_BOX_HEIGHT - OUTER_WIDTH - 1)).render(matrixStack, 0, 0);
         new TexturedWidget(font, endX, descY + i * gap - 1, OUTER_WIDTH, OUTER_WIDTH + 1, HOVER_BOX_WIDTH - OUTER_WIDTH, DESCRIPTION_TEXTURE_Y + (HOVER_BOX_HEIGHT - OUTER_WIDTH - 1)).render(matrixStack, 0, 0);
 
@@ -388,7 +389,7 @@ public class SkillsGui extends AbstractGui
         nameWidget.renderText(matrixStack, name, -font.width(name) - (skill.info.gui.texture.width + HOVER_PADDING * 2 - 2), 6, true, 0xffffffff);
 
         matrixStack.popPose();
-        GuiUtil.bindTexture(GuiUtil.SKILLS_WIDGETS);
+        GuiUtil.bindTexture(GuiTextures.SKILLS_WIDGETS);
 
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
     }
