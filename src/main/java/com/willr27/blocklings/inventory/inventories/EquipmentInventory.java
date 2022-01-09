@@ -12,14 +12,12 @@ import net.minecraft.util.Hand;
 
 public class EquipmentInventory extends AbstractInventory
 {
-    public static final int UTILITY_1 = 0;
-    public static final int UTILITY_2 = 1;
-    public static final int TOOL_MAIN_HAND = 2;
-    public static final int TOOL_OFF_HAND = 3;
+    public static final int TOOL_MAIN_HAND = 0;
+    public static final int TOOL_OFF_HAND = 1;
 
     public EquipmentInventory(BlocklingEntity blockling)
     {
-        super(blockling, 22);
+        super(blockling, 20);
     }
 
     public BlocklingHand findHandToolEquipped(ToolType toolType)
@@ -152,11 +150,7 @@ public class EquipmentInventory extends AbstractInventory
 
         for (int i = 0; i < invSize && !stack.isEmpty(); i++)
         {
-            if (i >= UTILITY_1 && i <= UTILITY_2)
-            {
-                continue;
-            }
-            else if (i >= TOOL_MAIN_HAND && i <= TOOL_OFF_HAND)
+            if (i >= TOOL_MAIN_HAND && i <= TOOL_OFF_HAND)
             {
                 if (!ToolUtil.isTool(stack))
                 {
@@ -178,11 +172,7 @@ public class EquipmentInventory extends AbstractInventory
 
         for (int i = 0; i < invSize && !stack.isEmpty(); i++)
         {
-            if (i >= UTILITY_1 && i <= UTILITY_2)
-            {
-                continue;
-            }
-            else if (i >= TOOL_MAIN_HAND && i <= TOOL_OFF_HAND)
+            if (i >= TOOL_MAIN_HAND && i <= TOOL_OFF_HAND)
             {
                 if (!ToolUtil.isTool(stack))
                 {

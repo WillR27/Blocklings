@@ -5,7 +5,6 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.containers.EquipmentContainer;
 import com.willr27.blocklings.gui.screens.guis.TabbedGui;
-import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.entity.player.PlayerEntity;
 
 public class EquipmentScreen extends TabbedContainerScreen<EquipmentContainer>
@@ -35,7 +34,7 @@ public class EquipmentScreen extends TabbedContainerScreen<EquipmentContainer>
         GuiUtil.bindTexture(GuiUtil.EQUIPMENT);
         blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedGui.CONTENT_WIDTH, TabbedGui.CONTENT_HEIGHT);
 
-        GuiUtil.renderEntityOnScreen(centerX - 58, centerY - 30, 20, centerX - 58 - mouseX, centerY - 30 - mouseY, blockling);
+        GuiUtil.renderEntityOnScreen(centerX - 58, centerY - 38, 20, centerX - 58 - mouseX, centerY - 38 - mouseY, blockling);
 
         super.renderBg(matrixStack, partialTicks, mouseX, mouseY);
     }
