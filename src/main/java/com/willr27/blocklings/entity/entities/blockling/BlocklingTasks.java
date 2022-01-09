@@ -1,13 +1,12 @@
 package com.willr27.blocklings.entity.entities.blockling;
 
-import com.willr27.blocklings.entity.goals.blockling.*;
-import com.willr27.blocklings.entity.goals.blockling.target.IHasTargetGoal;
+import com.willr27.blocklings.goal.IHasTargetGoal;
 import com.willr27.blocklings.goal.BlocklingGoal;
-import com.willr27.blocklings.goal.Task;
-import com.willr27.blocklings.goal.TaskType;
+import com.willr27.blocklings.goal.goals.*;
+import com.willr27.blocklings.task.Task;
+import com.willr27.blocklings.task.TaskType;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.widgets.tasks.TaskIconWidget;
-import com.willr27.blocklings.network.NetworkHandler;
 import com.willr27.blocklings.network.messages.TaskCreateMessage;
 import com.willr27.blocklings.network.messages.TaskRemoveMessage;
 import com.willr27.blocklings.network.messages.TaskTypeIsUnlockedMessage;

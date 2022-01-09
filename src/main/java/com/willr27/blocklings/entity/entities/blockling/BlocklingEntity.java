@@ -3,7 +3,7 @@ package com.willr27.blocklings.entity.entities.blockling;
 import com.google.common.collect.Iterables;
 import com.willr27.blocklings.action.BlocklingActions;
 import com.willr27.blocklings.attribute.BlocklingAttributes;
-import com.willr27.blocklings.goal.Task;
+import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.gui.BlocklingGuiHandler;
 import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
 import com.willr27.blocklings.item.ToolUtil;

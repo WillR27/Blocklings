@@ -1,10 +1,10 @@
-package com.willr27.blocklings.entity.goals.blockling;
+package com.willr27.blocklings.goal.goals;
 
 import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
-import com.willr27.blocklings.entity.goals.blockling.target.IHasTargetGoal;
+import com.willr27.blocklings.goal.IHasTargetGoal;
 import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.whitelist.GoalWhitelist;

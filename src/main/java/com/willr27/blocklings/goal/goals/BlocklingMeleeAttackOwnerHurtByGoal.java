@@ -1,8 +1,8 @@
-package com.willr27.blocklings.entity.goals.blockling;
+package com.willr27.blocklings.goal.goals;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
-import com.willr27.blocklings.entity.goals.blockling.target.BlocklingOwnerHurtByTargetGoal;
+import com.willr27.blocklings.goal.goals.target.BlocklingOwnerHurtByTargetGoal;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;

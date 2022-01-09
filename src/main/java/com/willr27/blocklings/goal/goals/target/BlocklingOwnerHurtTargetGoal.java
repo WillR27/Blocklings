@@ -1,33 +1,27 @@
-package com.willr27.blocklings.entity.goals.blockling.target;
+package com.willr27.blocklings.goal.goals.target;
 
 import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import net.minecraft.entity.LivingEntity;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Targets the last entity to attack the blockling.
+ * Targets the last entity the blockling's owner attacked.
  */
-public class BlocklingHurtByTargetGoal extends BlocklingTargetGoal<BlocklingGoal>
+public class BlocklingOwnerHurtTargetGoal extends BlocklingTargetGoal<BlocklingGoal>
 {
     /**
-     * The entity attacking the blockling.
+     * The entity the blockling's owner last attacked.
      */
     @Nullable
-    private LivingEntity attacker = null;
-
-    /**
-     * The mob timestamp.
-     */
-    private int timestamp = 0;
+    private LivingEntity ownersTarget = null;
 
     /**
      * @param goal the associated goal.
      */
-    public BlocklingHurtByTargetGoal(@Nonnull BlocklingGoal goal)
+    public BlocklingOwnerHurtTargetGoal(BlocklingGoal goal)
     {
         super(goal);
     }
@@ -45,21 +39,23 @@ public class BlocklingHurtByTargetGoal extends BlocklingTargetGoal<BlocklingGoal
             return false;
         }
 
-        attacker = blockling.getLastHurtByMob();
+        LivingEntity owner = blockling.getOwner();
 
-        if (attacker == null)
+        if (owner == null)
         {
             return false;
         }
 
-        if (timestamp == blockling.getLastHurtByMobTimestamp())
+        ownersTarget = owner.getLastHurtMob();
+
+        if (ownersTarget == null)
         {
             return false;
         }
 
         for (GoalWhitelist whitelist : goal.whitelists)
         {
-            if (whitelist.isEntryBlacklisted(attacker))
+            if (whitelist.isEntryBlacklisted(ownersTarget))
             {
                 return false;
             }
@@ -77,8 +73,6 @@ public class BlocklingHurtByTargetGoal extends BlocklingTargetGoal<BlocklingGoal
     @Override
     public void start()
     {
-        timestamp = blockling.getLastHurtByMobTimestamp();
-
-        blockling.setTarget(attacker);
+        blockling.setTarget(ownersTarget);
     }
 }

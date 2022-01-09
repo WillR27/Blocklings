@@ -1,7 +1,7 @@
-package com.willr27.blocklings.entity.goals.blockling.target;
+package com.willr27.blocklings.goal.goals.target;
 
 import com.willr27.blocklings.block.BlockUtil;
-import com.willr27.blocklings.entity.goals.blockling.BlocklingWoodcutGoal;
+import com.willr27.blocklings.goal.goals.BlocklingWoodcutGoal;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3i;

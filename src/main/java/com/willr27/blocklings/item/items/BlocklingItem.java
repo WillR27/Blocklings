@@ -3,7 +3,7 @@ package com.willr27.blocklings.item.items;
 import com.willr27.blocklings.entity.EntityTypes;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
-import com.willr27.blocklings.goal.Task;
+import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.util.BlocklingsResourceLocation;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.Item;

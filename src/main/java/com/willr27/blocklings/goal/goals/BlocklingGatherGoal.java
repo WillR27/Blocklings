@@ -1,11 +1,11 @@
-package com.willr27.blocklings.entity.goals.blockling;
+package com.willr27.blocklings.goal.goals;
 
 import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
-import com.willr27.blocklings.entity.goals.blockling.target.BlocklingGatherTargetGoal;
-import com.willr27.blocklings.entity.goals.blockling.target.IHasTargetGoal;
 import com.willr27.blocklings.goal.BlocklingGoal;
+import com.willr27.blocklings.goal.goals.target.BlocklingGatherTargetGoal;
+import com.willr27.blocklings.goal.IHasTargetGoal;
 import net.minecraft.command.arguments.EntityAnchorArgument;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.math.BlockPos;

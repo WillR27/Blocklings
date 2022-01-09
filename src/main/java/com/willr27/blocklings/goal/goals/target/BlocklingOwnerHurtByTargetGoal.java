@@ -1,4 +1,4 @@
-package com.willr27.blocklings.entity.goals.blockling.target;
+package com.willr27.blocklings.goal.goals.target;
 
 import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.goal.BlocklingTargetGoal;
@@ -8,20 +8,25 @@ import net.minecraft.entity.LivingEntity;
 import javax.annotation.Nullable;
 
 /**
- * Targets the last entity the blockling's owner attacked.
+ * Targets the last entity to attack the blockling's owner.
  */
-public class BlocklingOwnerHurtTargetGoal extends BlocklingTargetGoal<BlocklingGoal>
+public class BlocklingOwnerHurtByTargetGoal extends BlocklingTargetGoal<BlocklingGoal>
 {
     /**
-     * The entity the blockling's owner last attacked.
+     * The entity attacking the blockling's owner.
      */
     @Nullable
-    private LivingEntity ownersTarget = null;
+    private LivingEntity ownersAttacker = null;
+
+    /**
+     * The mob timestamp.
+     */
+    private int timestamp = 0;
 
     /**
      * @param goal the associated goal.
      */
-    public BlocklingOwnerHurtTargetGoal(BlocklingGoal goal)
+    public BlocklingOwnerHurtByTargetGoal(BlocklingGoal goal)
     {
         super(goal);
     }
@@ -46,16 +51,21 @@ public class BlocklingOwnerHurtTargetGoal extends BlocklingTargetGoal<BlocklingG
             return false;
         }
 
-        ownersTarget = owner.getLastHurtMob();
+        ownersAttacker = owner.getLastHurtByMob();
 
-        if (ownersTarget == null)
+        if (ownersAttacker == null)
+        {
+            return false;
+        }
+
+        if (timestamp == owner.getLastHurtByMobTimestamp())
         {
             return false;
         }
 
         for (GoalWhitelist whitelist : goal.whitelists)
         {
-            if (whitelist.isEntryBlacklisted(ownersTarget))
+            if (whitelist.isEntryBlacklisted(ownersAttacker))
             {
                 return false;
             }
@@ -73,6 +83,8 @@ public class BlocklingOwnerHurtTargetGoal extends BlocklingTargetGoal<BlocklingG
     @Override
     public void start()
     {
-        blockling.setTarget(ownersTarget);
+        timestamp = blockling.getOwner().getLastHurtByMobTimestamp();
+
+        blockling.setTarget(ownersAttacker);
     }
 }

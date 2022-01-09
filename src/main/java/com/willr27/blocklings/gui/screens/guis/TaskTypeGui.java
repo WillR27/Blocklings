@@ -2,8 +2,8 @@ package com.willr27.blocklings.gui.screens.guis;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
-import com.willr27.blocklings.goal.Task;
-import com.willr27.blocklings.goal.TaskType;
+import com.willr27.blocklings.task.Task;
+import com.willr27.blocklings.task.TaskType;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.widgets.ScrollbarWidget;
 import com.willr27.blocklings.gui.widgets.tasks.TaskTypeWidget;

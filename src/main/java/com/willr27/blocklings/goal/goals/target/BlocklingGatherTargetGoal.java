@@ -1,6 +1,6 @@
-package com.willr27.blocklings.entity.goals.blockling.target;
+package com.willr27.blocklings.goal.goals.target;
 
-import com.willr27.blocklings.entity.goals.blockling.BlocklingGatherGoal;
+import com.willr27.blocklings.goal.goals.BlocklingGatherGoal;
 import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
