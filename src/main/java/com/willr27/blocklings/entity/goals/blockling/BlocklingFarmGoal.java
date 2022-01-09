@@ -22,6 +22,9 @@ import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.UUID;
 
+/**
+ * Harvests/replants the targeted crop.
+ */
 public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGoal> implements IHasTargetGoal<BlocklingFarmTargetGoal>
 {
     /**

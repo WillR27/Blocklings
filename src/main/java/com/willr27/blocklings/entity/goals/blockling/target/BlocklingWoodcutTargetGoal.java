@@ -12,6 +12,9 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Targets the nearest tree to chop.
+ */
 public class BlocklingWoodcutTargetGoal extends BlocklingGatherTargetGoal<BlocklingWoodcutGoal>
 {
     /**

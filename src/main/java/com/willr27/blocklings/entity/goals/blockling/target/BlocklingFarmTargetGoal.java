@@ -9,6 +9,9 @@ import net.minecraft.util.math.BlockPos;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Targets the nearest fully grown crop to harvest.
+ */
 public class BlocklingFarmTargetGoal extends BlocklingGatherTargetGoal<BlocklingFarmGoal>
 {
     /**

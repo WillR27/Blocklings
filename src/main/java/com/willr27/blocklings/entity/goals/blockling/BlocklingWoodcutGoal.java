@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Chops the targeted log/tree.
+ */
 public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTargetGoal> implements IHasTargetGoal<BlocklingWoodcutTargetGoal>
 {
     /**

@@ -5,11 +5,27 @@ import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import net.minecraft.entity.LivingEntity;
 
+import javax.annotation.Nullable;
+
+/**
+ * Targets the last entity to attack the blockling's owner.
+ */
 public class BlocklingOwnerHurtByTargetGoal extends BlocklingTargetGoal<BlocklingGoal>
 {
+    /**
+     * The entity attacking the blockling's owner.
+     */
+    @Nullable
     private LivingEntity ownersAttacker = null;
+
+    /**
+     * The mob timestamp.
+     */
     private int timestamp = 0;
 
+    /**
+     * @param goal the associated goal.
+     */
     public BlocklingOwnerHurtByTargetGoal(BlocklingGoal goal)
     {
         super(goal);

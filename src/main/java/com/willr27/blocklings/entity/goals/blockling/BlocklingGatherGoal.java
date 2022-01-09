@@ -15,6 +15,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
+/**
+ * Contains common behaviour shared between gathering goals.
+ *
+ * @param <T>
+ */
 public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>> extends BlocklingGoal implements IHasTargetGoal<T>
 {
     /**

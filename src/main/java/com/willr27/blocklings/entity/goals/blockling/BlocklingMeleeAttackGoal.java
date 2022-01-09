@@ -18,6 +18,11 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.UUID;
 
+/**
+ * Contains common behaviour shared between melee attack goals.
+ *
+ * @param <T> the type of the corresponding target goal.
+ */
 public abstract class BlocklingMeleeAttackGoal<T extends BlocklingTargetGoal<?>> extends BlocklingGoal implements IHasTargetGoal<T>
 {
     /**

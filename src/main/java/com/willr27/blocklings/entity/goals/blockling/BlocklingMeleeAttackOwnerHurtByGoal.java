@@ -7,6 +7,9 @@ import com.willr27.blocklings.entity.goals.blockling.target.BlocklingOwnerHurtBy
 import javax.annotation.Nonnull;
 import java.util.UUID;
 
+/**
+ * Attacks the last entity to attack the blockling's owner using melee.
+ */
 public class BlocklingMeleeAttackOwnerHurtByGoal extends BlocklingMeleeAttackGoal<BlocklingOwnerHurtByTargetGoal>
 {
     /**

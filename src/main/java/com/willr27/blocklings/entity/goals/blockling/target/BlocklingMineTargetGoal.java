@@ -12,6 +12,9 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Used to target nearby veins of ore.
+ */
 public class BlocklingMineTargetGoal extends BlocklingGatherTargetGoal<BlocklingMineGoal>
 {
     /**

@@ -10,6 +10,9 @@ import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.UUID;
 
+/**
+ * Allows the blockling to wander aimlessly.
+ */
 public class BlocklingWanderGoal extends BlocklingGoal
 {
     /**

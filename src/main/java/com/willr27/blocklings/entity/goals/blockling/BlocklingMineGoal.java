@@ -20,6 +20,9 @@ import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.UUID;
 
+/**
+ * Mines the targeted ore/vein.
+ */
 public class BlocklingMineGoal extends BlocklingGatherGoal<BlocklingMineTargetGoal> implements IHasTargetGoal<BlocklingMineTargetGoal>
 {
     /**

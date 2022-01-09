@@ -13,7 +13,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class BlocklingGatherTargetGoal<T extends BlocklingGatherGoal> extends BlocklingTargetGoal<T>
+/**
+ * Contains common behaviour between gathering target goals.
+ *
+ * @param <T> the type of the associated gather goal.
+ */
+public abstract class BlocklingGatherTargetGoal<T extends BlocklingGatherGoal<?>> extends BlocklingTargetGoal<T>
 {
     /**
      * How many recalcs are called before a block is no longer marked bad.

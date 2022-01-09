@@ -9,6 +9,9 @@ import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.UUID;
 
+/**
+ * Sets the blockling to sit.
+ */
 public class BlocklingSitGoal extends BlocklingGoal
 {
     /**
