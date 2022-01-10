@@ -435,7 +435,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         ItemStack stack = player.getItemInHand(Hand.MAIN_HAND);
         Item item = stack.getItem();
 
-        if (isTame() && getOwner() == player)
+        if (isTame() && player == getOwner())
         {
             if (item != Items.EXPERIENCE_BOTTLE && (!BlocklingType.isFood(item) || !player.isCrouching()) && (!blocklingType.isFoodForType(item) || getHealth() >= getMaxHealth()))
             {
@@ -456,7 +456,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 {
                     tryTame((ServerPlayerEntity) player, stack);
                 }
-                else
+                else if (player == getOwner())
                 {
                     if (player.isCrouching())
                     {
@@ -490,7 +490,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         }
         else if (BlocklingType.isFood(item))
         {
-            if (player.isCrouching())
+            if (player == getOwner() && player.isCrouching())
             {
                 if (!level.isClientSide())
                 {
@@ -514,7 +514,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         }
         else if (item == Items.EXPERIENCE_BOTTLE)
         {
-            if (player.abilities.instabuild)
+            if (player == getOwner() && player.abilities.instabuild)
             {
                 if (!level.isClientSide())
                 {
