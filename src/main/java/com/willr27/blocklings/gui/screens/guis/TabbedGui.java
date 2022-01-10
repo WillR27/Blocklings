@@ -2,321 +2,190 @@ package com.willr27.blocklings.gui.screens.guis;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiTextures;
-import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.Tab;
+import com.willr27.blocklings.gui.widgets.TexturedWidget;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.entity.player.PlayerEntity;
 
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * The gui for the tabs in the blockling's gui.
+ * This is a gui instead of a screen, so it can be used with containers screens as well as regular screens.
+ */
 public class TabbedGui extends AbstractGui
 {
+    /**
+     * The offset for the entire gui.
+     */
     public static final int OFFSET_Y = -10;
 
-    public static final int UI_WIDTH = 232;
-    public static final int UI_HEIGHT = 166;
+    /**
+     * The width of the gui from the edge of a selected left-hand tab to the edge of a selected right-hand tab.
+     */
+    public static final int GUI_WIDTH = 234;
 
+    /**
+     * The height of the gui from the top of the regular inventory texture to the bottom.
+     */
+    public static final int GUI_HEIGHT = 166;
+
+    /**
+     * The width of the regular inventory texture.
+     */
     public static final int CONTENT_WIDTH = 176;
+
+    /**
+     * The height of the regular inventory texture.
+     */
     public static final int CONTENT_HEIGHT = 166;
 
-    public static final int TAB_GAP = 4;
-    public static final int TAB_HEIGHT = 28;
-
-    public static final int LEFT_TAB_OFF_WIDTH = 25;
-    public static final int RIGHT_TAB_OFF_WIDTH = 25;
-    public static final int LEFT_TAB_ON_WIDTH = 32;
-    public static final int RIGHT_TAB_ON_WIDTH = 32;
-
-    public static final int TAB_OFF_OFFSET_X = 3;
-
-    public static final int LEFT_TAB_OFF_TEXTURE_X = 0;
-    public static final int RIGHT_TAB_OFF_TEXTURE_X = 26;
-    public static final int LEFT_TAB_ON_TEXTURE_X = 52;
-    public static final int RIGHT_TAB_ON_TEXTURE_X = 85;
-
-    public static final int ICON_TEXTURE_Y = 28;
-    public static final int ICON_SIZE = 22;
-    public static final int ICON_OFFSET_X = 3;
-    public static final int ICON_OFFSET_Y = 3;
-
-    private BlocklingEntity blockling;
-    private PlayerEntity player;
+    private final BlocklingEntity blockling;
     private int centerX, centerY;
     private int left, top, right, bottom;
 
-    public TabbedGui(BlocklingEntity blockling, PlayerEntity player, int centerX, int centerY)
+    private final List<TabWidget> tabWidgets = new ArrayList<>();
+
+    public TabbedGui(BlocklingEntity blockling, int centerX, int centerY)
     {
         this.blockling = blockling;
-        this.player = player;
         this.centerX = centerX;
         this.centerY = centerY;
-        this.left = centerX - UI_WIDTH / 2;
-        this.top = centerY - UI_HEIGHT / 2;
-        this.right = left + UI_WIDTH;
-        this.bottom = top + UI_HEIGHT;
+        this.left = centerX - GUI_WIDTH / 2;
+        this.top = centerY - GUI_HEIGHT / 2;
+        this.right = left + GUI_WIDTH;
+        this.bottom = top + GUI_HEIGHT;
+
+        for (Tab tab : Tab.values())
+        {
+            tabWidgets.add(new TabWidget(tab, blockling, left, top, right));
+        }
     }
 
-    public void drawTabs(MatrixStack matrixStack)
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY)
     {
-        GuiUtil.bindTexture(GuiTextures.TABS);
+        tabWidgets.forEach(tabWidget -> tabWidget.render(matrixStack, mouseX, mouseY));
+    }
 
-        int i = 0;
-        for (Tab tab : Tab.leftTabs)
+    public boolean mouseClicked(int mouseX, int mouseY, int state)
+    {
+        boolean result = false;
+
+        for (TabWidget tabWidget : tabWidgets)
         {
-//            if (tab == Tab.UTILITY_1 && blockling.getUtilityManager().getUtility1() == null)
-//            {
-//                i++;
-//                continue;
-//            }
-//            else if (tab == Tab.UTILITY_2 && blockling.getUtilityManager().getUtility2() == null)
-//            {
-//                i++;
-//                continue;
-//            }
-
-            int tabTexLocationY = 0;
-            int iconTexLocationX = ICON_SIZE * tab.textureX;
-            int iconTexLocationY = ICON_SIZE * tab.textureY + ICON_TEXTURE_Y;
-            if (isActiveTab(tab))
+            if (tabWidget.mouseClicked(mouseX, mouseY, state))
             {
-                blit(matrixStack, getLeftTabOnX(i), getLeftTabOnY(i), LEFT_TAB_ON_TEXTURE_X, tabTexLocationY, LEFT_TAB_ON_WIDTH, TAB_HEIGHT);
+                result = true;
+            }
+        }
 
-//                if (tab == Tab.UTILITY_1)
-//                {
-//                    RenderHelper.enableGUIStandardItemLighting();
-//                    Minecraft.getInstance().getItemRenderer().renderItemIntoGUI(blockling.equipmentInventory.getStackInSlot(EquipmentInventory.UTILITY_SLOT_1), getLeftIconOnX(i) + 3, getLeftIconOnY(i) + 3);
-//                    GuiUtil.bindTexture(GuiUtil.TABS);
-//                }
-//                else if (tab == Tab.UTILITY_2)
-//                {
-//                    RenderHelper.enableGUIStandardItemLighting();
-//                    Minecraft.getInstance().getItemRenderer().renderItemIntoGUI(blockling.equipmentInventory.getStackInSlot(EquipmentInventory.UTILITY_SLOT_2), getLeftIconOnX(i) + 3, getLeftIconOnY(i) + 3);
-//                    GuiUtil.bindTexture(GuiUtil.TABS);
-//                }
-//                else
-                {
-                    blit(matrixStack, getLeftIconOnX(i), getLeftIconOnY(i), iconTexLocationX, iconTexLocationY, ICON_SIZE, ICON_SIZE);
-                }
+        return result;
+    }
+
+    /**
+     * The widget for the tabs along the edge of the gui.
+     */
+    private static class TabWidget extends TexturedWidget
+    {
+        /**
+         * The width/height of a tab icon.
+         */
+        private static final int ICON_SIZE = 22;
+
+        /**
+         * The background texture for a selected tab on the left-hand side.
+         */
+        private static final GuiTexture SELECTED_BACKGROUND_TEXTURE_LEFT = new GuiTexture(GuiTextures.TABS, 52, 0, 32, 28);
+
+        /**
+         * The background texture for a selected tab on the right-hand side.
+         */
+        private static final GuiTexture SELECTED_BACKGROUND_TEXTURE_RIGHT = new GuiTexture(GuiTextures.TABS, 85, 0, 32, 28);
+
+        /**
+         * The background texture for an unselected tab on the left-hand side.
+         */
+        private static final GuiTexture UNSELECTED_BACKGROUND_TEXTURE_LEFT = new GuiTexture(GuiTextures.TABS, 0, 0, 25, 28);
+
+        /**
+         * The background texture for an unselected tab on the right-hand side.
+         */
+        private static final GuiTexture UNSELECTED_BACKGROUND_TEXTURE_RIGHT = new GuiTexture(GuiTextures.TABS, 26, 0, 25, 28);
+
+        /**
+         * The associated tab.
+         */
+        private final Tab tab;
+
+        /**
+         * The blockling.
+         */
+        private final BlocklingEntity blockling;
+
+        /**
+         * The background texture used when the tab is unselected.
+         */
+        private final GuiTexture unselectedBackgroundTexture;
+
+        /**
+         * The texture used for the tab icon.
+         */
+        private final GuiTexture iconTexture;
+
+        /**
+         * @param tab the tab.
+         */
+        public TabWidget(@Nonnull Tab tab, @Nonnull BlocklingEntity blockling, int left, int top, int right)
+        {
+            super(tab.left ? left : right - SELECTED_BACKGROUND_TEXTURE_LEFT.width, top + tab.getIndex() * (SELECTED_BACKGROUND_TEXTURE_LEFT.height + 4) + 5, tab.left ? SELECTED_BACKGROUND_TEXTURE_LEFT : SELECTED_BACKGROUND_TEXTURE_RIGHT);
+            this.tab = tab;
+            this.blockling = blockling;
+            this.unselectedBackgroundTexture = tab.left ? UNSELECTED_BACKGROUND_TEXTURE_LEFT : UNSELECTED_BACKGROUND_TEXTURE_RIGHT;
+            this.iconTexture = new GuiTexture(GuiTextures.TABS, tab.getIndex() * ICON_SIZE, tab.left ? 28 : 28 + ICON_SIZE, ICON_SIZE, ICON_SIZE);
+        }
+
+        @Override
+        public void render(MatrixStack matrixStack, int mouseX, int mouseY)
+        {
+            if (isSelected())
+            {
+                super.render(matrixStack, mouseX, mouseY);
+                renderTexture(matrixStack, tab.left ? 6 : 4, 3, iconTexture);
             }
             else
             {
-                blit(matrixStack, getLeftTabOffX(i), getLeftTabOffY(i), LEFT_TAB_OFF_TEXTURE_X, tabTexLocationY, LEFT_TAB_OFF_WIDTH, TAB_HEIGHT);
-
-//                if (tab == Tab.UTILITY_1)
-//                {
-//                    RenderHelper.enableGUIStandardItemLighting();
-//                    Minecraft.getInstance().getItemRenderer().renderItemIntoGUI(blockling.equipmentInventory.getStackInSlot(EquipmentInventory.UTILITY_SLOT_1), getLeftIconOffX(i) + 3, getLeftIconOffY(i) + 3);
-//                    GuiUtil.bindTexture(GuiUtil.TABS);
-//                }
-//                else if (tab == Tab.UTILITY_2)
-//                {
-//                    RenderHelper.enableGUIStandardItemLighting();
-//                    Minecraft.getInstance().getItemRenderer().renderItemIntoGUI(blockling.equipmentInventory.getStackInSlot(EquipmentInventory.UTILITY_SLOT_2), getLeftIconOffX(i) + 3, getLeftIconOffY(i) + 3);
-//                    GuiUtil.bindTexture(GuiUtil.TABS);
-//                }
-//                else
-                {
-                    blit(matrixStack, getLeftIconOffX(i), getLeftIconOffY(i), iconTexLocationX, iconTexLocationY, ICON_SIZE, ICON_SIZE);
-                }
+                renderTexture(matrixStack, tab.left ? 5 : 3, 0, unselectedBackgroundTexture);
+                renderTexture(matrixStack, tab.left ? 8 : 3, 3, iconTexture);
             }
-            i++;
-        }
 
-        i = 0;
-        for (Tab tab : Tab.rightTabs)
-        {
-            int tabTexLocationY = 0;
-            int iconTexLocationX = ICON_SIZE * tab.textureX;
-            int iconTexLocationY = ICON_SIZE * tab.textureY + ICON_TEXTURE_Y;
-            if (isActiveTab(tab))
+            if (isMouseOver(mouseX, mouseY))
             {
-                blit(matrixStack, getRightTabOnX(i), getRightTabOnY(i), RIGHT_TAB_ON_TEXTURE_X, tabTexLocationY, RIGHT_TAB_ON_WIDTH, TAB_HEIGHT);
-                blit(matrixStack, getRightIconOnX(i), getRightIconOnY(i), iconTexLocationX, iconTexLocationY, ICON_SIZE, ICON_SIZE);
+                screen.renderTooltip(matrixStack, tab.name, mouseX, mouseY);
             }
-            else
-            {
-                blit(matrixStack, getRightTabOffX(i), getRightTabOffY(i), RIGHT_TAB_OFF_TEXTURE_X, tabTexLocationY, RIGHT_TAB_OFF_WIDTH, TAB_HEIGHT);
-                blit(matrixStack, getRightIconOffX(i), getRightIconOffY(i), iconTexLocationX, iconTexLocationY, ICON_SIZE, ICON_SIZE);
-            }
-            i++;
         }
-    }
 
-    public void drawTooltip(MatrixStack matrixStack, int mouseX, int mouseY, Screen screen)
-    {
-        Tab hoveredTab = getHoveredTab(mouseX, mouseY);
-        if (hoveredTab != null)
+        @Override
+        public boolean mouseClicked(int mouseX, int mouseY, int state)
         {
-//            if (hoveredTab == Tab.UTILITY_1 && blockling.getUtilityManager().getUtility1() == null)
-//            {
-//                return;
-//            }
-//            else if (hoveredTab == Tab.UTILITY_2 && blockling.getUtilityManager().getUtility2() == null)
-//            {
-//                return;
-//            }
-
-            screen.renderTooltip(matrixStack, hoveredTab.name, mouseX, mouseY);
-        }
-    }
-
-    public boolean mouseReleased(int mouseX, int mouseY, int state)
-    {
-        Tab hoveredTab = getHoveredTab(mouseX, mouseY);
-        if (hoveredTab != null)
-        {
-            int guiId = hoveredTab.guiId;
-            int utility = -1;
-
-//            if (hoveredTab == Tab.UTILITY_1)
-//            {
-//                Utility util = blockling.getUtilityManager().getUtility1();
-//                if (util == null)
-//                {
-//                    return false;
-//                }
-//                utility = 1;
-//            }
-//            else if (hoveredTab == Tab.UTILITY_2)
-//            {
-//                Utility util = blockling.getUtilityManager().getUtility2();
-//                if (util == null)
-//                {
-//                    return false;
-//                }
-//                utility = 2;
-//            }
-
-            blockling.guiHandler.openGui(guiId, player);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    private Tab getHoveredTab(int mouseX, int mouseY)
-    {
-        int i = 0;
-        for (Tab tab : Tab.leftTabs)
-        {
-            if ((isActiveTab(tab) && GuiUtil.isMouseOver(mouseX, mouseY, getLeftIconOffX(i), getLeftIconOffY(i), ICON_SIZE, ICON_SIZE))
-             || !isActiveTab(tab) && GuiUtil.isMouseOver(mouseX, mouseY, getLeftIconOnX(i), getLeftIconOnY(i), ICON_SIZE, ICON_SIZE))
+            if (isMouseOver(mouseX, mouseY))
             {
-                return tab;
+                blockling.guiHandler.openGui(tab.guiId, screen.getMinecraft().player);
+
+                return true;
             }
-            i++;
+
+            return super.mouseClicked(mouseX, mouseY, state);
         }
-        i = 0;
-        for (Tab tab : Tab.rightTabs)
+
+        /**
+         * @return true if the current tab is selected.
+         */
+        private boolean isSelected()
         {
-            if ((isActiveTab(tab) && GuiUtil.isMouseOver(mouseX, mouseY, getRightIconOffX(i), getRightIconOffY(i), ICON_SIZE, ICON_SIZE))
-             || !isActiveTab(tab) && GuiUtil.isMouseOver(mouseX, mouseY, getRightIconOnX(i), getRightIconOnY(i), ICON_SIZE, ICON_SIZE))
-            {
-                return tab;
-            }
-            i++;
+            return tab.guiId == blockling.guiHandler.getRecentGuiId();
         }
-
-        return null;
-    }
-
-    private Tab getActiveTab()
-    {
-//        if (guiInfo.utility == -1)
-//        {
-            for (Tab tab : Tab.values())
-            {
-                if (tab.guiId == blockling.guiHandler.getRecentGuiId())
-                {
-                    return tab;
-                }
-            }
-//        }
-//        else
-//        {
-//            return guiInfo.utility == 1 ? Tab.UTILITY_1 : Tab.UTILITY_2;
-//        }
-
-        return null;
-    }
-
-    private boolean isActiveTab(Tab tab)
-    {
-        return tab == getActiveTab();
-    }
-
-    private int getLeftIconOffX(int i)
-    {
-        return getLeftTabOffX(i) + ICON_OFFSET_X;
-    }
-    private int getLeftIconOffY(int i)
-    {
-        return getLeftTabOffY(i) + ICON_OFFSET_Y;
-    }
-
-    private int getRightIconOffX(int i)
-    {
-        return getRightTabOffX(i) + RIGHT_TAB_OFF_WIDTH - ICON_SIZE - ICON_OFFSET_X;
-    }
-    private int getRightIconOffY(int i)
-    {
-        return getRightTabOffY(i) + ICON_OFFSET_Y;
-    }
-
-    private int getLeftTabOffX(int i)
-    {
-        return left + TAB_OFF_OFFSET_X;
-    }
-    private int getLeftTabOffY(int i)
-    {
-        return top + 5 + ((TAB_HEIGHT + TAB_GAP) * i);
-    }
-
-    private int getRightTabOffX(int i)
-    {
-        return right - RIGHT_TAB_OFF_WIDTH - TAB_OFF_OFFSET_X;
-    }
-    private int getRightTabOffY(int i)
-    {
-        return top + 5 + ((TAB_HEIGHT + TAB_GAP) * i);
-    }
-
-
-
-    private int getLeftIconOnX(int i)
-    {
-        return getLeftTabOnX(i) + ICON_OFFSET_X + TAB_OFF_OFFSET_X;
-    }
-    private int getLeftIconOnY(int i)
-    {
-        return getLeftTabOnY(i) + ICON_OFFSET_Y;
-    }
-
-    private int getRightIconOnX(int i)
-    {
-        return getRightTabOnX(i) + RIGHT_TAB_ON_WIDTH - ICON_SIZE - ICON_OFFSET_X - TAB_OFF_OFFSET_X;
-    }
-    private int getRightIconOnY(int i)
-    {
-        return getRightTabOnY(i) + ICON_OFFSET_Y;
-    }
-
-    private int getLeftTabOnX(int i)
-    {
-        return left - 1;
-    }
-    private int getLeftTabOnY(int i)
-    {
-        return top + 5 + ((TAB_HEIGHT + TAB_GAP) * i);
-    }
-
-    private int getRightTabOnX(int i)
-    {
-        return right + 1 - RIGHT_TAB_ON_WIDTH;
-    }
-    private int getRightTabOnY(int i)
-    {
-        return top + 5 + ((TAB_HEIGHT + TAB_GAP) * i);
     }
 }

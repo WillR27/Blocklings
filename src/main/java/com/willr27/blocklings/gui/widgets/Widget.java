@@ -18,6 +18,17 @@ public class Widget extends AbstractGui
     public int width, height;
     public boolean isPressed = false;
 
+    public Widget(int x, int y, int width, int height)
+    {
+        this.screen = Minecraft.getInstance().screen;
+        this.font = Minecraft.getInstance().font;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+
+    @Deprecated
     public Widget(FontRenderer font, int x, int y, int width, int height)
     {
         this.screen = Minecraft.getInstance().screen;

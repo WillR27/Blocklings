@@ -1,18 +1,16 @@
 package com.willr27.blocklings.gui.widgets;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiUtil;
-import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.util.ResourceLocation;
 
 public class TexturedWidget extends Widget
 {
     public int textureX, textureY;
     public GuiTexture texture;
 
+    @Deprecated
     public TexturedWidget(FontRenderer font, int x, int y, int width, int height, int textureX, int textureY)
     {
         super(font, x, y, width, height);
@@ -21,6 +19,7 @@ public class TexturedWidget extends Widget
         this.texture = null;
     }
 
+    @Deprecated
     public TexturedWidget(FontRenderer font, int x, int y, int width, int height, GuiTexture texture)
     {
         super(font, x, y, width, height);
@@ -29,6 +28,15 @@ public class TexturedWidget extends Widget
         this.texture = texture;
     }
 
+    public TexturedWidget(int x, int y, GuiTexture texture)
+    {
+        super(x, y, texture.width, texture.height);
+        this.textureX = texture.x;
+        this.textureY = texture.y;
+        this.texture = texture;
+    }
+
+    @Deprecated
     public TexturedWidget(FontRenderer font, int x, int y, GuiTexture texture)
     {
         super(font, x, y, texture.width, texture.height);

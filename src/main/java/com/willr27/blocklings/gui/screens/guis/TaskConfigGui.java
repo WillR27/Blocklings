@@ -42,8 +42,8 @@ public class TaskConfigGui extends AbstractGui
         centerX = screen.width / 2;
         centerY = screen.height / 2 + TabbedGui.OFFSET_Y;
 
-        left = centerX - TabbedGui.UI_WIDTH / 2;
-        top = centerY - TabbedGui.UI_HEIGHT / 2;
+        left = centerX - TabbedGui.GUI_WIDTH / 2;
+        top = centerY - TabbedGui.GUI_HEIGHT / 2;
 
         contentLeft = centerX - TabbedGui.CONTENT_WIDTH / 2;
         contentTop = top;

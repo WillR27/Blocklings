@@ -48,6 +48,14 @@ public enum Tab
         }
     }
 
+    /**
+     * @return the index of the tab for the side it's on where 0 is at the top and 1 is below etc.
+     */
+    public int getIndex()
+    {
+        return left ? leftTabs.indexOf(this) : rightTabs.indexOf(this);
+    }
+
     public static boolean hasTab(int guiId)
     {
         return getTab(guiId) != null;
