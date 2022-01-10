@@ -15,6 +15,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -131,18 +133,31 @@ public class BlocklingGuiHandler
                 player.containerMenu = container;
             }
 
-            // Create the screen for this gui id
-            Screen screen = createScreen(guiId, container, player);
+            openScreen(guiId, player, container);
+        }
+    }
 
-            // If there is no screen something has gone wrong
-            if (screen != null)
-            {
-                Minecraft.getInstance().setScreen(screen);
-            }
-            else
-            {
-                Blocklings.LOGGER.warn("No screen exists for gui id: " + guiId);
-            }
+    /**
+     * Opens the screen on the client with the given gui id.
+     *
+     * @param guiId the gui id of the screen to open.
+     * @param player the player opening the screen.
+     * @param container the container associated with the screen.
+     */
+    @OnlyIn(Dist.CLIENT)
+    private void openScreen(int guiId, @Nonnull PlayerEntity player, @Nullable Container container)
+    {
+        // Create the screen for this gui id
+        Screen screen = createScreen(guiId, container, player);
+
+        // If there is no screen something has gone wrong
+        if (screen != null)
+        {
+            Minecraft.getInstance().setScreen(screen);
+        }
+        else
+        {
+            Blocklings.LOGGER.warn("No screen exists for gui id: " + guiId);
         }
     }
 
@@ -174,6 +189,7 @@ public class BlocklingGuiHandler
      * @param player the player to pass to the screen.
      * @return the screen or null if gui id is not recognised.
      */
+    @OnlyIn(Dist.CLIENT)
     @Nullable
     private Screen createScreen(int guiId, @Nullable Container container, @Nonnull PlayerEntity player)
     {

@@ -2,6 +2,7 @@ package com.willr27.blocklings.gui.widgets.tasks;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.gui.GuiTexture;
@@ -12,12 +13,12 @@ import java.util.function.Consumer;
 
 public class TaskIconWidget extends Widget
 {
-    public static final int GOAL_ICON_WIDTH = 20;
-    public static final int GOAL_ICON_HEIGHT = 20;
+    public static final int GOAL_ICON_WIDTH = BlocklingTasks.NULL.texture.width;
+    public static final int GOAL_ICON_HEIGHT = BlocklingTasks.NULL.texture.height;
 
     public static final GuiTexture BACKGROUND_TEXTURE = new GuiTexture(GuiTextures.TASKS, 0, 166, GOAL_ICON_WIDTH, GOAL_ICON_HEIGHT);
     public static final GuiTexture BACKGROUND_PRESSED_TEXTURE = new GuiTexture(GuiTextures.TASKS, 20, 166, GOAL_ICON_WIDTH, GOAL_ICON_HEIGHT);
-    public static final GuiTexture CONFIGURE_TEXTURE = new GuiTexture(GuiTextures.TASKS, 176, 166, GOAL_ICON_WIDTH, GOAL_ICON_HEIGHT);
+    public static final GuiTexture CONFIGURE_TEXTURE = BlocklingTasks.NULL.texture;
 
     public final TaskWidget taskWidget;
     public final boolean isCreateWidget;

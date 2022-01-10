@@ -3,6 +3,7 @@ package com.willr27.blocklings.entity.entities.blockling;
 import com.willr27.blocklings.goal.IHasTargetGoal;
 import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.goal.goals.*;
+import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.task.TaskType;
 import com.willr27.blocklings.gui.GuiTexture;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 
 public class BlocklingTasks
 {
-    public static final TaskType NULL = new TaskType("1c330075-19af-4c12-ac20-6de50e7b84a9", "null", false, false, TaskIconWidget.CONFIGURE_TEXTURE, ((i, b, t) -> null));
+    public static final TaskType NULL = new TaskType("1c330075-19af-4c12-ac20-6de50e7b84a9", "null", false, false, new GuiTexture(GuiTextures.TASKS, 176, 166, 20, 20), ((i, b, t) -> null));
     public static final TaskType MELEE_ATTACK_HURT_BY = new TaskType("2888dde5-f6ee-439d-ab8d-ea9a91470c64", "hurt_by_melee", true, true, new GuiTexture.GoalGuiTexture(4, 0), BlocklingMeleeAttackHurtByGoal::new);
     public static final TaskType MELEE_ATTACK_OWNER_HURT_BY = new TaskType("72b27eb1-e5bd-48e0-b562-74dece3d144a", "owner_hurt_by_melee", false, false, new GuiTexture.GoalGuiTexture(3, 0), BlocklingMeleeAttackOwnerHurtByGoal::new);
     public static final TaskType MELEE_ATTACK_OWNER_HURT = new TaskType("51d0ae15-8605-4240-a515-89f47b2f450a", "owner_hurt_melee", false, false, new GuiTexture.GoalGuiTexture(3, 0), BlocklingMeleeAttackOwnerHurtGoal::new);
@@ -85,15 +86,15 @@ public class BlocklingTasks
      */
     public void reapplyGoals()
     {
-        Set<PrioritizedGoal> goals = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, goalSelector, "availableGoals");
-        Set<PrioritizedGoal> targets = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, targetSelector, "availableGoals");
+        Set<PrioritizedGoal> goals = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, goalSelector, "field_220892_d");
+        Set<PrioritizedGoal> targets = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, targetSelector, "field_220892_d");
         goals.forEach(prioritizedGoal -> prioritizedGoal.stop());
         goals.clear();
         targets.forEach(prioritizedGoal -> prioritizedGoal.stop());
         targets.clear();
 
-        Map<Goal.Flag, PrioritizedGoal> goalLockedFlags  = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, goalSelector, "lockedFlags");
-        Map<Goal.Flag, PrioritizedGoal> targetLockedFlags  = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, targetSelector, "lockedFlags");
+        Map<Goal.Flag, PrioritizedGoal> goalLockedFlags  = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, goalSelector, "field_220891_c");
+        Map<Goal.Flag, PrioritizedGoal> targetLockedFlags  = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, targetSelector, "field_220891_c");
         goalLockedFlags.clear();
         targetLockedFlags.clear();
 

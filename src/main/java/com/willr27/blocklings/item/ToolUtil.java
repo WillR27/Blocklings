@@ -110,7 +110,7 @@ public class ToolUtil
         for (Map.Entry<Attribute, AttributeModifier> entry : multimap.entries())
         {
             AttributeModifier attributemodifier = entry.getValue();
-            UUID baseAttackSpeedAttributeId = ObfuscationReflectionHelper.getPrivateValue(Item.class, Items.ACACIA_BOAT, "BASE_ATTACK_SPEED_UUID");
+            UUID baseAttackSpeedAttributeId = ObfuscationReflectionHelper.getPrivateValue(Item.class, Items.ACACIA_BOAT, "field_185050_h");
 
             if (attributemodifier.getId() == baseAttackSpeedAttributeId)
             {
@@ -130,7 +130,7 @@ public class ToolUtil
         for (Map.Entry<Attribute, AttributeModifier> entry : multimap.entries())
         {
             AttributeModifier attributemodifier = entry.getValue();
-            UUID baseAttackDamageAttributeId = ObfuscationReflectionHelper.getPrivateValue(Item.class, Items.ACACIA_BOAT, "BASE_ATTACK_DAMAGE_UUID");
+            UUID baseAttackDamageAttributeId = ObfuscationReflectionHelper.getPrivateValue(Item.class, Items.ACACIA_BOAT, "field_111210_e");
 
             if (attributemodifier.getId() == baseAttackDamageAttributeId)
             {
