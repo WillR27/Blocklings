@@ -8,6 +8,7 @@ import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
 import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.item.items.BlocklingItem;
 import com.willr27.blocklings.network.messages.BlocklingAttackTargetMessage;
+import com.willr27.blocklings.network.messages.BlocklingNameMessage;
 import com.willr27.blocklings.network.messages.BlocklingScaleMessage;
 import com.willr27.blocklings.network.messages.BlocklingTypeMessage;
 import com.willr27.blocklings.skills.BlocklingSkills;
@@ -32,6 +33,7 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.IServerWorld;
@@ -46,6 +48,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.function.BiPredicate;
 
 /**
@@ -137,7 +140,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     {
         super(type, world);
 
-        setCustomName(new StringTextComponent("Blockling"));
+        setCustomName(new StringTextComponent("Blockling"), false);
 
         stats.initUpdateCallbacks();
 
@@ -755,6 +758,40 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     public void dropItemStack(@Nonnull ItemStack stack)
     {
         level.addFreshEntity(new ItemEntity(level, getX(), getY() + 0.2f, getZ(), stack));
+    }
+
+    /**
+     * Sets the name of the blockling.
+     * Does NOT sync to client/server.
+     *
+     * @param name the new name.
+     */
+    @Override
+    public void setCustomName(@Nullable ITextComponent name)
+    {
+        if (name != null)
+        {
+            name = new StringTextComponent(name.getString());
+        }
+
+        setCustomName((StringTextComponent) name, false);
+    }
+
+    /**
+     * Sets the name of the blockling.
+     * Syncs to the server if set from the client and sync is true.
+     *
+     * @param name the new name.
+     * @param sync whether to sync to the server from the client.
+     */
+    public void setCustomName(@Nullable StringTextComponent name, boolean sync)
+    {
+        super.setCustomName(name);
+
+        if (level.isClientSide && sync)
+        {
+            new BlocklingNameMessage(this, name).sync();
+        }
     }
 
     /**

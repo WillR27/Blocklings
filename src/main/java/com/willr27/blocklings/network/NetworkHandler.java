@@ -52,9 +52,10 @@ public class NetworkHandler
     public static void init()
     {
         registerMessage(Attribute.IsEnabledMessage.class);
-        registerMessage(BlocklingGuiHandler.OpenMessage.class);
-        registerMessage(BlocklingScaleMessage.class);
         registerMessage(BlocklingAttackTargetMessage.class);
+        registerMessage(BlocklingGuiHandler.OpenMessage.class);
+        registerMessage(BlocklingNameMessage.class);
+        registerMessage(BlocklingScaleMessage.class);
         registerMessage(BlocklingTypeMessage.class);
         registerMessage(EquipmentInventoryMessage.class);
         registerMessage(GoalStateMessage.class);

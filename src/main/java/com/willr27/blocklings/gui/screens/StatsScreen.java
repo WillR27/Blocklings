@@ -169,12 +169,12 @@ public class StatsScreen extends TabbedScreen
                 {
                     if (!getValue().equals(""))
                     {
-                        blockling.setCustomName(new StringTextComponent(getValue()));
+                        blockling.setCustomName(new StringTextComponent(getValue()), true);
                     }
                     else
                     {
                         ITextComponent name = Items.BLOCKLING.get().getName(Items.BLOCKLING.get().getDefaultInstance());
-                        blockling.setCustomName(name);
+                        blockling.setCustomName(new StringTextComponent(name.getString()), true);
                         setValue(name.getString());
                     }
                 }
