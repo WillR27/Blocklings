@@ -12,7 +12,7 @@ public class EquipmentScreen extends TabbedContainerScreen<EquipmentContainer>
 {
     public EquipmentScreen(EquipmentContainer screenContainer, BlocklingEntity blockling, PlayerEntity player)
     {
-        super(screenContainer, blockling, player, "Equipment");
+        super(screenContainer, blockling);
     }
 
     @Override

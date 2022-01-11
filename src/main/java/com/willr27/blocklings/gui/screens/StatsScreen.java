@@ -91,7 +91,7 @@ public class StatsScreen extends TabbedScreen
 
     public StatsScreen(BlocklingEntity blockling, PlayerEntity player)
     {
-        super(blockling, player, "Stats");
+        super(blockling);
         this.stats = blockling.getStats();
     }
 

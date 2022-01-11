@@ -34,7 +34,7 @@ public class TasksScreen extends TabbedScreen
 
     public TasksScreen(BlocklingEntity blockling, PlayerEntity player)
     {
-        super(blockling, player, "Tasks");
+        super(blockling);
     }
 
     @Override

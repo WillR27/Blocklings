@@ -9,24 +9,83 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.util.text.StringTextComponent;
 
+import javax.annotation.Nonnull;
+
+/**
+ * A container screen that includes the blockling gui tabs.
+ */
 public class TabbedContainerScreen<T extends Container> extends ContainerScreen<T>
 {
+    /**
+     * The blockling.
+     */
+    @Nonnull
+    protected final BlocklingEntity blockling;
+
+    /**
+     * The player opening the gui.
+     */
+    @Nonnull
+    protected final PlayerEntity player;
+
+    /**
+     * The x position in the center of the screen.
+     */
+    protected int centerX;
+
+    /**
+     * The y position in the center of the screen.
+     */
+    protected int centerY;
+
+    /**
+     * The x position at the left of the gui's tabs.
+     */
+    protected int left;
+
+    /**
+     * The y position at the top of the gui.
+     */
+    protected int top;
+
+    /**
+     * The x position at the left of the gui excluding the tabs.
+     */
+    protected int contentLeft;
+
+    /**
+     * The y position at the top of the gui excluding.
+     */
+    protected int contentTop;
+
+    /**
+     * The x position at the right of the gui excluding the tabs.
+     */
+    protected int contentRight;
+
+    /**
+     * The y position at the bottom of the gui excluding.
+     */
+    protected int contentBottom;
+
+    /**
+     * The gui used to the draw and handle the tabs.
+     */
     private TabbedGui tabbedGui;
 
-    protected final BlocklingEntity blockling;
-    protected final PlayerEntity player;
-    protected int centerX, centerY;
-    protected int left, top;
-    protected int contentLeft, contentTop;
-    protected int contentRight, contentBottom;
-
-    public TabbedContainerScreen(T screenContainer, BlocklingEntity blockling, PlayerEntity player, String label)
+    /**
+     * @param blockling the blockling.
+     */
+    public TabbedContainerScreen(@Nonnull T screenContainer, @Nonnull BlocklingEntity blockling)
     {
-        super(screenContainer, player.inventory, new StringTextComponent(label));
+        super(screenContainer, Minecraft.getInstance().player.inventory, new StringTextComponent(""));
         this.blockling = blockling;
-        this.player = player;
+        this.player = Minecraft.getInstance().player;
     }
 
+    /**
+     * Called on first creation and whenever the screen is resized.
+     */
     @Override
     protected void init()
     {
@@ -49,7 +108,7 @@ public class TabbedContainerScreen<T extends Container> extends ContainerScreen<
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
@@ -57,13 +116,13 @@ public class TabbedContainerScreen<T extends Container> extends ContainerScreen<
     }
 
     @Override
-    protected void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY)
+    protected void renderBg(@Nonnull MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY)
     {
         tabbedGui.render(matrixStack, mouseX, mouseY);
     }
 
     @Override
-    protected void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY)
+    protected void renderLabels(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
         // Leave empty to stop container labels being rendered
     }

@@ -7,6 +7,8 @@ import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.Tab;
 import com.willr27.blocklings.gui.widgets.TexturedWidget;
 import net.minecraft.client.gui.AbstractGui;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ import java.util.List;
  * The gui for the tabs in the blockling's gui.
  * This is a gui instead of a screen, so it can be used with containers screens as well as regular screens.
  */
+@OnlyIn(Dist.CLIENT)
 public class TabbedGui extends AbstractGui
 {
     /**
@@ -43,21 +46,37 @@ public class TabbedGui extends AbstractGui
      */
     public static final int CONTENT_HEIGHT = 166;
 
-    private final BlocklingEntity blockling;
-    private int centerX, centerY;
-    private int left, top, right, bottom;
+    /**
+     * The x position at the left-hand side of the tabs.
+     */
+    private int left;
 
+    /**
+     * The y position at the top of the gui.
+     */
+    private int top;
+
+    /**
+     * The x position at the right-hand side of the tabs.
+     */
+    private int right;
+
+    /**
+     * The tab widgets.
+     */
+    @Nonnull
     private final List<TabWidget> tabWidgets = new ArrayList<>();
 
-    public TabbedGui(BlocklingEntity blockling, int centerX, int centerY)
+    /**
+     * @param blockling the blockling.
+     * @param centerX the x position at the center of the screen.
+     * @param centerY the y position at the center of the screen.
+     */
+    public TabbedGui(@Nonnull BlocklingEntity blockling, int centerX, int centerY)
     {
-        this.blockling = blockling;
-        this.centerX = centerX;
-        this.centerY = centerY;
         this.left = centerX - GUI_WIDTH / 2;
         this.top = centerY - GUI_HEIGHT / 2;
         this.right = left + GUI_WIDTH;
-        this.bottom = top + GUI_HEIGHT;
 
         for (Tab tab : Tab.values())
         {
@@ -65,11 +84,26 @@ public class TabbedGui extends AbstractGui
         }
     }
 
+    /**
+     * Renders the tabs.
+     *
+     * @param matrixStack the matrix stack.
+     * @param mouseX the current mouse x position.
+     * @param mouseY the current mouse y position.
+     */
     public void render(MatrixStack matrixStack, int mouseX, int mouseY)
     {
         tabWidgets.forEach(tabWidget -> tabWidget.render(matrixStack, mouseX, mouseY));
     }
 
+    /**
+     * Handles the mouse being clicked anywhere on the screen.
+     *
+     * @param mouseX the mouse x position.
+     * @param mouseY the mouse y position.
+     * @param state the mouse state.
+     * @return true if the click is handled.
+     */
     public boolean mouseClicked(int mouseX, int mouseY, int state)
     {
         boolean result = false;
@@ -137,6 +171,10 @@ public class TabbedGui extends AbstractGui
 
         /**
          * @param tab the tab.
+         * @param blockling the blockling.
+         * @param left the x position at the left-hand side of the tab.
+         * @param top the y position at the top of the gui.
+         * @param right the x position at the right-hand side of the tab.
          */
         public TabWidget(@Nonnull Tab tab, @Nonnull BlocklingEntity blockling, int left, int top, int right)
         {

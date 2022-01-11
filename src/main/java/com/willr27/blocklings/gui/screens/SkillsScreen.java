@@ -34,7 +34,7 @@ public class SkillsScreen extends TabbedScreen
 
     public SkillsScreen(BlocklingEntity blockling, PlayerEntity player, SkillGroupInfo skillsGroup)
     {
-        super(blockling, player, "Skills");
+        super(blockling);
         this.group = blockling.getSkills().getGroup(skillsGroup);
     }
 
