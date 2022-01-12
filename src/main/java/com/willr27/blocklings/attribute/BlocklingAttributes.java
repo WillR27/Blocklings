@@ -63,9 +63,11 @@ public class BlocklingAttributes
     @Nonnull
     public final ModifiableFloatAttribute maxHealth;
     @Nonnull
-    public final FloatAttributeModifier maxHealthCombatLevelModifier;
+    public final ModifiableFloatAttributeModifier maxHealthBlocklingModifier;
     @Nonnull
     public final FloatAttributeModifier maxHealthTypeModifier;
+    @Nonnull
+    public final FloatAttributeModifier maxHealthCombatLevelModifier;
 
     @Nonnull
     public final ModifiableFloatAttribute mainHandAttackDamage;
@@ -262,11 +264,12 @@ public class BlocklingAttributes
         addAttribute(woodcuttingXp = new IntAttribute("82165063-6d47-4534-acc9-db3543c3db74", "woodcutting_xp", blockling, blockling.getRandom().nextInt(getXpUntilNextLevel(woodcuttingLevel.getValue())), null, null, true));
         addAttribute(farmingXp = new IntAttribute("1f1e4cbc-358e-4477-92d8-03e818d5272c", "farming_xp", blockling, blockling.getRandom().nextInt(getXpUntilNextLevel(farmingLevel.getValue())), null, null, true));
 
-        addAttribute(hand = new EnumAttribute<BlocklingHand>("f21fcbaa-f800-468e-8c22-ec4b4fd0fdc2", "hand", blockling, BlocklingHand.class, BlocklingHand.NONE, null, null, true));
+        addAttribute(hand = new EnumAttribute<>("f21fcbaa-f800-468e-8c22-ec4b4fd0fdc2", "hand", blockling, BlocklingHand.class, BlocklingHand.NONE, null, null, true));
 
         addAttribute(maxHealth = new ModifiableFloatAttribute("9c6eb101-f025-4f8f-895b-10868b7d06b2", "max_health",blockling, 10.0f, null, null, true));
-        addModifier(maxHealthCombatLevelModifier = new FloatAttributeModifier("a78160fa-7bc3-493e-b74b-27af4206d111", "max_health_combat_level", maxHealth, blockling, 0.0f, Operation.ADD, null, null, true));
-        addModifier(maxHealthTypeModifier  = new FloatAttributeModifier("79043f39-6f44-4077-a358-0f75a0a1e995", "max_health_type", maxHealth, blockling, 0.0f, Operation.ADD, null, null, true));
+        addModifier(maxHealthBlocklingModifier = new ModifiableFloatAttributeModifier("42418962-175b-4c06-84a2-f770ebd00a88", "max_health_blockling", maxHealth, blockling, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString(), true));
+        addModifier(maxHealthTypeModifier  = new FloatAttributeModifier("79043f39-6f44-4077-a358-0f75a0a1e995", "max_health_type", maxHealthBlocklingModifier, blockling, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString(), true));
+        addModifier(maxHealthCombatLevelModifier = new FloatAttributeModifier("a78160fa-7bc3-493e-b74b-27af4206d111", "max_health_combat_level", maxHealthBlocklingModifier, blockling, 0.0f, Operation.ADD, null, combatLevel.displayStringNameSupplier, true));
 
         addAttribute(mainHandAttackDamage = new ModifiableFloatAttribute("e8549f17-e473-4849-8f48-ae624ee0c242", "main_hand_attack_damage", blockling, 0.0f, null, null, true));
         addModifier(mainHandAttackDamageBlocklingModifier = new ModifiableFloatAttributeModifier("9bfdfe35-c6c4-4364-8535-7aa50927f484", "main_hand_attack_blockling", mainHandAttackDamage, blockling, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString(), true));
@@ -733,6 +736,23 @@ public class BlocklingAttributes
             case MINING: return miningLevel;
             case WOODCUTTING: return woodcuttingLevel;
             case FARMING: return farmingLevel;
+            default: return totalLevel;
+        }
+    }
+
+    /**
+     * @param level the level to enquire about.
+     * @return the corresponding xp attribute for that level.
+     */
+    @Nonnull
+    public Attribute<Integer> getLevelXpAttribute(@Nonnull Level level)
+    {
+        switch (level)
+        {
+            case COMBAT: return combatXp;
+            case MINING: return miningXp;
+            case WOODCUTTING: return woodcuttingXp;
+            case FARMING: return farmingXp;
             default: return totalLevel;
         }
     }

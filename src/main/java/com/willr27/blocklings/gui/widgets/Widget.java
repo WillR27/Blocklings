@@ -9,8 +9,11 @@ import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 
+import javax.annotation.Nonnull;
+
 public class Widget extends AbstractGui
 {
+    @Nonnull
     public final Screen screen;
 
     public FontRenderer font;

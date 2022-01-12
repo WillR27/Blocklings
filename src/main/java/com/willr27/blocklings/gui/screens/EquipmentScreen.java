@@ -6,13 +6,24 @@ import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.containers.EquipmentContainer;
 import com.willr27.blocklings.gui.screens.guis.TabbedGui;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+import javax.annotation.Nonnull;
+
+/**
+ * The container screen for the blockling's main equipment inventory.
+ */
+@OnlyIn(Dist.CLIENT)
 public class EquipmentScreen extends TabbedContainerScreen<EquipmentContainer>
 {
-    public EquipmentScreen(EquipmentContainer screenContainer, BlocklingEntity blockling, PlayerEntity player)
+    /**
+     * @param equipmentContainer the container for the equipment.
+     * @param blockling the blockling.
+     */
+    public EquipmentScreen(@Nonnull EquipmentContainer equipmentContainer, @Nonnull BlocklingEntity blockling)
     {
-        super(screenContainer, blockling);
+        super(equipmentContainer, blockling);
     }
 
     @Override
@@ -22,7 +33,7 @@ public class EquipmentScreen extends TabbedContainerScreen<EquipmentContainer>
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
@@ -30,7 +41,7 @@ public class EquipmentScreen extends TabbedContainerScreen<EquipmentContainer>
     }
 
     @Override
-    protected void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY)
+    protected void renderBg(@Nonnull MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY)
     {
         GuiUtil.bindTexture(GuiTextures.EQUIPMENT);
         blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedGui.CONTENT_WIDTH, TabbedGui.CONTENT_HEIGHT);

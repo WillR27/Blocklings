@@ -4,35 +4,69 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import com.willr27.blocklings.gui.GuiTextures;
-import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.screens.guis.TabbedGui;
 import com.willr27.blocklings.gui.screens.guis.TaskConfigGui;
-import com.willr27.blocklings.gui.widgets.*;
+import com.willr27.blocklings.gui.widgets.ScrollbarWidget;
+import com.willr27.blocklings.gui.widgets.Widget;
 import com.willr27.blocklings.gui.widgets.tasks.TaskWidget;
+import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * The screen for rendering and handling blocklings' tasks.
+ */
+@OnlyIn(Dist.CLIENT)
 public class TasksScreen extends TabbedScreen
 {
+    /**
+     * The gap between each task widget.
+     */
     private static final int TASK_GAP = 4;
 
+    /**
+     * The gui used to configure a task.
+     */
+    @Nullable
     private TaskConfigGui taskConfigGui;
 
-    private Widget tasksWidget = null;
-    private List<TaskWidget> taskWidgets = new ArrayList<>();
-    private TaskWidget addTaskWidget = null;
-    private ScrollbarWidget tasksScrollbarWidget = null;
+    /**
+     * A widget used to represent the bounding box of the area the tasks widgets are found.
+     */
+    private Widget tasksWidget;
 
-    public TasksScreen(BlocklingEntity blockling, PlayerEntity player)
+    /**
+     * The list of task widgets to add to the gui.
+     */
+    @Nonnull
+    private final List<TaskWidget> taskWidgets = new ArrayList<>();
+
+    /**
+     * The task widget to append to the end of the task widgets used to create a new task.
+     */
+    private TaskWidget addTaskWidget;
+
+    /**
+     * The scrollbar used to scroll the list of tasks.
+     */
+    private ScrollbarWidget tasksScrollbarWidget;
+
+    /**
+     * @param blockling the blockling.
+     */
+    public TasksScreen(BlocklingEntity blockling)
     {
         super(blockling);
     }
@@ -71,7 +105,7 @@ public class TasksScreen extends TabbedScreen
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         GuiUtil.bindTexture(GuiTextures.TASKS);
         blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedGui.CONTENT_WIDTH, TabbedGui.CONTENT_HEIGHT);
@@ -98,7 +132,7 @@ public class TasksScreen extends TabbedScreen
             addNewTasks();
             updateTaskPositions();
 
-            drawTasks(matrixStack, mouseX, mouseY);
+            renderTasks(matrixStack, mouseX, mouseY);
 
             tasksScrollbarWidget.render(matrixStack, mouseX, mouseY);
         }
@@ -114,10 +148,13 @@ public class TasksScreen extends TabbedScreen
         {
             font.drawShadow(matrixStack, new BlocklingsTranslationTextComponent("tab.tasks"), contentLeft + 8, contentTop + 5, 0xffffff);
 
-            drawTasksTooltips(matrixStack, mouseX, mouseY);
+            renderTasksTooltips(matrixStack, mouseX, mouseY);
         }
     }
 
+    /**
+     * Removes any task widgets that no longer exist as tasks.
+     */
     private void removeOldTasks()
     {
         for (int i = 0; i < taskWidgets.size(); i++)
@@ -132,6 +169,9 @@ public class TasksScreen extends TabbedScreen
         }
     }
 
+    /**
+     * Adds task widgets for any new tasks that have been added.
+     */
     private void addNewTasks()
     {
         for (int i = 0; i < blockling.getTasks().getPrioritisedTasks().size(); i++)
@@ -158,6 +198,9 @@ public class TasksScreen extends TabbedScreen
         }
     }
 
+    /**
+     * Updates the positions of the tasks depending on their position in the list and the amount the scrollbar is scrolled.
+     */
     private void updateTaskPositions()
     {
         tasksScrollbarWidget.isDisabled = true;
@@ -192,7 +235,14 @@ public class TasksScreen extends TabbedScreen
         }
     }
 
-    private void drawTasks(MatrixStack matrixStack, int mouseX, int mouseY)
+    /**
+     * Renders the task widgets in the gui.
+     *
+     * @param matrixStack the matrix stack.
+     * @param mouseX the current mouse x position.
+     * @param mouseY the current mouse y position.
+     */
+    private void renderTasks(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
         tasksWidget.enableScissor();
 
@@ -206,7 +256,14 @@ public class TasksScreen extends TabbedScreen
         GuiUtil.disableScissor();
     }
 
-    private void drawTasksTooltips(MatrixStack matrixStack, int mouseX, int mouseY)
+    /**
+     * Renders the task widget tooltips in the gui.
+     *
+     * @param matrixStack the matrix stack.
+     * @param mouseX the current mouse x position.
+     * @param mouseY the current mouse y position.
+     */
+    private void renderTasksTooltips(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
         if (tasksWidget.isMouseOver(mouseX, mouseY))
         {
@@ -224,7 +281,12 @@ public class TasksScreen extends TabbedScreen
         }
     }
 
-    private void onConfigure(Task task)
+    /**
+     * Called when the configure button is pressed on a task.
+     *
+     * @param task the task to configure.
+     */
+    private void onConfigure(@Nonnull Task task)
     {
         taskConfigGui = new TaskConfigGui(task, font, this);
     }
@@ -359,6 +421,12 @@ public class TasksScreen extends TabbedScreen
         return super.charTyped(cah, code); // TODO: TIDY
     }
 
+    /**
+     * @param mouseX the mouse x position.
+     * @param mouseY the mouse y position.
+     * @return the current task that is being hovered over or null if none are.
+     */
+    @Nullable
     private TaskWidget getHoveredTaskWidget(int mouseX, int mouseY)
     {
         for (TaskWidget taskWidget : taskWidgets)

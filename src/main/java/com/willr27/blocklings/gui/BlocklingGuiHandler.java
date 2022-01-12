@@ -195,9 +195,9 @@ public class BlocklingGuiHandler
     {
         switch (guiId)
         {
-            case STATS_ID: return new StatsScreen(blockling, player);
-            case TASKS_ID: return new TasksScreen(blockling, player);
-            case EQUIPMENT_ID: return new EquipmentScreen((EquipmentContainer) container, blockling, player);
+            case STATS_ID: return new StatsScreen(blockling);
+            case TASKS_ID: return new TasksScreen(blockling);
+            case EQUIPMENT_ID: return new EquipmentScreen((EquipmentContainer) container, blockling);
 //            case UTILITY_ID: return new UtilityScreen(container, blockling, player);
             case GENERAL_ID: return new SkillsScreen(blockling, player, BlocklingSkillGroups.GENERAL);
             case COMBAT_ID: return new SkillsScreen(blockling, player, BlocklingSkillGroups.COMBAT);
