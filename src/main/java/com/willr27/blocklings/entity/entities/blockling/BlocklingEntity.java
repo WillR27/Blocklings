@@ -243,6 +243,9 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         blocklingType = BlocklingType.TYPES.get(tag.getInt("type"));
         setScale(tag.getFloat("scale"), false);
 
+        // Health can be overwritten when loading max health modifiers
+        float health = getHealth();
+
         equipmentInv.readFromNBT(tag);
         stats.readFromNBT(tag);
         tasks.readFromNBT(tag);
@@ -250,6 +253,9 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         equipmentInv.updateToolAttributes();
         stats.updateTypeBonuses(false);
+
+        // Set back to the saved health as this should be correct
+        setHealth(health);
     }
 
     @Override
