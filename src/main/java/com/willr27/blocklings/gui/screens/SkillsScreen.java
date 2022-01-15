@@ -3,30 +3,38 @@ package com.willr27.blocklings.gui.screens;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiTextures;
+import com.willr27.blocklings.gui.widgets.Widget;
 import com.willr27.blocklings.skills.SkillGroup;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.screens.guis.SkillsGui;
 import com.willr27.blocklings.gui.screens.guis.TabbedGui;
-import com.willr27.blocklings.gui.widgets.TexturedWidget;
 import com.willr27.blocklings.skills.info.SkillGroupInfo;
 import net.minecraft.entity.player.PlayerEntity;
 
 public class SkillsScreen extends TabbedScreen
 {
+    /**
+     * The width of the inside section of the gui where the skill tree is rendered.
+     */
     private static final int WINDOW_WIDTH = 158;
+
+    /**
+     * The height of the inside section of the gui where the skill tree is rendered.
+     */
     private static final int WINDOW_HEIGHT = 138;
 
-    private static final int MAXIMISE_X = 180;
-    private static final int MAXIMISE_Y = 142;
-    private static final int MAXIMISE_TEXTURE_Y = 206;
-    private static final int MAXIMISE_SIZE = 11;
-
+    /**
+     * The gui displayed inside the window area that handles the skill tree rendering and interaction.
+     */
     private SkillsGui skillsGui;
-    private TexturedWidget maximiseWidget;
 
-    private boolean maximised;
+    /**
+     * The widget used for the maximise button.
+     */
+    private MaximiseWidget maximiseWidget;
 
     private int firstOpenDelay = 20;
 
@@ -44,8 +52,12 @@ public class SkillsScreen extends TabbedScreen
         super.init();
 
         skillsGui = new SkillsGui(blockling, group, font, WINDOW_WIDTH, WINDOW_HEIGHT, centerX, centerY + 5, width, height);
-        if (maximised) skillsGui.resize(getMaximisedWidth(), getMaximisedHeight(), 1.0f);
-        maximiseWidget = new TexturedWidget(font, left + MAXIMISE_X, top + MAXIMISE_Y, MAXIMISE_SIZE, MAXIMISE_SIZE, 0, MAXIMISE_TEXTURE_Y);
+        maximiseWidget = new MaximiseWidget(left + 180, top + 142);
+
+        if (maximiseWidget.isMaximised)
+        {
+            skillsGui.resize(getMaximisedWidth(), getMaximisedHeight(), 1.0f);
+        }
     }
 
     @Override
@@ -60,11 +72,12 @@ public class SkillsScreen extends TabbedScreen
 
         GuiUtil.bindTexture(GuiTextures.SKILLS);
 
-        if (!maximised)
+        if (!maximiseWidget.isMaximised)
         {
             blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedGui.CONTENT_WIDTH, TabbedGui.CONTENT_HEIGHT);
             super.render(matrixStack, mouseX, mouseY, partialTicks);
             font.drawShadow(matrixStack, group.info.guiTitle.getString(), left + 36, top + 7, 0xffffff);
+            RenderSystem.enableDepthTest();
         }
         else
         { // TODO: MAKE DYNAMIC
@@ -79,16 +92,10 @@ public class SkillsScreen extends TabbedScreen
             blit(matrixStack, left + 111, top - 13, 30, 0, 78, 30);
             blit(matrixStack, left + 111, bottom - 30 + 13, 30, 166 - 30, 78, 30);
             font.drawShadow(matrixStack, group.info.guiTitle.getString(), left, top - 6, 0xffffff);
+            RenderSystem.enableDepthTest();
         }
 
-        GuiUtil.bindTexture(GuiTextures.SKILLS);
-
-        RenderSystem.enableDepthTest();
-        matrixStack.pushPose();
-        matrixStack.translate(0.0f, 0.0f, 0.0f);
-        maximiseWidget.textureX = maximiseWidget.isMouseOver(mouseX, mouseY) && !skillsGui.isDragging() ? 0 : MAXIMISE_SIZE;
-        if (!maximised) maximiseWidget.render(matrixStack, mouseX, mouseY);
-        matrixStack.popPose();
+        maximiseWidget.render(matrixStack, mouseX, mouseY);
     }
 
     @Override
@@ -99,7 +106,23 @@ public class SkillsScreen extends TabbedScreen
             return true;
         }
 
-        skillsGui.mouseClicked((int) mouseX, (int) mouseY, state);
+        boolean result = false;
+
+        if (skillsGui.mouseClicked((int) mouseX, (int) mouseY, state))
+        {
+            result = true;
+        }
+
+        if (maximiseWidget.mouseClicked((int) mouseX, (int) mouseY, state))
+        {
+            result = true;
+        }
+
+        if (result)
+        {
+            return true;
+        }
+
         return super.mouseClicked(mouseX, mouseY, state);
     }
 
@@ -111,24 +134,26 @@ public class SkillsScreen extends TabbedScreen
             return true;
         }
 
-        if (skillsGui.mouseReleased((int) mouseX, (int) mouseY, state))
-        {
-            return true;
-        }
+        boolean result = false;
 
-        if (!maximised && !skillsGui.isDragging() && maximiseWidget.isMouseOver((int) mouseX, (int) mouseY))
+        if (maximiseWidget.mouseReleased((int) mouseX, (int) mouseY, state))
         {
             skillsGui.resize(getMaximisedWidth(), getMaximisedHeight(), 1.0f);
-            maximised = true;
-            return true;
+
+            result = true;
         }
 
-        if (!maximised)
+        if (skillsGui.mouseReleased((int) mouseX, (int) mouseY, state))
         {
-            return super.mouseReleased(mouseX, mouseY, state);
+            result = true;
         }
 
-        return false;
+        if (!result && super.mouseReleased(mouseX, mouseY, state))
+        {
+            result = true;
+        }
+
+        return result;
     }
 
     @Override
@@ -141,9 +166,9 @@ public class SkillsScreen extends TabbedScreen
 
         if (GuiUtil.isCloseInventoryKey(keyCode))
         {
-            if (maximised)
+            if (maximiseWidget.isMaximised)
             {
-                maximised = false;
+                maximiseWidget.isMaximised = false;
                 skillsGui.resize(WINDOW_WIDTH, WINDOW_HEIGHT, 1.0f);
             }
             else
@@ -182,5 +207,60 @@ public class SkillsScreen extends TabbedScreen
     private int getMaximisedHeight()
     {
         return height + 20;
+    }
+
+    private static final class MaximiseWidget extends Widget
+    {
+        private static final GuiTexture DEFAULT_TEXTURE = new GuiTexture(GuiTextures.SKILLS, 0, 206, 11, 11);
+        private static final GuiTexture HOVERED_TEXTURE = new GuiTexture(GuiTextures.SKILLS, 11, 206, DEFAULT_TEXTURE.width, DEFAULT_TEXTURE.height);
+
+        /**
+         * Whether the skills gui is maximised.
+         */
+        public boolean isMaximised = false;
+
+        /**
+         * @param x the x position.
+         * @param y the y position.
+         */
+        public MaximiseWidget(int x, int y)
+        {
+            super(x, y, 11, 11);
+        }
+
+        @Override
+        public void render(MatrixStack matrixStack, int mouseX, int mouseY)
+        {
+            if (isMaximised)
+            {
+                return;
+            }
+
+            if (isMouseOver(mouseX, mouseY))
+            {
+                renderTexture(matrixStack, HOVERED_TEXTURE);
+            }
+            else
+            {
+                renderTexture(matrixStack, DEFAULT_TEXTURE);
+            }
+        }
+
+        @Override
+        public boolean mouseReleased(int mouseX, int mouseY, int state)
+        {
+            boolean result = false;
+
+            if (!isMaximised && isPressed && isMouseOver(mouseX, mouseY))
+            {
+                isMaximised = true;
+
+                result = true;
+            }
+
+            super.mouseReleased(mouseX, mouseY, state);
+
+            return result;
+        }
     }
 }
