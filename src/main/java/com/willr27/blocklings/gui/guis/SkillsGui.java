@@ -1,18 +1,19 @@
-package com.willr27.blocklings.gui.screens.guis;
+package com.willr27.blocklings.gui.guis;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.attribute.Attribute;
-import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.attribute.BlocklingAttributes;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
+import com.willr27.blocklings.gui.IControl;
 import com.willr27.blocklings.gui.widgets.SkillWidget;
 import com.willr27.blocklings.gui.widgets.TexturedWidget;
 import com.willr27.blocklings.skills.Skill;
 import com.willr27.blocklings.skills.SkillGroup;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
-import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
@@ -22,7 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class SkillsGui extends AbstractGui
+/**
+ * The gui used to display the skill tree in a skill group.
+ */
+public class SkillsGui extends Control
 {
     private static final int TILE_SIZE = 16;
 //    private static final int SKILL_SIZE = SkillGuiInfo.AbilityGuiTexture.ICON_SIZE;
@@ -31,6 +35,7 @@ public class SkillsGui extends AbstractGui
     private static final int LINE_BORDER_WIDTH = 4;
 
     public final int backgroundOffsetX, backgroundOffsetY;
+
     private BlocklingEntity blockling;
     private SkillGroup group;
     private FontRenderer font;
@@ -52,8 +57,9 @@ public class SkillsGui extends AbstractGui
     public float scale = 1.0f;
     private int tileSize = TILE_SIZE;
 
-    public SkillsGui(BlocklingEntity blockling, SkillGroup skillGroup, FontRenderer font, int width, int height, int centerX, int centerY, int windowWidth, int windowHeight)
+    public SkillsGui(IControl parent, BlocklingEntity blockling, SkillGroup skillGroup, FontRenderer font, int width, int height, int centerX, int centerY, int windowWidth, int windowHeight)
     {
+        super();
         this.blockling = blockling;
         this.group = skillGroup;
         this.font = font;
@@ -88,7 +94,8 @@ public class SkillsGui extends AbstractGui
         this.tilesX = width / tileSize;
         this.tilesY = height / tileSize;
 
-        windowWidget = new TexturedWidget(font, left, top, width, height, 0, 0);
+        removeChild(windowWidget);
+        addChild(windowWidget = new TexturedWidget(font, left, top, width, height, 0, 0));
 
         if (confirmGui != null && !confirmGui.closed)
         {

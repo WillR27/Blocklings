@@ -1,4 +1,4 @@
-package com.willr27.blocklings.gui.screens.guis;
+package com.willr27.blocklings.gui.guis;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
@@ -186,7 +186,7 @@ public class TabbedGui extends AbstractGui
         }
 
         @Override
-        public void render(MatrixStack matrixStack, int mouseX, int mouseY)
+        public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
         {
             if (isSelected())
             {

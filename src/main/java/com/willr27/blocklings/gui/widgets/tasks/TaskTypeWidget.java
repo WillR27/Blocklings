@@ -9,6 +9,8 @@ import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.widgets.TexturedWidget;
 import net.minecraft.client.gui.FontRenderer;
 
+import javax.annotation.Nonnull;
+
 public class TaskTypeWidget extends TexturedWidget
 {
     public static final int WIDTH = 40;
@@ -28,7 +30,7 @@ public class TaskTypeWidget extends TexturedWidget
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
         super.render(matrixStack, mouseX, mouseY);
 
@@ -51,7 +53,7 @@ public class TaskTypeWidget extends TexturedWidget
     @Override
     public boolean mouseReleased(int mouseX, int mouseY, int button)
     {
-        if (isPressed && isMouseOver(mouseX, mouseY))
+        if (isPressed() && isMouseOver(mouseX, mouseY))
         {
             task.setType(taskType);
 

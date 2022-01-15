@@ -3,8 +3,9 @@ package com.willr27.blocklings.gui.screens;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.gui.screens.guis.TabbedGui;
-import com.willr27.blocklings.gui.widgets.Widget;
+import com.willr27.blocklings.gui.Control;
+import com.willr27.blocklings.gui.IControl;
+import com.willr27.blocklings.gui.guis.TabbedGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,6 +14,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +22,7 @@ import java.util.List;
  * A screen that includes the blockling gui tabs.
  */
 @OnlyIn(Dist.CLIENT)
-public class TabbedScreen extends Screen implements IWidgetHandler
+public class TabbedScreen extends Screen implements IControl
 {
     /**
      * The blockling.
@@ -80,10 +82,10 @@ public class TabbedScreen extends Screen implements IWidgetHandler
     private TabbedGui tabbedGui;
 
     /**
-     * The list of widgets on the screen.
+     * The list of guis to handle.
      */
     @Nonnull
-    private final List<Widget> widgets = new ArrayList<>();
+    private final List<Control> children = new ArrayList<>();
 
     /**
      * @param blockling the blockling.
@@ -95,13 +97,39 @@ public class TabbedScreen extends Screen implements IWidgetHandler
         this.player = Minecraft.getInstance().player;
     }
 
+    @Override
+    @Nullable
+    public IControl getParent()
+    {
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public List<Control> getChildren()
+    {
+        return children;
+    }
+
+    @Override
+    public void addChild(@Nonnull Control control)
+    {
+        children.add(control);
+    }
+
+    @Override
+    public void removeChild(@Nonnull Control control)
+    {
+        children.remove(control);
+    }
+
     /**
      * Called on first creation and whenever the screen is resized.
      */
     @Override
     protected void init()
     {
-        widgets.clear();
+        children.clear();
 
         centerX = width / 2;
         centerY = height / 2 + TabbedGui.OFFSET_Y;
@@ -140,18 +168,5 @@ public class TabbedScreen extends Screen implements IWidgetHandler
         }
 
         return super.mouseClicked(mouseX, mouseY, button);
-    }
-
-    @Nonnull
-    @Override
-    public List<Widget> getWidgets()
-    {
-        return widgets;
-    }
-
-    @Override
-    public void addWidget(@Nonnull Widget widget)
-    {
-        widgets.add(widget);
     }
 }

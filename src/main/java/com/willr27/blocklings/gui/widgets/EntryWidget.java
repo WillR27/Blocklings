@@ -19,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
 
 public class EntryWidget extends Widget
@@ -39,7 +40,7 @@ public class EntryWidget extends Widget
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
         GuiUtil.scissor(x, y, width, height, true);
 
@@ -106,7 +107,7 @@ public class EntryWidget extends Widget
     @Override
     public boolean mouseReleased(int mouseX, int mouseY, int button)
     {
-        if (isPressed && isMouseOver(mouseX, mouseY))
+        if (isPressed() && isMouseOver(mouseX, mouseY))
         {
             whitelist.toggleEntry(entry.getKey());
         }

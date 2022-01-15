@@ -1,10 +1,8 @@
-package com.willr27.blocklings.gui.screens.guis;
+package com.willr27.blocklings.gui.guis;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.skills.Skill;
-import com.willr27.blocklings.skills.SkillGroup;
-import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.button.Button;

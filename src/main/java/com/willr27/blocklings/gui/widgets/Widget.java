@@ -2,49 +2,31 @@ package com.willr27.blocklings.gui.widgets;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nonnull;
-
-public class Widget extends AbstractGui
+/**
+ * Represents a gui that has a location and dimensions.
+ *
+ */
+@OnlyIn(Dist.CLIENT)
+@Deprecated
+public class Widget extends Control
 {
-    @Nonnull
-    public final Screen screen;
-
-    public FontRenderer font;
-    public int x, y;
-    public int width, height;
-    public boolean isPressed = false;
-
+    @Deprecated
     public Widget(int x, int y, int width, int height)
     {
-        this.screen = Minecraft.getInstance().screen;
-        this.font = Minecraft.getInstance().font;
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+        super(null, x, y, width, height);
     }
 
     @Deprecated
     public Widget(FontRenderer font, int x, int y, int width, int height)
     {
-        this.screen = Minecraft.getInstance().screen;
-        this.font = font;
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-    }
-
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY)
-    {
-
+        super(null, x, y, width, height);
     }
 
     public void renderText(MatrixStack matrixStack, String text, int dx, int dy, boolean right, int colour)
@@ -59,105 +41,5 @@ public class Widget extends AbstractGui
         int bonusX = right ? -dx : width + dx;
         drawCenteredString(matrixStack, font, text, x + bonusX, y + dy, colour);
         RenderSystem.enableDepthTest(); // Apparently depth test gets turned off so turn it back on
-    }
-
-    public void renderTexture(MatrixStack matrixStack, GuiTexture texture)
-    {
-        renderTexture(matrixStack, 0, 0, texture);
-    }
-
-    public void renderTexture(MatrixStack matrixStack, int dx, int dy, GuiTexture texture)
-    {
-        GuiUtil.bindTexture(texture.texture);
-        renderTexture(matrixStack, texture, x + dx, y + dy);
-    }
-
-    public void renderTexture(MatrixStack matrixStack, GuiTexture texture, int x, int y)
-    {
-        GuiUtil.bindTexture(texture.texture);
-        blit(matrixStack, x, y, texture.x, texture.y, texture.width, texture.height);
-    }
-
-    public void enableScissor()
-    {
-        GuiUtil.scissor(x, y, width, height);
-    }
-
-    /**
-     * Handles the behaviour of a widget when the mouse is clicked.
-     *
-     * @param mouseX the scaled mouse x.
-     * @param mouseY the scaled mouse y.
-     * @param button the mouse button.
-     */
-    public void onMouseClicked(int mouseX, int mouseY, int button)
-    {
-        if (isMouseOver(mouseX, mouseY))
-        {
-            isPressed = true;
-        }
-    }
-
-    /**
-     * Handles the behaviour of a widget when the mouse is released.
-     *
-     * @param mouseX the scaled mouse x.
-     * @param mouseY the scaled mouse y.
-     * @param button the mouse button.
-     */
-    public void onMouseReleased(int mouseX, int mouseY, int button)
-    {
-        isPressed = false;
-    }
-
-    /**
-     * Handles the behaviour of a widget when the mouse is clicked.
-     *
-     * @param mouseX the scaled mouse x.
-     * @param mouseY the scaled mouse y.
-     * @param button the mouse button.
-     * @return true if the mouse click has been handled.
-     */
-    public boolean mouseClicked(int mouseX, int mouseY, int button)
-    {
-        return false;
-    }
-
-    /**
-     * Handles the behaviour of a widget when the mouse is released.
-     *
-     * @param mouseX the scaled mouse x.
-     * @param mouseY the scaled mouse y.
-     * @param button the mouse button.
-     * @return true if the mouse release has been handled.
-     */
-    public boolean mouseReleased(int mouseX, int mouseY, int button)
-    {
-        return false;
-    }
-
-    public boolean mouseScrolled(int mouseX, int mouseY, double scroll)
-    {
-        return false;
-    }
-
-    public boolean isMouseOver(int mouseX, int mouseY)
-    {
-        return GuiUtil.isMouseOver(mouseX, mouseY, x, y, width, height);
-    }
-
-    public boolean isMouseOver(int mouseX, int mouseY, float scale)
-    {
-        return GuiUtil.isMouseOver((int) (mouseX / scale), (int) (mouseY / scale), x, y, width, height);
-    }
-
-    public int toLocalX(int x)
-    {
-        return x - this.x;
-    }
-
-    public int toLocalY(int y)
-    {
-        return y - this.y;
     }
 }

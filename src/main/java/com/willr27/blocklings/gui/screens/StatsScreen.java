@@ -8,7 +8,7 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
-import com.willr27.blocklings.gui.screens.guis.TabbedGui;
+import com.willr27.blocklings.gui.guis.TabbedGui;
 import com.willr27.blocklings.gui.widgets.TextFieldWidget;
 import com.willr27.blocklings.gui.widgets.TexturedWidget;
 import com.willr27.blocklings.gui.widgets.Widget;
@@ -255,7 +255,7 @@ public class StatsScreen extends TabbedScreen
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button)
     {
-        onMouseClicked((int) mouseX, (int) mouseY, button);
+        mouseClickedNoHandle((int) mouseX, (int) mouseY, button);
 
         if (nameField.mouseClicked(mouseX, mouseY, button))
         {
@@ -286,7 +286,7 @@ public class StatsScreen extends TabbedScreen
     {
         nameField.mouseReleased(mouseX, mouseY, button);
 
-        onMouseReleased((int) mouseX, (int) mouseY, button);
+        mouseReleasedNoHandle((int) mouseX, (int) mouseY, button);
 
         return super.mouseReleased(mouseX, mouseY, button);
     }
@@ -319,11 +319,11 @@ public class StatsScreen extends TabbedScreen
     }
 
     @Override
-    public boolean charTyped(char cah, int code)
+    public boolean charTyped(char character, int keyCode)
     {
-        nameField.charTyped(cah, code);
+        nameField.charTyped(character, keyCode);
 
-        return super.charTyped(cah, code);
+        return super.charTyped(character, keyCode);
     }
 
     @Override
@@ -510,7 +510,7 @@ public class StatsScreen extends TabbedScreen
         }
 
         @Override
-        public void render(MatrixStack matrixStack, int mouseX, int mouseY)
+        public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
         {
             if (blockling.tickCount - tickCount > enumerationInterval)
             {
@@ -654,7 +654,7 @@ public class StatsScreen extends TabbedScreen
         }
 
         @Override
-        public void render(MatrixStack matrixStack, int mouseX, int mouseY)
+        public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
         {
             renderTexture(matrixStack, getTexture());
             xpBar.render(matrixStack, mouseX, mouseY);
@@ -724,7 +724,7 @@ public class StatsScreen extends TabbedScreen
             }
 
             @Override
-            public void render(MatrixStack matrixStack, int mouseX, int mouseY)
+            public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
             {
                 float percentage = blockling.getStats().getLevelXpAttribute(level).getValue() / (float) BlocklingAttributes.getXpUntilNextLevel(blockling.getStats().getLevelAttribute(level).getValue());
                 int middle = (int) (width * percentage);

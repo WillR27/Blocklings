@@ -5,7 +5,7 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.containers.EquipmentContainer;
-import com.willr27.blocklings.gui.screens.guis.TabbedGui;
+import com.willr27.blocklings.gui.guis.TabbedGui;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 

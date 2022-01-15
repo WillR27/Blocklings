@@ -199,11 +199,11 @@ public class BlocklingGuiHandler
             case TASKS_ID: return new TasksScreen(blockling);
             case EQUIPMENT_ID: return new EquipmentScreen((EquipmentContainer) container, blockling);
 //            case UTILITY_ID: return new UtilityScreen(container, blockling, player);
-            case GENERAL_ID: return new SkillsScreen(blockling, player, BlocklingSkillGroups.GENERAL);
-            case COMBAT_ID: return new SkillsScreen(blockling, player, BlocklingSkillGroups.COMBAT);
-            case MINING_ID: return new SkillsScreen(blockling, player, BlocklingSkillGroups.MINING);
-            case WOODCUTTING_ID: return new SkillsScreen(blockling, player, BlocklingSkillGroups.WOODCUTTING);
-            case FARMING_ID: return new SkillsScreen(blockling, player, BlocklingSkillGroups.FARMING);
+            case GENERAL_ID: return new SkillsScreen(blockling, BlocklingSkillGroups.GENERAL);
+            case COMBAT_ID: return new SkillsScreen(blockling, BlocklingSkillGroups.COMBAT);
+            case MINING_ID: return new SkillsScreen(blockling, BlocklingSkillGroups.MINING);
+            case WOODCUTTING_ID: return new SkillsScreen(blockling, BlocklingSkillGroups.WOODCUTTING);
+            case FARMING_ID: return new SkillsScreen(blockling, BlocklingSkillGroups.FARMING);
 //            case WHITELIST_ID: return new WhitelistScreen(blockling, player);
         }
 

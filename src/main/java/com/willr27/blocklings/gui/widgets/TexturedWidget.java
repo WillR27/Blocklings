@@ -5,6 +5,8 @@ import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiUtil;
 import net.minecraft.client.gui.FontRenderer;
 
+import javax.annotation.Nonnull;
+
 public class TexturedWidget extends Widget
 {
     public int textureX, textureY;
@@ -46,7 +48,7 @@ public class TexturedWidget extends Widget
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
         if (texture != null)
         {

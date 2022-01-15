@@ -9,6 +9,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.StringTextComponent;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class TabWidget extends Widget
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
         if (tabs.isEmpty())
         {
@@ -97,7 +98,7 @@ public class TabWidget extends Widget
     @Override
     public boolean mouseReleased(int mouseX, int mouseY, int button)
     {
-        if (isPressed && isMouseOver(mouseX, mouseY))
+        if (isPressed() && isMouseOver(mouseX, mouseY))
         {
             Tab clickedTab = getHoveredTab(mouseX, mouseY);
 

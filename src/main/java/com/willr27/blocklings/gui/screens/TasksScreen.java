@@ -5,8 +5,8 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
-import com.willr27.blocklings.gui.screens.guis.TabbedGui;
-import com.willr27.blocklings.gui.screens.guis.TaskConfigGui;
+import com.willr27.blocklings.gui.guis.TabbedGui;
+import com.willr27.blocklings.gui.guis.TaskConfigGui;
 import com.willr27.blocklings.gui.widgets.ScrollbarWidget;
 import com.willr27.blocklings.gui.widgets.Widget;
 import com.willr27.blocklings.gui.widgets.tasks.TaskWidget;
@@ -294,7 +294,7 @@ public class TasksScreen extends TabbedScreen
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button)
     {
-        onMouseClicked((int) mouseX, (int) mouseY, button);
+        mouseClickedNoHandle((int) mouseX, (int) mouseY, button);
 
         if (taskConfigGui != null)
         {
@@ -358,7 +358,7 @@ public class TasksScreen extends TabbedScreen
             }
         }
 
-        onMouseReleased((int) mouseX, (int) mouseY, button);
+        mouseReleasedNoHandle((int) mouseX, (int) mouseY, button);
 
         return ret || super.mouseReleased(mouseX, mouseY, button);
     }

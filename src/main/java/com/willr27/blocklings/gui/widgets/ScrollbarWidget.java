@@ -6,6 +6,8 @@ import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
 import net.minecraft.client.gui.FontRenderer;
 
+import javax.annotation.Nonnull;
+
 public class ScrollbarWidget extends TexturedWidget
 {
     /**
@@ -30,7 +32,7 @@ public class ScrollbarWidget extends TexturedWidget
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
         GuiUtil.bindTexture(texture.texture);
 

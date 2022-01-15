@@ -8,6 +8,8 @@ import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.widgets.Widget;
 import net.minecraft.client.gui.FontRenderer;
 
+import javax.annotation.Nonnull;
+
 public class TaskStateWidget extends Widget
 {
     public static final int GOAL_STATE_WIDTH = 20;
@@ -25,7 +27,7 @@ public class TaskStateWidget extends Widget
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
         if (taskWidget.task.isConfigured())
         {
@@ -62,7 +64,7 @@ public class TaskStateWidget extends Widget
     @Override
     public boolean mouseReleased(int mouseX, int mouseY, int button)
     {
-        if (isPressed && isMouseOver(mouseX, mouseY))
+        if (isPressed() && isMouseOver(mouseX, mouseY))
         {
             if (taskWidget.task.isConfigured())
             {

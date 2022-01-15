@@ -2,7 +2,7 @@ package com.willr27.blocklings.gui.screens;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.gui.screens.guis.TabbedGui;
+import com.willr27.blocklings.gui.guis.TabbedGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerEntity;

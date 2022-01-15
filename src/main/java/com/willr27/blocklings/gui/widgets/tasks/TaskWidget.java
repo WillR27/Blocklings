@@ -123,9 +123,9 @@ public class TaskWidget extends Widget
     @Override
     public boolean mouseClicked(int mouseX, int mouseY, int button)
     {
-        iconWidget.mouseClicked(mouseX, mouseY, button);
-        stateWidget.mouseClicked(mouseX, mouseY, button);
-        addRemoveWidget.mouseClicked(mouseX, mouseY, button);
+        iconWidget.mouseClickedNoHandle(mouseX, mouseY, button);
+        stateWidget.mouseClickedNoHandle(mouseX, mouseY, button);
+        addRemoveWidget.mouseClickedNoHandle(mouseX, mouseY, button);
 
         if (isMouseOver(mouseX, mouseY) && !addRemoveWidget.isMouseOver(mouseX, mouseY) && taskWidgets.size() > 1 && !isCreateWidget)
         {

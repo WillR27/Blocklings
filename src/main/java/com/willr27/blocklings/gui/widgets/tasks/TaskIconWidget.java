@@ -9,6 +9,7 @@ import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.widgets.Widget;
 import net.minecraft.client.gui.FontRenderer;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class TaskIconWidget extends Widget
@@ -33,9 +34,9 @@ public class TaskIconWidget extends Widget
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
-        if (isPressed || isCreateWidget)
+        if (isPressed() || isCreateWidget)
         {
             RenderSystem.color3f(0.8f, 0.8f, 0.8f);
 
@@ -46,7 +47,7 @@ public class TaskIconWidget extends Widget
             renderTexture(matrixStack, BACKGROUND_TEXTURE);
         }
 
-        if (isPressed || isMouseOver(mouseX, mouseY))
+        if (isPressed() || isMouseOver(mouseX, mouseY))
         {
             renderTexture(matrixStack, CONFIGURE_TEXTURE);
         }
