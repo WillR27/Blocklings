@@ -62,4 +62,14 @@ public interface IControl
     {
         getChildren().forEach(control -> control.mouseReleasedNoHandle(mouseX, mouseY, button));
     }
+
+    /**
+     * @return the x position on the screen.
+     */
+    int getScreenX();
+
+    /**
+     * @return the y position on the screen.
+     */
+    int getScreenY();
 }

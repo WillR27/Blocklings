@@ -22,7 +22,7 @@ public class TaskAddRemoveWidget extends Widget
 
     public TaskAddRemoveWidget(TaskWidget taskWidget, FontRenderer font, boolean isCreateWidget)
     {
-        super(font, taskWidget.x + taskWidget.width - 20, taskWidget.y, GOAL_ADD_REMOVE_WIDTH, GOAL_ADD_REMOVE_HEIGHT);
+        super(font, taskWidget.screenX + taskWidget.width - 20, taskWidget.screenY, GOAL_ADD_REMOVE_WIDTH, GOAL_ADD_REMOVE_HEIGHT);
         this.taskWidget = taskWidget;
         this.isCreateWidget = isCreateWidget;
     }

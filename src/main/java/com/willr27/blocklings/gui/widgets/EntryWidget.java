@@ -42,7 +42,7 @@ public class EntryWidget extends Widget
     @Override
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
-        GuiUtil.scissor(x, y, width, height, true);
+        GuiUtil.scissor(screenX, screenY, width, height, true);
 
         if (entry.getValue())
         {
@@ -64,24 +64,24 @@ public class EntryWidget extends Widget
             RenderSystem.color3f(0.5f, 0.5f, 0.5f);
         }
 
-        GuiUtil.scissor(x + 2, y + 2, width - 4, height - 4, true);
+        GuiUtil.scissor(screenX + 2, screenY + 2, width - 4, height - 4, true);
 
         if (whitelist.type == Whitelist.Type.BLOCK)
         {
             Block block = Registry.BLOCK.get(entry.getKey());
             ItemStack stack = new ItemStack(block);
-            GuiUtil.renderItemStack(matrixStack, stack, x, y, 10);
+            GuiUtil.renderItemStack(matrixStack, stack, screenX, screenY, 10);
         }
         else if (whitelist.type == Whitelist.Type.ITEM)
         {
             Item item = Registry.ITEM.get(entry.getKey());
             ItemStack stack = new ItemStack(item);
-            GuiUtil.renderItemStack(matrixStack, stack, x, y, 10);
+            GuiUtil.renderItemStack(matrixStack, stack, screenX, screenY, 10);
         }
         else if (whitelist.type == Whitelist.Type.ENTITY)
         {
             LivingEntity entity = (LivingEntity) EntityUtil.VALID_ATTACK_TARGETS.get(entry.getKey());
-            GuiUtil.renderEntityOnScreen(x + width / 2, y + width / 2 + 11, 20, 25, -10, entity);
+            GuiUtil.renderEntityOnScreen(screenX + width / 2, screenY + width / 2 + 11, 20, 25, -10, entity);
         }
     }
 

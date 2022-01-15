@@ -86,13 +86,13 @@ public class TaskTypeGui extends ConfigGui
         for (int i = 0; i < taskTypeWidgets.size(); i++)
         {
             TaskTypeWidget taskTypeWidget = taskTypeWidgets.get(i);
-            taskTypeWidget.x = contentLeft + TASK_TYPE_GAP + ((i % 3) * (TaskTypeWidget.WIDTH + TASK_TYPE_GAP));
-            taskTypeWidget.y = contentTop + TASK_TYPE_GAP + ((i / 3) * (TaskTypeWidget.HEIGHT + TASK_TYPE_GAP));
+            taskTypeWidget.screenX = contentLeft + TASK_TYPE_GAP + ((i % 3) * (TaskTypeWidget.WIDTH + TASK_TYPE_GAP));
+            taskTypeWidget.screenY = contentTop + TASK_TYPE_GAP + ((i / 3) * (TaskTypeWidget.HEIGHT + TASK_TYPE_GAP));
         }
 
         if (taskTypeWidgets.size() >= 2)
         {
-            int taskWidgetsHeight = taskTypeWidgets.get(taskTypeWidgets.size() - 1).y + taskTypeWidgets.get(taskTypeWidgets.size() - 1).height - taskTypeWidgets.get(0).y + TASK_TYPE_GAP * 2;
+            int taskWidgetsHeight = taskTypeWidgets.get(taskTypeWidgets.size() - 1).screenY + taskTypeWidgets.get(taskTypeWidgets.size() - 1).height - taskTypeWidgets.get(0).screenY + TASK_TYPE_GAP * 2;
             int taskWidgetsHeightDif = taskWidgetsHeight - height;
 
             if (taskWidgetsHeightDif > 0)
@@ -102,7 +102,7 @@ public class TaskTypeGui extends ConfigGui
                 for (int i = 0; i < taskTypeWidgets.size(); i++)
                 {
                     TaskTypeWidget taskTypeWidget = taskTypeWidgets.get(i);
-                    taskTypeWidget.y = contentTop + TASK_TYPE_GAP + ((i / 3) * (TaskTypeWidget.HEIGHT + TASK_TYPE_GAP)) - (int) (taskWidgetsHeightDif * contentScrollbarWidget.percentageScrolled());
+                    taskTypeWidget.screenY = contentTop + TASK_TYPE_GAP + ((i / 3) * (TaskTypeWidget.HEIGHT + TASK_TYPE_GAP)) - (int) (taskWidgetsHeightDif * contentScrollbarWidget.percentageScrolled());
                 }
             }
         }

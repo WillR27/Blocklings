@@ -14,6 +14,6 @@ public class BoundWidget extends TexturedWidget
 
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
-        blit(matrixStack, x, y, textureX, textureY, width, height);
+        blit(matrixStack, screenX, screenY, textureX, textureY, width, height);
     }
 }

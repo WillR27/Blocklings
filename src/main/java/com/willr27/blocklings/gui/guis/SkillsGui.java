@@ -59,7 +59,7 @@ public class SkillsGui extends Control
 
     public SkillsGui(IControl parent, BlocklingEntity blockling, SkillGroup skillGroup, FontRenderer font, int width, int height, int centerX, int centerY, int windowWidth, int windowHeight)
     {
-        super();
+        super(parent, 0, 0, 0, 0);
         this.blockling = blockling;
         this.group = skillGroup;
         this.font = font;
@@ -360,10 +360,10 @@ public class SkillsGui extends Control
         }
         maxWidth += HOVER_PADDING * 2;
 
-        int startX = skillWidget.x - 4;
+        int startX = skillWidget.screenX - 4;
         int endX = startX + maxWidth;
 
-        int nameY = skillWidget.y + 2;
+        int nameY = skillWidget.screenY + 2;
         int descY = nameY + 23;
 
         RenderSystem.enableDepthTest();

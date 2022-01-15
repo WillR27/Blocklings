@@ -70,13 +70,13 @@ public class WhitelistGui extends ConfigGui
         for (int i = 0; i < entryWidgets.size(); i++)
         {
             EntryWidget entryWidget = entryWidgets.get(i);
-            entryWidget.x = contentLeft + ENTRY_GAP + ((i % 4) * (EntryWidget.ENTRY_UNSELECTED.width + ENTRY_GAP));
-            entryWidget.y = contentTop + ENTRY_GAP + ((i / 4) * (EntryWidget.ENTRY_UNSELECTED.height + ENTRY_GAP));
+            entryWidget.screenX = contentLeft + ENTRY_GAP + ((i % 4) * (EntryWidget.ENTRY_UNSELECTED.width + ENTRY_GAP));
+            entryWidget.screenY = contentTop + ENTRY_GAP + ((i / 4) * (EntryWidget.ENTRY_UNSELECTED.height + ENTRY_GAP));
         }
 
         if (entryWidgets.size() >= 2)
         {
-            int taskWidgetsHeight = entryWidgets.get(entryWidgets.size() - 1).y + entryWidgets.get(entryWidgets.size() - 1).height - entryWidgets.get(0).y + ENTRY_GAP * 2;
+            int taskWidgetsHeight = entryWidgets.get(entryWidgets.size() - 1).screenY + entryWidgets.get(entryWidgets.size() - 1).height - entryWidgets.get(0).screenY + ENTRY_GAP * 2;
             int taskWidgetsHeightDif = taskWidgetsHeight - height;
 
             if (taskWidgetsHeightDif > 0)
@@ -86,7 +86,7 @@ public class WhitelistGui extends ConfigGui
                 for (int i = 0; i < entryWidgets.size(); i++)
                 {
                     EntryWidget entryWidget = entryWidgets.get(i);
-                    entryWidget.y = contentTop + ENTRY_GAP + ((i / 4) * (EntryWidget.ENTRY_UNSELECTED.height + ENTRY_GAP)) - (int) (taskWidgetsHeightDif * contentScrollbarWidget.percentageScrolled());
+                    entryWidget.screenY = contentTop + ENTRY_GAP + ((i / 4) * (EntryWidget.ENTRY_UNSELECTED.height + ENTRY_GAP)) - (int) (taskWidgetsHeightDif * contentScrollbarWidget.percentageScrolled());
                 }
             }
         }

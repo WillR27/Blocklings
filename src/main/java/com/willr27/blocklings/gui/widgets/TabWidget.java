@@ -53,7 +53,7 @@ public class TabWidget extends Widget
         for (int i = 0; i < tabs.size(); i++)
         {
             Tab tab = tabs.get(i);
-            tab.x = i != 0 ? tabs.get(i - 1).x + tabs.get(i - 1).width - OVERLAP : x - edgePadding;
+            tab.x = i != 0 ? tabs.get(i - 1).x + tabs.get(i - 1).width - OVERLAP : screenX - edgePadding;
             tab.width = i < numberOfTabsWithExtraWidth ? baseTabWidth + 1 : baseTabWidth;
 
             if (i == selectedTabIndex)
@@ -63,26 +63,26 @@ public class TabWidget extends Widget
 
             GuiTexture unselectedLeft = new GuiTexture(GuiTextures.COMMON_WIDGETS, UNSELECTED_LEFT.x, UNSELECTED_LEFT.y, tab.width - UNSELECTED_RIGHT.width, UNSELECTED_HEIGHT);
             unselectedLeft = i == 0 ? unselectedLeft.shift(4, 0).resize(-edgePadding, 0) : unselectedLeft;
-            renderTexture(matrixStack, unselectedLeft, tab.x + (i == 0 ? edgePadding : 0), y);
+            renderTexture(matrixStack, unselectedLeft, tab.x + (i == 0 ? edgePadding : 0), screenY);
 
             GuiTexture unselectedRight = i == tabs.size() - 1 ? UNSELECTED_RIGHT.shift(-4, 0).resize(-edgePadding - 1, 0) : UNSELECTED_RIGHT;
-            renderTexture(matrixStack, unselectedRight, tab.x + tab.width - unselectedRight.width - (i == tabs.size() - 1 ? edgePadding + 1 : 0), y);
+            renderTexture(matrixStack, unselectedRight, tab.x + tab.width - unselectedRight.width - (i == tabs.size() - 1 ? edgePadding + 1 : 0), screenY);
 
             String name = GuiUtil.trimWithEllipses(font, tab.name, tab.width - 10);
-            font.draw(matrixStack, name, tab.x + tab.width / 2 - font.width(name) / 2 + 1, y + 2, 0x666666);
+            font.draw(matrixStack, name, tab.x + tab.width / 2 - font.width(name) / 2 + 1, screenY + 2, 0x666666);
         }
 
         Tab tab = tabs.get(selectedTabIndex);
 
         GuiTexture selectedLeft = new GuiTexture(GuiTextures.COMMON_WIDGETS, SELECTED_LEFT.x, SELECTED_LEFT.y, tab.width - SELECTED_RIGHT.width, SELECTED_HEIGHT);
         selectedLeft = selectedTabIndex == 0 ? selectedLeft.shift(4, 0).resize(-edgePadding + 1, 0) : selectedLeft;
-        renderTexture(matrixStack, selectedLeft, selectedTabIndex == 0 ? tab.x + edgePadding - 1 : tab.x, y - 1);
+        renderTexture(matrixStack, selectedLeft, selectedTabIndex == 0 ? tab.x + edgePadding - 1 : tab.x, screenY - 1);
 
         GuiTexture selectedRight = selectedTabIndex == tabs.size() - 1 ? SELECTED_RIGHT.shift(-5, 0).resize(-edgePadding, 0) : SELECTED_RIGHT;
-        renderTexture(matrixStack, selectedRight, tab.x + tab.width - selectedRight.width - (selectedTabIndex == tabs.size() - 1 ? edgePadding : 0), y - 1);
+        renderTexture(matrixStack, selectedRight, tab.x + tab.width - selectedRight.width - (selectedTabIndex == tabs.size() - 1 ? edgePadding : 0), screenY - 1);
 
         String name = GuiUtil.trimWithEllipses(font, tab.name, tab.width - 10);
-        renderCenteredText(matrixStack, name, tab.x - x - width + tab.width / 2 + 1, 2, false, 0xffffff);
+        renderCenteredText(matrixStack, name, tab.x - screenX - width + tab.width / 2 + 1, 2, false, 0xffffff);
     }
 
     public void renderTooltips(MatrixStack matrixStack, int mouseX, int mouseY, Screen screen)
@@ -116,7 +116,7 @@ public class TabWidget extends Widget
 
     private Tab getHoveredTab(int mouseX, int mouseY)
     {
-        return tabs.stream().filter(tab -> GuiUtil.isMouseOver(mouseX, mouseY, tab.x, y, tab.width, UNSELECTED_HEIGHT)).findFirst().orElse(null);
+        return tabs.stream().filter(tab -> GuiUtil.isMouseOver(mouseX, mouseY, tab.x, screenY, tab.width, UNSELECTED_HEIGHT)).findFirst().orElse(null);
     }
 
     private class Tab

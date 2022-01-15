@@ -81,10 +81,10 @@ public class TasksScreen extends TabbedScreen
         taskWidgets.clear();
         for (int i = 0; i < blockling.getTasks().getPrioritisedTasks().size(); i++)
         {
-            taskWidgets.add(new TaskWidget(blockling.getTasks().getPrioritisedTasks().get(i), font, tasksWidget.x + TASK_GAP, tasksWidget.y + TASK_GAP + i * (TaskWidget.HEIGHT + TASK_GAP), taskWidgets, false, this::onConfigure));
+            taskWidgets.add(new TaskWidget(blockling.getTasks().getPrioritisedTasks().get(i), font, tasksWidget.screenX + TASK_GAP, tasksWidget.screenY + TASK_GAP + i * (TaskWidget.HEIGHT + TASK_GAP), taskWidgets, false, this::onConfigure));
         }
 
-        addTaskWidget = new TaskWidget(new Task(UUID.randomUUID(), BlocklingTasks.NULL, blockling, blockling.getTasks()), font, tasksWidget.x + TASK_GAP, tasksWidget.y + TASK_GAP + taskWidgets.size() * (TaskWidget.HEIGHT + TASK_GAP), taskWidgets, true, this::onConfigure);
+        addTaskWidget = new TaskWidget(new Task(UUID.randomUUID(), BlocklingTasks.NULL, blockling, blockling.getTasks()), font, tasksWidget.screenX + TASK_GAP, tasksWidget.screenY + TASK_GAP + taskWidgets.size() * (TaskWidget.HEIGHT + TASK_GAP), taskWidgets, true, this::onConfigure);
 
         tasksScrollbarWidget = new ScrollbarWidget(font, contentLeft + 155, contentTop + 17, 12, 141);
 
@@ -118,11 +118,11 @@ public class TasksScreen extends TabbedScreen
         {
             if (taskWidgets.stream().anyMatch(taskWidget -> taskWidget.isDragging))
             {
-                if (mouseY < tasksWidget.y)
+                if (mouseY < tasksWidget.screenY)
                 {
                     tasksScrollbarWidget.scroll(1.0);
                 }
-                else if (mouseY > tasksWidget.y + tasksWidget.height)
+                else if (mouseY > tasksWidget.screenY + tasksWidget.height)
                 {
                     tasksScrollbarWidget.scroll(-1.0);
                 }
@@ -208,16 +208,16 @@ public class TasksScreen extends TabbedScreen
         for (int i = 0; i < taskWidgets.size(); i++)
         {
             TaskWidget taskWidget = taskWidgets.get(i);
-            taskWidget.x = tasksWidget.x + TASK_GAP;
-            taskWidget.y = tasksWidget.y + TASK_GAP + i * (TaskWidget.HEIGHT + TASK_GAP);
+            taskWidget.screenX = tasksWidget.screenX + TASK_GAP;
+            taskWidget.screenY = tasksWidget.screenY + TASK_GAP + i * (TaskWidget.HEIGHT + TASK_GAP);
         }
 
-        addTaskWidget.x = tasksWidget.x + TASK_GAP;
-        addTaskWidget.y = tasksWidget.y + TASK_GAP + taskWidgets.size() * (TaskWidget.HEIGHT + TASK_GAP);
+        addTaskWidget.screenX = tasksWidget.screenX + TASK_GAP;
+        addTaskWidget.screenY = tasksWidget.screenY + TASK_GAP + taskWidgets.size() * (TaskWidget.HEIGHT + TASK_GAP);
 
         if (taskWidgets.size() >= 2)
         {
-            int taskWidgetsHeight = addTaskWidget.y + addTaskWidget.height - taskWidgets.get(0).y + TASK_GAP * 2;
+            int taskWidgetsHeight = addTaskWidget.screenY + addTaskWidget.height - taskWidgets.get(0).screenY + TASK_GAP * 2;
             int taskWidgetsHeightDif = taskWidgetsHeight - tasksWidget.height;
 
             if (taskWidgetsHeightDif > 0)
@@ -227,10 +227,10 @@ public class TasksScreen extends TabbedScreen
                 for (int i = 0; i < taskWidgets.size(); i++)
                 {
                     TaskWidget taskWidget = taskWidgets.get(i);
-                    taskWidget.y = tasksWidget.y + TASK_GAP + i * (TaskWidget.HEIGHT + TASK_GAP) - (int) (taskWidgetsHeightDif * tasksScrollbarWidget.percentageScrolled());
+                    taskWidget.screenY = tasksWidget.screenY + TASK_GAP + i * (TaskWidget.HEIGHT + TASK_GAP) - (int) (taskWidgetsHeightDif * tasksScrollbarWidget.percentageScrolled());
                 }
 
-                addTaskWidget.y = tasksWidget.y + TASK_GAP + taskWidgets.size() * (TaskWidget.HEIGHT + TASK_GAP) - (int) (taskWidgetsHeightDif * tasksScrollbarWidget.percentageScrolled());
+                addTaskWidget.screenY = tasksWidget.screenY + TASK_GAP + taskWidgets.size() * (TaskWidget.HEIGHT + TASK_GAP) - (int) (taskWidgetsHeightDif * tasksScrollbarWidget.percentageScrolled());
             }
         }
     }

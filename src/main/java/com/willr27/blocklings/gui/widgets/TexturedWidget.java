@@ -53,9 +53,9 @@ public class TexturedWidget extends Widget
         if (texture != null)
         {
             GuiUtil.bindTexture(texture.texture);
-            blit(matrixStack, x, y, textureX, textureY, texture.width, texture.height);
+            blit(matrixStack, screenX, screenY, textureX, textureY, texture.width, texture.height);
         }
 
-        blit(matrixStack, x, y, textureX, textureY, width, height);
+        blit(matrixStack, screenX, screenY, textureX, textureY, width, height);
     }
 }

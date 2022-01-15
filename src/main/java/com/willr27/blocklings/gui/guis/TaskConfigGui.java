@@ -104,7 +104,7 @@ public class TaskConfigGui extends AbstractGui
         blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedGui.CONTENT_WIDTH, TabbedGui.CONTENT_HEIGHT);
 
         contentWidget.enableScissor();
-        GuiUtil.setScissorBounds(contentWidget.x, contentWidget.y, contentWidget.x + contentWidget.width, contentWidget.y + contentWidget.height);
+        GuiUtil.setScissorBounds(contentWidget.screenX, contentWidget.screenY, contentWidget.screenX + contentWidget.width, contentWidget.screenY + contentWidget.height);
 
         configGui.render(matrixStack, mouseX, mouseY, partialTicks);
 

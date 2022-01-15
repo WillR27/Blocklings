@@ -14,13 +14,13 @@ public class ProgressWidget extends TexturedWidget
     {
         if (vertical) // TODO: THIS IS WRONG
         {
-            if (reverseDirection) blit(matrixStack, x, y + ((int) (height * progress)), textureX, textureY + ((int) (height * progress)), width, (int) (height * (1 - progress)));
-            else blit(matrixStack, x, y, textureX, textureY, width, (int) (height * progress));
+            if (reverseDirection) blit(matrixStack, screenX, screenY + ((int) (height * progress)), textureX, textureY + ((int) (height * progress)), width, (int) (height * (1 - progress)));
+            else blit(matrixStack, screenX, screenY, textureX, textureY, width, (int) (height * progress));
         }
         else
         {
-            if (reverseDirection) blit(matrixStack, x + ((int) (width * progress)), y, textureX + ((int) (width * progress)), textureY, (int) (width * (1 - progress)), height);
-            else blit(matrixStack, x, y, textureX, textureY, (int) (width * progress), height);
+            if (reverseDirection) blit(matrixStack, screenX + ((int) (width * progress)), screenY, textureX + ((int) (width * progress)), textureY, (int) (width * (1 - progress)), height);
+            else blit(matrixStack, screenX, screenY, textureX, textureY, (int) (width * progress), height);
         }
     }
 }

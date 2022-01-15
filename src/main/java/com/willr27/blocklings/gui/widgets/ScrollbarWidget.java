@@ -49,7 +49,7 @@ public class ScrollbarWidget extends TexturedWidget
             scrollOffset = 0;
         }
 
-        blit(matrixStack, x, y + scrollOffset, textureX + textureOffset, textureY, texture.width, texture.height);
+        blit(matrixStack, screenX, screenY + scrollOffset, textureX + textureOffset, textureY, texture.width, texture.height);
     }
 
     @Override

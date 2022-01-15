@@ -133,9 +133,9 @@ public class StatsScreen extends TabbedScreen
         movementWidget.addStat(() -> true, () -> stats.moveSpeed.displayStringValueFunction.apply(stats.moveSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.moveSpeed, TextFormatting.BLUE), 8);
 
         combatLevelWidget = new LevelWidget(BlocklingAttributes.Level.COMBAT, blockling, contentLeft + 15, contentTop + 102);
-        miningLevelWidget = new LevelWidget(BlocklingAttributes.Level.MINING, blockling, combatLevelWidget.x, combatLevelWidget.y + LEVEL_XP_GAP);
-        woodcuttingLevelWidget = new LevelWidget(BlocklingAttributes.Level.WOODCUTTING, blockling, combatLevelWidget.x, miningLevelWidget.y + LEVEL_XP_GAP);
-        farmingLevelWidget = new LevelWidget(BlocklingAttributes.Level.FARMING, blockling, combatLevelWidget.x, woodcuttingLevelWidget.y + LEVEL_XP_GAP);
+        miningLevelWidget = new LevelWidget(BlocklingAttributes.Level.MINING, blockling, combatLevelWidget.screenX, combatLevelWidget.screenY + LEVEL_XP_GAP);
+        woodcuttingLevelWidget = new LevelWidget(BlocklingAttributes.Level.WOODCUTTING, blockling, combatLevelWidget.screenX, miningLevelWidget.screenY + LEVEL_XP_GAP);
+        farmingLevelWidget = new LevelWidget(BlocklingAttributes.Level.FARMING, blockling, combatLevelWidget.screenX, woodcuttingLevelWidget.screenY + LEVEL_XP_GAP);
 
         nameField = new TextFieldWidget(font, contentLeft + 11, contentTop + 11, 154, 14, new StringTextComponent(""))
         {
@@ -587,11 +587,11 @@ public class StatsScreen extends TabbedScreen
         {
             if (shouldRightAlignText)
             {
-                return GuiUtil.isMouseOver(mouseX, mouseY, x - (font.width(valueSuppliers.get(currentEnumeration).get()) + TEXT_OFFSET_X + 3), y, width + font.width(valueSuppliers.get(currentEnumeration).get()) + TEXT_OFFSET_X + 3, height);
+                return GuiUtil.isMouseOver(mouseX, mouseY, screenX - (font.width(valueSuppliers.get(currentEnumeration).get()) + TEXT_OFFSET_X + 3), screenY, width + font.width(valueSuppliers.get(currentEnumeration).get()) + TEXT_OFFSET_X + 3, height);
             }
             else
             {
-                return GuiUtil.isMouseOver(mouseX, mouseY, x, y, width + font.width(valueSuppliers.get(currentEnumeration).get()) + TEXT_OFFSET_X + 3, height);
+                return GuiUtil.isMouseOver(mouseX, mouseY, screenX, screenY, width + font.width(valueSuppliers.get(currentEnumeration).get()) + TEXT_OFFSET_X + 3, height);
             }
         }
 

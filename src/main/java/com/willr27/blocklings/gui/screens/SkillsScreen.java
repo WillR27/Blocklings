@@ -4,21 +4,21 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.gui.GuiTexture;
-import com.willr27.blocklings.gui.GuiTextures;
-import com.willr27.blocklings.gui.GuiUtil;
+import com.willr27.blocklings.gui.*;
 import com.willr27.blocklings.gui.guis.SkillsGui;
 import com.willr27.blocklings.gui.guis.TabbedGui;
 import com.willr27.blocklings.gui.widgets.TexturedWidget;
-import com.willr27.blocklings.gui.widgets.Widget;
 import com.willr27.blocklings.skills.SkillGroup;
 import com.willr27.blocklings.skills.info.SkillGroupInfo;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 
 /**
  * The screen that displays the skill trees for each category.
  */
+@OnlyIn(Dist.CLIENT)
 public class SkillsScreen extends TabbedScreen
 {
     /**
@@ -37,12 +37,12 @@ public class SkillsScreen extends TabbedScreen
     private SkillsGui skillsGui;
 
     /**
-     * The widget used for the maximise button.
+     * The control used for the maximise button.
      */
-    private MaximiseWidget maximiseWidget;
+    private MaximiseControl maximiseControl;
 
     /**
-     * The widget used to render the gui border.
+     * The control used to render the gui border.
      */
     private TexturedWidget borderWidget;
 
@@ -56,7 +56,7 @@ public class SkillsScreen extends TabbedScreen
      * @param blockling the blockling.
      * @param group the skill group to display.
      */
-    public SkillsScreen(BlocklingEntity blockling, SkillGroupInfo group)
+    public SkillsScreen(@Nonnull BlocklingEntity blockling, @Nonnull SkillGroupInfo group)
     {
         super(blockling);
         this.group = blockling.getSkills().getGroup(group);
@@ -67,12 +67,12 @@ public class SkillsScreen extends TabbedScreen
     {
         super.init();
 
-        addChild(skillsGui = new SkillsGui(this, blockling, group, font, WINDOW_WIDTH, WINDOW_HEIGHT, centerX, centerY + 5, width, height));
-        addChild(maximiseWidget = new MaximiseWidget(left + 180, top + 142));
+        skillsGui = new SkillsGui(this, blockling, group, font, WINDOW_WIDTH, WINDOW_HEIGHT, centerX, centerY + 5, width, height);
+        maximiseControl = new MaximiseControl(this, 180, 142);
 
         skillsGui.addChild(borderWidget = new TexturedWidget(contentLeft, contentTop, new GuiTexture(GuiTextures.SKILLS, 0, 0, TabbedGui.CONTENT_WIDTH, TabbedGui.CONTENT_HEIGHT)));
 
-        if (maximiseWidget.isMaximised)
+        if (maximiseControl.isMaximised)
         {
             skillsGui.resize(getMaximisedWidth(), getMaximisedHeight(), 1.0f);
         }
@@ -88,7 +88,7 @@ public class SkillsScreen extends TabbedScreen
 
         GuiUtil.bindTexture(GuiTextures.SKILLS);
 
-        if (!maximiseWidget.isMaximised)
+        if (!maximiseControl.isMaximised)
         {
             borderWidget.render(matrixStack, mouseX, mouseY);
 
@@ -98,7 +98,7 @@ public class SkillsScreen extends TabbedScreen
             RenderSystem.enableDepthTest();
         }
 
-        maximiseWidget.render(matrixStack, mouseX, mouseY);
+        maximiseControl.render(matrixStack, mouseX, mouseY);
     }
 
     @Override
@@ -110,7 +110,7 @@ public class SkillsScreen extends TabbedScreen
         {
             return true;
         }
-        else if (maximiseWidget.mouseClicked((int) mouseX, (int) mouseY, button))
+        else if (maximiseControl.mouseClicked((int) mouseX, (int) mouseY, button))
         {
             return true;
         }
@@ -125,7 +125,7 @@ public class SkillsScreen extends TabbedScreen
         {
             return true;
         }
-        else if (maximiseWidget.mouseReleased((int) mouseX, (int) mouseY, button))
+        else if (maximiseControl.mouseReleased((int) mouseX, (int) mouseY, button))
         {
             skillsGui.resize(getMaximisedWidth(), getMaximisedHeight(), 1.0f);
 
@@ -147,9 +147,9 @@ public class SkillsScreen extends TabbedScreen
 
         if (GuiUtil.isCloseInventoryKey(keyCode))
         {
-            if (maximiseWidget.isMaximised)
+            if (maximiseControl.isMaximised)
             {
-                maximiseWidget.isMaximised = false;
+                maximiseControl.isMaximised = false;
                 skillsGui.resize(WINDOW_WIDTH, WINDOW_HEIGHT, 1.0f);
             }
             else
@@ -197,17 +197,17 @@ public class SkillsScreen extends TabbedScreen
     }
 
     /**
-     * The widget used to toggle the maximised version of the skills gui.
+     * The control used to toggle the maximised version of the skills gui.
      */
-    private static final class MaximiseWidget extends Widget
+    private static final class MaximiseControl extends Control
     {
         /**
-         * The texture used when the mouse is not over the widget.
+         * The texture used when the mouse is not over the control.
          */
         private static final GuiTexture DEFAULT_TEXTURE = new GuiTexture(GuiTextures.SKILLS, 0, 206, 11, 11);
 
         /**
-         * The texture used when the mouse is over the widget.
+         * The texture used when the mouse is over the control.
          */
         private static final GuiTexture HOVERED_TEXTURE = new GuiTexture(GuiTextures.SKILLS, DEFAULT_TEXTURE.width, 206, DEFAULT_TEXTURE.width, DEFAULT_TEXTURE.height);
 
@@ -217,12 +217,13 @@ public class SkillsScreen extends TabbedScreen
         private boolean isMaximised = false;
 
         /**
-         * @param x the x position.
-         * @param y the y position.
+         * @param parent the parent control.
+         * @param x the local x position.
+         * @param y the local y position.
          */
-        public MaximiseWidget(int x, int y)
+        public MaximiseControl(@Nonnull IControl parent, int x, int y)
         {
-            super(x, y, 11, 11);
+            super(parent, x, y, DEFAULT_TEXTURE.width, DEFAULT_TEXTURE.height);
         }
 
         @Override

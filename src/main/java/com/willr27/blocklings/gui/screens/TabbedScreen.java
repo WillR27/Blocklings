@@ -123,6 +123,18 @@ public class TabbedScreen extends Screen implements IControl
         children.remove(control);
     }
 
+    @Override
+    public int getScreenX()
+    {
+        return left;
+    }
+
+    @Override
+    public int getScreenY()
+    {
+        return top;
+    }
+
     /**
      * Called on first creation and whenever the screen is resized.
      */

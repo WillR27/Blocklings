@@ -22,7 +22,7 @@ public class TaskStateWidget extends Widget
 
     public TaskStateWidget(TaskWidget taskWidget, FontRenderer font)
     {
-        super(font, taskWidget.x + taskWidget.width - 42, taskWidget.y, GOAL_STATE_WIDTH, GOAL_STATE_HEIGHT);
+        super(font, taskWidget.screenX + taskWidget.width - 42, taskWidget.screenY, GOAL_STATE_WIDTH, GOAL_STATE_HEIGHT);
         this.taskWidget = taskWidget;
     }
 

@@ -49,7 +49,7 @@ public class TaskWidget extends Widget
     {
         matrixStack.pushPose();
 
-        int y = this.y;
+        int y = this.screenY;
 
         if (isTryingToDrag)
         {
@@ -63,7 +63,7 @@ public class TaskWidget extends Widget
         {
             matrixStack.translate(0.0f, 0.0f, 10.0f);
 
-            y = Math.min(taskWidgets.get(taskWidgets.size() - 1).y, Math.max(taskWidgets.get(0).y, mouseY - height / 2));
+            y = Math.min(taskWidgets.get(taskWidgets.size() - 1).screenY, Math.max(taskWidgets.get(0).screenY, mouseY - height / 2));
 
             TaskWidget closestTaskWidget = null;
             int closestDifY = Integer.MAX_VALUE;
@@ -72,7 +72,7 @@ public class TaskWidget extends Widget
 
             for (TaskWidget taskWidget : taskWidgets)
             {
-                int testMidY = taskWidget.y + taskWidget.height / 2;
+                int testMidY = taskWidget.screenY + taskWidget.height / 2;
                 int difY = testMidY - midY;
                 int difAbsY = Math.abs(difY);
 
@@ -97,14 +97,14 @@ public class TaskWidget extends Widget
             }
         }
 
-        titleWidget.x = x + 20;
-        titleWidget.y = y;
-        iconWidget.x = x;
-        iconWidget.y = y;
-        stateWidget.x = x + width - 42;
-        stateWidget.y = y;
-        addRemoveWidget.x = x + width - 20;
-        addRemoveWidget.y = y;
+        titleWidget.screenX = screenX + 20;
+        titleWidget.screenY = y;
+        iconWidget.screenX = screenX;
+        iconWidget.screenY = y;
+        stateWidget.screenX = screenX + width - 42;
+        stateWidget.screenY = y;
+        addRemoveWidget.screenX = screenX + width - 20;
+        addRemoveWidget.screenY = y;
 
         RenderSystem.color3f(0.8f, 0.8f, 0.8f);
         titleWidget.render(matrixStack, mouseX, mouseY);
@@ -114,7 +114,7 @@ public class TaskWidget extends Widget
         stateWidget.render(matrixStack, mouseX, mouseY);
         addRemoveWidget.render(matrixStack, mouseX, mouseY);
 
-        font.drawShadow(matrixStack, GuiUtil.trimWithEllipses(font, task.getCustomName(), width - 65), x + iconWidget.width + 4, y + 6, 0xffffff);
+        font.drawShadow(matrixStack, GuiUtil.trimWithEllipses(font, task.getCustomName(), width - 65), screenX + iconWidget.width + 4, y + 6, 0xffffff);
         RenderSystem.enableDepthTest();
 
         matrixStack.popPose();

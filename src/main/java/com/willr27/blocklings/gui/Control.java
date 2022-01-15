@@ -45,14 +45,24 @@ public class Control extends AbstractGui implements IControl
     private final List<Control> children = new ArrayList<>();
 
     /**
+     * The x position relative to the parent.
+     */
+    private int x;
+
+    /**
+     * The y position relative to the parent.
+     */
+    private int y;
+
+    /**
      * The x position on the screen.
      */
-    public int x;
+    public int screenX;
 
     /**
      * The y position on the screen.
      */
-    public int y;
+    public int screenY;
 
     /**
      * The width of the control.
@@ -72,20 +82,23 @@ public class Control extends AbstractGui implements IControl
     /**
      * The default constructor.
      */
+    @Deprecated
     public Control()
     {
         this(null, 0, 0, 0, 0);
     }
+
     /**
-     * @param parent the parent control.
+     *
      */
-    public Control(@Nonnull IControl parent, int x, int y, int width, int height)
+    @Deprecated
+    public Control(int screenX, int screenY, int width, int height)
     {
         this.parent = parent;
         this.screen = Objects.requireNonNull(Minecraft.getInstance().screen);
         this.font = Minecraft.getInstance().font;
-        this.x = x;
-        this.y = y;
+        this.screenX = screenX;
+        this.screenY = screenY;
         this.width = width;
         this.height = height;
 
@@ -93,6 +106,27 @@ public class Control extends AbstractGui implements IControl
         {
             parent.addChild(this);
         }
+    }
+
+    /**
+     * @param parent the parent control.
+     * @param x the local x position.
+     * @param y the local y position.
+     * @param width the width.
+     * @param height the height.
+     */
+    public Control(@Nonnull IControl parent, int x, int y, int width, int height)
+    {
+        this.parent = parent;
+        this.screen = Objects.requireNonNull(Minecraft.getInstance().screen);
+        this.font = Minecraft.getInstance().font;
+        this.width = width;
+        this.height = height;
+
+        setX(x);
+        setY(y);
+
+        parent.addChild(this);
     }
 
     @Override
@@ -155,7 +189,7 @@ public class Control extends AbstractGui implements IControl
     public void renderTexture(@Nonnull MatrixStack matrixStack, int dx, int dy, @Nonnull GuiTexture texture)
     {
         GuiUtil.bindTexture(texture.texture);
-        renderTexture(matrixStack, texture, x + dx, y + dy);
+        renderTexture(matrixStack, texture, screenX + dx, screenY + dy);
     }
 
     /**
@@ -273,7 +307,7 @@ public class Control extends AbstractGui implements IControl
      */
     public void enableScissor()
     {
-        GuiUtil.scissor(x, y, width, height);
+        GuiUtil.scissor(screenX, screenY, width, height);
     }
 
     /**
@@ -290,7 +324,7 @@ public class Control extends AbstractGui implements IControl
      */
     public int toLocalX(int x)
     {
-        return x - this.x;
+        return x - this.screenX;
     }
 
     /**
@@ -299,7 +333,7 @@ public class Control extends AbstractGui implements IControl
      */
     public int toLocalY(int y)
     {
-        return y - this.y;
+        return y - this.screenY;
     }
 
     /**
@@ -309,7 +343,7 @@ public class Control extends AbstractGui implements IControl
      */
     public boolean isMouseOver(int mouseX, int mouseY)
     {
-        return GuiUtil.isMouseOver(mouseX, mouseY, x, y, width, height);
+        return GuiUtil.isMouseOver(mouseX, mouseY, screenX, screenY, width, height);
     }
 
     /**
@@ -320,7 +354,59 @@ public class Control extends AbstractGui implements IControl
      */
     public boolean isMouseOver(int mouseX, int mouseY, float scale)
     {
-        return GuiUtil.isMouseOver((int) (mouseX / scale), (int) (mouseY / scale), x, y, width, height);
+        return GuiUtil.isMouseOver((int) (mouseX / scale), (int) (mouseY / scale), screenX, screenY, width, height);
+    }
+
+    /**
+     * @return the x position relative to the parent control.
+     */
+    public int getX()
+    {
+        return x;
+    }
+
+    /**
+     * Sets the x position relative to the parent control.
+     *
+     * @param x the local x position.
+     */
+    public void setX(int x)
+    {
+        this.x = x;
+
+        screenX = parent.getScreenX() + x;
+    }
+
+    /**
+     * @return the y position relative to the parent control.
+     */
+    public int getY()
+    {
+        return y;
+    }
+
+    /**
+     * Sets the y position relative to the parent control.
+     *
+     * @param y the local y position.
+     */
+    public void setY(int y)
+    {
+        this.y = y;
+
+        screenY = parent.getScreenY() + y;
+    }
+
+    @Override
+    public int getScreenX()
+    {
+        return screenX;
+    }
+
+    @Override
+    public int getScreenY()
+    {
+        return screenY;
     }
 
     /**

@@ -27,7 +27,7 @@ public class TaskIconWidget extends Widget
 
     public TaskIconWidget(TaskWidget taskWidget, FontRenderer font, boolean isCreateWidget, Consumer<Task> onConfigure)
     {
-        super(font, taskWidget.x, taskWidget.y, GOAL_ICON_WIDTH, GOAL_ICON_HEIGHT);
+        super(font, taskWidget.screenX, taskWidget.screenY, GOAL_ICON_WIDTH, GOAL_ICON_HEIGHT);
         this.taskWidget = taskWidget;
         this.isCreateWidget = isCreateWidget;
         this.onConfigure = onConfigure;

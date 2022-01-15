@@ -78,10 +78,10 @@ public class SkillWidget extends BoundWidget
     {
         Vec2i[] path = new Vec2i[3];
 
-        int x1 = x + width / 2;
-        int y1 = y + height / 2;
-        int x2 = ability.x + ability.width / 2;
-        int y2 = ability.y + ability.height / 2;
+        int x1 = screenX + width / 2;
+        int y1 = screenY + height / 2;
+        int x2 = ability.screenX + ability.width / 2;
+        int y2 = ability.screenY + ability.height / 2;
 
         if (connectionType == ConnectionType.SINGLE_LONGEST_FIRST || connectionType == ConnectionType.SINGLE_SHORTEST_FIRST)
         {
