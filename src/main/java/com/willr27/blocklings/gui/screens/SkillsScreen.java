@@ -14,6 +14,11 @@ import com.willr27.blocklings.gui.screens.guis.TabbedGui;
 import com.willr27.blocklings.skills.info.SkillGroupInfo;
 import net.minecraft.entity.player.PlayerEntity;
 
+import javax.annotation.Nonnull;
+
+/**
+ * The screen that displays the skill trees for each category.
+ */
 public class SkillsScreen extends TabbedScreen
 {
     /**
@@ -52,7 +57,8 @@ public class SkillsScreen extends TabbedScreen
         super.init();
 
         skillsGui = new SkillsGui(blockling, group, font, WINDOW_WIDTH, WINDOW_HEIGHT, centerX, centerY + 5, width, height);
-        maximiseWidget = new MaximiseWidget(left + 180, top + 142);
+
+        addWidget(maximiseWidget = new MaximiseWidget(left + 180, top + 142));
 
         if (maximiseWidget.isMaximised)
         {
@@ -61,7 +67,7 @@ public class SkillsScreen extends TabbedScreen
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         if (firstOpenDelay > 0) firstOpenDelay--;
 
@@ -99,61 +105,49 @@ public class SkillsScreen extends TabbedScreen
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int state)
+    public boolean mouseClicked(double mouseX, double mouseY, int button)
     {
         if (firstOpenDelay > 0)
         {
             return true;
         }
 
-        boolean result = false;
+        onMouseClicked((int) mouseX, (int) mouseY, button);
 
-        if (skillsGui.mouseClicked((int) mouseX, (int) mouseY, state))
+        if (skillsGui.mouseClicked((int) mouseX, (int) mouseY, button))
         {
-            result = true;
+            return true;
         }
-
-        if (maximiseWidget.mouseClicked((int) mouseX, (int) mouseY, state))
-        {
-            result = true;
-        }
-
-        if (result)
+        else if (maximiseWidget.mouseClicked((int) mouseX, (int) mouseY, button))
         {
             return true;
         }
 
-        return super.mouseClicked(mouseX, mouseY, state);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int state)
+    public boolean mouseReleased(double mouseX, double mouseY, int button)
     {
         if (firstOpenDelay > 0)
         {
             return true;
         }
 
-        boolean result = false;
-
-        if (maximiseWidget.mouseReleased((int) mouseX, (int) mouseY, state))
+        if (skillsGui.mouseReleased((int) mouseX, (int) mouseY, button))
+        {
+            return true;
+        }
+        else if (maximiseWidget.mouseReleased((int) mouseX, (int) mouseY, button))
         {
             skillsGui.resize(getMaximisedWidth(), getMaximisedHeight(), 1.0f);
 
-            result = true;
+            return true;
         }
 
-        if (skillsGui.mouseReleased((int) mouseX, (int) mouseY, state))
-        {
-            result = true;
-        }
+        onMouseReleased((int) mouseX, (int) mouseY, button);
 
-        if (!result && super.mouseReleased(mouseX, mouseY, state))
-        {
-            result = true;
-        }
-
-        return result;
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
@@ -209,10 +203,20 @@ public class SkillsScreen extends TabbedScreen
         return height + 20;
     }
 
+    /**
+     * The widget used to toggle the maximised version of the skills gui.
+     */
     private static final class MaximiseWidget extends Widget
     {
+        /**
+         * The texture used when the mouse is not over the widget.
+         */
         private static final GuiTexture DEFAULT_TEXTURE = new GuiTexture(GuiTextures.SKILLS, 0, 206, 11, 11);
-        private static final GuiTexture HOVERED_TEXTURE = new GuiTexture(GuiTextures.SKILLS, 11, 206, DEFAULT_TEXTURE.width, DEFAULT_TEXTURE.height);
+
+        /**
+         * The texture used when the mouse is over the widget.
+         */
+        private static final GuiTexture HOVERED_TEXTURE = new GuiTexture(GuiTextures.SKILLS, DEFAULT_TEXTURE.width, 206, DEFAULT_TEXTURE.width, DEFAULT_TEXTURE.height);
 
         /**
          * Whether the skills gui is maximised.
@@ -247,20 +251,16 @@ public class SkillsScreen extends TabbedScreen
         }
 
         @Override
-        public boolean mouseReleased(int mouseX, int mouseY, int state)
+        public boolean mouseReleased(int mouseX, int mouseY, int button)
         {
-            boolean result = false;
-
             if (!isMaximised && isPressed && isMouseOver(mouseX, mouseY))
             {
                 isMaximised = true;
 
-                result = true;
+                return true;
             }
 
-            super.mouseReleased(mouseX, mouseY, state);
-
-            return result;
+            return false;
         }
     }
 }

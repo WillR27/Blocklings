@@ -104,13 +104,13 @@ public class EntryWidget extends Widget
     }
 
     @Override
-    public boolean mouseReleased(int mouseX, int mouseY, int state)
+    public boolean mouseReleased(int mouseX, int mouseY, int button)
     {
         if (isPressed && isMouseOver(mouseX, mouseY))
         {
             whitelist.toggleEntry(entry.getKey());
         }
 
-        return super.mouseReleased(mouseX, mouseY, state);
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 }

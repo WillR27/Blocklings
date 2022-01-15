@@ -253,38 +253,42 @@ public class StatsScreen extends TabbedScreen
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int state)
+    public boolean mouseClicked(double mouseX, double mouseY, int button)
     {
-        if (nameField.mouseClicked(mouseX, mouseY, state))
+        onMouseClicked((int) mouseX, (int) mouseY, button);
+
+        if (nameField.mouseClicked(mouseX, mouseY, button))
         {
             return true;
         }
-        else if (attackWidget.mouseClicked((int) mouseX, (int) mouseY, state))
+        else if (attackWidget.mouseClicked((int) mouseX, (int) mouseY, button))
         {
             return true;
         }
-        else if (defenceWidget.mouseClicked((int) mouseX, (int) mouseY, state))
+        else if (defenceWidget.mouseClicked((int) mouseX, (int) mouseY, button))
         {
             return true;
         }
-        else if (gatherWidget.mouseClicked((int) mouseX, (int) mouseY, state))
+        else if (gatherWidget.mouseClicked((int) mouseX, (int) mouseY, button))
         {
             return true;
         }
-        else if (movementWidget.mouseClicked((int) mouseX, (int) mouseY, state))
+        else if (movementWidget.mouseClicked((int) mouseX, (int) mouseY, button))
         {
             return true;
         }
 
-        return super.mouseClicked(mouseX, mouseY, state);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int state)
+    public boolean mouseReleased(double mouseX, double mouseY, int button)
     {
-        nameField.mouseReleased(mouseX, mouseY, state);
+        nameField.mouseReleased(mouseX, mouseY, button);
 
-        return super.mouseReleased(mouseX, mouseY, state);
+        onMouseReleased((int) mouseX, (int) mouseY, button);
+
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
@@ -592,9 +596,9 @@ public class StatsScreen extends TabbedScreen
         }
 
         @Override
-        public boolean mouseClicked(int mouseX, int mouseY, int state)
+        public boolean mouseClicked(int mouseX, int mouseY, int button)
         {
-            super.mouseClicked(mouseX, mouseY, state);
+            super.mouseClicked(mouseX, mouseY, button);
 
             if (isMouseOver(mouseX, mouseY))
             {

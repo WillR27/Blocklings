@@ -83,20 +83,56 @@ public class Widget extends AbstractGui
         GuiUtil.scissor(x, y, width, height);
     }
 
-    public boolean mouseClicked(int mouseX, int mouseY, int state)
+    /**
+     * Handles the behaviour of a widget when the mouse is clicked.
+     *
+     * @param mouseX the scaled mouse x.
+     * @param mouseY the scaled mouse y.
+     * @param button the mouse button.
+     */
+    public void onMouseClicked(int mouseX, int mouseY, int button)
     {
         if (isMouseOver(mouseX, mouseY))
         {
             isPressed = true;
         }
+    }
 
+    /**
+     * Handles the behaviour of a widget when the mouse is released.
+     *
+     * @param mouseX the scaled mouse x.
+     * @param mouseY the scaled mouse y.
+     * @param button the mouse button.
+     */
+    public void onMouseReleased(int mouseX, int mouseY, int button)
+    {
+        isPressed = false;
+    }
+
+    /**
+     * Handles the behaviour of a widget when the mouse is clicked.
+     *
+     * @param mouseX the scaled mouse x.
+     * @param mouseY the scaled mouse y.
+     * @param button the mouse button.
+     * @return true if the mouse click has been handled.
+     */
+    public boolean mouseClicked(int mouseX, int mouseY, int button)
+    {
         return false;
     }
 
-    public boolean mouseReleased(int mouseX, int mouseY, int state)
+    /**
+     * Handles the behaviour of a widget when the mouse is released.
+     *
+     * @param mouseX the scaled mouse x.
+     * @param mouseY the scaled mouse y.
+     * @param button the mouse button.
+     * @return true if the mouse release has been handled.
+     */
+    public boolean mouseReleased(int mouseX, int mouseY, int button)
     {
-        isPressed = false;
-
         return false;
     }
 

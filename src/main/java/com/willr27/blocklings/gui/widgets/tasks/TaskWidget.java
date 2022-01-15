@@ -121,11 +121,11 @@ public class TaskWidget extends Widget
     }
 
     @Override
-    public boolean mouseClicked(int mouseX, int mouseY, int state)
+    public boolean mouseClicked(int mouseX, int mouseY, int button)
     {
-        iconWidget.mouseClicked(mouseX, mouseY, state);
-        stateWidget.mouseClicked(mouseX, mouseY, state);
-        addRemoveWidget.mouseClicked(mouseX, mouseY, state);
+        iconWidget.mouseClicked(mouseX, mouseY, button);
+        stateWidget.mouseClicked(mouseX, mouseY, button);
+        addRemoveWidget.mouseClicked(mouseX, mouseY, button);
 
         if (isMouseOver(mouseX, mouseY) && !addRemoveWidget.isMouseOver(mouseX, mouseY) && taskWidgets.size() > 1 && !isCreateWidget)
         {
@@ -135,19 +135,19 @@ public class TaskWidget extends Widget
             return true;
         }
 
-        return super.mouseClicked(mouseX, mouseY, state);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean mouseReleased(int mouseX, int mouseY, int state)
+    public boolean mouseReleased(int mouseX, int mouseY, int button)
     {
-        iconWidget.mouseReleased(mouseX, mouseY, state);
-        stateWidget.mouseReleased(mouseX, mouseY, state);
-        addRemoveWidget.mouseReleased(mouseX, mouseY, state);
+        iconWidget.mouseReleased(mouseX, mouseY, button);
+        stateWidget.mouseReleased(mouseX, mouseY, button);
+        addRemoveWidget.mouseReleased(mouseX, mouseY, button);
 
         isTryingToDrag = false;
         isDragging = false;
 
-        return super.mouseReleased(mouseX, mouseY, state);
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 }

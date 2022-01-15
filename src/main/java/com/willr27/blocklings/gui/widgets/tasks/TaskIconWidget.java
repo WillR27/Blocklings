@@ -59,13 +59,13 @@ public class TaskIconWidget extends Widget
     }
 
     @Override
-    public boolean mouseReleased(int mouseX, int mouseY, int state)
+    public boolean mouseReleased(int mouseX, int mouseY, int button)
     {
         if (isMouseOver(mouseX, mouseY))
         {
             onConfigure.accept(taskWidget.task);
         }
 
-        return super.mouseReleased(mouseX, mouseY, state);
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 }

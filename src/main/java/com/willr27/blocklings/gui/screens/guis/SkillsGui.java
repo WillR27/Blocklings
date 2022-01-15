@@ -413,6 +413,8 @@ public class SkillsGui extends AbstractGui
             startX = (int) mouseX;
             startY = (int) mouseY;
             mouseDown = true;
+
+            return true;
         }
 
         return false;

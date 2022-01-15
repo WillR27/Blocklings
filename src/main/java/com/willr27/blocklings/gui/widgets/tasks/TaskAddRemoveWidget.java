@@ -39,7 +39,7 @@ public class TaskAddRemoveWidget extends Widget
     }
 
     @Override
-    public boolean mouseReleased(int mouseX, int mouseY, int state)
+    public boolean mouseReleased(int mouseX, int mouseY, int button)
     {
         if (isPressed && isMouseOver(mouseX, mouseY))
         {
@@ -53,6 +53,6 @@ public class TaskAddRemoveWidget extends Widget
             }
         }
 
-        return super.mouseReleased(mouseX, mouseY, state);
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 }

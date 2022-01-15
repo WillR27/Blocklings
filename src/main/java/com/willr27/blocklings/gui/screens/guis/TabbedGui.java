@@ -206,7 +206,7 @@ public class TabbedGui extends AbstractGui
         }
 
         @Override
-        public boolean mouseClicked(int mouseX, int mouseY, int state)
+        public boolean mouseClicked(int mouseX, int mouseY, int button)
         {
             if (isMouseOver(mouseX, mouseY))
             {
@@ -215,7 +215,7 @@ public class TabbedGui extends AbstractGui
                 return true;
             }
 
-            return super.mouseClicked(mouseX, mouseY, state);
+            return super.mouseClicked(mouseX, mouseY, button);
         }
 
         /**

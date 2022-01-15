@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.screens.guis.TabbedGui;
+import com.willr27.blocklings.gui.widgets.Widget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,12 +13,14 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A screen that includes the blockling gui tabs.
  */
 @OnlyIn(Dist.CLIENT)
-public class TabbedScreen extends Screen
+public class TabbedScreen extends Screen implements IWidgetHandler
 {
     /**
      * The blockling.
@@ -77,6 +80,12 @@ public class TabbedScreen extends Screen
     private TabbedGui tabbedGui;
 
     /**
+     * The list of widgets on the screen.
+     */
+    @Nonnull
+    private final List<Widget> widgets = new ArrayList<>();
+
+    /**
      * @param blockling the blockling.
      */
     public TabbedScreen(@Nonnull BlocklingEntity blockling)
@@ -92,6 +101,8 @@ public class TabbedScreen extends Screen
     @Override
     protected void init()
     {
+        widgets.clear();
+
         centerX = width / 2;
         centerY = height / 2 + TabbedGui.OFFSET_Y;
 
@@ -121,13 +132,26 @@ public class TabbedScreen extends Screen
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int state)
+    public boolean mouseClicked(double mouseX, double mouseY, int button)
     {
-        if (tabbedGui.mouseClicked((int) mouseX, (int) mouseY, state))
+        if (tabbedGui.mouseClicked((int) mouseX, (int) mouseY, button))
         {
             return true;
         }
 
-        return super.mouseClicked(mouseX, mouseY, state);
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Nonnull
+    @Override
+    public List<Widget> getWidgets()
+    {
+        return widgets;
+    }
+
+    @Override
+    public void addWidget(@Nonnull Widget widget)
+    {
+        widgets.add(widget);
     }
 }

@@ -95,7 +95,7 @@ public class TabWidget extends Widget
     }
 
     @Override
-    public boolean mouseReleased(int mouseX, int mouseY, int state)
+    public boolean mouseReleased(int mouseX, int mouseY, int button)
     {
         if (isPressed && isMouseOver(mouseX, mouseY))
         {
@@ -110,7 +110,7 @@ public class TabWidget extends Widget
             }
         }
 
-        return super.mouseReleased(mouseX, mouseY, state);
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     private Tab getHoveredTab(int mouseX, int mouseY)

@@ -292,22 +292,24 @@ public class TasksScreen extends TabbedScreen
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int state)
+    public boolean mouseClicked(double mouseX, double mouseY, int button)
     {
+        onMouseClicked((int) mouseX, (int) mouseY, button);
+
         if (taskConfigGui != null)
         {
-            if (taskConfigGui.mouseClicked(mouseX, mouseY, state))
+            if (taskConfigGui.mouseClicked(mouseX, mouseY, button))
             {
                 return true;
             }
         }
         else
         {
-            if (tasksScrollbarWidget.mouseClicked((int) mouseX, (int) mouseY, state))
+            if (tasksScrollbarWidget.mouseClicked((int) mouseX, (int) mouseY, button))
             {
                 return true;
             }
-            else if (addTaskWidget.mouseClicked((int) mouseX, (int) mouseY, state))
+            else if (addTaskWidget.mouseClicked((int) mouseX, (int) mouseY, button))
             {
                 return true;
             }
@@ -317,7 +319,7 @@ public class TasksScreen extends TabbedScreen
 
                 if (hoveredWidget != null)
                 {
-                    if (hoveredWidget.mouseClicked((int) mouseX, (int) mouseY, state))
+                    if (hoveredWidget.mouseClicked((int) mouseX, (int) mouseY, button))
                     {
                         return true;
                     }
@@ -325,38 +327,40 @@ public class TasksScreen extends TabbedScreen
             }
         }
 
-        return super.mouseClicked(mouseX, mouseY, state);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int state)
+    public boolean mouseReleased(double mouseX, double mouseY, int button)
     {
         boolean ret  = false;
 
         if (taskConfigGui != null)
         {
-            if (taskConfigGui.mouseReleased(mouseX, mouseY, state))
+            if (taskConfigGui.mouseReleased(mouseX, mouseY, button))
             {
                 ret = true;
             }
         }
         else
         {
-            if (taskWidgets.stream().filter(taskWidget -> taskWidget.mouseReleased((int) mouseX, (int) mouseY, state)).findFirst().isPresent())
+            if (taskWidgets.stream().filter(taskWidget -> taskWidget.mouseReleased((int) mouseX, (int) mouseY, button)).findFirst().isPresent())
             {
                 ret = true;
             }
-            else if (addTaskWidget.mouseReleased((int) mouseX, (int) mouseY, state))
+            else if (addTaskWidget.mouseReleased((int) mouseX, (int) mouseY, button))
             {
                 ret = true;
             }
-            else if (tasksScrollbarWidget.mouseReleased((int) mouseX, (int) mouseY, state))
+            else if (tasksScrollbarWidget.mouseReleased((int) mouseX, (int) mouseY, button))
             {
                 ret = true;
             }
         }
 
-        return ret || super.mouseReleased(mouseX, mouseY, state);
+        onMouseReleased((int) mouseX, (int) mouseY, button);
+
+        return ret || super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
