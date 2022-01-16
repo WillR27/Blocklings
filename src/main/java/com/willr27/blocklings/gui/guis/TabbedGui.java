@@ -5,7 +5,7 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.Tab;
-import com.willr27.blocklings.gui.widgets.TexturedWidget;
+import com.willr27.blocklings.gui.widgets.TexturedControl;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -122,7 +122,7 @@ public class TabbedGui extends AbstractGui
     /**
      * The widget for the tabs along the edge of the gui.
      */
-    private static class TabWidget extends TexturedWidget
+    private static class TabWidget extends TexturedControl
     {
         /**
          * The width/height of a tab icon.

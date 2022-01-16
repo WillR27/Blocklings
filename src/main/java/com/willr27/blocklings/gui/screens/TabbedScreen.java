@@ -126,13 +126,13 @@ public class TabbedScreen extends Screen implements IControl
     @Override
     public int getScreenX()
     {
-        return left;
+        return contentLeft;
     }
 
     @Override
     public int getScreenY()
     {
-        return top;
+        return contentTop;
     }
 
     /**

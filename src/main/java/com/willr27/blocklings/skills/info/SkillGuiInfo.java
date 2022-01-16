@@ -1,7 +1,7 @@
 package com.willr27.blocklings.skills.info;
 
 import com.willr27.blocklings.gui.GuiTexture;
-import com.willr27.blocklings.gui.widgets.SkillWidget;
+import com.willr27.blocklings.gui.widgets.SkillControl;
 import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
@@ -10,11 +10,11 @@ public  class SkillGuiInfo
 {
     public final int x;
     public final int y;
-    public final SkillWidget.ConnectionType connectionType;
+    public final SkillControl.ConnectionType connectionType;
     public final SkillGuiTexture texture;
     public final Color colour;
 
-    public SkillGuiInfo(int x, int y, SkillWidget.ConnectionType connectionType, int colour, SkillGuiTexture texture)
+    public SkillGuiInfo(int x, int y, SkillControl.ConnectionType connectionType, int colour, SkillGuiTexture texture)
     {
         this.x = x;
         this.y = y;

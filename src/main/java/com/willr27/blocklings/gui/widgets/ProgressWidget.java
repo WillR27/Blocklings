@@ -3,7 +3,7 @@ package com.willr27.blocklings.gui.widgets;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.FontRenderer;
 
-public class ProgressWidget extends TexturedWidget
+public class ProgressWidget extends TexturedControl
 {
     public ProgressWidget(FontRenderer font, int x, int y, int width, int height, int textureX, int textureY)
     {

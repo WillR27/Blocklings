@@ -8,7 +8,7 @@ import net.minecraft.client.gui.FontRenderer;
 
 import javax.annotation.Nonnull;
 
-public class ScrollbarWidget extends TexturedWidget
+public class ScrollbarWidget extends TexturedControl
 {
     /**
      * Is the scrollbar locked to the top (normally if there is nothing to scroll)?

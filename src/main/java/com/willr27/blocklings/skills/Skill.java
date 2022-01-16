@@ -1,6 +1,8 @@
 package com.willr27.blocklings.skills;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.gui.GuiTexture;
+import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.network.NetworkHandler;
 import com.willr27.blocklings.network.messages.SkillTryBuyMessage;
 import com.willr27.blocklings.network.messages.SkillStateMessage;
@@ -156,11 +158,11 @@ public class Skill
         UTILITY(2),
         OTHER(3);
 
-        public final int textureX;
+        public final GuiTexture texture;
 
         Type(int textureX)
         {
-            this.textureX = textureX;
+            this.texture = new GuiTexture(GuiTextures.SKILLS_WIDGETS, textureX * 24, 0, 24, 24);
         }
     }
 

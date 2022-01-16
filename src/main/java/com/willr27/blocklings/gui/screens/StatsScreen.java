@@ -10,7 +10,7 @@ import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.guis.TabbedGui;
 import com.willr27.blocklings.gui.widgets.TextFieldWidget;
-import com.willr27.blocklings.gui.widgets.TexturedWidget;
+import com.willr27.blocklings.gui.widgets.TexturedControl;
 import com.willr27.blocklings.gui.widgets.Widget;
 import com.willr27.blocklings.item.items.Items;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
@@ -335,7 +335,7 @@ public class StatsScreen extends TabbedScreen
     /**
      * A widget for displaying the blockling's health as a health bar.
      */
-    private static class HealthBarWidget extends TexturedWidget
+    private static class HealthBarWidget extends TexturedControl
     {
         /**
          * The blockling.

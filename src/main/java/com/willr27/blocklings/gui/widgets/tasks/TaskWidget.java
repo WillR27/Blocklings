@@ -6,7 +6,7 @@ import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiUtil;
-import com.willr27.blocklings.gui.widgets.TexturedWidget;
+import com.willr27.blocklings.gui.widgets.TexturedControl;
 import com.willr27.blocklings.gui.widgets.Widget;
 import net.minecraft.client.gui.FontRenderer;
 
@@ -26,7 +26,7 @@ public class TaskWidget extends Widget
     private boolean isTryingToDrag = false;
     private int dragStartY;
 
-    private TexturedWidget titleWidget;
+    private TexturedControl titleWidget;
     private TaskIconWidget iconWidget;
     private TaskStateWidget stateWidget;
     private TaskAddRemoveWidget addRemoveWidget;
@@ -38,7 +38,7 @@ public class TaskWidget extends Widget
         this.taskWidgets = taskWidgets;
         this.isCreateWidget = isCreateWidget;
 
-        titleWidget = new TexturedWidget(font, x + 20, y, new GuiTexture(GuiTextures.TASKS, 40, 166, 96, HEIGHT));
+        titleWidget = new TexturedControl(font, x + 20, y, new GuiTexture(GuiTextures.TASKS, 40, 166, 96, HEIGHT));
         iconWidget = new TaskIconWidget(this, font, isCreateWidget, onConfigure);
         stateWidget = new TaskStateWidget(this, font);
         addRemoveWidget = new TaskAddRemoveWidget(this, font, isCreateWidget);

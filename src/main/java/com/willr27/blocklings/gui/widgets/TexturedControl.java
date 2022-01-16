@@ -7,13 +7,13 @@ import net.minecraft.client.gui.FontRenderer;
 
 import javax.annotation.Nonnull;
 
-public class TexturedWidget extends Widget
+public class TexturedControl extends Widget
 {
     public int textureX, textureY;
     public GuiTexture texture;
 
     @Deprecated
-    public TexturedWidget(FontRenderer font, int x, int y, int width, int height, int textureX, int textureY)
+    public TexturedControl(FontRenderer font, int x, int y, int width, int height, int textureX, int textureY)
     {
         super(font, x, y, width, height);
         this.textureX = textureX;
@@ -22,7 +22,7 @@ public class TexturedWidget extends Widget
     }
 
     @Deprecated
-    public TexturedWidget(FontRenderer font, int x, int y, int width, int height, GuiTexture texture)
+    public TexturedControl(FontRenderer font, int x, int y, int width, int height, GuiTexture texture)
     {
         super(font, x, y, width, height);
         this.textureX = texture.x;
@@ -30,7 +30,7 @@ public class TexturedWidget extends Widget
         this.texture = texture;
     }
 
-    public TexturedWidget(int x, int y, GuiTexture texture)
+    public TexturedControl(int x, int y, GuiTexture texture)
     {
         super(x, y, texture.width, texture.height);
         this.textureX = texture.x;
@@ -39,7 +39,7 @@ public class TexturedWidget extends Widget
     }
 
     @Deprecated
-    public TexturedWidget(FontRenderer font, int x, int y, GuiTexture texture)
+    public TexturedControl(FontRenderer font, int x, int y, GuiTexture texture)
     {
         super(font, x, y, texture.width, texture.height);
         this.textureX = texture.x;

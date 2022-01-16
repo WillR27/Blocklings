@@ -5,7 +5,7 @@ import net.minecraft.client.gui.FontRenderer;
 
 import javax.annotation.Nonnull;
 
-public class BoundWidget extends TexturedWidget
+public class BoundWidget extends TexturedControl
 {
     public BoundWidget(FontRenderer font, int x, int y, int width, int height, int textureX, int textureY)
     {

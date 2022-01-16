@@ -6,12 +6,12 @@ import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.task.TaskType;
 import com.willr27.blocklings.gui.GuiTexture;
-import com.willr27.blocklings.gui.widgets.TexturedWidget;
+import com.willr27.blocklings.gui.widgets.TexturedControl;
 import net.minecraft.client.gui.FontRenderer;
 
 import javax.annotation.Nonnull;
 
-public class TaskTypeWidget extends TexturedWidget
+public class TaskTypeWidget extends TexturedControl
 {
     public static final int WIDTH = 40;
     public static final int HEIGHT = 20;
