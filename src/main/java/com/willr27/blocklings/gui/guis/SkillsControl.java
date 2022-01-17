@@ -26,36 +26,130 @@ import java.util.Random;
  */
 public class SkillsControl extends Control
 {
+    /**
+     * The width and height of the icon for a skill.
+     */
     public static final int SKILL_SIZE = SkillGuiInfo.SkillGuiTexture.ICON_SIZE;
+
+    /**
+     * The width and height of a tile in the background.
+     */
     private static final int TILE_SIZE = 16;
 
-    public final int backgroundOffsetX, backgroundOffsetY;
+    /**
+     * The current x offset of the background.
+     */
+    private final int backgroundOffsetX;
 
-    private BlocklingEntity blockling;
-    private SkillGroup group;
-    private int tilesX, tilesY;
-    private int prevMouseX, prevMouseY;
-    private int moveX, moveY;
-    private boolean mouseDown;
-    private boolean dragging;
-    private int startX, startY;
-    private TexturedControl windowWidget;
-    private SkillsConfirmationGui confirmGui;
+    /**
+     * The current y offset of the background.
+     */
+    private final int backgroundOffsetY;
 
+    /**
+     * The skill group to display.
+     */
+    @Nonnull
+    private final SkillGroup group;
+
+    /**
+     * The x position when minimised.
+     */
     private final int minimisedX;
+
+    /**
+     * The y position when minimised.
+     */
     private final int minimisedY;
+
+    /**
+     * The width when minimised.
+     */
     private final int minimisedWidth;
+
+    /**
+     * The height when minimised.
+     */
     private final int minimisedHeight;
 
-    public float scale = 1.0f;
-    private int tileSize = TILE_SIZE;
+    /**
+     * How many tiles fit in the x-axis.
+     */
+    private int tilesX;
 
+    /**
+     * How many tiles fit in the y-axis.
+     */
+    private int tilesY;
+
+    /**
+     * The x position the user started dragging at.
+     */
+    private int dragStartX;
+
+    /**
+     * The y position the user started dragging at.
+     */
+    private int dragStartY;
+
+    /**
+     * The x offset from panning around the skills.
+     */
+    private int moveOffsetX;
+
+    /**
+     * The y offset from panning around the skills.
+     */
+    private int moveOffsetY;
+
+    /**
+     * The mouse x position from the previous frame.
+     */
+    private int prevMouseX;
+
+    /**
+     * The mouse y position from the previous frame.
+     */
+    private int prevMouseY;
+
+    /**
+     * Whether the mouse is down for the current frame.
+     */
+    private boolean mouseDown;
+
+    /**
+     * Whether the user is dragging the mouse.
+     */
+    private boolean dragging;
+
+    /**
+     * The current scale to display the skills at.
+     */
+    public float scale = 1.0f;
+
+    /**
+     * The list of controls representing each skill.
+     */
+    @Nonnull
     private final List<SkillControl> skillControls = new ArrayList<>();
 
-    public SkillsControl(IControl parent, BlocklingEntity blockling, SkillGroup group, int minimisedX, int minimisedY, int minimisedWidth, int minimisedHeight)
+    /**
+     * The gui used to confirm buying a skill.
+     */
+    private SkillsConfirmationGui confirmSkillBuyGui;
+
+    /**
+     * @param parent the parent control.
+     * @param blockling the blockling.
+     * @param group the skill group to display.
+     * @param minimisedX the x position when minimised.
+     * @param minimisedY the y position when minimised.
+     * @param minimisedWidth the width when minimised.
+     * @param minimisedHeight the height when minimised.
+     */
+    public SkillsControl(@Nonnull IControl parent, @Nonnull BlocklingEntity blockling, @Nonnull SkillGroup group, int minimisedX, int minimisedY, int minimisedWidth, int minimisedHeight)
     {
         super(parent, minimisedX, minimisedY, minimisedWidth, minimisedHeight);
-        this.blockling = blockling;
         this.group = group;
         this.minimisedX = minimisedX;
         this.minimisedY = minimisedY;
@@ -67,7 +161,7 @@ public class SkillsControl extends Control
         this.backgroundOffsetX = blockling.getRandom().nextInt(1000);
         this.backgroundOffsetY = blockling.getRandom().nextInt(1000);
 
-        confirmGui = new SkillsConfirmationGui();
+        confirmSkillBuyGui = new SkillsConfirmationGui();
 
         for (Skill skill : group.getSkills())
         {
@@ -95,8 +189,8 @@ public class SkillsControl extends Control
         setY(-parent.getScreenY() - 10);
         resize(screen.width + 20, screen.height + 20, scale);
 
-        moveX = (int) (((width - SKILL_SIZE) / 2) / scale);
-        moveY = (int) (((height - SKILL_SIZE) / 2) / scale);
+        moveOffsetX = (int) (((width - SKILL_SIZE) / 2) / scale);
+        moveOffsetY = (int) (((height - SKILL_SIZE) / 2) / scale);
     }
 
     /**
@@ -108,8 +202,8 @@ public class SkillsControl extends Control
         setY(minimisedY);
         resize(minimisedWidth, minimisedHeight, scale);
 
-        moveX = (int) (((width - SKILL_SIZE) / 2) / scale);
-        moveY = (int) (((height - SKILL_SIZE) / 2) / scale);
+        moveOffsetX = (int) (((width - SKILL_SIZE) / 2) / scale);
+        moveOffsetY = (int) (((height - SKILL_SIZE) / 2) / scale);
     }
 
     /**
@@ -125,17 +219,14 @@ public class SkillsControl extends Control
         this.height = height;
         this.scale = scale;
 
-        this.tileSize = (int) (TILE_SIZE * scale);
+        int tileSize = (int) (TILE_SIZE * scale);
 
         this.tilesX = width / tileSize;
         this.tilesY = height / tileSize;
 
-        removeChild(windowWidget);
-        addChild(windowWidget = new TexturedControl(font, getScreenX(), getScreenY(), width, height, 0, 0));
-
-        if (confirmGui != null && !confirmGui.closed)
+        if (confirmSkillBuyGui != null && !confirmSkillBuyGui.closed)
         {
-            confirmGui = new SkillsConfirmationGui(scale, confirmGui);
+            confirmSkillBuyGui = new SkillsConfirmationGui(scale, confirmSkillBuyGui);
         }
     }
 
@@ -152,7 +243,7 @@ public class SkillsControl extends Control
 
         matrixStack.popPose();
 
-        confirmGui.draw(matrixStack, mouseX, mouseY);
+        confirmSkillBuyGui.draw(matrixStack, mouseX, mouseY);
 
         prevMouseX = mouseX;
         prevMouseY = mouseY;
@@ -169,8 +260,8 @@ public class SkillsControl extends Control
         if (mouseDown)
         {
             // Try to pan around the window
-            int difX = Math.abs(mouseX - startX);
-            int difY = Math.abs(mouseY - startY);
+            int difX = Math.abs(mouseX - dragStartX);
+            int difY = Math.abs(mouseY - dragStartY);
 
             boolean drag = difX > 4 || difY > 4;
 
@@ -178,8 +269,8 @@ public class SkillsControl extends Control
             {
                 dragging = true;
 
-                moveX += (mouseX - prevMouseX) / scale;
-                moveY += (mouseY - prevMouseY) / scale;
+                moveOffsetX += (mouseX - prevMouseX) / scale;
+                moveOffsetY += (mouseY - prevMouseY) / scale;
             }
         }
     }
@@ -197,11 +288,11 @@ public class SkillsControl extends Control
         {
             for (int j = -1; j < tilesY + 1; j++)
             {
-                int x = (int) (getScreenX() / scale) + ((TILE_SIZE + (moveX % TILE_SIZE)) % TILE_SIZE) + i * TILE_SIZE;
-                int y = (int) (getScreenY() / scale) + ((TILE_SIZE + (moveY % TILE_SIZE)) % TILE_SIZE) + j * TILE_SIZE;
+                int x = (int) (getScreenX() / scale) + ((TILE_SIZE + (moveOffsetX % TILE_SIZE)) % TILE_SIZE) + i * TILE_SIZE;
+                int y = (int) (getScreenY() / scale) + ((TILE_SIZE + (moveOffsetY % TILE_SIZE)) % TILE_SIZE) + j * TILE_SIZE;
 
-                int i1 = i - (int)Math.floor((moveX / (double) TILE_SIZE)) + backgroundOffsetX;
-                int j1 = j - (int)Math.floor((moveY / (double) TILE_SIZE)) + backgroundOffsetY;
+                int i1 = i - (int)Math.floor((moveOffsetX / (double) TILE_SIZE)) + backgroundOffsetX;
+                int j1 = j - (int)Math.floor((moveOffsetY / (double) TILE_SIZE)) + backgroundOffsetY;
                 int rand = new Random(new Random(i1).nextInt() * new Random(j1).nextInt()).nextInt((256 / TILE_SIZE) * (256 / TILE_SIZE));
 
                 int tileTextureX = (rand % TILE_SIZE) * TILE_SIZE;
@@ -213,14 +304,6 @@ public class SkillsControl extends Control
                 GL11.glDisable(GL11.GL_SCISSOR_TEST);
             }
         }
-
-//        matrixStack.popPose();
-//        fill(matrixStack, left, top - 1, right, top - 2, 0xffffffff);
-//        fill(matrixStack, left - 2, top, left - 1, bottom, 0xffffffff);
-//        fill(matrixStack, right + 2, top, right + 1, bottom, 0xffffffff);
-//        fill(matrixStack, left, bottom + 1, right, bottom + 2, 0xffffffff);
-//        matrixStack.pushPose();
-//        matrixStack.scale(scale, scale, 1.0f);
     }
 
     /**
@@ -236,8 +319,8 @@ public class SkillsControl extends Control
 
         GuiUtil.bindTexture(GuiTextures.SKILLS_WIDGETS);
 
-        int x = (int) (getScreenX() / scale) + moveX;
-        int y = (int) (getScreenY() / scale) + moveY;
+        int x = (int) (getScreenX() / scale) + moveOffsetX;
+        int y = (int) (getScreenY() / scale) + moveOffsetY;
 
         // Update the skill control positions
         for (SkillControl skillControl : skillControls)
@@ -260,7 +343,7 @@ public class SkillsControl extends Control
         {
             boolean isHover = false;
 
-            if (confirmGui.closed && windowWidget.isMouseOver(mouseX, mouseY))
+            if (confirmSkillBuyGui.closed && isMouseOver(mouseX, mouseY))
             {
                 if (skillControl.isMouseOver(mouseX, mouseY, scale))
                 {
@@ -290,24 +373,26 @@ public class SkillsControl extends Control
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
     }
 
-    public boolean keyPressed(int keyCode, int i, int j)
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int mods)
     {
-        return confirmGui.keyPressed(keyCode, i, j);
+        return confirmSkillBuyGui.keyPressed(keyCode, scanCode, mods);
     }
 
-    public boolean mouseClicked(double mouseX, double mouseY, int state)
+    @Override
+    public boolean mouseClicked(int mouseX, int mouseY, int button)
     {
-        if (!confirmGui.closed)
+        if (!confirmSkillBuyGui.closed)
         {
-            confirmGui.mouseClicked(mouseX, mouseY, state);
+            confirmSkillBuyGui.mouseClicked(mouseX, mouseY, button);
 
             return true;
         }
 
-        if (windowWidget.isMouseOver((int) mouseX, (int) mouseY))
+        if (isMouseOver(mouseX, mouseY))
         {
-            startX = (int) mouseX;
-            startY = (int) mouseY;
+            dragStartX = mouseX;
+            dragStartY = mouseY;
             mouseDown = true;
 
             return true;
@@ -316,23 +401,21 @@ public class SkillsControl extends Control
         return false;
     }
 
-    public boolean mouseReleased(double mouseX, double mouseY, int button)
+    @Override
+    public boolean mouseReleased(int mouseX, int mouseY, int button)
     {
-        int x = (int) ((getScreenX() / scale) + moveX);
-        int y = (int) ((getScreenY() / scale) + moveY);
-
         boolean result = false;
 
-        if (!confirmGui.closed)
+        if (!confirmSkillBuyGui.closed)
         {
-            confirmGui.mouseReleased(mouseX, mouseY, button);
+            confirmSkillBuyGui.mouseReleased(mouseX, mouseY, button);
 
             result = true;
         }
 
         if (!dragging)
         {
-            if (windowWidget.isMouseOver((int) mouseX, (int) mouseY))
+            if (isMouseOver((int) mouseX, (int) mouseY))
             {
                 if (skillControls.stream().anyMatch(skillControl -> skillControl.mouseReleased((int) mouseX, (int) mouseY, button)))
                 {
@@ -347,10 +430,15 @@ public class SkillsControl extends Control
         return result;
     }
 
+    /**
+     * Opens the buy skill confirmation dialog for the given skill.
+     *
+     * @param skill the skill attempting to be bought.
+     */
     public void openConfirmationDialog(@Nonnull Skill skill)
     {
         String name = TextFormatting.LIGHT_PURPLE + skill.info.general.name.getString() + TextFormatting.WHITE;
-        confirmGui = new SkillsConfirmationGui(scale, font, skill, GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("skill.buy_confirmation", name).getString(), width < 200 ? width - 10 : width - 50), width, height, width, height);
+        confirmSkillBuyGui = new SkillsConfirmationGui(scale, font, skill, GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("skill.buy_confirmation", name).getString(), width < 200 ? width - 10 : width - 50), width, height, width, height);
     }
 
     @Override
@@ -359,12 +447,13 @@ public class SkillsControl extends Control
         int localMouseX = toLocalX(mouseX);
         int localMouseY = toLocalY(mouseY);
 
-        int midMoveX = (int) (moveX + (SKILL_SIZE / 2 * scale));
-        int midMoveY = (int) (moveY + (SKILL_SIZE / 2 * scale));
+        int midMoveX = (int) (moveOffsetX + (SKILL_SIZE / 2 * scale));
+        int midMoveY = (int) (moveOffsetY + (SKILL_SIZE / 2 * scale));
 
-        int mouseMoveX = (int) ((int) (moveX + (localMouseX * scale)) - ((width - SKILL_SIZE) / 2) * scale);
-        int mouseMoveY = (int) ((int) (moveY + (localMouseY * scale)) - ((height - SKILL_SIZE) / 2) * scale);
+        int mouseMoveX = (int) ((int) (moveOffsetX + (localMouseX * scale)) - ((width - SKILL_SIZE) / 2) * scale);
+        int mouseMoveY = (int) ((int) (moveOffsetY + (localMouseY * scale)) - ((height - SKILL_SIZE) / 2) * scale);
 
+        // I have literally no idea why this works, but it does (although with some precision issues)
         int difMoveX1 = (int) ((mouseMoveX - midMoveX) / scale);
         int difMoveY1 = (int) ((mouseMoveY - midMoveY) / scale);
         int difMoveX2 = (int) ((mouseMoveX - midMoveX) / scale / scale);
@@ -381,10 +470,10 @@ public class SkillsControl extends Control
             }
             else
             {
-                moveX -= (width / 2) / scale;
-                moveY -= (height / 2) / scale;
-                moveX -= difMoveX1 / scale;
-                moveY -= difMoveY1 / scale;
+                moveOffsetX -= (width / 2) / scale;
+                moveOffsetY -= (height / 2) / scale;
+                moveOffsetX -= difMoveX1 / scale;
+                moveOffsetY -= difMoveY1 / scale;
             }
         }
         // Zoom out
@@ -398,10 +487,10 @@ public class SkillsControl extends Control
             }
             else
             {
-                moveX += (width / 4) / scale;
-                moveY += (height / 4) / scale;
-                moveX += difMoveX2;
-                moveY += difMoveY2;
+                moveOffsetX += (width / 4) / scale;
+                moveOffsetY += (height / 4) / scale;
+                moveOffsetX += difMoveX2;
+                moveOffsetY += difMoveY2;
             }
         }
 

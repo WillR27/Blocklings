@@ -96,7 +96,7 @@ public class SkillsScreen extends TabbedScreen
     {
         mouseClickedNoHandle((int) mouseX, (int) mouseY, button);
 
-        if (skillsGui.mouseClicked(mouseX, mouseY, button))
+        if (skillsGui.mouseClicked((int) mouseX, (int) mouseY, button))
         {
             return true;
         }
@@ -111,7 +111,7 @@ public class SkillsScreen extends TabbedScreen
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button)
     {
-        if (skillsGui.mouseReleased(mouseX, mouseY, button))
+        if (skillsGui.mouseReleased((int) mouseX, (int) mouseY, button))
         {
             return true;
         }
