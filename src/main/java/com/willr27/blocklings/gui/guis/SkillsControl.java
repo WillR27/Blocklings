@@ -8,7 +8,6 @@ import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.IControl;
 import com.willr27.blocklings.gui.widgets.SkillControl;
-import com.willr27.blocklings.gui.widgets.TexturedControl;
 import com.willr27.blocklings.skills.Skill;
 import com.willr27.blocklings.skills.SkillGroup;
 import com.willr27.blocklings.skills.info.SkillGuiInfo;
@@ -17,6 +16,7 @@ import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -113,6 +113,16 @@ public class SkillsControl extends Control
     private int prevMouseY;
 
     /**
+     * The total drag amount in the x-axis.
+     */
+    private float totalDragX;
+
+    /**
+     * The total drag amount in the y-axis.
+     */
+    private float totalDragY;
+
+    /**
      * Whether the mouse is down for the current frame.
      */
     private boolean mouseDown;
@@ -136,7 +146,8 @@ public class SkillsControl extends Control
     /**
      * The gui used to confirm buying a skill.
      */
-    private SkillsConfirmationGui confirmSkillBuyGui;
+    @Nullable
+    public BuySkillConfirmationControl skillBuyConfirmationControl;
 
     /**
      * @param parent the parent control.
@@ -160,8 +171,6 @@ public class SkillsControl extends Control
 
         this.backgroundOffsetX = blockling.getRandom().nextInt(1000);
         this.backgroundOffsetY = blockling.getRandom().nextInt(1000);
-
-        confirmSkillBuyGui = new SkillsConfirmationGui();
 
         for (Skill skill : group.getSkills())
         {
@@ -224,9 +233,9 @@ public class SkillsControl extends Control
         this.tilesX = width / tileSize;
         this.tilesY = height / tileSize;
 
-        if (confirmSkillBuyGui != null && !confirmSkillBuyGui.closed)
+        if (skillBuyConfirmationControl != null && !skillBuyConfirmationControl.closed)
         {
-            confirmSkillBuyGui = new SkillsConfirmationGui(scale, confirmSkillBuyGui);
+            skillBuyConfirmationControl = new BuySkillConfirmationControl(skillBuyConfirmationControl);
         }
     }
 
@@ -243,7 +252,10 @@ public class SkillsControl extends Control
 
         matrixStack.popPose();
 
-        confirmSkillBuyGui.draw(matrixStack, mouseX, mouseY);
+        if (skillBuyConfirmationControl != null && !skillBuyConfirmationControl.closed)
+        {
+            skillBuyConfirmationControl.render(matrixStack, mouseX, mouseY);
+        }
 
         prevMouseX = mouseX;
         prevMouseY = mouseY;
@@ -269,8 +281,20 @@ public class SkillsControl extends Control
             {
                 dragging = true;
 
-                moveOffsetX += (mouseX - prevMouseX) / scale;
-                moveOffsetY += (mouseY - prevMouseY) / scale;
+                totalDragX += (mouseX - prevMouseX) / scale;
+                totalDragY += (mouseY - prevMouseY) / scale;
+
+                if (Math.abs(totalDragX) >= 1.0f)
+                {
+                    moveOffsetX += (int) totalDragX;
+                    totalDragX -= (int) totalDragX;
+                }
+
+                if (Math.abs(totalDragY) >= 1.0f)
+                {
+                    moveOffsetY += (int) totalDragY;
+                    totalDragY -= (int) totalDragY;
+                }
             }
         }
     }
@@ -343,7 +367,7 @@ public class SkillsControl extends Control
         {
             boolean isHover = false;
 
-            if (confirmSkillBuyGui.closed && isMouseOver(mouseX, mouseY))
+            if ((skillBuyConfirmationControl == null || skillBuyConfirmationControl.closed) && isMouseOver(mouseX, mouseY))
             {
                 if (skillControl.isMouseOver(mouseX, mouseY, scale))
                 {
@@ -376,15 +400,23 @@ public class SkillsControl extends Control
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int mods)
     {
-        return confirmSkillBuyGui.keyPressed(keyCode, scanCode, mods);
+        if (skillBuyConfirmationControl != null && !skillBuyConfirmationControl.closed)
+        {
+            if (skillBuyConfirmationControl.keyPressed(keyCode, scanCode, mods))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
     public boolean mouseClicked(int mouseX, int mouseY, int button)
     {
-        if (!confirmSkillBuyGui.closed)
+        if (skillBuyConfirmationControl != null && !skillBuyConfirmationControl.closed)
         {
-            confirmSkillBuyGui.mouseClicked(mouseX, mouseY, button);
+            skillBuyConfirmationControl.mouseClicked(mouseX, mouseY, button);
 
             return true;
         }
@@ -406,18 +438,19 @@ public class SkillsControl extends Control
     {
         boolean result = false;
 
-        if (!confirmSkillBuyGui.closed)
+        if (skillBuyConfirmationControl!= null && !skillBuyConfirmationControl.closed)
         {
-            confirmSkillBuyGui.mouseReleased(mouseX, mouseY, button);
-
-            result = true;
+            if (skillBuyConfirmationControl.mouseReleased(mouseX, mouseY, button))
+            {
+                result = true;
+            }
         }
 
-        if (!dragging)
+        if (!dragging && !result)
         {
-            if (isMouseOver((int) mouseX, (int) mouseY))
+            if (isMouseOver(mouseX, mouseY))
             {
-                if (skillControls.stream().anyMatch(skillControl -> skillControl.mouseReleased((int) mouseX, (int) mouseY, button)))
+                if (skillControls.stream().anyMatch(skillControl -> skillControl.mouseReleased(mouseX, mouseY, button)))
                 {
                     result = true;
                 }
@@ -438,7 +471,7 @@ public class SkillsControl extends Control
     public void openConfirmationDialog(@Nonnull Skill skill)
     {
         String name = TextFormatting.LIGHT_PURPLE + skill.info.general.name.getString() + TextFormatting.WHITE;
-        confirmSkillBuyGui = new SkillsConfirmationGui(scale, font, skill, GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("skill.buy_confirmation", name).getString(), width < 200 ? width - 10 : width - 50), width, height, width, height);
+        skillBuyConfirmationControl = new BuySkillConfirmationControl(this, skill, GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("skill.buy_confirmation", name).getString(), width < 200 ? width - 10 : width - 50), width, height, width, height);
     }
 
     @Override

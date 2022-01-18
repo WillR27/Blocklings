@@ -111,20 +111,22 @@ public class SkillsScreen extends TabbedScreen
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button)
     {
+        boolean result = false;
+
         if (skillsGui.mouseReleased((int) mouseX, (int) mouseY, button))
         {
-            return true;
+            result = true;
         }
         else if (maximiseControl.mouseReleased((int) mouseX, (int) mouseY, button))
         {
             skillsGui.maximise();
 
-            return true;
+            result = true;
         }
 
         mouseReleasedNoHandle((int) mouseX, (int) mouseY, button);
 
-        return super.mouseReleased(mouseX, mouseY, button);
+        return result || super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override

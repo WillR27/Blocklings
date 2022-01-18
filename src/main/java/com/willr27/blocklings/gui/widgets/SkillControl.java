@@ -353,7 +353,7 @@ public class SkillControl extends Control
     {
         super.mouseReleasedNoHandle(mouseX, mouseY, button);
 
-        if (!isMouseOver(mouseX, mouseY, skillsControl.scale))
+        if (!isMouseOver(mouseX, mouseY, skillsControl.scale) || (skillsControl.skillBuyConfirmationControl != null && !skillsControl.skillBuyConfirmationControl.closed))
         {
             isSelected = false;
         }
