@@ -1,4 +1,4 @@
-package com.willr27.blocklings.gui.guis;
+package com.willr27.blocklings.gui.screens.skills;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -7,12 +7,14 @@ import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.IControl;
-import com.willr27.blocklings.gui.widgets.SkillControl;
+import com.willr27.blocklings.gui.controls.SkillControl;
 import com.willr27.blocklings.skills.Skill;
 import com.willr27.blocklings.skills.SkillGroup;
 import com.willr27.blocklings.skills.info.SkillGuiInfo;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
@@ -24,6 +26,7 @@ import java.util.Random;
 /**
  * The gui used to display the skill tree in a skill group.
  */
+@OnlyIn(Dist.CLIENT)
 public class SkillsControl extends Control
 {
     /**

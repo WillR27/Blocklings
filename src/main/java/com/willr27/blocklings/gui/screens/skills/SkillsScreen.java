@@ -1,13 +1,13 @@
-package com.willr27.blocklings.gui.screens;
+package com.willr27.blocklings.gui.screens.skills;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.*;
-import com.willr27.blocklings.gui.guis.SkillsControl;
+import com.willr27.blocklings.gui.screens.TabbedScreen;
 import com.willr27.blocklings.gui.guis.TabbedGui;
-import com.willr27.blocklings.gui.widgets.TexturedControl;
+import com.willr27.blocklings.gui.controls.TexturedControl;
 import com.willr27.blocklings.skills.SkillGroup;
 import com.willr27.blocklings.skills.info.SkillGroupInfo;
 import net.minecraftforge.api.distmarker.Dist;

@@ -1,4 +1,4 @@
-package com.willr27.blocklings.gui.widgets;
+package com.willr27.blocklings.gui.controls;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -7,8 +7,7 @@ import com.willr27.blocklings.attribute.BlocklingAttributes;
 import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
-import com.willr27.blocklings.gui.IControl;
-import com.willr27.blocklings.gui.guis.SkillsControl;
+import com.willr27.blocklings.gui.screens.skills.SkillsControl;
 import com.willr27.blocklings.skills.Skill;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.text.TextFormatting;

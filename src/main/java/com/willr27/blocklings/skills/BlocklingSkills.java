@@ -4,7 +4,7 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.attribute.BlocklingAttributes;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import com.willr27.blocklings.gui.GuiTextures;
-import com.willr27.blocklings.gui.widgets.SkillControl;
+import com.willr27.blocklings.gui.controls.SkillControl;
 import com.willr27.blocklings.skills.info.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;

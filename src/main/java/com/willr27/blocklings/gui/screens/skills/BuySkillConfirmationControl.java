@@ -1,4 +1,4 @@
-package com.willr27.blocklings.gui.guis;
+package com.willr27.blocklings.gui.screens.skills;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.gui.Control;
@@ -7,6 +7,8 @@ import com.willr27.blocklings.gui.IControl;
 import com.willr27.blocklings.skills.Skill;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.List;
 /**
  * The control to display the confirmation dialog when buying a skill.
  */
+@OnlyIn(Dist.CLIENT)
 public class BuySkillConfirmationControl extends Control
 {
     /**
@@ -114,12 +117,9 @@ public class BuySkillConfirmationControl extends Control
     {
         if (!closed && GuiUtil.isCloseInventoryKey(keyCode))
         {
-            if (noButton != null)
-            {
-                noButton.onPress();
+            noButton.onPress();
 
-                return true;
-            }
+            return true;
         }
 
         return false;

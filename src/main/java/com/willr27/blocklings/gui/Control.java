@@ -1,6 +1,7 @@
 package com.willr27.blocklings.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
@@ -204,6 +205,40 @@ public class Control extends AbstractGui implements IControl
     {
         GuiUtil.bindTexture(texture.texture);
         blit(matrixStack, x, y, texture.x, texture.y, texture.width, texture.height);
+    }
+
+    /**
+     * Renders shadowed text.
+     *
+     * @param matrixStack the matrix stack.
+     * @param text the text to render.
+     * @param dx the x offset from the control's top left.
+     * @param dy the y offset from the control's top left.
+     * @param right whether to render from the right-hand side of the control.
+     * @param colour the colour of the text.
+     */
+    public void renderText(MatrixStack matrixStack, String text, int dx, int dy, boolean right, int colour)
+    {
+        int bonusX = right ? -font.width(text) - dx : width + dx;
+        drawString(matrixStack, font, text, screenX + bonusX, screenY + dy, colour);
+        RenderSystem.enableDepthTest(); // Apparently depth test gets turned off so turn it back on
+    }
+
+    /**
+     * Renders centered shadowed text.
+     *
+     * @param matrixStack the matrix stack.
+     * @param text the text to render.
+     * @param dx the x offset from the control's top left.
+     * @param dy the y offset from the control's top left.
+     * @param right whether to render from the right-hand side of the control.
+     * @param colour the colour of the text.
+     */
+    public void renderCenteredText(MatrixStack matrixStack, String text, int dx, int dy, boolean right, int colour)
+    {
+        int bonusX = right ? -dx : width + dx;
+        drawCenteredString(matrixStack, font, text, screenX + bonusX, screenY + dy, colour);
+        RenderSystem.enableDepthTest(); // Apparently depth test gets turned off so turn it back on
     }
 
     @Override

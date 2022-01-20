@@ -7,7 +7,6 @@ import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.task.TaskType;
 import com.willr27.blocklings.gui.GuiTexture;
-import com.willr27.blocklings.gui.widgets.tasks.TaskIconWidget;
 import com.willr27.blocklings.network.messages.TaskCreateMessage;
 import com.willr27.blocklings.network.messages.TaskRemoveMessage;
 import com.willr27.blocklings.network.messages.TaskTypeIsUnlockedMessage;

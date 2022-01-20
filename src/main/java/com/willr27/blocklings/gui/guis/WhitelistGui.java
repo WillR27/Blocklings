@@ -1,8 +1,8 @@
 package com.willr27.blocklings.gui.guis;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.willr27.blocklings.gui.widgets.EntryWidget;
-import com.willr27.blocklings.gui.widgets.ScrollbarWidget;
+import com.willr27.blocklings.gui.controls.EntryWidget;
+import com.willr27.blocklings.gui.controls.ScrollbarWidget;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.ResourceLocation;

@@ -120,7 +120,7 @@
 
   "blocklings.stats.attack.name": "§6Attack",
   "blocklings.stats.defence.name": "§6Defence",
-  "blocklings.stats.gather.name": "§6Gather",
+  "blocklings.stats.gathering.name": "§6Gathering",
   "blocklings.stats.movement.name": "§6Movement",
 
   "blocklings.attribute.health.name": "Health",

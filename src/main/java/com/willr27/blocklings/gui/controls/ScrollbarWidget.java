@@ -1,4 +1,4 @@
-package com.willr27.blocklings.gui.widgets;
+package com.willr27.blocklings.gui.controls;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.gui.GuiTexture;

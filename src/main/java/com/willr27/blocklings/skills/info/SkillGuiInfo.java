@@ -1,7 +1,7 @@
 package com.willr27.blocklings.skills.info;
 
 import com.willr27.blocklings.gui.GuiTexture;
-import com.willr27.blocklings.gui.widgets.SkillControl;
+import com.willr27.blocklings.gui.controls.SkillControl;
 import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
