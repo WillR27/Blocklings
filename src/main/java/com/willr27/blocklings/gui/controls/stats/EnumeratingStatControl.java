@@ -1,4 +1,4 @@
-package com.willr27.blocklings.gui.screens.stats;
+package com.willr27.blocklings.gui.controls.stats;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;

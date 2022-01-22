@@ -1,38 +1,93 @@
-package com.willr27.blocklings.gui.controls;
+package com.willr27.blocklings.gui.controls.tasks;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.willr27.blocklings.gui.GuiTextures;
+import com.willr27.blocklings.gui.*;
 import com.willr27.blocklings.task.Task;
-import com.willr27.blocklings.gui.GuiTexture;
-import com.willr27.blocklings.gui.GuiUtil;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TabWidget extends Widget
+/**
+ * A control to display tabs.
+ */
+@OnlyIn(Dist.CLIENT)
+public class TabControl extends Control
 {
+    /**
+     * The height of a selected tab.
+     */
     public static final int SELECTED_HEIGHT = 18;
+
+    /**
+     * The height of an unselected tab.
+     */
     public static final int UNSELECTED_HEIGHT = 15;
+
+    /**
+     * The overlap between two tabs.
+     */
     public static final int OVERLAP = 1;
 
+    /**
+     * The selected tab texture on the left.
+     */
+    @Nonnull
     public static final GuiTexture SELECTED_LEFT = new GuiTexture(GuiTextures.COMMON_WIDGETS, 0, 15, 4, SELECTED_HEIGHT);
+
+    /**
+     * The selected tab texture on the right.
+     */
+    @Nonnull
     public static final GuiTexture SELECTED_RIGHT = new GuiTexture(GuiTextures.COMMON_WIDGETS, 252, 15, 4, SELECTED_HEIGHT);
+
+    /**
+     * The unselected tab texture on the left.
+     */
+    @Nonnull
     public static final GuiTexture UNSELECTED_LEFT = new GuiTexture(GuiTextures.COMMON_WIDGETS, 0, 33, 4, UNSELECTED_HEIGHT);
+
+    /**
+     * The unselected tab texture on the right.
+     */
+    @Nonnull
     public static final GuiTexture UNSELECTED_RIGHT = new GuiTexture(GuiTextures.COMMON_WIDGETS, 252, 33, 4, UNSELECTED_HEIGHT);
 
+    /**
+     * The currently selected tab index.
+     */
     private int selectedTabIndex = 0;
-    List<Tab> tabs = new ArrayList<>();
 
-    public TabWidget(Task task, FontRenderer font, int x, int y, int width)
+    /**
+     * The list of tabs.
+     */
+    @Nonnull
+    private final List<Tab> tabs = new ArrayList<>();
+
+    /**
+     * @param parent the parent control.
+     * @param x the x position.
+     * @param y the y position.
+     * @param width the width.
+     */
+    public TabControl(@Nonnull IControl parent, int x, int y, int width)
     {
-        super(font, x, y, width, UNSELECTED_HEIGHT);
+        super(parent, x, y, width, UNSELECTED_HEIGHT);
     }
 
-    public void add(String name, Runnable onSelect)
+    /**
+     * Adds a new tab.
+     *
+     * @param name the name of the tab.
+     * @param onSelect the callback to run when the tab is selected.
+     */
+    public void add(@Nonnull String name, @Nonnull Runnable onSelect)
     {
         tabs.add(new Tab(name, onSelect));
     }
@@ -85,7 +140,14 @@ public class TabWidget extends Widget
         renderCenteredText(matrixStack, name, tab.x - screenX - width + tab.width / 2 + 1, 2, false, 0xffffff);
     }
 
-    public void renderTooltips(MatrixStack matrixStack, int mouseX, int mouseY, Screen screen)
+    /**
+     * Renders the tooltips for the tabs.
+     *
+     * @param matrixStack the matrix stack.
+     * @param mouseX the mouse x position.
+     * @param mouseY the mouse y position.
+     */
+    public void renderTooltips(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
         Tab hoveredTab = getHoveredTab(mouseX, mouseY);
 
@@ -114,20 +176,43 @@ public class TabWidget extends Widget
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
+    /**
+     * @return the tab at the mouse position.
+     */
+    @Nullable
     private Tab getHoveredTab(int mouseX, int mouseY)
     {
         return tabs.stream().filter(tab -> GuiUtil.isMouseOver(mouseX, mouseY, tab.x, screenY, tab.width, UNSELECTED_HEIGHT)).findFirst().orElse(null);
     }
 
-    private class Tab
+    /**
+     * A class to represent a tab.
+     */
+    private static class Tab
     {
+        /**
+         * The tab's name.
+         */
+        @Nonnull
         public final String name;
+
+        /**
+         * The callback to call when the tab is selected.
+         */
+        @Nonnull
         public final Runnable onSelect;
 
+        /**
+         * The x position.
+         */
         public int x = 0;
+
+        /**
+         * The tab width.
+         */
         public int width = 30;
 
-        public Tab(String name, Runnable onSelect)
+        public Tab(@Nonnull String name, @Nonnull Runnable onSelect)
         {
             this.name = name;
             this.onSelect = onSelect;

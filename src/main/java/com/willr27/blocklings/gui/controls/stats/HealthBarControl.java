@@ -1,4 +1,4 @@
-package com.willr27.blocklings.gui.screens.stats;
+package com.willr27.blocklings.gui.controls.stats;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -8,6 +8,7 @@ import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.IControl;
+import com.willr27.blocklings.gui.screens.StatsScreen;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * A widget for displaying the blockling's health as a health bar.
+ * A control for displaying the blockling's health as a health bar.
  */
 @OnlyIn(Dist.CLIENT)
 public class HealthBarControl extends Control

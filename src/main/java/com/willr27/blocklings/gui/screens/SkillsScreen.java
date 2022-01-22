@@ -1,13 +1,13 @@
-package com.willr27.blocklings.gui.screens.skills;
+package com.willr27.blocklings.gui.screens;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.*;
-import com.willr27.blocklings.gui.screens.TabbedScreen;
-import com.willr27.blocklings.gui.guis.TabbedGui;
 import com.willr27.blocklings.gui.controls.TexturedControl;
+import com.willr27.blocklings.gui.controls.skills.SkillsControl;
+import com.willr27.blocklings.gui.controls.TabbedControl;
 import com.willr27.blocklings.skills.SkillGroup;
 import com.willr27.blocklings.skills.info.SkillGroupInfo;
 import net.minecraftforge.api.distmarker.Dist;
@@ -24,7 +24,7 @@ public class SkillsScreen extends TabbedScreen
     /**
      * The gui displayed inside the window area that handles the skill tree rendering and interaction.
      */
-    private SkillsControl skillsGui;
+    private SkillsControl skillsControl;
 
     /**
      * The control used for the maximise button.
@@ -57,21 +57,25 @@ public class SkillsScreen extends TabbedScreen
     {
         super.init();
 
-        skillsGui = new SkillsControl(this, blockling, group, 9, 19, 158, 138);
+        removeChild(skillsControl);
+        skillsControl = new SkillsControl(this, blockling, group, 9, 19, 158, 138);
+
+        removeChild(maximiseControl);
         maximiseControl = new MaximiseControl(this, 151, 141);
 
-        skillsGui.addChild(borderControl = new TexturedControl(contentLeft, contentTop, new GuiTexture(GuiTextures.SKILLS, 0, 0, TabbedGui.CONTENT_WIDTH, TabbedGui.CONTENT_HEIGHT)));
+        removeChild(borderControl);
+        borderControl = new TexturedControl(this, 0, 0, new GuiTexture(GuiTextures.SKILLS, 0, 0, TabbedControl.CONTENT_WIDTH, TabbedControl.CONTENT_HEIGHT));
 
         if (maximiseControl.isMaximised)
         {
-            skillsGui.maximise();
+            skillsControl.maximise();
         }
     }
 
     @Override
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
-        skillsGui.render(matrixStack, mouseX, mouseY);
+        skillsControl.render(matrixStack, mouseX, mouseY);
 
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -96,7 +100,7 @@ public class SkillsScreen extends TabbedScreen
     {
         mouseClickedNoHandle((int) mouseX, (int) mouseY, button);
 
-        if (skillsGui.mouseClicked((int) mouseX, (int) mouseY, button))
+        if (skillsControl.mouseClicked((int) mouseX, (int) mouseY, button))
         {
             return true;
         }
@@ -113,13 +117,13 @@ public class SkillsScreen extends TabbedScreen
     {
         boolean result = false;
 
-        if (skillsGui.mouseReleased((int) mouseX, (int) mouseY, button))
+        if (skillsControl.mouseReleased((int) mouseX, (int) mouseY, button))
         {
             result = true;
         }
         else if (maximiseControl.mouseReleased((int) mouseX, (int) mouseY, button))
         {
-            skillsGui.maximise();
+            skillsControl.maximise();
 
             result = true;
         }
@@ -132,7 +136,7 @@ public class SkillsScreen extends TabbedScreen
     @Override
     public boolean keyPressed(int keyCode, int i, int j)
     {
-        if (skillsGui.keyPressed(keyCode, i, j))
+        if (skillsControl.keyPressed(keyCode, i, j))
         {
             return true;
         }
@@ -142,7 +146,7 @@ public class SkillsScreen extends TabbedScreen
             if (maximiseControl.isMaximised)
             {
                 maximiseControl.isMaximised = false;
-                skillsGui.minimise();
+                skillsControl.minimise();
             }
             else
             {
@@ -158,7 +162,7 @@ public class SkillsScreen extends TabbedScreen
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scroll)
     {
-        if (skillsGui.mouseScrolled((int) mouseX, (int) mouseY, scroll))
+        if (skillsControl.mouseScrolled((int) mouseX, (int) mouseY, scroll))
         {
             return true;
         }

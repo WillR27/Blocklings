@@ -1,15 +1,20 @@
-package com.willr27.blocklings.gui.screens.stats;
+package com.willr27.blocklings.gui.screens;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.willr27.blocklings.attribute.*;
+import com.willr27.blocklings.attribute.BlocklingAttributes;
+import com.willr27.blocklings.attribute.IModifiable;
+import com.willr27.blocklings.attribute.IModifier;
+import com.willr27.blocklings.attribute.Operation;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
-import com.willr27.blocklings.gui.controls.TextFieldWidget;
-import com.willr27.blocklings.gui.guis.TabbedGui;
-import com.willr27.blocklings.gui.screens.TabbedScreen;
+import com.willr27.blocklings.gui.controls.common.TextFieldControl;
+import com.willr27.blocklings.gui.controls.stats.EnumeratingStatControl;
+import com.willr27.blocklings.gui.controls.stats.HealthBarControl;
+import com.willr27.blocklings.gui.controls.stats.LevelControl;
+import com.willr27.blocklings.gui.controls.TabbedControl;
 import com.willr27.blocklings.item.items.Items;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.text.ITextComponent;
@@ -66,47 +71,47 @@ public class StatsScreen extends TabbedScreen
     /**
      * The control to display the attack stats.
      */
-    private EnumeratingStatControl attackWidget;
+    private EnumeratingStatControl attackControl;
 
     /**
      * The control to display the defence stats.
      */
-    private EnumeratingStatControl defenceWidget;
+    private EnumeratingStatControl defenceControl;
 
     /**
      * The control to display the gathering stats.
      */
-    private EnumeratingStatControl gatheringWidget;
+    private EnumeratingStatControl gatheringControl;
 
     /**
      * The control to display the combat stats.
      */
-    private EnumeratingStatControl movementWidget;
+    private EnumeratingStatControl movementControl;
 
     /**
      * The control to display the combat level info.
      */
-    private LevelControl combatLevelWidget;
+    private LevelControl combatLevelControl;
 
     /**
      * The control to display the mining level info.
      */
-    private LevelControl miningLevelWidget;
+    private LevelControl miningLevelControl;
 
     /**
      * The control to display the woodcutting level info.
      */
-    private LevelControl woodcuttingLevelWidget;
+    private LevelControl woodcuttingLevelControl;
 
     /**
      * The control to display the farming level info.
      */
-    private LevelControl farmingLevelWidget;
+    private LevelControl farmingLevelControl;
 
     /**
      * The text field control used to change the blockling's name.
      */
-    private TextFieldWidget nameField;
+    private TextFieldControl nameField;
 
     /**
      *
@@ -123,32 +128,41 @@ public class StatsScreen extends TabbedScreen
     {
         super.init();
 
+        removeChild(healthBar);
         healthBar = new HealthBarControl(this, blockling, 20, 36);
 
-        attackWidget = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.attack.name"), ICON_X_OFFSET, TOP_ICON_Y, false, 60, true, blockling);
-        attackWidget.addStat(() -> blockling.getEquipment().isAttackingWith(BlocklingHand.MAIN), () -> stats.mainHandAttackDamage.displayStringValueFunction.apply(stats.mainHandAttackDamage.getValue()), () -> createModifiableFloatAttributeTooltip(stats.mainHandAttackDamage, TextFormatting.DARK_RED), 12);
-        attackWidget.addStat(() -> blockling.getEquipment().isAttackingWith(BlocklingHand.OFF), () -> stats.offHandAttackDamage.displayStringValueFunction.apply(stats.offHandAttackDamage.getValue()), () -> createModifiableFloatAttributeTooltip(stats.offHandAttackDamage, TextFormatting.DARK_RED), 10);
-        attackWidget.addStat(() -> true, () -> stats.attackSpeed.displayStringValueFunction.apply(stats.attackSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.attackSpeed, TextFormatting.DARK_PURPLE),11);
+        removeChild(attackControl);
+        attackControl = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.attack.name"), ICON_X_OFFSET, TOP_ICON_Y, false, 60, true, blockling);
+        attackControl.addStat(() -> blockling.getEquipment().isAttackingWith(BlocklingHand.MAIN), () -> stats.mainHandAttackDamage.displayStringValueFunction.apply(stats.mainHandAttackDamage.getValue()), () -> createModifiableFloatAttributeTooltip(stats.mainHandAttackDamage, TextFormatting.DARK_RED), 12);
+        attackControl.addStat(() -> blockling.getEquipment().isAttackingWith(BlocklingHand.OFF), () -> stats.offHandAttackDamage.displayStringValueFunction.apply(stats.offHandAttackDamage.getValue()), () -> createModifiableFloatAttributeTooltip(stats.offHandAttackDamage, TextFormatting.DARK_RED), 10);
+        attackControl.addStat(() -> true, () -> stats.attackSpeed.displayStringValueFunction.apply(stats.attackSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.attackSpeed, TextFormatting.DARK_PURPLE),11);
 
-        defenceWidget = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.defence.name"), ICON_X_OFFSET, BOTTOM_ICON_Y, false, 60, true, blockling);
-        defenceWidget.addStat(() -> true, () -> stats.armour.displayStringValueFunction.apply(stats.armour.getValue()), () -> createModifiableFloatAttributeTooltip(stats.armour, TextFormatting.DARK_AQUA), 5);
-        defenceWidget.addStat(() -> true, () -> stats.armourToughness.displayStringValueFunction.apply(stats.armourToughness.getValue()), () -> createModifiableFloatAttributeTooltip(stats.armourToughness, TextFormatting.AQUA), 6);
-        defenceWidget.addStat(() -> true, () -> stats.knockbackResistance.displayStringValueFunction.apply(stats.knockbackResistance.getValue()), () -> createModifiableFloatAttributeTooltip(stats.knockbackResistance, TextFormatting.YELLOW), 7);
+        removeChild(defenceControl);
+        defenceControl = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.defence.name"), ICON_X_OFFSET, BOTTOM_ICON_Y, false, 60, true, blockling);
+        defenceControl.addStat(() -> true, () -> stats.armour.displayStringValueFunction.apply(stats.armour.getValue()), () -> createModifiableFloatAttributeTooltip(stats.armour, TextFormatting.DARK_AQUA), 5);
+        defenceControl.addStat(() -> true, () -> stats.armourToughness.displayStringValueFunction.apply(stats.armourToughness.getValue()), () -> createModifiableFloatAttributeTooltip(stats.armourToughness, TextFormatting.AQUA), 6);
+        defenceControl.addStat(() -> true, () -> stats.knockbackResistance.displayStringValueFunction.apply(stats.knockbackResistance.getValue()), () -> createModifiableFloatAttributeTooltip(stats.knockbackResistance, TextFormatting.YELLOW), 7);
 
-        gatheringWidget = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.gathering.name"), TabbedGui.CONTENT_WIDTH - ICON_X_OFFSET - EnumeratingStatControl.ICON_SIZE, TOP_ICON_Y, true, 60, true, blockling);
-        gatheringWidget.addStat(() -> true, () -> stats.miningSpeed.displayStringValueFunction.apply(stats.miningSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.miningSpeed, TextFormatting.BLUE), 1);
-        gatheringWidget.addStat(() -> true, () -> stats.woodcuttingSpeed.displayStringValueFunction.apply(stats.woodcuttingSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.woodcuttingSpeed, TextFormatting.DARK_GREEN), 2);
-        gatheringWidget.addStat(() -> true, () -> stats.farmingSpeed.displayStringValueFunction.apply(stats.farmingSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.farmingSpeed, TextFormatting.YELLOW), 3);
+        removeChild(gatheringControl);
+        gatheringControl = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.gathering.name"), TabbedControl.CONTENT_WIDTH - ICON_X_OFFSET - EnumeratingStatControl.ICON_SIZE, TOP_ICON_Y, true, 60, true, blockling);
+        gatheringControl.addStat(() -> true, () -> stats.miningSpeed.displayStringValueFunction.apply(stats.miningSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.miningSpeed, TextFormatting.BLUE), 1);
+        gatheringControl.addStat(() -> true, () -> stats.woodcuttingSpeed.displayStringValueFunction.apply(stats.woodcuttingSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.woodcuttingSpeed, TextFormatting.DARK_GREEN), 2);
+        gatheringControl.addStat(() -> true, () -> stats.farmingSpeed.displayStringValueFunction.apply(stats.farmingSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.farmingSpeed, TextFormatting.YELLOW), 3);
 
-        movementWidget = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.movement.name"), TabbedGui.CONTENT_WIDTH - ICON_X_OFFSET - EnumeratingStatControl.ICON_SIZE, BOTTOM_ICON_Y, true, 60, true, blockling);
-        movementWidget.addStat(() -> true, () -> stats.moveSpeed.displayStringValueFunction.apply(stats.moveSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.moveSpeed, TextFormatting.BLUE), 8);
+        removeChild(movementControl);
+        movementControl = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.movement.name"), TabbedControl.CONTENT_WIDTH - ICON_X_OFFSET - EnumeratingStatControl.ICON_SIZE, BOTTOM_ICON_Y, true, 60, true, blockling);
+        movementControl.addStat(() -> true, () -> stats.moveSpeed.displayStringValueFunction.apply(stats.moveSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.moveSpeed, TextFormatting.BLUE), 8);
 
-        combatLevelWidget = new LevelControl(this, BlocklingAttributes.Level.COMBAT, blockling, 15, 102);
-        miningLevelWidget = new LevelControl(this, BlocklingAttributes.Level.MINING, blockling, combatLevelWidget.getX(), combatLevelWidget.getY() + LEVEL_XP_GAP);
-        woodcuttingLevelWidget = new LevelControl(this, BlocklingAttributes.Level.WOODCUTTING, blockling, combatLevelWidget.getX(), miningLevelWidget.getY() + LEVEL_XP_GAP);
-        farmingLevelWidget = new LevelControl(this, BlocklingAttributes.Level.FARMING, blockling, combatLevelWidget.getX(), woodcuttingLevelWidget.getY() + LEVEL_XP_GAP);
+        removeChild(combatLevelControl);
+        combatLevelControl = new LevelControl(this, BlocklingAttributes.Level.COMBAT, blockling, 15, 102);
+        removeChild(miningLevelControl);
+        miningLevelControl = new LevelControl(this, BlocklingAttributes.Level.MINING, blockling, combatLevelControl.getX(), combatLevelControl.getY() + LEVEL_XP_GAP);
+        removeChild(woodcuttingLevelControl);
+        woodcuttingLevelControl = new LevelControl(this, BlocklingAttributes.Level.WOODCUTTING, blockling, combatLevelControl.getX(), miningLevelControl.getY() + LEVEL_XP_GAP);
+        removeChild(farmingLevelControl);
+        farmingLevelControl = new LevelControl(this, BlocklingAttributes.Level.FARMING, blockling, combatLevelControl.getX(), woodcuttingLevelControl.getY() + LEVEL_XP_GAP);
 
-        nameField = new TextFieldWidget(font, contentLeft + 11, contentTop + 11, 154, 14, new StringTextComponent(""))
+        nameField = new TextFieldControl(font, contentLeft + 11, contentTop + 11, 154, 14, new StringTextComponent(""))
         {
             @Override
             public void setFocus(boolean focus)
@@ -231,7 +245,7 @@ public class StatsScreen extends TabbedScreen
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         GuiUtil.bindTexture(GuiTextures.STATS);
-        blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedGui.CONTENT_WIDTH, TabbedGui.CONTENT_HEIGHT);
+        blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedControl.CONTENT_WIDTH, TabbedControl.CONTENT_HEIGHT);
 
         GuiUtil.renderEntityOnScreen(centerX, centerY + 10, 35, centerX - mouseX, centerY - mouseY, blockling);
 
@@ -240,15 +254,15 @@ public class StatsScreen extends TabbedScreen
 
         healthBar.render(matrixStack, mouseX, mouseY);
 
-        attackWidget.render(matrixStack, mouseX, mouseY);
-        defenceWidget.render(matrixStack, mouseX, mouseY);
-        gatheringWidget.render(matrixStack, mouseX, mouseY);
-        movementWidget.render(matrixStack, mouseX, mouseY);
+        attackControl.render(matrixStack, mouseX, mouseY);
+        defenceControl.render(matrixStack, mouseX, mouseY);
+        gatheringControl.render(matrixStack, mouseX, mouseY);
+        movementControl.render(matrixStack, mouseX, mouseY);
 
-        combatLevelWidget.render(matrixStack, mouseX, mouseY);
-        miningLevelWidget.render(matrixStack, mouseX, mouseY);
-        woodcuttingLevelWidget.render(matrixStack, mouseX, mouseY);
-        farmingLevelWidget.render(matrixStack, mouseX, mouseY);
+        combatLevelControl.render(matrixStack, mouseX, mouseY);
+        miningLevelControl.render(matrixStack, mouseX, mouseY);
+        woodcuttingLevelControl.render(matrixStack, mouseX, mouseY);
+        farmingLevelControl.render(matrixStack, mouseX, mouseY);
 
         nameField.render(matrixStack, mouseX, mouseY, partialTicks);
         RenderSystem.enableDepthTest();
@@ -257,10 +271,10 @@ public class StatsScreen extends TabbedScreen
 
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
-        attackWidget.renderTooltip(matrixStack, mouseX, mouseY);
-        defenceWidget.renderTooltip(matrixStack, mouseX, mouseY);
-        gatheringWidget.renderTooltip(matrixStack, mouseX, mouseY);
-        movementWidget.renderTooltip(matrixStack, mouseX, mouseY);
+        attackControl.renderTooltip(matrixStack, mouseX, mouseY);
+        defenceControl.renderTooltip(matrixStack, mouseX, mouseY);
+        gatheringControl.renderTooltip(matrixStack, mouseX, mouseY);
+        movementControl.renderTooltip(matrixStack, mouseX, mouseY);
     }
 
     @Override
@@ -272,19 +286,19 @@ public class StatsScreen extends TabbedScreen
         {
             return true;
         }
-        else if (attackWidget.mouseClicked((int) mouseX, (int) mouseY, button))
+        else if (attackControl.mouseClicked((int) mouseX, (int) mouseY, button))
         {
             return true;
         }
-        else if (defenceWidget.mouseClicked((int) mouseX, (int) mouseY, button))
+        else if (defenceControl.mouseClicked((int) mouseX, (int) mouseY, button))
         {
             return true;
         }
-        else if (gatheringWidget.mouseClicked((int) mouseX, (int) mouseY, button))
+        else if (gatheringControl.mouseClicked((int) mouseX, (int) mouseY, button))
         {
             return true;
         }
-        else if (movementWidget.mouseClicked((int) mouseX, (int) mouseY, button))
+        else if (movementControl.mouseClicked((int) mouseX, (int) mouseY, button))
         {
             return true;
         }

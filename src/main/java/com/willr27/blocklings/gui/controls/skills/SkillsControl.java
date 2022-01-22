@@ -1,4 +1,4 @@
-package com.willr27.blocklings.gui.screens.skills;
+package com.willr27.blocklings.gui.controls.skills;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -7,7 +7,6 @@ import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.IControl;
-import com.willr27.blocklings.gui.controls.SkillControl;
 import com.willr27.blocklings.skills.Skill;
 import com.willr27.blocklings.skills.SkillGroup;
 import com.willr27.blocklings.skills.info.SkillGuiInfo;

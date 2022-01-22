@@ -1,61 +1,40 @@
 package com.willr27.blocklings.gui.controls;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTexture;
-import com.willr27.blocklings.gui.GuiUtil;
-import net.minecraft.client.gui.FontRenderer;
+import com.willr27.blocklings.gui.IControl;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 
-public class TexturedControl extends Widget
+/**
+ * A simple control to display a constant texture.
+ */
+@OnlyIn(Dist.CLIENT)
+public class TexturedControl extends Control
 {
-    public int textureX, textureY;
+    /**
+     * The texture to render.
+     */
+    @Nonnull
     public GuiTexture texture;
 
-    @Deprecated
-    public TexturedControl(FontRenderer font, int x, int y, int width, int height, int textureX, int textureY)
+    /**
+     * @param parent the parent control.
+     * @param x the x position.
+     * @param y the y position.
+     * @param texture the texture to render.
+     */
+    public TexturedControl(@Nonnull IControl parent, int x, int y, GuiTexture texture)
     {
-        super(font, x, y, width, height);
-        this.textureX = textureX;
-        this.textureY = textureY;
-        this.texture = null;
-    }
-
-    @Deprecated
-    public TexturedControl(FontRenderer font, int x, int y, int width, int height, GuiTexture texture)
-    {
-        super(font, x, y, width, height);
-        this.textureX = texture.x;
-        this.textureY = texture.y;
+        super(parent, x, y, texture.width, texture.height);
         this.texture = texture;
     }
-
-    public TexturedControl(int x, int y, GuiTexture texture)
-    {
-        super(x, y, texture.width, texture.height);
-        this.textureX = texture.x;
-        this.textureY = texture.y;
-        this.texture = texture;
-    }
-
-    @Deprecated
-    public TexturedControl(FontRenderer font, int x, int y, GuiTexture texture)
-    {
-        super(font, x, y, texture.width, texture.height);
-        this.textureX = texture.x;
-        this.textureY = texture.y;
-        this.texture = texture;
-    }
-
     @Override
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
-        if (texture != null)
-        {
-            GuiUtil.bindTexture(texture.texture);
-            blit(matrixStack, screenX, screenY, textureX, textureY, texture.width, texture.height);
-        }
-
-        blit(matrixStack, screenX, screenY, textureX, textureY, width, height);
+        renderTexture(matrixStack, texture);
     }
 }

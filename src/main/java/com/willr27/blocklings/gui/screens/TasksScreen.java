@@ -3,13 +3,13 @@ package com.willr27.blocklings.gui.screens;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
+import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
-import com.willr27.blocklings.gui.guis.TabbedGui;
-import com.willr27.blocklings.gui.guis.TaskConfigGui;
-import com.willr27.blocklings.gui.controls.ScrollbarWidget;
-import com.willr27.blocklings.gui.controls.Widget;
-import com.willr27.blocklings.gui.controls.tasks.TaskWidget;
+import com.willr27.blocklings.gui.controls.common.ScrollbarControl;
+import com.willr27.blocklings.gui.controls.TabbedControl;
+import com.willr27.blocklings.gui.controls.tasks.TaskConfigControl;
+import com.willr27.blocklings.gui.controls.tasks.TaskControl;
 import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.IReorderingProcessor;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public class TasksScreen extends TabbedScreen
 {
     /**
-     * The gap between each task widget.
+     * The gap between each task control.
      */
     private static final int TASK_GAP = 4;
 
@@ -40,28 +40,28 @@ public class TasksScreen extends TabbedScreen
      * The gui used to configure a task.
      */
     @Nullable
-    private TaskConfigGui taskConfigGui;
+    private TaskConfigControl taskConfigControl;
 
     /**
-     * A widget used to represent the bounding box of the area the tasks widgets are found.
+     * A control used to represent the bounding box of the area the tasks controls are found.
      */
-    private Widget tasksWidget;
+    private Control tasksControl;
 
     /**
-     * The list of task widgets to add to the gui.
+     * The list of task controls to add to the gui.
      */
     @Nonnull
-    private final List<TaskWidget> taskWidgets = new ArrayList<>();
+    private final List<TaskControl> taskControls = new ArrayList<>();
 
     /**
-     * The task widget to append to the end of the task widgets used to create a new task.
+     * The task control to append to the end of the task controls used to create a new task.
      */
-    private TaskWidget addTaskWidget;
+    private TaskControl addTaskControl;
 
     /**
      * The scrollbar used to scroll the list of tasks.
      */
-    private ScrollbarWidget tasksScrollbarWidget;
+    private ScrollbarControl tasksScrollbarControl;
 
     /**
      * @param blockling the blockling.
@@ -76,21 +76,24 @@ public class TasksScreen extends TabbedScreen
     {
         super.init();
 
-        tasksWidget = new Widget(font, contentLeft + 9, contentTop + 17, 140, 141);
+        removeChild(tasksControl);
+        tasksControl = new Control(this, 9, 17, 140, 141);
 
-        taskWidgets.clear();
+        taskControls.clear();
         for (int i = 0; i < blockling.getTasks().getPrioritisedTasks().size(); i++)
         {
-            taskWidgets.add(new TaskWidget(blockling.getTasks().getPrioritisedTasks().get(i), font, tasksWidget.screenX + TASK_GAP, tasksWidget.screenY + TASK_GAP + i * (TaskWidget.HEIGHT + TASK_GAP), taskWidgets, false, this::onConfigure));
+            taskControls.add(new TaskControl(tasksControl, blockling.getTasks().getPrioritisedTasks().get(i), TASK_GAP, TASK_GAP + i * (TaskControl.HEIGHT + TASK_GAP), taskControls, false, this::onConfigure));
         }
 
-        addTaskWidget = new TaskWidget(new Task(UUID.randomUUID(), BlocklingTasks.NULL, blockling, blockling.getTasks()), font, tasksWidget.screenX + TASK_GAP, tasksWidget.screenY + TASK_GAP + taskWidgets.size() * (TaskWidget.HEIGHT + TASK_GAP), taskWidgets, true, this::onConfigure);
+        addTaskControl = new TaskControl(tasksControl, new Task(UUID.randomUUID(), BlocklingTasks.NULL, blockling, blockling.getTasks()), TASK_GAP, TASK_GAP + taskControls.size() * (TaskControl.HEIGHT + TASK_GAP), taskControls, true, this::onConfigure);
 
-        tasksScrollbarWidget = new ScrollbarWidget(font, contentLeft + 155, contentTop + 17, 12, 141);
+        removeChild(tasksScrollbarControl);
+        tasksScrollbarControl = new ScrollbarControl(this, 155, 17, 12, 141);
 
-        if (taskConfigGui != null)
+        if (taskConfigControl != null)
         {
-            taskConfigGui = new TaskConfigGui(taskConfigGui.task, font, this);
+            removeChild(taskConfigControl);
+            taskConfigControl = new TaskConfigControl(this, taskConfigControl.task, 0, 0);
         }
     }
 
@@ -98,9 +101,9 @@ public class TasksScreen extends TabbedScreen
     @Override
     public void tick()
     {
-        if (taskConfigGui != null)
+        if (taskConfigControl != null)
         {
-            taskConfigGui.nameField.tick();
+            taskConfigControl.nameTextFieldControl.tick();
         }
     }
 
@@ -108,23 +111,23 @@ public class TasksScreen extends TabbedScreen
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         GuiUtil.bindTexture(GuiTextures.TASKS);
-        blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedGui.CONTENT_WIDTH, TabbedGui.CONTENT_HEIGHT);
+        blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedControl.CONTENT_WIDTH, TabbedControl.CONTENT_HEIGHT);
 
-        if (taskConfigGui != null)
+        if (taskConfigControl != null)
         {
-            taskConfigGui.render(matrixStack, mouseX, mouseY, partialTicks);
+            taskConfigControl.render(matrixStack, mouseX, mouseY, partialTicks);
         }
         else
         {
-            if (taskWidgets.stream().anyMatch(taskWidget -> taskWidget.isDragging))
+            if (taskControls.stream().anyMatch(taskControl -> taskControl.isDragging))
             {
-                if (mouseY < tasksWidget.screenY)
+                if (mouseY < tasksControl.screenY)
                 {
-                    tasksScrollbarWidget.scroll(1.0);
+                    tasksScrollbarControl.scroll(1.0);
                 }
-                else if (mouseY > tasksWidget.screenY + tasksWidget.height)
+                else if (mouseY > tasksControl.screenY + tasksControl.height)
                 {
-                    tasksScrollbarWidget.scroll(-1.0);
+                    tasksScrollbarControl.scroll(-1.0);
                 }
             }
 
@@ -134,17 +137,17 @@ public class TasksScreen extends TabbedScreen
 
             renderTasks(matrixStack, mouseX, mouseY);
 
-            tasksScrollbarWidget.render(matrixStack, mouseX, mouseY);
+            tasksScrollbarControl.render(matrixStack, mouseX, mouseY);
         }
 
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
-        if (taskConfigGui != null)
+        if (taskConfigControl != null)
         {
-            taskConfigGui.renderTooltips(matrixStack, mouseX, mouseY);
+            taskConfigControl.renderTooltips(matrixStack, mouseX, mouseY);
         }
 
-        if (taskConfigGui == null)
+        if (taskConfigControl == null)
         {
             font.drawShadow(matrixStack, new BlocklingsTranslationTextComponent("tab.tasks"), contentLeft + 8, contentTop + 5, 0xffffff);
 
@@ -153,47 +156,47 @@ public class TasksScreen extends TabbedScreen
     }
 
     /**
-     * Removes any task widgets that no longer exist as tasks.
+     * Removes any task controls that no longer exist as tasks.
      */
     private void removeOldTasks()
     {
-        for (int i = 0; i < taskWidgets.size(); i++)
+        for (int i = 0; i < taskControls.size(); i++)
         {
-            TaskWidget taskWidget = taskWidgets.get(i);
+            TaskControl taskControl = taskControls.get(i);
 
-            if (!blockling.getTasks().getPrioritisedTasks().contains(taskWidget.task))
+            if (!blockling.getTasks().getPrioritisedTasks().contains(taskControl.task))
             {
-                taskWidgets.remove(i);
+                taskControls.remove(i);
                 i--;
             }
         }
     }
 
     /**
-     * Adds task widgets for any new tasks that have been added.
+     * Adds task controls for any new tasks that have been added.
      */
     private void addNewTasks()
     {
         for (int i = 0; i < blockling.getTasks().getPrioritisedTasks().size(); i++)
         {
             Task task = blockling.getTasks().getPrioritisedTasks().get(i);
-            TaskWidget taskWidget = i >= taskWidgets.size() ? null : taskWidgets.get(i);
+            TaskControl taskControl = i >= taskControls.size() ? null : taskControls.get(i);
 
-            if (taskWidget != null && task.equals(taskWidget.task))
+            if (taskControl != null && task.equals(taskControl.task))
             {
                 continue;
             }
 
-            taskWidget = taskWidgets.stream().filter(widget -> widget.task.equals(task)).findFirst().orElse(null);
+            taskControl = taskControls.stream().filter(control -> control.task.equals(task)).findFirst().orElse(null);
 
-            if (taskWidget != null)
+            if (taskControl != null)
             {
-                taskWidgets.remove(taskWidget);
-                taskWidgets.add(i, taskWidget);
+                taskControls.remove(taskControl);
+                taskControls.add(i, taskControl);
             }
             else
             {
-                taskWidgets.add(i, new TaskWidget(task, font, 0, 0, taskWidgets, false, this::onConfigure));
+                taskControls.add(i, new TaskControl(tasksControl, task, 0, 0, taskControls, false, this::onConfigure));
             }
         }
     }
@@ -203,40 +206,40 @@ public class TasksScreen extends TabbedScreen
      */
     private void updateTaskPositions()
     {
-        tasksScrollbarWidget.isDisabled = true;
+        tasksScrollbarControl.isDisabled = true;
 
-        for (int i = 0; i < taskWidgets.size(); i++)
+        for (int i = 0; i < taskControls.size(); i++)
         {
-            TaskWidget taskWidget = taskWidgets.get(i);
-            taskWidget.screenX = tasksWidget.screenX + TASK_GAP;
-            taskWidget.screenY = tasksWidget.screenY + TASK_GAP + i * (TaskWidget.HEIGHT + TASK_GAP);
+            TaskControl taskControl = taskControls.get(i);
+            taskControl.screenX = tasksControl.screenX + TASK_GAP;
+            taskControl.screenY = tasksControl.screenY + TASK_GAP + i * (TaskControl.HEIGHT + TASK_GAP);
         }
 
-        addTaskWidget.screenX = tasksWidget.screenX + TASK_GAP;
-        addTaskWidget.screenY = tasksWidget.screenY + TASK_GAP + taskWidgets.size() * (TaskWidget.HEIGHT + TASK_GAP);
+        addTaskControl.screenX = tasksControl.screenX + TASK_GAP;
+        addTaskControl.screenY = tasksControl.screenY + TASK_GAP + taskControls.size() * (TaskControl.HEIGHT + TASK_GAP);
 
-        if (taskWidgets.size() >= 2)
+        if (taskControls.size() >= 2)
         {
-            int taskWidgetsHeight = addTaskWidget.screenY + addTaskWidget.height - taskWidgets.get(0).screenY + TASK_GAP * 2;
-            int taskWidgetsHeightDif = taskWidgetsHeight - tasksWidget.height;
+            int taskControlsHeight = addTaskControl.screenY + addTaskControl.height - taskControls.get(0).screenY + TASK_GAP * 2;
+            int taskControlsHeightDif = taskControlsHeight - tasksControl.height;
 
-            if (taskWidgetsHeightDif > 0)
+            if (taskControlsHeightDif > 0)
             {
-                tasksScrollbarWidget.isDisabled = false;
+                tasksScrollbarControl.isDisabled = false;
 
-                for (int i = 0; i < taskWidgets.size(); i++)
+                for (int i = 0; i < taskControls.size(); i++)
                 {
-                    TaskWidget taskWidget = taskWidgets.get(i);
-                    taskWidget.screenY = tasksWidget.screenY + TASK_GAP + i * (TaskWidget.HEIGHT + TASK_GAP) - (int) (taskWidgetsHeightDif * tasksScrollbarWidget.percentageScrolled());
+                    TaskControl taskControl = taskControls.get(i);
+                    taskControl.screenY = tasksControl.screenY + TASK_GAP + i * (TaskControl.HEIGHT + TASK_GAP) - (int) (taskControlsHeightDif * tasksScrollbarControl.percentageScrolled());
                 }
 
-                addTaskWidget.screenY = tasksWidget.screenY + TASK_GAP + taskWidgets.size() * (TaskWidget.HEIGHT + TASK_GAP) - (int) (taskWidgetsHeightDif * tasksScrollbarWidget.percentageScrolled());
+                addTaskControl.screenY = tasksControl.screenY + TASK_GAP + taskControls.size() * (TaskControl.HEIGHT + TASK_GAP) - (int) (taskControlsHeightDif * tasksScrollbarControl.percentageScrolled());
             }
         }
     }
 
     /**
-     * Renders the task widgets in the gui.
+     * Renders the task controls in the gui.
      *
      * @param matrixStack the matrix stack.
      * @param mouseX the current mouse x position.
@@ -244,20 +247,20 @@ public class TasksScreen extends TabbedScreen
      */
     private void renderTasks(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
-        tasksWidget.enableScissor();
+        tasksControl.enableScissor();
 
-        for (TaskWidget taskWidget : taskWidgets)
+        for (TaskControl taskControl : taskControls)
         {
-            taskWidget.render(matrixStack, mouseX, mouseY);
+            taskControl.render(matrixStack, mouseX, mouseY);
         }
 
-        addTaskWidget.render(matrixStack, mouseX, mouseY);
+        addTaskControl.render(matrixStack, mouseX, mouseY);
 
         GuiUtil.disableScissor();
     }
 
     /**
-     * Renders the task widget tooltips in the gui.
+     * Renders the task control tooltips in the gui.
      *
      * @param matrixStack the matrix stack.
      * @param mouseX the current mouse x position.
@@ -265,16 +268,16 @@ public class TasksScreen extends TabbedScreen
      */
     private void renderTasksTooltips(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
-        if (tasksWidget.isMouseOver(mouseX, mouseY))
+        if (tasksControl.isMouseOver(mouseX, mouseY))
         {
-            TaskWidget hoveredTaskWidget = getHoveredTaskWidget(mouseX, mouseY);
+            TaskControl hoveredTaskControl = getHoveredTaskControl(mouseX, mouseY);
 
-            if (hoveredTaskWidget != null)
+            if (hoveredTaskControl != null)
             {
                 List<IReorderingProcessor> text = new ArrayList<>();
-                text.add(new StringTextComponent(TextFormatting.GOLD + hoveredTaskWidget.task.getCustomName()).getVisualOrderText());
+                text.add(new StringTextComponent(TextFormatting.GOLD + hoveredTaskControl.task.getCustomName()).getVisualOrderText());
                 text.add(new StringTextComponent("").getVisualOrderText());
-                text.addAll(GuiUtil.splitText(font, hoveredTaskWidget.task.getType().desc.getString(), 150).stream().map(s -> new StringTextComponent(s).getVisualOrderText()).collect(Collectors.toList()));
+                text.addAll(GuiUtil.splitText(font, hoveredTaskControl.task.getType().desc.getString(), 150).stream().map(s -> new StringTextComponent(s).getVisualOrderText()).collect(Collectors.toList()));
 
                 renderTooltip(matrixStack, text, mouseX, mouseY);
             }
@@ -288,7 +291,12 @@ public class TasksScreen extends TabbedScreen
      */
     private void onConfigure(@Nonnull Task task)
     {
-        taskConfigGui = new TaskConfigGui(task, font, this);
+        if (taskConfigControl != null)
+        {
+            removeChild(taskConfigControl);
+        }
+
+        taskConfigControl = new TaskConfigControl(this, task, 0, 0);
     }
 
     @Override
@@ -296,30 +304,30 @@ public class TasksScreen extends TabbedScreen
     {
         mouseClickedNoHandle((int) mouseX, (int) mouseY, button);
 
-        if (taskConfigGui != null)
+        if (taskConfigControl != null)
         {
-            if (taskConfigGui.mouseClicked(mouseX, mouseY, button))
+            if (taskConfigControl.mouseClicked((int) mouseX, (int) mouseY, button))
             {
                 return true;
             }
         }
         else
         {
-            if (tasksScrollbarWidget.mouseClicked((int) mouseX, (int) mouseY, button))
+            if (tasksScrollbarControl.mouseClicked((int) mouseX, (int) mouseY, button))
             {
                 return true;
             }
-            else if (addTaskWidget.mouseClicked((int) mouseX, (int) mouseY, button))
+            else if (addTaskControl.mouseClicked((int) mouseX, (int) mouseY, button))
             {
                 return true;
             }
             else
             {
-                TaskWidget hoveredWidget = getHoveredTaskWidget((int) mouseX, (int) mouseY);
+                TaskControl hoveredControl = getHoveredTaskControl((int) mouseX, (int) mouseY);
 
-                if (hoveredWidget != null)
+                if (hoveredControl != null)
                 {
-                    if (hoveredWidget.mouseClicked((int) mouseX, (int) mouseY, button))
+                    if (hoveredControl.mouseClicked((int) mouseX, (int) mouseY, button))
                     {
                         return true;
                     }
@@ -335,24 +343,24 @@ public class TasksScreen extends TabbedScreen
     {
         boolean ret  = false;
 
-        if (taskConfigGui != null)
+        if (taskConfigControl != null)
         {
-            if (taskConfigGui.mouseReleased(mouseX, mouseY, button))
+            if (taskConfigControl.mouseReleased((int) mouseX, (int) mouseY, button))
             {
                 ret = true;
             }
         }
         else
         {
-            if (taskWidgets.stream().filter(taskWidget -> taskWidget.mouseReleased((int) mouseX, (int) mouseY, button)).findFirst().isPresent())
+            if (taskControls.stream().filter(taskControl -> taskControl.mouseReleased((int) mouseX, (int) mouseY, button)).findFirst().isPresent())
             {
                 ret = true;
             }
-            else if (addTaskWidget.mouseReleased((int) mouseX, (int) mouseY, button))
+            else if (addTaskControl.mouseReleased((int) mouseX, (int) mouseY, button))
             {
                 ret = true;
             }
-            else if (tasksScrollbarWidget.mouseReleased((int) mouseX, (int) mouseY, button))
+            else if (tasksScrollbarControl.mouseReleased((int) mouseX, (int) mouseY, button))
             {
                 ret = true;
             }
@@ -366,18 +374,18 @@ public class TasksScreen extends TabbedScreen
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scroll)
     {
-        if (taskConfigGui != null)
+        if (taskConfigControl != null)
         {
-            if (taskConfigGui.mouseScrolled(mouseX, mouseY, scroll))
+            if (taskConfigControl.mouseScrolled((int) mouseX, (int) mouseY, scroll))
             {
                 return true;
             }
         }
         else
         {
-            if (tasksWidget.isMouseOver((int) mouseX, (int) mouseY) || tasksScrollbarWidget.isMouseOver((int) mouseX, (int) mouseY))
+            if (tasksControl.isMouseOver((int) mouseX, (int) mouseY) || tasksScrollbarControl.isMouseOver((int) mouseX, (int) mouseY))
             {
-                if (tasksScrollbarWidget.scroll(scroll))
+                if (tasksScrollbarControl.scroll(scroll))
                 {
                     return true;
                 }
@@ -390,21 +398,22 @@ public class TasksScreen extends TabbedScreen
     @Override
     public boolean keyPressed(int keyCode, int i, int j)
     {
-        if (taskConfigGui != null)
+        if (taskConfigControl != null)
         {
-            if (taskConfigGui.keyPressed(keyCode, i, j))
+            if (taskConfigControl.keyPressed(keyCode, i, j))
             {
                 return true;
             }
-            else if (!taskConfigGui.nameField.isFocused() && GuiUtil.isCloseInventoryKey(keyCode))
+            else if (!taskConfigControl.nameTextFieldControl.isFocused() && GuiUtil.isCloseInventoryKey(keyCode))
             {
-                taskConfigGui = null;
+                removeChild(taskConfigControl);
+                taskConfigControl = null;
 
                 return true;
             }
         }
 
-        if ((taskConfigGui == null || !taskConfigGui.nameField.isFocused()) && GuiUtil.isCloseInventoryKey(keyCode))
+        if ((taskConfigControl == null || !taskConfigControl.nameTextFieldControl.isFocused()) && GuiUtil.isCloseInventoryKey(keyCode))
         {
             onClose();
 
@@ -417,12 +426,12 @@ public class TasksScreen extends TabbedScreen
     @Override
     public boolean charTyped(char cah, int code)
     {
-        if (taskConfigGui != null && taskConfigGui.charTyped(cah, code))
+        if (taskConfigControl != null && taskConfigControl.charTyped(cah, code))
         {
             return true;
         }
 
-        return super.charTyped(cah, code); // TODO: TIDY
+        return super.charTyped(cah, code);
     }
 
     /**
@@ -431,13 +440,13 @@ public class TasksScreen extends TabbedScreen
      * @return the current task that is being hovered over or null if none are.
      */
     @Nullable
-    private TaskWidget getHoveredTaskWidget(int mouseX, int mouseY)
+    private TaskControl getHoveredTaskControl(int mouseX, int mouseY)
     {
-        for (TaskWidget taskWidget : taskWidgets)
+        for (TaskControl taskControl : taskControls)
         {
-            if (taskWidget.isMouseOver(mouseX, mouseY))
+            if (taskControl.isMouseOver(mouseX, mouseY))
             {
-                return taskWidget;
+                return taskControl;
             }
         }
 

@@ -1,15 +1,18 @@
-package com.willr27.blocklings.gui.controls;
+package com.willr27.blocklings.gui.controls.common;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.willr27.blocklings.gui.GuiTexture;
-import com.willr27.blocklings.gui.GuiTextures;
-import com.willr27.blocklings.gui.GuiUtil;
-import net.minecraft.client.gui.FontRenderer;
+import com.willr27.blocklings.gui.*;
 
 import javax.annotation.Nonnull;
 
-public class ScrollbarWidget extends TexturedControl
+public class ScrollbarControl extends Control
 {
+    /**
+     * The grabber texture.
+     */
+    @Nonnull
+    private static final GuiTexture GRABBER_TEXTURE = new GuiTexture(GuiTextures.COMMON_WIDGETS, 0, 0, 12, 15);
+
     /**
      * Is the scrollbar locked to the top (normally if there is nothing to scroll)?
      */
@@ -26,30 +29,37 @@ public class ScrollbarWidget extends TexturedControl
      */
     private int scrollOffset = 0;
 
-    public ScrollbarWidget(FontRenderer font, int x, int y, int width, int height)
+    /**
+     * @param parent the parent control.
+     * @param x the x position.
+     * @param y the y position.
+     * @param width the width.
+     * @param height the height.
+     */
+    public ScrollbarControl(@Nonnull IControl parent, int x, int y, int width, int height)
     {
-        super(font, x, y, width, height, new GuiTexture(GuiTextures.COMMON_WIDGETS, 0, 0, 12, 15));
+        super(parent, x, y, width, height);
     }
 
     @Override
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
-        GuiUtil.bindTexture(texture.texture);
+        GuiUtil.bindTexture(GRABBER_TEXTURE.texture);
 
         int textureOffset = 0;
 
         if (isDragging)
         {
-            textureOffset = texture.width;
-            scrollOffset = calcOffsetFromMouseY((int) mouseY);
+            textureOffset = GRABBER_TEXTURE.width;
+            scrollOffset = calcOffsetFromMouseY(mouseY);
         }
         else if (isDisabled)
         {
-            textureOffset = texture.width;
+            textureOffset = GRABBER_TEXTURE.width;
             scrollOffset = 0;
         }
 
-        blit(matrixStack, screenX, screenY + scrollOffset, textureX + textureOffset, textureY, texture.width, texture.height);
+        blit(matrixStack, screenX, screenY + scrollOffset, GRABBER_TEXTURE.x + textureOffset, GRABBER_TEXTURE.y, GRABBER_TEXTURE.width, GRABBER_TEXTURE.height);
     }
 
     @Override
@@ -92,12 +102,12 @@ public class ScrollbarWidget extends TexturedControl
 
     public float percentageScrolled()
     {
-        return scrollOffset / (float) (height - texture.height);
+        return scrollOffset / (float) (height - GRABBER_TEXTURE.height);
     }
 
     private int calcOffsetFromMouseY(int mouseY)
     {
-        return calcOffsetFromLocalMouseY(toLocalY(mouseY) - texture.height / 2);
+        return calcOffsetFromLocalMouseY(toLocalY(mouseY) - GRABBER_TEXTURE.height / 2);
     }
 
     private int calcOffsetFromLocalMouseY(int localMouseY)
@@ -108,9 +118,9 @@ public class ScrollbarWidget extends TexturedControl
         {
             offset = 0;
         }
-        else if (localMouseY > height - texture.height)
+        else if (localMouseY > height - GRABBER_TEXTURE.height)
         {
-            offset = height - texture.height;
+            offset = height - GRABBER_TEXTURE.height;
         }
         else
         {

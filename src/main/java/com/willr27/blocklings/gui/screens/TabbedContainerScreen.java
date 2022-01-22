@@ -2,7 +2,7 @@ package com.willr27.blocklings.gui.screens;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.gui.guis.TabbedGui;
+import com.willr27.blocklings.gui.controls.TabbedControl;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerEntity;
@@ -71,7 +71,7 @@ public class TabbedContainerScreen<T extends Container> extends ContainerScreen<
     /**
      * The gui used to the draw and handle the tabs.
      */
-    private TabbedGui tabbedGui;
+    private TabbedControl tabbedControl;
 
     /**
      * @param blockling the blockling.
@@ -90,17 +90,17 @@ public class TabbedContainerScreen<T extends Container> extends ContainerScreen<
     protected void init()
     {
         centerX = width / 2;
-        centerY = height / 2 + TabbedGui.OFFSET_Y;
+        centerY = height / 2 + TabbedControl.OFFSET_Y;
 
-        left = centerX - TabbedGui.GUI_WIDTH / 2;
-        top = centerY - TabbedGui.GUI_HEIGHT / 2;
+        left = centerX - TabbedControl.GUI_WIDTH / 2;
+        top = centerY - TabbedControl.GUI_HEIGHT / 2;
 
-        contentLeft = centerX - TabbedGui.CONTENT_WIDTH / 2;
+        contentLeft = centerX - TabbedControl.CONTENT_WIDTH / 2;
         contentTop = top;
-        contentRight = contentLeft + TabbedGui.CONTENT_WIDTH;
-        contentBottom = contentTop + TabbedGui.CONTENT_HEIGHT;
+        contentRight = contentLeft + TabbedControl.CONTENT_WIDTH;
+        contentBottom = contentTop + TabbedControl.CONTENT_HEIGHT;
 
-        tabbedGui = new TabbedGui(blockling, centerX, centerY);
+        tabbedControl = new TabbedControl(blockling, centerX, centerY);
 
         Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
 
@@ -118,7 +118,7 @@ public class TabbedContainerScreen<T extends Container> extends ContainerScreen<
     @Override
     protected void renderBg(@Nonnull MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY)
     {
-        tabbedGui.render(matrixStack, mouseX, mouseY);
+        tabbedControl.render(matrixStack, mouseX, mouseY);
     }
 
     @Override
@@ -130,7 +130,7 @@ public class TabbedContainerScreen<T extends Container> extends ContainerScreen<
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int state)
     {
-        if (tabbedGui.mouseClicked((int) mouseX, (int) mouseY, state))
+        if (tabbedControl.mouseClicked((int) mouseX, (int) mouseY, state))
         {
             return true;
         }

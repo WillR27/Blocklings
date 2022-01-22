@@ -1,11 +1,11 @@
-package com.willr27.blocklings.gui.guis;
+package com.willr27.blocklings.gui.controls;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.Tab;
-import com.willr27.blocklings.gui.controls.TexturedControl;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -15,11 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The gui for the tabs in the blockling's gui.
- * This is a gui instead of a screen, so it can be used with containers screens as well as regular screens.
+ * The control for the tabs in the blockling's gui.
+ * This is a control instead of a screen, so it can be used with containers screens as well as regular screens.
  */
 @OnlyIn(Dist.CLIENT)
-public class TabbedGui extends AbstractGui
+public class TabbedControl extends AbstractGui
 {
     /**
      * The offset for the entire gui.
@@ -62,17 +62,17 @@ public class TabbedGui extends AbstractGui
     private int right;
 
     /**
-     * The tab widgets.
+     * The tab controls.
      */
     @Nonnull
-    private final List<TabWidget> tabWidgets = new ArrayList<>();
+    private final List<TabControl> tabControls = new ArrayList<>();
 
     /**
      * @param blockling the blockling.
      * @param centerX the x position at the center of the screen.
      * @param centerY the y position at the center of the screen.
      */
-    public TabbedGui(@Nonnull BlocklingEntity blockling, int centerX, int centerY)
+    public TabbedControl(@Nonnull BlocklingEntity blockling, int centerX, int centerY)
     {
         this.left = centerX - GUI_WIDTH / 2;
         this.top = centerY - GUI_HEIGHT / 2;
@@ -80,7 +80,7 @@ public class TabbedGui extends AbstractGui
 
         for (Tab tab : Tab.values())
         {
-            tabWidgets.add(new TabWidget(tab, blockling, left, top, right));
+            tabControls.add(new TabControl(tab, blockling, left, top, right));
         }
     }
 
@@ -93,7 +93,7 @@ public class TabbedGui extends AbstractGui
      */
     public void render(MatrixStack matrixStack, int mouseX, int mouseY)
     {
-        tabWidgets.forEach(tabWidget -> tabWidget.render(matrixStack, mouseX, mouseY));
+        tabControls.forEach(tabControl -> tabControl.render(matrixStack, mouseX, mouseY));
     }
 
     /**
@@ -108,9 +108,9 @@ public class TabbedGui extends AbstractGui
     {
         boolean result = false;
 
-        for (TabWidget tabWidget : tabWidgets)
+        for (TabControl tabControl : tabControls)
         {
-            if (tabWidget.mouseClicked(mouseX, mouseY, state))
+            if (tabControl.mouseClicked(mouseX, mouseY, state))
             {
                 result = true;
             }
@@ -120,9 +120,9 @@ public class TabbedGui extends AbstractGui
     }
 
     /**
-     * The widget for the tabs along the edge of the gui.
+     * The control for the tabs along the edge of the gui.
      */
-    private static class TabWidget extends TexturedControl
+    private static class TabControl extends Control
     {
         /**
          * The width/height of a tab icon.
@@ -132,41 +132,55 @@ public class TabbedGui extends AbstractGui
         /**
          * The background texture for a selected tab on the left-hand side.
          */
+        @Nonnull
         private static final GuiTexture SELECTED_BACKGROUND_TEXTURE_LEFT = new GuiTexture(GuiTextures.TABS, 52, 0, 32, 28);
 
         /**
          * The background texture for a selected tab on the right-hand side.
          */
+        @Nonnull
         private static final GuiTexture SELECTED_BACKGROUND_TEXTURE_RIGHT = new GuiTexture(GuiTextures.TABS, 85, 0, 32, 28);
 
         /**
          * The background texture for an unselected tab on the left-hand side.
          */
+        @Nonnull
         private static final GuiTexture UNSELECTED_BACKGROUND_TEXTURE_LEFT = new GuiTexture(GuiTextures.TABS, 0, 0, 25, 28);
 
         /**
          * The background texture for an unselected tab on the right-hand side.
          */
+        @Nonnull
         private static final GuiTexture UNSELECTED_BACKGROUND_TEXTURE_RIGHT = new GuiTexture(GuiTextures.TABS, 26, 0, 25, 28);
 
         /**
          * The associated tab.
          */
+        @Nonnull
         private final Tab tab;
 
         /**
          * The blockling.
          */
+        @Nonnull
         private final BlocklingEntity blockling;
+
+        /**
+         * The background texture used when the tab is selected.
+         */
+        @Nonnull
+        private final GuiTexture selectedBackgroundTexture;
 
         /**
          * The background texture used when the tab is unselected.
          */
+        @Nonnull
         private final GuiTexture unselectedBackgroundTexture;
 
         /**
          * The texture used for the tab icon.
          */
+        @Nonnull
         private final GuiTexture iconTexture;
 
         /**
@@ -176,11 +190,12 @@ public class TabbedGui extends AbstractGui
          * @param top the y position at the top of the gui.
          * @param right the x position at the right-hand side of the tab.
          */
-        public TabWidget(@Nonnull Tab tab, @Nonnull BlocklingEntity blockling, int left, int top, int right)
+        public TabControl(@Nonnull Tab tab, @Nonnull BlocklingEntity blockling, int left, int top, int right)
         {
-            super(tab.left ? left : right - SELECTED_BACKGROUND_TEXTURE_LEFT.width, top + tab.getIndex() * (SELECTED_BACKGROUND_TEXTURE_LEFT.height + 4) + 5, tab.left ? SELECTED_BACKGROUND_TEXTURE_LEFT : SELECTED_BACKGROUND_TEXTURE_RIGHT);
+            super(tab.left ? left : right - SELECTED_BACKGROUND_TEXTURE_LEFT.width, top + tab.getIndex() * (SELECTED_BACKGROUND_TEXTURE_LEFT.height + 4) + 5, SELECTED_BACKGROUND_TEXTURE_LEFT.width, SELECTED_BACKGROUND_TEXTURE_LEFT.height);
             this.tab = tab;
             this.blockling = blockling;
+            this.selectedBackgroundTexture = tab.left ? SELECTED_BACKGROUND_TEXTURE_LEFT : SELECTED_BACKGROUND_TEXTURE_RIGHT;
             this.unselectedBackgroundTexture = tab.left ? UNSELECTED_BACKGROUND_TEXTURE_LEFT : UNSELECTED_BACKGROUND_TEXTURE_RIGHT;
             this.iconTexture = new GuiTexture(GuiTextures.TABS, tab.getIndex() * ICON_SIZE, tab.left ? 28 : 28 + ICON_SIZE, ICON_SIZE, ICON_SIZE);
         }
@@ -190,7 +205,7 @@ public class TabbedGui extends AbstractGui
         {
             if (isSelected())
             {
-                super.render(matrixStack, mouseX, mouseY);
+                renderTexture(matrixStack, selectedBackgroundTexture);
                 renderTexture(matrixStack, tab.left ? 6 : 4, 3, iconTexture);
             }
             else

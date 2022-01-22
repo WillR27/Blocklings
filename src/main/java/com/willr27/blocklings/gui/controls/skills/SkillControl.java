@@ -1,13 +1,14 @@
-package com.willr27.blocklings.gui.controls;
+package com.willr27.blocklings.gui.controls.skills;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.attribute.Attribute;
 import com.willr27.blocklings.attribute.BlocklingAttributes;
 import com.willr27.blocklings.gui.Control;
+import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
-import com.willr27.blocklings.gui.screens.skills.SkillsControl;
+import com.willr27.blocklings.gui.controls.TexturedControl;
 import com.willr27.blocklings.skills.Skill;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -165,41 +166,38 @@ public class SkillControl extends Control
         }
         maxWidth += PADDING * 2;
 
-        int startX = screenX - 4;
+        int startX = 4;
         int endX = startX + maxWidth;
 
-        int nameY = screenY + 2;
+        int nameY = 2;
         int descY = nameY + 23;
 
         RenderSystem.enableDepthTest();
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
 
-        GuiUtil.bindTexture(GuiTextures.SKILLS);
-        new TexturedControl(font, startX, descY - DESCRIPTION_START_OFFSET_Y, maxWidth, DESCRIPTION_START_OFFSET_Y, 0, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH).render(matrixStack, 0, 0);
-        new TexturedControl(font, endX, descY - DESCRIPTION_START_OFFSET_Y, OUTER_WIDTH, DESCRIPTION_START_OFFSET_Y, HOVER_BOX_WIDTH - OUTER_WIDTH, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH).render(matrixStack, 0, 0);
+        new TexturedControl(this, startX, descY - DESCRIPTION_START_OFFSET_Y, new GuiTexture(GuiTextures.SKILLS, 0, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH, maxWidth, DESCRIPTION_START_OFFSET_Y)).render(matrixStack, 0, 0);
+        new TexturedControl(this, endX, descY - DESCRIPTION_START_OFFSET_Y, new GuiTexture(GuiTextures.SKILLS, HOVER_BOX_WIDTH - OUTER_WIDTH, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH, OUTER_WIDTH, DESCRIPTION_START_OFFSET_Y)).render(matrixStack, 0, 0);
         int gap = 10;
         int i = 0;
         for (String str : description)
         {
-            GuiUtil.bindTexture(GuiTextures.SKILLS);
-            TexturedControl lineWidget = new TexturedControl(font, startX, descY + i * gap, maxWidth, gap, 0, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH);
-            lineWidget.render(matrixStack, 0, 0);
-            new TexturedControl(font, endX, descY + i * gap, OUTER_WIDTH, gap, HOVER_BOX_WIDTH - OUTER_WIDTH, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH).render(matrixStack, 0, 0);
-            lineWidget.renderText(matrixStack, str, -font.width(str) - PADDING, 0, true, 0xffffffff);
+            TexturedControl lineControl = new TexturedControl(this, startX, descY + i * gap, new GuiTexture(GuiTextures.SKILLS, 0, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH, maxWidth, gap));
+            lineControl.render(matrixStack, 0, 0);
+            new TexturedControl(this, endX, descY + i * gap, new GuiTexture(GuiTextures.SKILLS, HOVER_BOX_WIDTH - OUTER_WIDTH, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH, OUTER_WIDTH, gap)).render(matrixStack, 0, 0);
+            lineControl.renderText(matrixStack, str, -font.width(str) - PADDING, 0, true, 0xffffffff);
             i++;
         }
-        GuiUtil.bindTexture(GuiTextures.SKILLS);
-        new TexturedControl(font, startX, descY + i * gap - 1, maxWidth, OUTER_WIDTH + 1, 0, DESCRIPTION_TEXTURE_Y + (HOVER_BOX_HEIGHT - OUTER_WIDTH - 1)).render(matrixStack, 0, 0);
-        new TexturedControl(font, endX, descY + i * gap - 1, OUTER_WIDTH, OUTER_WIDTH + 1, HOVER_BOX_WIDTH - OUTER_WIDTH, DESCRIPTION_TEXTURE_Y + (HOVER_BOX_HEIGHT - OUTER_WIDTH - 1)).render(matrixStack, 0, 0);
+        new TexturedControl(this, startX, descY + i * gap - 1, new GuiTexture(GuiTextures.SKILLS, 0, DESCRIPTION_TEXTURE_Y + (HOVER_BOX_HEIGHT - OUTER_WIDTH - 1), maxWidth, OUTER_WIDTH + 1)).render(matrixStack, 0, 0);
+        new TexturedControl(this, endX, descY + i * gap - 1, new GuiTexture(GuiTextures.SKILLS, HOVER_BOX_WIDTH - OUTER_WIDTH, DESCRIPTION_TEXTURE_Y + (HOVER_BOX_HEIGHT - OUTER_WIDTH - 1), OUTER_WIDTH, OUTER_WIDTH + 1)).render(matrixStack, 0, 0);
 
-        TexturedControl nameWidget = new TexturedControl(font, startX, nameY, maxWidth, HOVER_BOX_HEIGHT, 0, NAME_TEXTURE_Y);
-        TexturedControl nameWidgetEnd = new TexturedControl(font, endX, nameY, OUTER_WIDTH, HOVER_BOX_HEIGHT, HOVER_BOX_WIDTH - OUTER_WIDTH, NAME_TEXTURE_Y);
+        TexturedControl nameControl = new TexturedControl(this, startX, nameY, new GuiTexture(GuiTextures.SKILLS, 0, NAME_TEXTURE_Y, maxWidth, HOVER_BOX_HEIGHT));
+        TexturedControl nameControlEnd = new TexturedControl(this, endX, nameY, new GuiTexture(GuiTextures.SKILLS, HOVER_BOX_WIDTH - OUTER_WIDTH, NAME_TEXTURE_Y, OUTER_WIDTH, HOVER_BOX_HEIGHT));
 
         if (state == Skill.State.LOCKED) RenderSystem.color3f(0.5f, 0.5f, 0.5f);
         else RenderSystem.color3f(skill.info.gui.colour.getRed() / 255f, skill.info.gui.colour.getGreen() / 255f, skill.info.gui.colour.getBlue() / 255f);
-        nameWidget.render(matrixStack, 0, 0);
-        nameWidgetEnd.render(matrixStack, 0, 0);
-        nameWidget.renderText(matrixStack, name, -font.width(name) - (skill.info.gui.texture.width + PADDING * 2 - 2), 6, true, 0xffffffff);
+        nameControl.render(matrixStack, 0, 0);
+        nameControlEnd.render(matrixStack, 0, 0);
+        nameControl.renderText(matrixStack, name, skill.info.gui.texture.width - nameControl.width, 6, false, 0xffffffff);
 
         render(matrixStack);
     }

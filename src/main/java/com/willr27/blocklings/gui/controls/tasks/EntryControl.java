@@ -1,42 +1,66 @@
-package com.willr27.blocklings.gui.controls;
+package com.willr27.blocklings.gui.controls.tasks;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.entity.EntityUtil;
-import com.willr27.blocklings.gui.GuiTexture;
-import com.willr27.blocklings.gui.GuiTextures;
-import com.willr27.blocklings.gui.GuiUtil;
+import com.willr27.blocklings.gui.*;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
 
-public class EntryWidget extends Widget
+/**
+ * A control used to display an individual entry in a whitelist.
+ */
+@OnlyIn(Dist.CLIENT)
+public class EntryControl extends Control
 {
+    /**
+     * The unselected entry background texture.
+     */
+    @Nonnull
     public static final GuiTexture ENTRY_UNSELECTED = new GuiTexture(GuiTextures.WHITELIST, 0, 166, 30, 30);
+
+    /**
+     * The selected entry background texture.
+     */
+    @Nonnull
     public static final GuiTexture ENTRY_SELECTED = ENTRY_UNSELECTED.shift(30, 0);
 
+    /**
+     * The whitelist the entry belongs to.
+     */
+    @Nonnull
     private final GoalWhitelist whitelist;
-    private final Map.Entry<ResourceLocation, Boolean> entry;
-    private final Screen screen;
 
-    public EntryWidget(GoalWhitelist whitelist, Map.Entry<ResourceLocation, Boolean> entry, FontRenderer font, int x, int y)
+    /**
+     * The entry to display.
+     */
+    @Nonnull
+    private final Map.Entry<ResourceLocation, Boolean> entry;
+
+    /**
+     * @param parent the parent control.
+     * @param whitelist the whitelist the entry belongs to.
+     * @param entry the entry to display.
+     * @param x the x position.
+     * @param y the y position.
+     */
+    public EntryControl(@Nonnull IControl parent, @Nonnull GoalWhitelist whitelist, @Nonnull Map.Entry<ResourceLocation, Boolean> entry, int x, int y)
     {
-        super(font, x, y, ENTRY_UNSELECTED.width, ENTRY_UNSELECTED.height);
+        super(parent, x, y, ENTRY_UNSELECTED.width, ENTRY_UNSELECTED.height);
         this.whitelist = whitelist;
         this.entry = entry;
-        this.screen = Minecraft.getInstance().screen;
     }
 
     @Override
@@ -85,7 +109,14 @@ public class EntryWidget extends Widget
         }
     }
 
-    public void renderTooltip(MatrixStack matrixStack, int mouseX, int mouseY)
+    /**
+     * Renders the tooltip for the entry.
+     *
+     * @param matrixStack the matrix stack.
+     * @param mouseX the mouse x position.
+     * @param mouseY the mouse y position.
+     */
+    public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
         if (whitelist.type == Whitelist.Type.BLOCK)
         {

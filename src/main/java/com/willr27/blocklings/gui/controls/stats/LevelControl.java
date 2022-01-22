@@ -1,4 +1,4 @@
-package com.willr27.blocklings.gui.screens.stats;
+package com.willr27.blocklings.gui.controls.stats;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.attribute.BlocklingAttributes;
@@ -37,7 +37,7 @@ public class LevelControl extends Control
     private final BlocklingEntity blockling;
 
     /**
-     * The xp bar widget.
+     * The xp bar control.
      */
     @Nonnull
     private final XpBarControl xpBar;
