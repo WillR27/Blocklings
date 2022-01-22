@@ -62,12 +62,12 @@ public class XpBarControl extends Control
     @Override
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
-        float percentage = blockling.getStats().getLevelXpAttribute(level).getValue() / (float) BlocklingAttributes.getXpUntilNextLevel(blockling.getStats().getLevelAttribute(level).getValue());
+        float percentage = blockling.getStats().getLevelXpAttribute(level).getValue() / (float) BlocklingAttributes.getXpForLevel(blockling.getStats().getLevelAttribute(level).getValue());
         int middle = (int) (width * percentage);
 
         renderTexture(matrixStack, backgroundTexture);
         renderTexture(matrixStack, new GuiTexture(GuiTextures.STATS, 0, 188 + level.ordinal() * height * 2, middle, height));
-        renderCenteredText(matrixStack, "" + blockling.getStats().getLevelAttribute(level).getValue(), 12, -1, false, getTextColour());
+        renderCenteredText(matrixStack, "" + blockling.getStats().getLevelAttribute(level).getValue(), -width / 2 + 1, -1, false, getTextColour());
     }
 
     /**

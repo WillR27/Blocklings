@@ -51,7 +51,7 @@ public class LevelControl extends Control
      */
     public LevelControl(@Nonnull IControl parent, @Nonnull BlocklingAttributes.Level level, @Nonnull BlocklingEntity blockling, int x, int y)
     {
-        super(parent, x, y, ICON_SIZE + XpBarControl.WIDTH + ICON_SIZE, ICON_SIZE);
+        super(parent, x, y, ICON_SIZE + XpBarControl.WIDTH + ICON_SIZE + ICON_SIZE, ICON_SIZE);
         this.level = level;
         this.blockling = blockling;
         this.xpBar = new XpBarControl(this, level, blockling, ICON_SIZE + 5, (ICON_SIZE - XpBarControl.HEIGHT) / 2);
@@ -60,12 +60,15 @@ public class LevelControl extends Control
     @Override
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
-        renderTexture(matrixStack, getTexture());
+        int level = blockling.getStats().getLevelAttribute(this.level).getValue();
+
+        renderTexture(matrixStack, getTexture(level));
+        renderTexture(matrixStack, width - getTexture(level + 1).width, 0, getTexture(level + 1));
         xpBar.render(matrixStack, mouseX, mouseY);
 
         if (isMouseOver(mouseX, mouseY))
         {
-            screen.renderTooltip(matrixStack, new StringTextComponent(blockling.getStats().getLevelXpAttribute(level).getValue() + "/" + BlocklingAttributes.getXpUntilNextLevel(blockling.getStats().getLevelAttribute(level).getValue())), mouseX, mouseY);
+            screen.renderTooltip(matrixStack, new StringTextComponent(blockling.getStats().getLevelXpAttribute(this.level).getValue() + "/" + BlocklingAttributes.getXpForLevel(level)), mouseX, mouseY);
         }
     }
 
@@ -73,11 +76,9 @@ public class LevelControl extends Control
      * @return the texture for the current level.
      */
     @Nonnull
-    private GuiTexture getTexture()
+    private GuiTexture getTexture(int level)
     {
-        int level = blockling.getStats().getLevelAttribute(this.level).getValue();
-
-        if (level >= 99)
+        if (level >= BlocklingAttributes.Level.MAX)
         {
             return new GuiTexture(GuiTextures.STATS, ICON_SIZE * this.level.ordinal(), 166, ICON_SIZE, ICON_SIZE);
         }

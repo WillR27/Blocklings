@@ -259,10 +259,10 @@ public class BlocklingAttributes
             }
         };
 
-        addAttribute(combatXp = new IntAttribute("ec56a177-2a08-4f43-b77a-b1d4544a8656", "combat_xp", blockling, blockling.getRandom().nextInt(getXpUntilNextLevel(combatLevel.getValue())), null, null, true));
-        addAttribute(miningXp = new IntAttribute("ce581807-3fad-45b1-9aec-43ed0cb53c8f", "mining_xp", blockling, blockling.getRandom().nextInt(getXpUntilNextLevel(miningLevel.getValue())), null, null, true));
-        addAttribute(woodcuttingXp = new IntAttribute("82165063-6d47-4534-acc9-db3543c3db74", "woodcutting_xp", blockling, blockling.getRandom().nextInt(getXpUntilNextLevel(woodcuttingLevel.getValue())), null, null, true));
-        addAttribute(farmingXp = new IntAttribute("1f1e4cbc-358e-4477-92d8-03e818d5272c", "farming_xp", blockling, blockling.getRandom().nextInt(getXpUntilNextLevel(farmingLevel.getValue())), null, null, true));
+        addAttribute(combatXp = new IntAttribute("ec56a177-2a08-4f43-b77a-b1d4544a8656", "combat_xp", blockling, blockling.getRandom().nextInt(getXpForLevel(combatLevel.getValue())), null, null, true));
+        addAttribute(miningXp = new IntAttribute("ce581807-3fad-45b1-9aec-43ed0cb53c8f", "mining_xp", blockling, blockling.getRandom().nextInt(getXpForLevel(miningLevel.getValue())), null, null, true));
+        addAttribute(woodcuttingXp = new IntAttribute("82165063-6d47-4534-acc9-db3543c3db74", "woodcutting_xp", blockling, blockling.getRandom().nextInt(getXpForLevel(woodcuttingLevel.getValue())), null, null, true));
+        addAttribute(farmingXp = new IntAttribute("1f1e4cbc-358e-4477-92d8-03e818d5272c", "farming_xp", blockling, blockling.getRandom().nextInt(getXpForLevel(farmingLevel.getValue())), null, null, true));
 
         addAttribute(hand = new EnumAttribute<>("f21fcbaa-f800-468e-8c22-ec4b4fd0fdc2", "hand", blockling, BlocklingHand.class, BlocklingHand.NONE, null, null, true));
 
@@ -517,7 +517,7 @@ public class BlocklingAttributes
      * @param level the level to enquire about.
      * @return the xp needed to reach the next level.
      */
-    public static int getXpUntilNextLevel(int level)
+    public static int getXpForLevel(int level)
     {
         return (int) (Math.exp(level / 25.0) * 40) - 30;
     }
@@ -556,7 +556,7 @@ public class BlocklingAttributes
         {
             int combatLevel = this.combatLevel.getValue();
             int combatXp = this.combatXp.getValue();
-            int combatXpReq = getXpUntilNextLevel(combatLevel);
+            int combatXpReq = getXpForLevel(combatLevel);
             if (combatXp >= combatXpReq)
             {
                 this.combatLevel.setValue(combatLevel + 1, sync);
@@ -568,7 +568,7 @@ public class BlocklingAttributes
         {
             int miningLevel = this.miningLevel.getValue();
             int miningXp = this.miningXp.getValue();
-            int miningXpReq = getXpUntilNextLevel(miningLevel);
+            int miningXpReq = getXpForLevel(miningLevel);
             if (miningXp >= miningXpReq)
             {
                 this.miningLevel.setValue(miningLevel + 1, sync);
@@ -580,7 +580,7 @@ public class BlocklingAttributes
         {
             int woodcuttingLevel = this.woodcuttingLevel.getValue();
             int woodcuttingXp = this.woodcuttingXp.getValue();
-            int woodcuttingXpReq = getXpUntilNextLevel(woodcuttingLevel);
+            int woodcuttingXpReq = getXpForLevel(woodcuttingLevel);
             if (woodcuttingXp >= woodcuttingXpReq)
             {
                 this.woodcuttingLevel.setValue(woodcuttingLevel + 1, sync);
@@ -592,7 +592,7 @@ public class BlocklingAttributes
         {
             int farmingLevel = this.farmingLevel.getValue();
             int farmingXp = this.farmingXp.getValue();
-            int farmingXpReq = getXpUntilNextLevel(farmingLevel);
+            int farmingXpReq = getXpForLevel(farmingLevel);
             if (farmingXp >= farmingXpReq)
             {
                 this.farmingLevel.setValue(farmingLevel + 1, sync);

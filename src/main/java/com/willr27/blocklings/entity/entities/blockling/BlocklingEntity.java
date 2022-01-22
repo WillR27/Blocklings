@@ -532,10 +532,10 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
                     }
 
-                    stats.combatXp.setValue(BlocklingAttributes.getXpUntilNextLevel(stats.combatLevel.getValue()));
-                    stats.miningXp.setValue(BlocklingAttributes.getXpUntilNextLevel(stats.miningLevel.getValue()));
-                    stats.woodcuttingXp.setValue(BlocklingAttributes.getXpUntilNextLevel(stats.woodcuttingLevel.getValue()));
-                    stats.farmingXp.setValue(BlocklingAttributes.getXpUntilNextLevel(stats.farmingLevel.getValue()));
+                    stats.combatXp.setValue(BlocklingAttributes.getXpForLevel(stats.combatLevel.getValue()));
+                    stats.miningXp.setValue(BlocklingAttributes.getXpForLevel(stats.miningLevel.getValue()));
+                    stats.woodcuttingXp.setValue(BlocklingAttributes.getXpForLevel(stats.woodcuttingLevel.getValue()));
+                    stats.farmingXp.setValue(BlocklingAttributes.getXpForLevel(stats.farmingLevel.getValue()));
 
                     heal(Float.MAX_VALUE);
                 }
