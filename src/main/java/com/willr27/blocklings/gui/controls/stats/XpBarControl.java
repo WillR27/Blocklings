@@ -67,7 +67,7 @@ public class XpBarControl extends Control
 
         renderTexture(matrixStack, backgroundTexture);
         renderTexture(matrixStack, new GuiTexture(GuiTextures.STATS, 0, 188 + level.ordinal() * height * 2, middle, height));
-        renderText(matrixStack, "" + blockling.getStats().getLevelAttribute(level).getValue(), 6, 0, false, getTextColour());
+        renderCenteredText(matrixStack, "" + blockling.getStats().getLevelAttribute(level).getValue(), 12, -1, false, getTextColour());
     }
 
     /**

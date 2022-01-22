@@ -48,7 +48,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.function.BiPredicate;
 
 /**
@@ -526,10 +525,10 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 {
                     if (player.isCrouching())
                     {
-                        stats.combatLevel.setValue(99);
-                        stats.miningLevel.setValue(99);
-                        stats.woodcuttingLevel.setValue(99);
-                        stats.farmingLevel.setValue(99);
+                        stats.combatLevel.setValue(BlocklingAttributes.Level.MAX);
+                        stats.miningLevel.setValue(BlocklingAttributes.Level.MAX);
+                        stats.woodcuttingLevel.setValue(BlocklingAttributes.Level.MAX);
+                        stats.farmingLevel.setValue(BlocklingAttributes.Level.MAX);
 
                     }
 

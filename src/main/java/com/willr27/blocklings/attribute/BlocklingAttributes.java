@@ -552,7 +552,7 @@ public class BlocklingAttributes
      */
     public void checkForLevelUpAndUpdate(boolean sync)
     {
-        if (combatLevel.getValue() < 99)
+        if (combatLevel.getValue() < Level.MAX)
         {
             int combatLevel = this.combatLevel.getValue();
             int combatXp = this.combatXp.getValue();
@@ -564,7 +564,7 @@ public class BlocklingAttributes
             }
         }
 
-        if (miningLevel.getValue() < 99)
+        if (miningLevel.getValue() < Level.MAX)
         {
             int miningLevel = this.miningLevel.getValue();
             int miningXp = this.miningXp.getValue();
@@ -576,7 +576,7 @@ public class BlocklingAttributes
             }
         }
 
-        if (woodcuttingLevel.getValue() < 99)
+        if (woodcuttingLevel.getValue() < Level.MAX)
         {
             int woodcuttingLevel = this.woodcuttingLevel.getValue();
             int woodcuttingXp = this.woodcuttingXp.getValue();
@@ -588,7 +588,7 @@ public class BlocklingAttributes
             }
         }
 
-        if (farmingLevel.getValue() < 99)
+        if (farmingLevel.getValue() < Level.MAX)
         {
             int farmingLevel = this.farmingLevel.getValue();
             int farmingXp = this.farmingXp.getValue();
@@ -644,7 +644,7 @@ public class BlocklingAttributes
      */
     private float calcBlockBreakSpeedFromLevel(int level)
     {
-        return (float) (10.0f * Math.tan((level / 99.0) * (Math.PI / 4.0)));
+        return (float) (10.0f * Math.tan((level / (float) Level.MAX) * (Math.PI / 4.0f)));
     }
 
     /**
@@ -652,7 +652,7 @@ public class BlocklingAttributes
      */
     private float calcBonusHealthFromCombatLevel()
     {
-        return (float) (50.0f * Math.tan((combatLevel.getValue() / 99.0) * (Math.PI / 4.0)));
+        return (float) (50.0f * Math.tan((combatLevel.getValue() / (float) Level.MAX) * (Math.PI / 4.0f)));
     }
 
     /**
@@ -660,7 +660,7 @@ public class BlocklingAttributes
      */
     private float calcBonusDamageFromCombatLevel()
     {
-        return (float) (20.0f * Math.tan((combatLevel.getValue() / 99.0) * (Math.PI / 4.0)));
+        return (float) (20.0f * Math.tan((combatLevel.getValue() / (float) Level.MAX) * (Math.PI / 4.0f)));
     }
 
     /**
@@ -668,7 +668,7 @@ public class BlocklingAttributes
      */
     private float calcBonusArmourFromCombatLevel()
     {
-        return (float) (10.0f * Math.tan((combatLevel.getValue() / 99.0) * (Math.PI / 4.0)));
+        return (float) (10.0f * Math.tan((combatLevel.getValue() / (float) Level.MAX) * (Math.PI / 4.0f)));
     }
 
     /**
@@ -676,7 +676,7 @@ public class BlocklingAttributes
      */
     private float calcBonusArmourToughnessFromCombatLevel()
     {
-        return (float) (5.0f * Math.tan((combatLevel.getValue() / 99.0) * (Math.PI / 4.0)));
+        return (float) (5.0f * Math.tan((combatLevel.getValue() / (float) Level.MAX) * (Math.PI / 4.0f)));
     }
 
     /**
@@ -684,7 +684,7 @@ public class BlocklingAttributes
      */
     private float calcBonusKnockbackResistanceFromCombatLevel()
     {
-        return (float) (0.5f * Math.tan((combatLevel.getValue() / 99.0) * (Math.PI / 4.0)));
+        return (float) (0.5f * Math.tan((combatLevel.getValue() / (float) Level.MAX) * (Math.PI / 4.0f)));
     }
 
     /**
@@ -763,5 +763,7 @@ public class BlocklingAttributes
     public enum Level
     {
         COMBAT, MINING, WOODCUTTING, FARMING, TOTAL;
+
+        public static int MAX = 100;
     }
 }
