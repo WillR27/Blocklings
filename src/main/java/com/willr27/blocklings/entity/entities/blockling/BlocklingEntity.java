@@ -12,6 +12,7 @@ import com.willr27.blocklings.network.messages.BlocklingNameMessage;
 import com.willr27.blocklings.network.messages.BlocklingScaleMessage;
 import com.willr27.blocklings.network.messages.BlocklingTypeMessage;
 import com.willr27.blocklings.skills.BlocklingSkills;
+import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.task.Task;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;

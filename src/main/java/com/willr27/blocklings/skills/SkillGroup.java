@@ -4,37 +4,74 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.skills.info.SkillGroupInfo;
 import com.willr27.blocklings.skills.info.SkillInfo;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
+/**
+ * Contains a list of skills.
+ */
 public class SkillGroup
 {
+    /**
+     * The blockling.
+     */
+    @Nonnull
     public final BlocklingEntity blockling;
+
+    /**
+     * The skill group's info.
+     */
+    @Nonnull
     public final SkillGroupInfo info;
 
+    /**
+     * The list og skills in the group.
+     */
+    @Nonnull
     private List<Skill> skills = new ArrayList<>();
 
-    public SkillGroup(BlocklingEntity blockling, SkillGroupInfo info)
+    /**
+     * @param blockling the blockling.
+     * @param info the group's info.
+     */
+    public SkillGroup(@Nonnull BlocklingEntity blockling, @Nonnull SkillGroupInfo info)
     {
         this.blockling = blockling;
         this.info = info;
     }
 
-    public boolean contains(Skill ability)
+    /**
+     * @return true if the given ability is part of the group.
+     */
+    public boolean contains(@Nullable Skill ability)
     {
         return skills.contains(ability);
     }
 
+    /**
+     * @return the list of skills in the group.
+     */
+    @Nonnull
     public List<Skill> getSkills()
     {
         return skills;
     }
 
-    public Skill getSkill(SkillInfo skillInfo)
+    /**
+     * @return the skill for the given skill info if it exists in the group, else null.
+     */
+    @Nullable
+    public Skill getSkill(@Nonnull SkillInfo skillInfo)
     {
         return getSkill(skillInfo.id);
     }
 
-    public Skill getSkill(UUID skillId)
+    /**
+     * @return the skill for the given skill id if it exists in the group, else null.
+     */
+    @Nullable
+    public Skill getSkill(@Nonnull UUID skillId)
     {
         for (Skill skill : skills)
         {
@@ -47,16 +84,26 @@ public class SkillGroup
         return null;
     }
 
-    public void addSkill(Skill skill)
+    /**
+     * Adds the given skill to the group.
+     *
+     * @param skill the skill to add.
+     */
+    public void addSkill(@Nonnull Skill skill)
     {
         skills.add(skill);
     }
 
-    public void addSkills(List<Skill> abilities)
+    /**
+     * Adds a list of skills to the group.
+     *
+     * @param skills the list of skills to add.
+     */
+    public void addSkills(List<Skill> skills)
     {
-        for (Skill ability : abilities)
+        for (Skill skill : skills)
         {
-            addSkill(ability);
+            addSkill(skill);
         }
     }
 }

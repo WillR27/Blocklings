@@ -1,5 +1,6 @@
-package com.willr27.blocklings.entity.entities.blockling;
+package com.willr27.blocklings.task;
 
+import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.goal.IHasTargetGoal;
 import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.goal.goals.*;

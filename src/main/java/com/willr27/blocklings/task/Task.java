@@ -1,7 +1,6 @@
 package com.willr27.blocklings.task;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
 import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.network.messages.TaskPriorityMessage;
 import com.willr27.blocklings.network.messages.TaskCustomNameMessage;

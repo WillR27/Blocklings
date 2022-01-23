@@ -62,7 +62,7 @@ public class SkillControl extends Control
      */
     public SkillControl(@Nonnull SkillsControl skillsControl, @Nonnull Skill skill)
     {
-        super(skillsControl, skill.info.gui.x, skill.info.gui.y, skill.info.gui.texture.width, skill.info.gui.texture.height);
+        super(skillsControl, skill.info.gui.x, skill.info.gui.y, skill.info.gui.iconTexture.width, skill.info.gui.iconTexture.height);
         this.skillsControl = skillsControl;
         this.skill = skill;
     }
@@ -108,7 +108,7 @@ public class SkillControl extends Control
             RenderSystem.color3f(1.0f, 1.0f, 1.0f);
         }
 
-        renderTexture(matrixStack, skill.info.gui.texture);
+        renderTexture(matrixStack, skill.info.gui.iconTexture);
 
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
     }
@@ -117,7 +117,7 @@ public class SkillControl extends Control
     {
         Skill.State state = skill.getState();
         String name = skill.info.general.name.getString();
-        int maxWidth = font.width(name) + skill.info.gui.texture.width + PADDING - 1;
+        int maxWidth = font.width(name) + skill.info.gui.iconTexture.width + PADDING - 1;
         List<String> description = GuiUtil.splitText(font, skill.info.general.desc.getString(), Math.max(maxWidth, 130));
 
         if (state == Skill.State.LOCKED)
@@ -197,7 +197,7 @@ public class SkillControl extends Control
         else RenderSystem.color3f(skill.info.gui.colour.getRed() / 255f, skill.info.gui.colour.getGreen() / 255f, skill.info.gui.colour.getBlue() / 255f);
         nameControl.render(matrixStack, 0, 0);
         nameControlEnd.render(matrixStack, 0, 0);
-        nameControl.renderText(matrixStack, name, skill.info.gui.texture.width - nameControl.width, 6, false, 0xffffffff);
+        nameControl.renderText(matrixStack, name, skill.info.gui.iconTexture.width - nameControl.width, 6, false, 0xffffffff);
 
         render(matrixStack);
     }

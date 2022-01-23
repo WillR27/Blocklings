@@ -2,7 +2,7 @@ package com.willr27.blocklings.goal.goals;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.goal.BlocklingGoal;
-import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
+import com.willr27.blocklings.task.BlocklingTasks;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.pathfinding.PathNavigator;
 import net.minecraft.pathfinding.PathNodeType;

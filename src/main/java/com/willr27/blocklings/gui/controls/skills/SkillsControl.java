@@ -31,7 +31,7 @@ public class SkillsControl extends Control
     /**
      * The width and height of the icon for a skill.
      */
-    public static final int SKILL_SIZE = SkillGuiInfo.SkillGuiTexture.ICON_SIZE;
+    public static final int SKILL_SIZE = SkillGuiInfo.SkillIconTexture.ICON_SIZE;
 
     /**
      * The width and height of a tile in the background.

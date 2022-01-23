@@ -37,188 +37,105 @@ public class BlocklingAttributes
     @Nonnull
     public final List<IModifier<?>> modifiers = new ArrayList<>();
 
-    @Nonnull
-    public final IntAttribute combatLevel;
-    @Nonnull
-    public final IntAttribute miningLevel;
-    @Nonnull
-    public final IntAttribute woodcuttingLevel;
-    @Nonnull
-    public final IntAttribute farmingLevel;
-    @Nonnull
-    public final Attribute<Integer> totalLevel;
+    
+    @Nonnull public final IntAttribute combatLevel;
+    @Nonnull public final IntAttribute miningLevel;
+    @Nonnull public final IntAttribute woodcuttingLevel;
+    @Nonnull public final IntAttribute farmingLevel;
+    @Nonnull public final Attribute<Integer> totalLevel;
 
-    @Nonnull
-    public final IntAttribute combatXp;
-    @Nonnull
-    public final IntAttribute miningXp;
-    @Nonnull
-    public final IntAttribute woodcuttingXp;
-    @Nonnull
-    public final IntAttribute farmingXp;
+    @Nonnull public final IntAttribute combatXp;
+    @Nonnull public final IntAttribute miningXp;
+    @Nonnull public final IntAttribute woodcuttingXp;
+    @Nonnull public final IntAttribute farmingXp;
 
-    @Nonnull
-    public final EnumAttribute<BlocklingHand> hand;
+    @Nonnull public final EnumAttribute<BlocklingHand> hand;
 
-    @Nonnull
-    public final ModifiableFloatAttribute maxHealth;
-    @Nonnull
-    public final ModifiableFloatAttributeModifier maxHealthBlocklingModifier;
-    @Nonnull
-    public final FloatAttributeModifier maxHealthTypeModifier;
-    @Nonnull
-    public final FloatAttributeModifier maxHealthCombatLevelModifier;
+    @Nonnull public final ModifiableFloatAttribute maxHealth;
+    @Nonnull public final ModifiableFloatAttributeModifier maxHealthBlocklingModifier;
+    @Nonnull public final FloatAttributeModifier maxHealthTypeModifier;
+    @Nonnull public final FloatAttributeModifier maxHealthCombatLevelModifier;
 
-    @Nonnull
-    public final ModifiableFloatAttribute mainHandAttackDamage;
-    @Nonnull
-    public final ModifiableFloatAttributeModifier mainHandAttackDamageBlocklingModifier;
-    @Nonnull
-    public final FloatAttributeModifier mainHandAttackDamageTypeModifier;
-    @Nonnull
-    public final FloatAttributeModifier mainHandAttackDamageCombatLevelModifier;
-    @Nonnull
-    public final FloatAttributeModifier mainHandAttackDamageToolModifier;
+    @Nonnull public final ModifiableFloatAttribute mainHandAttackDamage;
+    @Nonnull public final ModifiableFloatAttributeModifier mainHandAttackDamageBlocklingModifier;
+    @Nonnull public final FloatAttributeModifier mainHandAttackDamageTypeModifier;
+    @Nonnull public final FloatAttributeModifier mainHandAttackDamageCombatLevelModifier;
+    @Nonnull public final FloatAttributeModifier mainHandAttackDamageToolModifier;
 
-    @Nonnull
-    public final ModifiableFloatAttribute offHandAttackDamage;
-    @Nonnull
-    public final ModifiableFloatAttributeModifier offHandAttackDamageBlocklingModifier;
-    @Nonnull
-    public final FloatAttributeModifier offHandAttackDamageTypeModifier;
-    @Nonnull
-    public final FloatAttributeModifier offHandAttackDamageCombatLevelModifier;
-    @Nonnull
-    public final FloatAttributeModifier offHandAttackDamageToolModifier;
+    @Nonnull public final ModifiableFloatAttribute offHandAttackDamage;
+    @Nonnull public final ModifiableFloatAttributeModifier offHandAttackDamageBlocklingModifier;
+    @Nonnull public final FloatAttributeModifier offHandAttackDamageTypeModifier;
+    @Nonnull public final FloatAttributeModifier offHandAttackDamageCombatLevelModifier;
+    @Nonnull public final FloatAttributeModifier offHandAttackDamageToolModifier;
 
-    @Nonnull
-    public final AveragedAttribute attackSpeed;
-    @Nonnull
-    public final ModifiableFloatAttributeModifier attackSpeedBlocklingModifier;
-    @Nonnull
-    public final FloatAttributeModifier attackSpeedTypeModifier;
-    @Nonnull
-    public final FloatAttributeModifier attackSpeedLevelModifier;
-    @Nonnull
-    public final FloatAttributeModifier attackSpeedMainHandModifier;
-    @Nonnull
-    public final FloatAttributeModifier attackSpeedOffHandModifier;
+    @Nonnull public final AveragedAttribute attackSpeed;
+    @Nonnull public final ModifiableFloatAttributeModifier attackSpeedBlocklingModifier;
+    @Nonnull public final FloatAttributeModifier attackSpeedTypeModifier;
+    @Nonnull public final FloatAttributeModifier attackSpeedLevelModifier;
+    @Nonnull public final FloatAttributeModifier attackSpeedMainHandModifier;
+    @Nonnull public final FloatAttributeModifier attackSpeedOffHandModifier;
 
-    @Nonnull
-    public final ModifiableFloatAttribute armour;
-    @Nonnull
-    public final ModifiableFloatAttributeModifier armourBlocklingModifier;
-    @Nonnull
-    public final FloatAttributeModifier armourCombatLevelModifier;
-    @Nonnull
-    public final FloatAttributeModifier armourTypeModifier;
+    @Nonnull public final ModifiableFloatAttribute armour;
+    @Nonnull public final ModifiableFloatAttributeModifier armourBlocklingModifier;
+    @Nonnull public final FloatAttributeModifier armourCombatLevelModifier;
+    @Nonnull public final FloatAttributeModifier armourTypeModifier;
 
-    @Nonnull
-    public final ModifiableFloatAttribute armourToughness;
-    @Nonnull
-    public final ModifiableFloatAttributeModifier armourToughnessBlocklingModifier;
-    @Nonnull
-    public final FloatAttributeModifier armourToughnessCombatLevelModifier;
-    @Nonnull
-    public final FloatAttributeModifier armourToughnessTypeModifier;
+    @Nonnull public final ModifiableFloatAttribute armourToughness;
+    @Nonnull public final ModifiableFloatAttributeModifier armourToughnessBlocklingModifier;
+    @Nonnull public final FloatAttributeModifier armourToughnessCombatLevelModifier;
+    @Nonnull public final FloatAttributeModifier armourToughnessTypeModifier;
 
-    @Nonnull
-    public final ModifiableFloatAttribute knockbackResistance;
-    @Nonnull
-    public final ModifiableFloatAttributeModifier knockbackResistanceBlocklingModifier;
-    @Nonnull
-    public final FloatAttributeModifier knockbackResistanceCombatLevelModifier;
-    @Nonnull
-    public final FloatAttributeModifier knockbackResistanceTypeModifier;
+    @Nonnull public final ModifiableFloatAttribute knockbackResistance;
+    @Nonnull public final ModifiableFloatAttributeModifier knockbackResistanceBlocklingModifier;
+    @Nonnull public final FloatAttributeModifier knockbackResistanceCombatLevelModifier;
+    @Nonnull public final FloatAttributeModifier knockbackResistanceTypeModifier;
 
-    @Nonnull
-    public final ModifiableFloatAttribute moveSpeed;
-    @Nonnull
-    public final ModifiableFloatAttributeModifier moveSpeedBlocklingModifier;
-    @Nonnull
-    public final FloatAttributeModifier moveSpeedTypeModifier;
+    @Nonnull public final ModifiableFloatAttribute moveSpeed;
+    @Nonnull public final ModifiableFloatAttributeModifier moveSpeedBlocklingModifier;
+    @Nonnull public final FloatAttributeModifier moveSpeedTypeModifier;
 
-    @Nonnull
-    public final ModifiableFloatAttribute miningRange;
-    @Nonnull
-    public final ModifiableFloatAttribute miningRangeSq;
-    @Nonnull
-    public final ModifiableFloatAttribute woodcuttingRange;
-    @Nonnull
-    public final ModifiableFloatAttribute woodcuttingRangeSq;
-    @Nonnull
-    public final ModifiableFloatAttribute farmingRange;
-    @Nonnull
-    public final ModifiableFloatAttribute farmingRangeSq;
+    @Nonnull public final ModifiableFloatAttribute miningRange;
+    @Nonnull public final ModifiableFloatAttribute miningRangeSq;
+    @Nonnull public final ModifiableFloatAttribute woodcuttingRange;
+    @Nonnull public final ModifiableFloatAttribute woodcuttingRangeSq;
+    @Nonnull public final ModifiableFloatAttribute farmingRange;
+    @Nonnull public final ModifiableFloatAttribute farmingRangeSq;
 
-    @Nonnull
-    public final ModifiableFloatAttribute miningSpeed;
-    @Nonnull
-    public final ModifiableFloatAttributeModifier miningSpeedBlocklingModifier;
-    @Nonnull
-    public final FloatAttributeModifier miningSpeedTypeModifier;
-    @Nonnull
-    public final FloatAttributeModifier miningSpeedLevelModifier;
-    @Nonnull
-    public final FloatAttributeModifier miningSpeedMainHandModifier;
-    @Nonnull
-    public final FloatAttributeModifier miningSpeedOffHandModifier;
-    @Nonnull
-    public final FloatAttributeModifier miningSpeedSkillEfficiencyModifier;
-    @Nonnull
-    public final FloatAttributeModifier miningSpeedSkillAdrenalineModifier;
-    @Nonnull
-    public final FloatAttributeModifier miningSpeedSkillMomentumModifier;
-    @Nonnull
-    public final FloatAttributeModifier miningSpeedSkillHastyModifier;
-    @Nonnull
-    public final FloatAttributeModifier miningSpeedSkillNightOwlModifier;
+    @Nonnull public final ModifiableFloatAttribute miningSpeed;
+    @Nonnull public final ModifiableFloatAttributeModifier miningSpeedBlocklingModifier;
+    @Nonnull public final FloatAttributeModifier miningSpeedTypeModifier;
+    @Nonnull public final FloatAttributeModifier miningSpeedLevelModifier;
+    @Nonnull public final FloatAttributeModifier miningSpeedMainHandModifier;
+    @Nonnull public final FloatAttributeModifier miningSpeedOffHandModifier;
+    @Nonnull public final FloatAttributeModifier miningSpeedSkillEfficiencyModifier;
+    @Nonnull public final FloatAttributeModifier miningSpeedSkillAdrenalineModifier;
+    @Nonnull public final FloatAttributeModifier miningSpeedSkillMomentumModifier;
+    @Nonnull public final FloatAttributeModifier miningSpeedSkillHastyModifier;
+    @Nonnull public final FloatAttributeModifier miningSpeedSkillNightOwlModifier;
 
-    @Nonnull
-    public final ModifiableFloatAttribute woodcuttingSpeed;
-    @Nonnull
-    public final ModifiableFloatAttributeModifier woodcuttingSpeedBlocklingModifier;
-    @Nonnull
-    public final FloatAttributeModifier woodcuttingSpeedTypeModifier;
-    @Nonnull
-    public final FloatAttributeModifier woodcuttingSpeedLevelModifier;
-    @Nonnull
-    public final FloatAttributeModifier woodcuttingSpeedMainHandModifier;
-    @Nonnull
-    public final FloatAttributeModifier woodcuttingSpeedOffHandModifier;
-    @Nonnull
-    public final FloatAttributeModifier woodcuttingSpeedSkillEfficiencyModifier;
-    @Nonnull
-    public final FloatAttributeModifier woodcuttingSpeedSkillAdrenalineModifier;
-    @Nonnull
-    public final FloatAttributeModifier woodcuttingSpeedSkillMomentumModifier;
-    @Nonnull
-    public final FloatAttributeModifier woodcuttingSpeedSkillHastyModifier;
-    @Nonnull
-    public final FloatAttributeModifier woodcuttingSpeedSkillNightOwlModifier;
+    @Nonnull public final ModifiableFloatAttribute woodcuttingSpeed;
+    @Nonnull public final ModifiableFloatAttributeModifier woodcuttingSpeedBlocklingModifier;
+    @Nonnull public final FloatAttributeModifier woodcuttingSpeedTypeModifier;
+    @Nonnull public final FloatAttributeModifier woodcuttingSpeedLevelModifier;
+    @Nonnull public final FloatAttributeModifier woodcuttingSpeedMainHandModifier;
+    @Nonnull public final FloatAttributeModifier woodcuttingSpeedOffHandModifier;
+    @Nonnull public final FloatAttributeModifier woodcuttingSpeedSkillEfficiencyModifier;
+    @Nonnull public final FloatAttributeModifier woodcuttingSpeedSkillAdrenalineModifier;
+    @Nonnull public final FloatAttributeModifier woodcuttingSpeedSkillMomentumModifier;
+    @Nonnull public final FloatAttributeModifier woodcuttingSpeedSkillHastyModifier;
+    @Nonnull public final FloatAttributeModifier woodcuttingSpeedSkillNightOwlModifier;
 
-    @Nonnull
-    public final ModifiableFloatAttribute farmingSpeed;
-    @Nonnull
-    public final ModifiableFloatAttributeModifier farmingSpeedBlocklingModifier;
-    @Nonnull
-    public final FloatAttributeModifier farmingSpeedTypeModifier;
-    @Nonnull
-    public final FloatAttributeModifier farmingSpeedLevelModifier;
-    @Nonnull
-    public final FloatAttributeModifier farmingSpeedMainHandModifier;
-    @Nonnull
-    public final FloatAttributeModifier farmingSpeedOffHandModifier;
-    @Nonnull
-    public final FloatAttributeModifier farmingSpeedSkillEfficiencyModifier;
-    @Nonnull
-    public final FloatAttributeModifier farmingSpeedSkillAdrenalineModifier;
-    @Nonnull
-    public final FloatAttributeModifier farmingSpeedSkillMomentumModifier;
-    @Nonnull
-    public final FloatAttributeModifier farmingSpeedSkillHastyModifier;
-    @Nonnull
-    public final FloatAttributeModifier farmingSpeedSkillNightOwlModifier;
+    @Nonnull public final ModifiableFloatAttribute farmingSpeed;
+    @Nonnull public final ModifiableFloatAttributeModifier farmingSpeedBlocklingModifier;
+    @Nonnull public final FloatAttributeModifier farmingSpeedTypeModifier;
+    @Nonnull public final FloatAttributeModifier farmingSpeedLevelModifier;
+    @Nonnull public final FloatAttributeModifier farmingSpeedMainHandModifier;
+    @Nonnull public final FloatAttributeModifier farmingSpeedOffHandModifier;
+    @Nonnull public final FloatAttributeModifier farmingSpeedSkillEfficiencyModifier;
+    @Nonnull public final FloatAttributeModifier farmingSpeedSkillAdrenalineModifier;
+    @Nonnull public final FloatAttributeModifier farmingSpeedSkillMomentumModifier;
+    @Nonnull public final FloatAttributeModifier farmingSpeedSkillHastyModifier;
+    @Nonnull public final FloatAttributeModifier farmingSpeedSkillNightOwlModifier;
 
     /**
      * The associated blockling.

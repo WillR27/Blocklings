@@ -1,20 +1,27 @@
 package com.willr27.blocklings.skills;
 
-import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.attribute.BlocklingAttributes;
-import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.controls.skills.SkillControl;
 import com.willr27.blocklings.skills.info.*;
+import com.willr27.blocklings.task.BlocklingTasks;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * The blockling's skills.
+ */
 public class BlocklingSkills
 {
+    /**
+     * The general skills.
+     */
     public static class General
     {
         public static final List<Function<SkillGroup, Skill>> SKILLS = new ArrayList<Function<SkillGroup, Skill>>()
@@ -23,6 +30,9 @@ public class BlocklingSkills
         }};
     }
 
+    /**
+     * The combat skills.
+     */
     public static class Combat
     {
         public static final SkillInfo NOVICE_GUARD = new SkillInfo("dcbf7cc1-8bef-49aa-a5a0-cd70cb40cbac",
@@ -30,7 +40,7 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.UNLOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{  }}),
                 new SkillCallbackInfo(skill -> { skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT_BY, true); skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT, true); return true; }),
-                new SkillGuiInfo(0, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, new SkillGuiInfo.SkillGuiTexture(GuiTextures.COMBAT_ICONS, 0, 0)));
+                new SkillGuiInfo(0, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 0, 0)));
 
         public static final List<Function<SkillGroup, Skill>> SKILLS = new ArrayList<Function<SkillGroup, Skill>>()
         {{
@@ -38,6 +48,9 @@ public class BlocklingSkills
         }};
     }
 
+    /**
+     * The mining skills.
+     */
     public static class Mining
     {
         public static final SkillInfo NOVICE_MINER = new SkillInfo("dcbf7cc1-8be-49aa-a5a0-cd70cb40cbac",
@@ -45,14 +58,14 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.UNLOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{  }}),
                 new SkillCallbackInfo(skill -> { skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.MINE, true); return true; }),
-                new SkillGuiInfo(0, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, new SkillGuiInfo.SkillGuiTexture(GuiTextures.MINING_ICONS, 0, 0)));
+                new SkillGuiInfo(0, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 0, 0)));
 
         public static final SkillInfo WHITELIST = new SkillInfo("8963cddd-06dd-4b5a-8c1e-b1e38a99b25f",
                 new SkillGeneralInfo(Skill.Type.OTHER, "mining.whitelist"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.MINING, 5); }}),
                 new SkillCallbackInfo(skill -> { unlockExistingWhitelists(skill, "24d7135e-607b-413b-a2a7-00d19119b9de"); return true; }),
-                new SkillGuiInfo(0, 70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, new SkillGuiInfo.SkillGuiTexture(GuiTextures.MINING_ICONS, 1, 0)))
+                new SkillGuiInfo(0, 70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 1, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -66,7 +79,7 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.MINING, 10); }}),
                 new SkillCallbackInfo(skill -> { skill.blockling.getStats().miningSpeedSkillEfficiencyModifier.setIsEnabled(true, false); return true; }),
-                new SkillGuiInfo(70, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xffd56d, new SkillGuiInfo.SkillGuiTexture(GuiTextures.MINING_ICONS, 2, 0)))
+                new SkillGuiInfo(70, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xffd56d, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 2, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -80,7 +93,7 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.MINING, 25); }}),
                 new SkillCallbackInfo(skill -> { skill.blockling.getStats().miningSpeedSkillAdrenalineModifier.setIsEnabled(true, false); return true; }),
-                new SkillGuiInfo(140, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xb72626, new SkillGuiInfo.SkillGuiTexture(GuiTextures.MINING_ICONS, 3, 0)))
+                new SkillGuiInfo(140, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xb72626, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 3, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -106,7 +119,7 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.MINING, 25); }}),
                 new SkillCallbackInfo(skill -> { skill.blockling.getStats().miningSpeedSkillMomentumModifier.setIsEnabled(true, false); return true; }),
-                new SkillGuiInfo(140, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xad79b5, new SkillGuiInfo.SkillGuiTexture(GuiTextures.MINING_ICONS, 4, 0)))
+                new SkillGuiInfo(140, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xad79b5, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 4, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -126,7 +139,7 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.MINING, 25); }}),
                 new SkillCallbackInfo(skill -> { skill.blockling.getStats().miningSpeedSkillHastyModifier.setIsEnabled(true, false); return true; }),
-                new SkillGuiInfo(210, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x4eb2aa, new SkillGuiInfo.SkillGuiTexture(GuiTextures.MINING_ICONS, 5, 0)))
+                new SkillGuiInfo(210, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x4eb2aa, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 5, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -146,7 +159,7 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.MINING, 25); }}),
                 new SkillCallbackInfo(skill -> { skill.blockling.getStats().miningSpeedSkillNightOwlModifier.setIsEnabled(true, false); return true; }),
-                new SkillGuiInfo(210, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x2b2a3d, new SkillGuiInfo.SkillGuiTexture(GuiTextures.MINING_ICONS, 6, 0)))
+                new SkillGuiInfo(210, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x2b2a3d, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 6, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -180,7 +193,7 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.MINING, 40); }}),
                 new SkillCallbackInfo(skill -> true),
-                new SkillGuiInfo(0, -70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdd3355, new SkillGuiInfo.SkillGuiTexture(GuiTextures.MINING_ICONS, 7, 0)))
+                new SkillGuiInfo(0, -70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdd3355, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 7, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -202,6 +215,9 @@ public class BlocklingSkills
         }};
     }
 
+    /**
+     * The woodcutting skills.
+     */
     public static class Woodcutting
     {
         public static final SkillInfo NOVICE_LUMBERJACK = new SkillInfo("c70f6e84-b82f-4a2d-8cbf-5914c589e8b6",
@@ -209,14 +225,14 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.UNLOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{  }}),
                 new SkillCallbackInfo(skill -> { skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.WOODCUT, true, false); return true; }),
-                new SkillGuiInfo(0, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, new SkillGuiInfo.SkillGuiTexture(GuiTextures.WOODCUTTING_ICONS, 0, 0)));
+                new SkillGuiInfo(0, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 0, 0)));
 
         public static final SkillInfo WHITELIST = new SkillInfo("6c1c96c3-c784-4022-bcdd-432618f5d33d",
                 new SkillGeneralInfo(Skill.Type.OTHER, "woodcutting.whitelist"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.WOODCUTTING, 5); }}),
                 new SkillCallbackInfo(skill -> { unlockExistingWhitelists(skill, "fbfbfd44-c1b0-4420-824a-270b34c866f7"); return true; }),
-                new SkillGuiInfo(0, 70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, new SkillGuiInfo.SkillGuiTexture(GuiTextures.WOODCUTTING_ICONS, 1, 0)))
+                new SkillGuiInfo(0, 70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 1, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -230,7 +246,7 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.WOODCUTTING, 10); }}),
                 new SkillCallbackInfo(skill -> { skill.blockling.getStats().woodcuttingSpeedSkillEfficiencyModifier.setIsEnabled(true, false); return true; }),
-                new SkillGuiInfo(70, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xffd56d, new SkillGuiInfo.SkillGuiTexture(GuiTextures.WOODCUTTING_ICONS, 2, 0)))
+                new SkillGuiInfo(70, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xffd56d, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 2, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -244,7 +260,7 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.WOODCUTTING, 25); }}),
                 new SkillCallbackInfo(skill -> { skill.blockling.getStats().woodcuttingSpeedSkillAdrenalineModifier.setIsEnabled(true, false); return true; }),
-                new SkillGuiInfo(140, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xb72626, new SkillGuiInfo.SkillGuiTexture(GuiTextures.WOODCUTTING_ICONS, 3, 0)))
+                new SkillGuiInfo(140, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xb72626, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 3, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -270,7 +286,7 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.WOODCUTTING, 25); }}),
                 new SkillCallbackInfo(skill -> { skill.blockling.getStats().woodcuttingSpeedSkillMomentumModifier.setIsEnabled(true, false); return true; }),
-                new SkillGuiInfo(140, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x9f6a16, new SkillGuiInfo.SkillGuiTexture(GuiTextures.WOODCUTTING_ICONS, 4, 0)))
+                new SkillGuiInfo(140, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x9f6a16, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 4, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -290,7 +306,7 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.WOODCUTTING, 25); }}),
                 new SkillCallbackInfo(skill -> { skill.blockling.getStats().woodcuttingSpeedSkillHastyModifier.setIsEnabled(true, false); return true; }),
-                new SkillGuiInfo(210, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x4eb2aa, new SkillGuiInfo.SkillGuiTexture(GuiTextures.WOODCUTTING_ICONS, 5, 0)))
+                new SkillGuiInfo(210, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x4eb2aa, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 5, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -310,7 +326,7 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.WOODCUTTING, 25); }}),
                 new SkillCallbackInfo(skill -> { skill.blockling.getStats().woodcuttingSpeedSkillNightOwlModifier.setIsEnabled(true, false); return true; }),
-                new SkillGuiInfo(210, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x2b2a3d, new SkillGuiInfo.SkillGuiTexture(GuiTextures.WOODCUTTING_ICONS, 6, 0)))
+                new SkillGuiInfo(210, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x2b2a3d, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 6, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -351,6 +367,9 @@ public class BlocklingSkills
         }};
     }
 
+    /**
+     * The farming skills.
+     */
     public static class Farming
     {
         public static final SkillInfo NOVICE_FARMER = new SkillInfo("d70e08ef-25e0-4639-8af5-4b7d55893568",
@@ -358,14 +377,14 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.UNLOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{  }}),
                 new SkillCallbackInfo(skill -> { skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.FARM, true, false); return true; }),
-                new SkillGuiInfo(0, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, new SkillGuiInfo.SkillGuiTexture(GuiTextures.FARMING_ICONS, 0, 0)));
+                new SkillGuiInfo(0, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 0, 0)));
 
         public static final SkillInfo CROP_WHITELIST = new SkillInfo("0d9f7b71-3930-4848-9329-8994b0ce7cd1",
                 new SkillGeneralInfo(Skill.Type.OTHER, "farming.crop_whitelist"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.FARMING, 5); }}),
                 new SkillCallbackInfo(skill -> { unlockExistingWhitelists(skill, "25140edf-f60e-459e-b1f0-9ff82108ec0b"); return true; }),
-                new SkillGuiInfo(0, 70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, new SkillGuiInfo.SkillGuiTexture(GuiTextures.FARMING_ICONS, 1, 0)))
+                new SkillGuiInfo(0, 70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 1, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -379,7 +398,7 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.FARMING, 10); }}),
                 new SkillCallbackInfo(skill -> { skill.blockling.getStats().farmingSpeedSkillEfficiencyModifier.setIsEnabled(true, false); return true; }),
-                new SkillGuiInfo(70, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xffd56d, new SkillGuiInfo.SkillGuiTexture(GuiTextures.FARMING_ICONS, 2, 0)))
+                new SkillGuiInfo(70, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xffd56d, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 2, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -393,7 +412,7 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.FARMING, 10); }}),
                 new SkillCallbackInfo(skill -> true),
-                new SkillGuiInfo(-70, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x64de10, new SkillGuiInfo.SkillGuiTexture(GuiTextures.FARMING_ICONS, 3, 0)))
+                new SkillGuiInfo(-70, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x64de10, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 3, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -407,7 +426,7 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.FARMING, 15); }}),
                 new SkillCallbackInfo(skill -> { unlockExistingWhitelists(skill, "d77bf1c1-7718-4733-b763-298b03340eea"); return true; }),
-                new SkillGuiInfo(-70, 70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, new SkillGuiInfo.SkillGuiTexture(GuiTextures.FARMING_ICONS, 1, 0)))
+                new SkillGuiInfo(-70, 70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 1, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -421,7 +440,7 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.FARMING, 25); }}),
                 new SkillCallbackInfo(skill -> { skill.blockling.getStats().farmingSpeedSkillAdrenalineModifier.setIsEnabled(true, false); return true; }),
-                new SkillGuiInfo(140, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xb72626, new SkillGuiInfo.SkillGuiTexture(GuiTextures.FARMING_ICONS, 4, 0)))
+                new SkillGuiInfo(140, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xb72626, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 4, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -447,7 +466,7 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.FARMING, 25); }}),
                 new SkillCallbackInfo(skill -> { skill.blockling.getStats().farmingSpeedSkillMomentumModifier.setIsEnabled(true, false); return true; }),
-                new SkillGuiInfo(140, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x39bb39, new SkillGuiInfo.SkillGuiTexture(GuiTextures.FARMING_ICONS, 5, 0)))
+                new SkillGuiInfo(140, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x39bb39, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 5, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -467,7 +486,7 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.FARMING, 25); }}),
                 new SkillCallbackInfo(skill -> { skill.blockling.getStats().farmingSpeedSkillHastyModifier.setIsEnabled(true, false); return true; }),
-                new SkillGuiInfo(210, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x4eb2aa, new SkillGuiInfo.SkillGuiTexture(GuiTextures.FARMING_ICONS, 6, 0)))
+                new SkillGuiInfo(210, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x4eb2aa, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 6, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -487,7 +506,7 @@ public class BlocklingSkills
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.FARMING, 25); }}),
                 new SkillCallbackInfo(skill -> { skill.blockling.getStats().farmingSpeedSkillNightOwlModifier.setIsEnabled(true, false); return true; }),
-                new SkillGuiInfo(210, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x2b2a3d, new SkillGuiInfo.SkillGuiTexture(GuiTextures.FARMING_ICONS, 7, 0)))
+                new SkillGuiInfo(210, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x2b2a3d, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 7, 0)))
         {
             @Override
             public List<SkillInfo> parents()
@@ -530,7 +549,13 @@ public class BlocklingSkills
         }};
     }
 
-    private static void unlockExistingWhitelists(Skill skill, String whitelistId)
+    /**
+     * Helper method to unlock any existing whitelist with the given id.
+     *
+     * @param skill the skill that has been unlocked.
+     * @param whitelistId the whitelist id to unlock.
+     */
+    private static void unlockExistingWhitelists(@Nonnull Skill skill, @Nonnull String whitelistId)
     {
         skill.blockling.getTasks().getPrioritisedTasks().forEach(task ->
         {
@@ -547,17 +572,31 @@ public class BlocklingSkills
         });
     }
 
+    /**
+     * The blockling.
+     */
+    @Nonnull
     private final BlocklingEntity blockling;
 
+    /**
+     * The list of skill groups.
+     */
+    @Nonnull
     private final List<SkillGroup> skillGroups = new ArrayList<>();
 
-    public BlocklingSkills(BlocklingEntity blockling)
+    /**
+     * @param blockling the blockling.
+     */
+    public BlocklingSkills(@Nonnull BlocklingEntity blockling)
     {
         this.blockling = blockling;
 
         reset();
     }
 
+    /**
+     * Resets all the skills and skill groups back to default.
+     */
     public void reset()
     {
         skillGroups.clear();
@@ -583,9 +622,14 @@ public class BlocklingSkills
         skillGroups.add(farming);
     }
 
-    public void writeToNBT(CompoundNBT c)
+    /**
+     * Writes the skills to the given tag.
+     *
+     * @param tag the tag to write to.
+     */
+    public void writeToNBT(@Nonnull CompoundNBT tag)
     {
-        CompoundNBT tag = new CompoundNBT();
+        CompoundNBT skillsTag = new CompoundNBT();
 
         for (SkillGroup skillGroup : skillGroups)
         {
@@ -600,19 +644,24 @@ public class BlocklingSkills
                 groupTag.put(skill.info.id.toString(), skillTag);
             }
 
-            tag.put(skillGroup.info.id.toString(), groupTag);
+            skillsTag.put(skillGroup.info.id.toString(), groupTag);
         }
 
-        c.put("skills", tag);
+        tag.put("skills", skillsTag);
     }
 
-    public void readFromNBT(CompoundNBT c)
+    /**
+     * Reads the skills from the given tag.
+     *
+     * @param tag the tag to read from.
+     */
+    public void readFromNBT(@Nonnull CompoundNBT tag)
     {
-        CompoundNBT tag = (CompoundNBT) c.get("skills");
+        CompoundNBT skillsTag = (CompoundNBT) tag.get("skills");
 
         for (SkillGroup skillGroup : skillGroups)
         {
-            CompoundNBT groupTag = (CompoundNBT) tag.get(skillGroup.info.id.toString());
+            CompoundNBT groupTag = (CompoundNBT) skillsTag.get(skillGroup.info.id.toString());
 
             if (groupTag == null)
             {
@@ -633,7 +682,12 @@ public class BlocklingSkills
         }
     }
 
-    public void encode(PacketBuffer buf)
+    /**
+     * Writes the skills to the given buffer.
+     *
+     * @param buf the buffer to write to.
+     */
+    public void encode(@Nonnull PacketBuffer buf)
     {
         for (SkillGroup skillGroup : skillGroups)
         {
@@ -644,7 +698,12 @@ public class BlocklingSkills
         }
     }
 
-    public void decode(PacketBuffer buf)
+    /**
+     * Reads the skills from the given buffer.
+     *
+     * @param buf the buffer to read from.
+     */
+    public void decode(@Nonnull PacketBuffer buf)
     {
         for (SkillGroup skillGroup : skillGroups)
         {
@@ -655,6 +714,9 @@ public class BlocklingSkills
         }
     }
 
+    /**
+     * Ticks skills.
+     */
     public void tick()
     {
         for (SkillGroup skillGroup : skillGroups)
@@ -663,22 +725,39 @@ public class BlocklingSkills
         }
     }
 
-    public SkillGroup findGroup(SkillInfo skillInfo)
+    /**
+     * @return the instance of the skill group containing the given skill info.
+     */
+    @Nonnull
+    public SkillGroup findGroup(@Nonnull SkillInfo skillInfo)
     {
         return skillGroups.stream().filter(group -> group.getSkills().stream().filter(skill -> skill.info == skillInfo).findFirst().orElse(null) != null).findFirst().get();
     }
 
-    public SkillGroup getGroup(SkillGroupInfo groupInfo)
+    /**
+     *
+     * @return the instance of the group for the given group info.
+     */
+    @Nonnull
+    public SkillGroup getGroup(@Nonnull SkillGroupInfo groupInfo)
     {
         return getGroup(groupInfo.id);
     }
 
-    public SkillGroup getGroup(UUID groupId)
+    /**
+     * @return the instance of the group for the given group info id.
+     */
+    @Nonnull
+    public SkillGroup getGroup(@Nonnull UUID groupId)
     {
         return skillGroups.stream().filter(group -> group.info.id.equals(groupId)).findFirst().get();
     }
 
-    public Skill getSkill(SkillInfo skillInfo)
+    /**
+     * @return the instance of the skill for the given skill info.
+     */
+    @Nonnull
+    public Skill getSkill(@Nonnull SkillInfo skillInfo)
     {
         return findGroup(skillInfo).getSkill(skillInfo);
     }

@@ -2,7 +2,7 @@ package com.willr27.blocklings.gui.screens;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.entity.entities.blockling.BlocklingTasks;
+import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
