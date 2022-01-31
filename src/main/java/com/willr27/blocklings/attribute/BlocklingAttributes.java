@@ -61,12 +61,18 @@ public class BlocklingAttributes
     @Nonnull public final FloatAttributeModifier mainHandAttackDamageTypeModifier;
     @Nonnull public final FloatAttributeModifier mainHandAttackDamageCombatLevelModifier;
     @Nonnull public final FloatAttributeModifier mainHandAttackDamageToolModifier;
+    @Nonnull public final FloatAttributeModifier mainHandAttackDamageSkillSharpnessModifier;
+    @Nonnull public final FloatAttributeModifier mainHandAttackDamageSkillBerserkerModifier;
+    @Nonnull public final FloatAttributeModifier mainHandAttackDamageSkillWrecklessModifier;
 
     @Nonnull public final ModifiableFloatAttribute offHandAttackDamage;
     @Nonnull public final ModifiableFloatAttributeModifier offHandAttackDamageBlocklingModifier;
     @Nonnull public final FloatAttributeModifier offHandAttackDamageTypeModifier;
     @Nonnull public final FloatAttributeModifier offHandAttackDamageCombatLevelModifier;
     @Nonnull public final FloatAttributeModifier offHandAttackDamageToolModifier;
+    @Nonnull public final FloatAttributeModifier offHandAttackDamageSkillSharpnessModifier;
+    @Nonnull public final FloatAttributeModifier offHandAttackDamageSkillBerserkerModifier;
+    @Nonnull public final FloatAttributeModifier offHandAttackDamageSkillWrecklessModifier;
 
     @Nonnull public final AveragedAttribute attackSpeed;
     @Nonnull public final ModifiableFloatAttributeModifier attackSpeedBlocklingModifier;
@@ -74,6 +80,8 @@ public class BlocklingAttributes
     @Nonnull public final FloatAttributeModifier attackSpeedLevelModifier;
     @Nonnull public final FloatAttributeModifier attackSpeedMainHandModifier;
     @Nonnull public final FloatAttributeModifier attackSpeedOffHandModifier;
+    @Nonnull public final FloatAttributeModifier attackSpeedSkillMomentumModifier;
+    @Nonnull public final FloatAttributeModifier attackSpeedSkillPhotophileModifier;
 
     @Nonnull public final ModifiableFloatAttribute armour;
     @Nonnull public final ModifiableFloatAttributeModifier armourBlocklingModifier;
@@ -193,12 +201,18 @@ public class BlocklingAttributes
         addModifier(mainHandAttackDamageTypeModifier = new FloatAttributeModifier("ddb441fc-2d8c-4950-b0a9-b96b60680ac1", "main_hand_attack_damage_type", mainHandAttackDamageBlocklingModifier, blockling, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString(), true));
         addModifier(mainHandAttackDamageCombatLevelModifier = new FloatAttributeModifier("406a98f7-df1f-4c7f-93e4-990d71c7747f", "main_hand_attack_damage_combat_level", mainHandAttackDamageBlocklingModifier, blockling, 0.0f, Operation.ADD, null, combatLevel.displayStringNameSupplier, true));
         addModifier(mainHandAttackDamageToolModifier = new FloatAttributeModifier("2ae58b89-fed6-4b2f-90bc-e7dbc9d7b249", "main_hand_attack_damage_tool", mainHandAttackDamage, blockling, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString(), true));
+        addModifier(mainHandAttackDamageSkillSharpnessModifier = new FloatAttributeModifier("b27747e9-7e73-416f-bb1f-8853b4132e90", "main_hand_attack_damage_skill_sharpness", mainHandAttackDamage, blockling, 5.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Combat.SHARPNESS), false));
+        addModifier(mainHandAttackDamageSkillBerserkerModifier = new FloatAttributeModifier("2d1bc0b1-53cc-46e7-8a15-93c3bb538cdc", "main_hand_attack_damage_skill_berserker", mainHandAttackDamage, blockling, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Combat.BERSERKER), false));
+        addModifier(mainHandAttackDamageSkillWrecklessModifier = new FloatAttributeModifier("39b9820d-1805-484e-8bf0-9de9e12a878c", "main_hand_attack_damage_skill_wreckless", mainHandAttackDamage, blockling, 10.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Combat.WRECKLESS), false));
 
         addAttribute(offHandAttackDamage = new ModifiableFloatAttribute("519e98de-c213-4c1c-8a07-cd659bc9982c", "off_hand_attack_damage", blockling, 0.0f, null, null, true));
         addModifier(offHandAttackDamageBlocklingModifier = new ModifiableFloatAttributeModifier("806bd9bf-86de-416c-9e11-7beb7f482f11", "off_hand_attack_blockling", offHandAttackDamage, blockling, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString(), true));
         addModifier(offHandAttackDamageTypeModifier = new FloatAttributeModifier("c4bc950e-65c4-49c5-94e1-08e809788104", "off_hand_attack_damage_type", offHandAttackDamageBlocklingModifier, blockling, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString(), true));
         addModifier(offHandAttackDamageCombatLevelModifier = new FloatAttributeModifier("8d1c1da2-7a92-4142-8fde-306d21010a92", "off_hand_attack_damage_combat_level", offHandAttackDamageBlocklingModifier, blockling, 0.0f, Operation.ADD, null, combatLevel.displayStringNameSupplier, true));
         addModifier(offHandAttackDamageToolModifier = new FloatAttributeModifier("c1aa1629-fe40-47eb-8c5c-a02d0b82e636", "off_hand_attack_damage_tool", offHandAttackDamage, blockling, 0.0f, Operation.ADD, null, () -> blockling.getOffhandItem().getHoverName().getString(), true));
+        addModifier(offHandAttackDamageSkillSharpnessModifier = new FloatAttributeModifier("70dcb0be-badc-4e9b-9c64-c94f72ca0686", "off_hand_attack_damage_skill_sharpness", offHandAttackDamage, blockling, 5.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Combat.SHARPNESS), false));
+        addModifier(offHandAttackDamageSkillBerserkerModifier = new FloatAttributeModifier("ac55dffa-5403-4a9e-b475-80a07e4e393b", "off_hand_attack_damage_skill_berserker", offHandAttackDamage, blockling, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Combat.BERSERKER), false));
+        addModifier(offHandAttackDamageSkillWrecklessModifier = new FloatAttributeModifier("017c8124-108a-40f3-b801-bb7ea448fb9b", "off_hand_attack_damage_skill_wreckless", offHandAttackDamage, blockling, 10.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Combat.WRECKLESS), false));
 
         // Default set to 4.0f (seems to be the same for a player too)
         // A sword is 1.6f * 2.0f
@@ -210,6 +224,8 @@ public class BlocklingAttributes
         addModifier(attackSpeedLevelModifier = new FloatAttributeModifier("bfeb22fe-aaaf-4294-9850-27449e27e44f", "attack_speed_level", attackSpeedBlocklingModifier, blockling, 0.0f, Operation.ADD, null, combatLevel.displayStringNameSupplier, true));
         addModifier(attackSpeedMainHandModifier = new FloatAttributeModifier("87343a1e-7a0b-4963-8d7e-e95f809e90ee", "attack_speed_main_hand", attackSpeed, blockling, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString(), true));
         addModifier(attackSpeedOffHandModifier = new FloatAttributeModifier("3566961d-db2b-4833-8c0c-cf6813ade8cc", "attack_speed_off_hand", attackSpeed, blockling, 0.0f, Operation.ADD, null, () -> blockling.getOffhandItem().getHoverName().getString(), true));
+        addModifier(attackSpeedSkillMomentumModifier = new FloatAttributeModifier("b97dcf6f-d1e4-4988-aa42-819e79af4a02", "attack_speed_skill_momentum", attackSpeed, blockling, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Combat.MOMENTUM), false));
+        addModifier(attackSpeedSkillPhotophileModifier = new FloatAttributeModifier("8f7b5867-918a-46b0-bcfb-6ae470220171", "attack_speed_skill_photophile", attackSpeed, blockling, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(BlocklingSkills.Combat.PHOTOPHILE), false));
 
         addAttribute(armour = new ModifiableFloatAttribute("6b34a986-f1ad-4476-a1c6-700d841fb1ec", "armour", blockling, 0.0f, null, null, true));
         addModifier(armourBlocklingModifier = new ModifiableFloatAttributeModifier("1e5b8f41-bab6-41f9-9a3d-5303f2f1ed6e", "armour_blockling", armour, blockling, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString(), true));

@@ -80,16 +80,16 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     private final BlocklingAttributes stats = new BlocklingAttributes(this);
 
     /**
-     * The blockling's task manager.
-     */
-    @Nonnull
-    private final BlocklingTasks tasks = new BlocklingTasks(this);
-
-    /**
      * The blockling's skills manager.
      */
     @Nonnull
     private final BlocklingSkills skills = new BlocklingSkills(this);
+
+    /**
+     * The blockling's task manager.
+     */
+    @Nonnull
+    private final BlocklingTasks tasks = new BlocklingTasks(this);
 
     /**
      * The blockling's action manager.
@@ -113,6 +113,12 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
      *
      */
     private float scale;
+
+    /**
+     * Tracks how many attacks have occurred within 100 ticks of each other.
+     * Used by the momentum skill.
+     */
+    private int attacksRecently = 0;
 
     /**
      * Tracks how many ores have been mined within 100 ticks of each other.
@@ -313,6 +319,12 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
      */
     private void checkAndUpdateCooldowns()
     {
+        if (actions.attacksCooldown.isFinished())
+        {
+            attacksRecently = 0;
+            stats.attackSpeedSkillMomentumModifier.setValue(0.0f);
+        }
+
         if (actions.oresMinedCooldown.isFinished())
         {
             oresMinedRecently = 0;
@@ -408,7 +420,31 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     }
 
     @Override
-    public @Nonnull ActionResultType mobInteract(@Nonnull PlayerEntity player, @Nonnull Hand hand)
+    public boolean hurt(@Nonnull DamageSource damageSource, float damage)
+    {
+        boolean hurt = super.hurt(damageSource, damage);
+
+        if (!level.isClientSide)
+        {
+            if (skills.getSkill(BlocklingSkills.General.ARMADILLO).isBought())
+            {
+                if (isDeadOrDying())
+                {
+                    setHealth(1.0f);
+
+                    dropItemStack(BlocklingItem.create(this));
+
+                    remove();
+                }
+            }
+        }
+
+        return hurt;
+    }
+
+    @Override
+    @Nonnull
+    public ActionResultType mobInteract(@Nonnull PlayerEntity player, @Nonnull Hand hand)
     {
         ActionResultType result;
 
@@ -441,19 +477,6 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         ItemStack stack = player.getItemInHand(Hand.MAIN_HAND);
         Item item = stack.getItem();
 
-        if (isTame() && player == getOwner())
-        {
-            if (item != Items.EXPERIENCE_BOTTLE && (!BlocklingType.isFood(item) || !player.isCrouching()) && (!blocklingType.isFoodForType(item) || getHealth() >= getMaxHealth()))
-            {
-                if (!level.isClientSide())
-                {
-                    guiHandler.openGui(player);
-                }
-
-                return ActionResultType.CONSUME;
-            }
-        }
-
         if (blocklingType.isFoodForType(item))
         {
             if (!level.isClientSide())
@@ -461,38 +484,54 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 if (!isTame())
                 {
                     tryTame((ServerPlayerEntity) player, stack);
+
+                    return ActionResultType.SUCCESS;
                 }
-                else if (player == getOwner())
+                else
                 {
-                    if (player.isCrouching())
+                    if (skills.getSkill(BlocklingSkills.General.PACKLING).isBought())
                     {
-                        ItemStack blocklingStack = BlocklingItem.create(this);
-
-                        if (!player.inventory.add(blocklingStack))
+                        if (player == getOwner())
                         {
-                            dropItemStack(blocklingStack);
-                        }
+                            if (player.isCrouching())
+                            {
+                                ItemStack blocklingStack = BlocklingItem.create(this);
 
-                        remove();
+                                if (!player.inventory.add(blocklingStack))
+                                {
+                                    dropItemStack(blocklingStack);
+                                }
+
+                                remove();
+
+                                if (!player.abilities.instabuild)
+                                {
+                                    stack.shrink(1);
+                                }
+
+                                return ActionResultType.SUCCESS;
+                            }
+                        }
                     }
-                    else
+
+                    if (skills.getSkill(BlocklingSkills.General.HEAL).isBought())
                     {
                         if (getHealth() < getMaxHealth())
                         {
                             heal(random.nextInt(3) + 3);
 
                             level.broadcastEntityEvent(this, (byte) 7);
+
+                            if (!player.abilities.instabuild)
+                            {
+                                stack.shrink(1);
+                            }
+
+                            return ActionResultType.SUCCESS;
                         }
                     }
                 }
-
-                if (!player.abilities.instabuild)
-                {
-                    stack.shrink(1);
-                }
             }
-
-            return ActionResultType.SUCCESS;
         }
         else if (BlocklingType.isFood(item))
         {
@@ -543,6 +582,19 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
                 return ActionResultType.SUCCESS;
             }
+        }
+
+        if (isTame() && player == getOwner())
+        {
+//            if (item != Items.EXPERIENCE_BOTTLE && (!BlocklingType.isFood(item) || !player.isCrouching()) && (!blocklingType.isFoodForType(item) || getHealth() >= getMaxHealth()))
+//            {
+                if (!level.isClientSide())
+                {
+                    guiHandler.openGui(player);
+                }
+
+                return ActionResultType.CONSUME;
+//            }
         }
 
         return ActionResultType.PASS;
@@ -598,9 +650,9 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     }
 
     @Override
-    protected void dropCustomDeathLoot(@Nonnull DamageSource source, int something, boolean something2)
+    protected void dropCustomDeathLoot(@Nonnull DamageSource damageSource, int something, boolean something2)
     {
-        super.dropCustomDeathLoot(source, something, something2);
+        super.dropCustomDeathLoot(damageSource, something, something2);
 
         for (int i = 0; i < equipmentInv.getContainerSize(); i++)
         {
@@ -610,6 +662,15 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
             {
                 spawnAtLocation(stack);
             }
+        }
+    }
+
+    @Override
+    protected void dropAllDeathLoot(@Nonnull DamageSource damageSource)
+    {
+        if (!skills.getSkill(BlocklingSkills.General.ARMADILLO).isBought())
+        {
+            super.dropAllDeathLoot(damageSource);
         }
     }
 
@@ -895,15 +956,6 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     }
 
     /**
-     * @return the blockling's task manager.
-     */
-    @Nonnull
-    public BlocklingTasks getTasks()
-    {
-        return tasks;
-    }
-
-    /**
      * @return the blockling's skill manager.
      */
     @Nonnull
@@ -913,10 +965,19 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     }
 
     /**
+     * @return the blockling's task manager.
+     */
+    @Nonnull
+    public BlocklingTasks getTasks()
+    {
+        return tasks;
+    }
+
+    /**
      * @return the blockling's action manager.
      */
     @Nonnull
-    public BlocklingActions getActions ()
+    public BlocklingActions getActions()
     {
         return actions;
     }
@@ -965,6 +1026,21 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         if (sync)
         {
             new BlocklingScaleMessage(this, scale).sync();
+        }
+    }
+
+    /**
+     * Increments the count of attacks recently and resets the cooldown.
+     */
+    public void incAttacksRecently()
+    {
+        attacksRecently++;
+        actions.attacksCooldown.start();
+
+        if (skills.getSkill(BlocklingSkills.Combat.MOMENTUM).isBought())
+        {
+            int cappedCount = Math.min(attacksRecently, 20);
+            stats.attackSpeedSkillMomentumModifier.setValue((float) cappedCount);
         }
     }
 

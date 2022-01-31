@@ -28,6 +28,12 @@ public class BlocklingActions
     public final KnownTargetAction gather;
 
     /**
+     * The action used to track the combat momentum skill.
+     */
+    @Nonnull
+    public final KnownTargetAction attacksCooldown;
+
+    /**
      * The action used to track the mining momentum skill.
      */
     @Nonnull
@@ -71,6 +77,7 @@ public class BlocklingActions
 
         attack = createAction("attack", attackTargetSupplier, attackTargetSupplier);
         gather = new KnownTargetAction(blockling, "gather", () -> 1.0f);
+        attacksCooldown = createAction("attacks_cooldown", () -> 100.0f);
         oresMinedCooldown = createAction("ores_mined_cooldown", () -> 100.0f);
         logsChoppedCooldown = createAction("logs_chopped_cooldown", () -> 100.0f);
         cropsHarvestedCooldown = createAction("crops_harvested_cooldown", () -> 100.0f);

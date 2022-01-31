@@ -3,6 +3,7 @@ package com.willr27.blocklings.goal.goals;
 import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
+import com.willr27.blocklings.skills.BlocklingSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.goal.IHasTargetGoal;
 import com.willr27.blocklings.goal.BlocklingGoal;
@@ -11,6 +12,7 @@ import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.Path;
 
 import javax.annotation.Nonnull;
@@ -48,6 +50,7 @@ public abstract class BlocklingMeleeAttackGoal<T extends BlocklingTargetGoal<?>>
         setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
 
         GoalWhitelist whitelist = new GoalWhitelist("540241cd-085a-4c1f-9e90-8aea973568a8", "targets", Whitelist.Type.ENTITY, this);
+        whitelist.setIsUnlocked(blockling.getSkills().getSkill(BlocklingSkills.Combat.WHITELIST).isBought(), false);
         EntityUtil.VALID_ATTACK_TARGETS.keySet().forEach(type -> whitelist.put(type, true));
         whitelists.add(whitelist);
     }
@@ -139,6 +142,21 @@ public abstract class BlocklingMeleeAttackGoal<T extends BlocklingTargetGoal<?>>
 
             if (blockling.getActions().attack.tryStart(attackingHand))
             {
+                ItemStack mainStack = blockling.getMainHandItem();
+                ItemStack offStack = blockling.getOffhandItem();
+
+                if (mainStack.hurt(attackingHand == BlocklingHand.MAIN ? blockling.getSkills().getSkill(BlocklingSkills.Combat.WRECKLESS).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
+                {
+                    mainStack.shrink(1);
+                }
+
+                if (offStack.hurt(attackingHand == BlocklingHand.OFF ? blockling.getSkills().getSkill(BlocklingSkills.Combat.WRECKLESS).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
+                {
+                    offStack.shrink(1);
+                }
+
+                blockling.incAttacksRecently();
+
                 blockling.doHurtTarget(target);
                 path = blockling.getNavigation().createPath(target, 0);
                 blockling.getNavigation().moveTo(path, 1.0);
@@ -159,7 +177,7 @@ public abstract class BlocklingMeleeAttackGoal<T extends BlocklingTargetGoal<?>>
      * @param target the target entity.
      * @return true if the blockling is in range of the target entity.
      */
-    private boolean isInRange(LivingEntity target)
+    private boolean isInRange(@Nonnull LivingEntity target)
     {
         return blockling.distanceToSqr(target.getX(), target.getY() + target.getBbHeight() / 2.0f, target.getZ()) < 4.0f;
     }
