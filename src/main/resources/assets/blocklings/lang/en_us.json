@@ -82,6 +82,12 @@
   "blocklings.skill.combat.wreckless.desc": "Your blockling hits harder but their weapons use 2x the durability.",
   "blocklings.skill.combat.photophile.name": "Photophile",
   "blocklings.skill.combat.photophile.desc": "Your blockling attacks faster the higher the light level.",
+  "blocklings.skill.combat.regeneration_1.name": "Regeneration I",
+  "blocklings.skill.combat.regeneration_1.desc": "Your blockling will heal 1 health every 20 seconds.",
+  "blocklings.skill.combat.regeneration_2.name": "Regeneration II",
+  "blocklings.skill.combat.regeneration_2.desc": "Your blockling will heal 3 health every 20 seconds.",
+  "blocklings.skill.combat.regeneration_3.name": "Regeneration III",
+  "blocklings.skill.combat.regeneration_3.desc": "Your blockling will heal 5 health every 20 seconds.",
 
   "blocklings.skill.mining.novice_miner.name": "Novice Miner",
   "blocklings.skill.mining.novice_miner.desc": "Unlocks the \"Mine Ores\" task.",
@@ -114,6 +120,10 @@
   "blocklings.skill.woodcutting.hasty.desc": "Your blockling chops faster but their pickaxes use 2x the durability.",
   "blocklings.skill.woodcutting.night_owl.name": "Night Owl",
   "blocklings.skill.woodcutting.night_owl.desc": "Your blockling chops faster the lower the light level.",
+  "blocklings.skill.woodcutting.leaf_blower.name": "Leaf Blower",
+  "blocklings.skill.woodcutting.leaf_blower.desc": "Your blockling will break adjacent leaves when chopping logs.",
+  "blocklings.skill.woodcutting.tree_surgeon.name": "Tree Surgeon",
+  "blocklings.skill.woodcutting.tree_surgeon.desc": "Broken leaves will now drop items.",
 
   "blocklings.skill.farming.novice_farmer.name": "Novice Farmer",
   "blocklings.skill.farming.novice_farmer.desc": "Unlocks the \"Farm Crops\" task.",

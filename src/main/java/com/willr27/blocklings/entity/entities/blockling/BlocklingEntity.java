@@ -319,6 +319,22 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
      */
     private void checkAndUpdateCooldowns()
     {
+        if (actions.regenerationCooldown.tryStart())
+        {
+            if (skills.getSkill(BlocklingSkills.Combat.REGENERATION_3).isBought())
+            {
+                heal(5.0f);
+            }
+            else if (skills.getSkill(BlocklingSkills.Combat.REGENERATION_2).isBought())
+            {
+                heal(3.0f);
+            }
+            else if (skills.getSkill(BlocklingSkills.Combat.REGENERATION_1).isBought())
+            {
+                heal(1.0f);
+            }
+        }
+
         if (actions.attacksCooldown.isFinished())
         {
             attacksRecently = 0;

@@ -37,12 +37,6 @@ public class SkillInfo
     public final SkillRequirementsInfo requirements;
 
     /**
-     * The callbacks info.*
-     */
-    @Nonnull
-    public final SkillCallbackInfo callbacks;
-
-    /**
      * The gui info.
      */
     @Nonnull
@@ -53,22 +47,47 @@ public class SkillInfo
      * @param generalInfo the general info.
      * @param defaultsInfo the defaults info.
      * @param requirements the requirements info.
-     * @param callbacks the callbacks info.
      * @param guiInfo the gui info.
      */
-    public SkillInfo(@Nonnull String id, @Nonnull SkillGeneralInfo generalInfo, @Nonnull SkillDefaultsInfo defaultsInfo, @Nonnull SkillRequirementsInfo requirements, @Nonnull SkillCallbackInfo callbacks, @Nonnull SkillGuiInfo guiInfo)
+    public SkillInfo(@Nonnull String id, @Nonnull SkillGeneralInfo generalInfo, @Nonnull SkillDefaultsInfo defaultsInfo, @Nonnull SkillRequirementsInfo requirements, @Nonnull SkillGuiInfo guiInfo)
     {
         this.id = UUID.fromString(id);
         this.general = generalInfo;
         this.defaults = defaultsInfo;
         this.requirements = requirements;
-        this.callbacks = callbacks;
         this.gui = guiInfo;
+    }
+
+    /**
+     * Called when the given skill is first initialised.
+     */
+    public void init(@Nonnull Skill skill)
+    {
+
+    }
+
+    /**
+     * Called when the given skill is bought.
+     *
+     * @return whether to cancel the buying of the skill.
+     */
+    public boolean onTryBuy(@Nonnull Skill skill)
+    {
+        return true;
+    }
+
+    /**
+     * Called once every tick for a bought skill.
+     */
+    public void tick(@Nonnull Skill skill)
+    {
+
     }
 
     /**
      * Returns an array of all parent skill infos.
      */
+    @Nonnull
     public List<SkillInfo> parents()
     {
         return new ArrayList<>();
@@ -77,16 +96,9 @@ public class SkillInfo
     /**
      * Returns an array of all conflict skill infos.
      */
+    @Nonnull
     public List<SkillInfo> conflicts()
     {
         return new ArrayList<>();
-    }
-
-    /**
-     * Called once every tick for a bought skill.
-     */
-    public void tick(Skill skill)
-    {
-
     }
 }

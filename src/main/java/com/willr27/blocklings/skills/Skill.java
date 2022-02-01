@@ -50,6 +50,8 @@ public class Skill
         this.info = info;
         this.group = group;
         this.state = info.defaults.defaultState;
+
+        info.init(this);
     }
 
     /**
@@ -103,7 +105,7 @@ public class Skill
             return false;
         }
 
-        if (!info.callbacks.onBuy.apply(this))
+        if (!info.onTryBuy(this))
         {
             return false;
         }

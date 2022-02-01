@@ -162,6 +162,23 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTa
                     world.destroyBlock(targetBlockPos, false);
                     world.destroyBlockProgress(blockling.getId(), targetBlockPos, 0);
 
+                    if (blockling.getSkills().getSkill(BlocklingSkills.Woodcutting.LEAF_BLOWER).isBought())
+                    {
+                        for (BlockPos surroundingPos : BlockUtil.getSurroundingBlockPositions(targetBlockPos))
+                        {
+                            if (blockling.getSkills().getSkill(BlocklingSkills.Woodcutting.TREE_SURGEON).isBought())
+                            {
+                                for (ItemStack stack : DropUtil.getDrops(DropUtil.Context.WOODCUTTING, blockling, surroundingPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
+                                {
+                                    stack = blockling.getEquipment().addItem(stack);
+                                    blockling.dropItemStack(stack);
+                                }
+                            }
+
+                            world.destroyBlock(surroundingPos, false);
+                        }
+                    }
+
                     recalc();
                 }
                 else

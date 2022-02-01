@@ -28,24 +28,22 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.OTHER, "general.heal"),
                 new SkillDefaultsInfo(Skill.State.UNLOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.TOTAL, 10); }}),
-                new SkillCallbackInfo(skill -> true),
                 new SkillGuiInfo(0, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xa8f4a1, new SkillGuiInfo.SkillIconTexture(GuiTextures.GENERAL_ICONS, 0, 0)));
 
         public static final SkillInfo PACKLING = new SkillInfo("5cd54257-954f-4962-b248-99f58fb11d5d",
                 new SkillGeneralInfo(Skill.Type.OTHER, "general.packling"),
                 new SkillDefaultsInfo(Skill.State.UNLOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.TOTAL, 25); }}),
-                new SkillCallbackInfo(skill -> true),
                 new SkillGuiInfo(-50, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xcca58a, new SkillGuiInfo.SkillIconTexture(GuiTextures.GENERAL_ICONS, 1, 0)));
 
         public static final SkillInfo ARMADILLO = new SkillInfo("28ae60b1-1e8a-4c73-b1a1-5519be35d0ea",
                 new SkillGeneralInfo(Skill.Type.OTHER, "general.armadillo"),
                 new SkillDefaultsInfo(Skill.State.UNLOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.TOTAL, 50); }}),
-                new SkillCallbackInfo(skill -> true),
                 new SkillGuiInfo(50, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xa8924f, new SkillGuiInfo.SkillIconTexture(GuiTextures.GENERAL_ICONS, 2, 0)))
         {
             @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(PACKLING);
@@ -69,17 +67,34 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.AI, "combat.novice_guard"),
                 new SkillDefaultsInfo(Skill.State.UNLOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{  }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT_BY, true); skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT, true); return true; }),
-                new SkillGuiInfo(0, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 0, 0)));
+                new SkillGuiInfo(0, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 0, 0)))
+        {
+            @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT_BY, true);
+                skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT, true);
+
+                return true;
+            }
+        };
 
         public static final SkillInfo WHITELIST = new SkillInfo("9065aad7-70df-4ae1-88f3-40ef702b7212",
                 new SkillGeneralInfo(Skill.Type.OTHER, "combat.whitelist"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.COMBAT, 5); }}),
-                new SkillCallbackInfo(skill -> { unlockExistingWhitelists(skill, "540241cd-085a-4c1f-9e90-8aea973568a8"); return true; }),
                 new SkillGuiInfo(0, 70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 1, 0)))
         {
             @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                unlockExistingWhitelists(skill, "540241cd-085a-4c1f-9e90-8aea973568a8");
+
+                return true;
+            }
+
+            @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(NOVICE_GUARD);
@@ -90,10 +105,19 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.STAT, "combat.sharpness"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.COMBAT, 10); }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getStats().mainHandAttackDamageSkillSharpnessModifier.setIsEnabled(true, false); skill.blockling.getStats().offHandAttackDamageSkillSharpnessModifier.setIsEnabled(true, false); return true; }),
                 new SkillGuiInfo(70, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xffd56d, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 2, 0)))
         {
             @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                skill.blockling.getStats().mainHandAttackDamageSkillSharpnessModifier.setIsEnabled(true, false);
+                skill.blockling.getStats().offHandAttackDamageSkillSharpnessModifier.setIsEnabled(true, false);
+
+                return true;
+            }
+
+            @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(NOVICE_GUARD);
@@ -104,26 +128,36 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.STAT, "combat.berserker"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.COMBAT, 25); }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getStats().mainHandAttackDamageSkillBerserkerModifier.setIsEnabled(true, false); skill.blockling.getStats().offHandAttackDamageSkillBerserkerModifier.setIsEnabled(true, false); return true; }),
                 new SkillGuiInfo(140, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xb72626, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 3, 0)))
         {
             @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                skill.blockling.getStats().mainHandAttackDamageSkillBerserkerModifier.setIsEnabled(true, false);
+                skill.blockling.getStats().offHandAttackDamageSkillBerserkerModifier.setIsEnabled(true, false);
+
+                return true;
+            }
+
+            @Override
+            public void tick(@Nonnull Skill skill)
+            {
+                skill.blockling.getStats().mainHandAttackDamageSkillBerserkerModifier.setValue(10.0f * (1.0f - ((Math.max(skill.blockling.getHealth() - 1.0f, 0.0f)) / (skill.blockling.getMaxHealth() - 1.0f))), false);
+                skill.blockling.getStats().offHandAttackDamageSkillBerserkerModifier.setValue(10.0f * (1.0f - ((Math.max(skill.blockling.getHealth() - 1.0f, 0.0f)) / (skill.blockling.getMaxHealth() - 1.0f))), false);
+            }
+
+            @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(SHARPNESS);
             }
 
             @Override
+            @Nonnull
             public List<SkillInfo> conflicts()
             {
                 return Arrays.asList(MOMENTUM, WRECKLESS, PHOTOPHILE);
-            }
-
-            @Override
-            public void tick(Skill skill)
-            {
-                skill.blockling.getStats().mainHandAttackDamageSkillBerserkerModifier.setValue(10.0f * (1.0f - ((Math.max(skill.blockling.getHealth() - 1.0f, 0.0f)) / (skill.blockling.getMaxHealth() - 1.0f))), false);
-                skill.blockling.getStats().offHandAttackDamageSkillBerserkerModifier.setValue(10.0f * (1.0f - ((Math.max(skill.blockling.getHealth() - 1.0f, 0.0f)) / (skill.blockling.getMaxHealth() - 1.0f))), false);
             }
         };
 
@@ -131,16 +165,25 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.STAT, "combat.momentum"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.COMBAT, 25); }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getStats().attackSpeedSkillMomentumModifier.setIsEnabled(true, false); return true; }),
                 new SkillGuiInfo(140, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xad79b5, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 4, 0)))
         {
             @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                skill.blockling.getStats().attackSpeedSkillMomentumModifier.setIsEnabled(true, false);
+
+                return true;
+            }
+
+            @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(SHARPNESS);
             }
 
             @Override
+            @Nonnull
             public List<SkillInfo> conflicts()
             {
                 return Arrays.asList(BERSERKER, WRECKLESS, PHOTOPHILE);
@@ -151,16 +194,26 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.STAT, "combat.wreckless"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.COMBAT, 25); }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getStats().mainHandAttackDamageSkillWrecklessModifier.setIsEnabled(true, false); skill.blockling.getStats().offHandAttackDamageSkillWrecklessModifier.setIsEnabled(true, false); return true; }),
                 new SkillGuiInfo(210, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x4eb2aa, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 5, 0)))
         {
             @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                skill.blockling.getStats().mainHandAttackDamageSkillWrecklessModifier.setIsEnabled(true, false);
+                skill.blockling.getStats().offHandAttackDamageSkillWrecklessModifier.setIsEnabled(true, false);
+
+                return true;
+            }
+
+            @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(SHARPNESS);
             }
 
             @Override
+            @Nonnull
             public List<SkillInfo> conflicts()
             {
                 return Arrays.asList(BERSERKER, MOMENTUM, PHOTOPHILE);
@@ -171,23 +224,18 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.STAT, "combat.photophile"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.COMBAT, 25); }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getStats().attackSpeedSkillPhotophileModifier.setIsEnabled(true, false); return true; }),
                 new SkillGuiInfo(210, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xd3b630, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 6, 0)))
         {
             @Override
-            public List<SkillInfo> parents()
+            public boolean onTryBuy(@Nonnull Skill skill)
             {
-                return Collections.singletonList(SHARPNESS);
+                skill.blockling.getStats().attackSpeedSkillPhotophileModifier.setIsEnabled(true, false);
+
+                return true;
             }
 
             @Override
-            public List<SkillInfo> conflicts()
-            {
-                return Arrays.asList(BERSERKER, MOMENTUM, WRECKLESS);
-            }
-
-            @Override
-            public void tick(Skill skill)
+            public void tick(@Nonnull Skill skill)
             {
                 if (!skill.blockling.level.isClientSide)
                 {
@@ -198,6 +246,62 @@ public class BlocklingSkills
                         skill.blockling.getStats().attackSpeedSkillPhotophileModifier.setValue(value, true);
                     }
                 }
+            }
+
+            @Override
+            @Nonnull
+            public List<SkillInfo> parents()
+            {
+                return Collections.singletonList(SHARPNESS);
+            }
+
+            @Override
+            @Nonnull
+            public List<SkillInfo> conflicts()
+            {
+                return Arrays.asList(BERSERKER, MOMENTUM, WRECKLESS);
+            }
+        };
+
+        public static final SkillInfo REGENERATION_1 = new SkillInfo("0b1a72e4-486a-46a6-80f3-4a98694d99ea",
+                new SkillGeneralInfo(Skill.Type.OTHER, "combat.regeneration_1"),
+                new SkillDefaultsInfo(Skill.State.LOCKED),
+                new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.COMBAT, 10); }}),
+                new SkillGuiInfo(-70, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xabce61, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 7, 0)))
+        {
+            @Override
+            @Nonnull
+            public List<SkillInfo> parents()
+            {
+                return Collections.singletonList(NOVICE_GUARD);
+            }
+        };
+
+        public static final SkillInfo REGENERATION_2 = new SkillInfo("f790d1a7-f680-4ea1-a3e1-18bac656614d",
+                new SkillGeneralInfo(Skill.Type.OTHER, "combat.regeneration_2"),
+                new SkillDefaultsInfo(Skill.State.LOCKED),
+                new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.COMBAT, 30); }}),
+                new SkillGuiInfo(-140, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xc4ff47, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 8, 0)))
+        {
+            @Override
+            @Nonnull
+            public List<SkillInfo> parents()
+            {
+                return Collections.singletonList(REGENERATION_1);
+            }
+        };
+
+        public static final SkillInfo REGENERATION_3 = new SkillInfo("1330ddfe-9405-4bde-b870-831b999bce18",
+                new SkillGeneralInfo(Skill.Type.OTHER, "combat.regeneration_3"),
+                new SkillDefaultsInfo(Skill.State.LOCKED),
+                new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.COMBAT, 50); }}),
+                new SkillGuiInfo(-210, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x75ff35, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 9, 0)))
+        {
+            @Override
+            @Nonnull
+            public List<SkillInfo> parents()
+            {
+                return Collections.singletonList(REGENERATION_2);
             }
         };
 
@@ -210,6 +314,9 @@ public class BlocklingSkills
             add(group -> new Skill(MOMENTUM, group));
             add(group -> new Skill(WRECKLESS, group));
             add(group -> new Skill(PHOTOPHILE, group));
+            add(group -> new Skill(REGENERATION_1, group));
+            add(group -> new Skill(REGENERATION_2, group));
+            add(group -> new Skill(REGENERATION_3, group));
         }};
     }
 
@@ -222,17 +329,33 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.AI, "mining.novice_miner"),
                 new SkillDefaultsInfo(Skill.State.UNLOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{  }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.MINE, true); return true; }),
-                new SkillGuiInfo(0, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 0, 0)));
+                new SkillGuiInfo(0, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 0, 0)))
+        {
+            @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.MINE, true);
+
+                return true;
+            }
+        };
 
         public static final SkillInfo WHITELIST = new SkillInfo("8963cddd-06dd-4b5a-8c1e-b1e38a99b25f",
                 new SkillGeneralInfo(Skill.Type.OTHER, "mining.whitelist"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.MINING, 5); }}),
-                new SkillCallbackInfo(skill -> { unlockExistingWhitelists(skill, "24d7135e-607b-413b-a2a7-00d19119b9de"); return true; }),
                 new SkillGuiInfo(0, 70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 1, 0)))
         {
             @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                unlockExistingWhitelists(skill, "24d7135e-607b-413b-a2a7-00d19119b9de");
+
+                return true;
+            }
+
+            @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(NOVICE_MINER);
@@ -243,10 +366,18 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.STAT, "mining.efficiency"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.MINING, 10); }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getStats().miningSpeedSkillEfficiencyModifier.setIsEnabled(true, false); return true; }),
                 new SkillGuiInfo(70, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xffd56d, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 2, 0)))
         {
             @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                skill.blockling.getStats().miningSpeedSkillEfficiencyModifier.setIsEnabled(true, false);
+
+                return true;
+            }
+
+            @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(NOVICE_MINER);
@@ -257,25 +388,34 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.STAT, "mining.adrenaline"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.MINING, 25); }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getStats().miningSpeedSkillAdrenalineModifier.setIsEnabled(true, false); return true; }),
                 new SkillGuiInfo(140, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xb72626, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 3, 0)))
         {
             @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                skill.blockling.getStats().miningSpeedSkillAdrenalineModifier.setIsEnabled(true, false);
+
+                return true;
+            }
+
+            @Override
+            public void tick(@Nonnull Skill skill)
+            {
+                skill.blockling.getStats().miningSpeedSkillAdrenalineModifier.setValue(10.0f * (1.0f - ((Math.max(skill.blockling.getHealth() - 1.0f, 0.0f)) / (skill.blockling.getMaxHealth() - 1.0f))), false);
+            }
+
+            @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(EFFICIENCY);
             }
 
             @Override
+            @Nonnull
             public List<SkillInfo> conflicts()
             {
                 return Arrays.asList(MOMENTUM, HASTY, NIGHT_OWL);
-            }
-
-            @Override
-            public void tick(Skill skill)
-            {
-                skill.blockling.getStats().miningSpeedSkillAdrenalineModifier.setValue(10.0f * (1.0f - ((Math.max(skill.blockling.getHealth() - 1.0f, 0.0f)) / (skill.blockling.getMaxHealth() - 1.0f))), false);
             }
         };
 
@@ -283,16 +423,25 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.STAT, "mining.momentum"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.MINING, 25); }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getStats().miningSpeedSkillMomentumModifier.setIsEnabled(true, false); return true; }),
                 new SkillGuiInfo(140, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xad79b5, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 4, 0)))
         {
             @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                skill.blockling.getStats().miningSpeedSkillMomentumModifier.setIsEnabled(true, false);
+
+                return true;
+            }
+
+            @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(EFFICIENCY);
             }
 
             @Override
+            @Nonnull
             public List<SkillInfo> conflicts()
             {
                 return Arrays.asList(ADRENALINE, HASTY, NIGHT_OWL);
@@ -303,16 +452,25 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.STAT, "mining.hasty"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.MINING, 25); }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getStats().miningSpeedSkillHastyModifier.setIsEnabled(true, false); return true; }),
                 new SkillGuiInfo(210, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x4eb2aa, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 5, 0)))
         {
             @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                skill.blockling.getStats().miningSpeedSkillHastyModifier.setIsEnabled(true, false);
+
+                return true;
+            }
+
+            @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(EFFICIENCY);
             }
 
             @Override
+            @Nonnull
             public List<SkillInfo> conflicts()
             {
                 return Arrays.asList(ADRENALINE, MOMENTUM, NIGHT_OWL);
@@ -323,23 +481,18 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.STAT, "mining.night_owl"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.MINING, 25); }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getStats().miningSpeedSkillNightOwlModifier.setIsEnabled(true, false); return true; }),
                 new SkillGuiInfo(210, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x2b2a3d, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 6, 0)))
         {
             @Override
-            public List<SkillInfo> parents()
+            public boolean onTryBuy(@Nonnull Skill skill)
             {
-                return Collections.singletonList(EFFICIENCY);
+                skill.blockling.getStats().miningSpeedSkillNightOwlModifier.setIsEnabled(true, false);
+
+                return true;
             }
 
             @Override
-            public List<SkillInfo> conflicts()
-            {
-                return Arrays.asList(ADRENALINE, MOMENTUM, HASTY);
-            }
-
-            @Override
-            public void tick(Skill skill)
+            public void tick(@Nonnull Skill skill)
             {
                 if (!skill.blockling.level.isClientSide)
                 {
@@ -351,16 +504,30 @@ public class BlocklingSkills
                     }
                 }
             }
+
+            @Override
+            @Nonnull
+            public List<SkillInfo> parents()
+            {
+                return Collections.singletonList(EFFICIENCY);
+            }
+
+            @Override
+            @Nonnull
+            public List<SkillInfo> conflicts()
+            {
+                return Arrays.asList(ADRENALINE, MOMENTUM, HASTY);
+            }
         };
 
         public static final SkillInfo HOT_HANDS = new SkillInfo("6ddccec1-af7b-4e8a-90a0-3962ef422858",
                 new SkillGeneralInfo(Skill.Type.OTHER, "mining.hot_hands"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.MINING, 40); }}),
-                new SkillCallbackInfo(skill -> true),
                 new SkillGuiInfo(0, -70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdd3355, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 7, 0)))
         {
             @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(NOVICE_MINER);
@@ -389,17 +556,33 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.AI, "woodcutting.novice_lumberjack"),
                 new SkillDefaultsInfo(Skill.State.UNLOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{  }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.WOODCUT, true, false); return true; }),
-                new SkillGuiInfo(0, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 0, 0)));
+                new SkillGuiInfo(0, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 0, 0)))
+        {
+            @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.WOODCUT, true, false);
+
+                return true;
+            }
+        };
 
         public static final SkillInfo WHITELIST = new SkillInfo("6c1c96c3-c784-4022-bcdd-432618f5d33d",
                 new SkillGeneralInfo(Skill.Type.OTHER, "woodcutting.whitelist"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.WOODCUTTING, 5); }}),
-                new SkillCallbackInfo(skill -> { unlockExistingWhitelists(skill, "fbfbfd44-c1b0-4420-824a-270b34c866f7"); return true; }),
                 new SkillGuiInfo(0, 70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 1, 0)))
         {
             @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                unlockExistingWhitelists(skill, "fbfbfd44-c1b0-4420-824a-270b34c866f7");
+
+                return true;
+            }
+
+            @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(NOVICE_LUMBERJACK);
@@ -410,10 +593,18 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.STAT, "woodcutting.efficiency"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.WOODCUTTING, 10); }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getStats().woodcuttingSpeedSkillEfficiencyModifier.setIsEnabled(true, false); return true; }),
                 new SkillGuiInfo(70, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xffd56d, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 2, 0)))
         {
             @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                skill.blockling.getStats().woodcuttingSpeedSkillEfficiencyModifier.setIsEnabled(true, false);
+
+                return true;
+            }
+
+            @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(NOVICE_LUMBERJACK);
@@ -424,25 +615,34 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.STAT, "woodcutting.adrenaline"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.WOODCUTTING, 25); }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getStats().woodcuttingSpeedSkillAdrenalineModifier.setIsEnabled(true, false); return true; }),
                 new SkillGuiInfo(140, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xb72626, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 3, 0)))
         {
             @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                skill.blockling.getStats().woodcuttingSpeedSkillAdrenalineModifier.setIsEnabled(true, false);
+
+                return true;
+            }
+
+            @Override
+            public void tick(@Nonnull Skill skill)
+            {
+                skill.blockling.getStats().woodcuttingSpeedSkillAdrenalineModifier.setValue(10.0f * (1.0f - ((Math.max(skill.blockling.getHealth() - 1.0f, 0.0f)) / (skill.blockling.getMaxHealth() - 1.0f))), false);
+            }
+
+            @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(EFFICIENCY);
             }
 
             @Override
+            @Nonnull
             public List<SkillInfo> conflicts()
             {
                 return Arrays.asList(MOMENTUM, HASTY, NIGHT_OWL);
-            }
-
-            @Override
-            public void tick(Skill skill)
-            {
-                skill.blockling.getStats().woodcuttingSpeedSkillAdrenalineModifier.setValue(10.0f * (1.0f - ((Math.max(skill.blockling.getHealth() - 1.0f, 0.0f)) / (skill.blockling.getMaxHealth() - 1.0f))), false);
             }
         };
 
@@ -450,16 +650,25 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.STAT, "woodcutting.momentum"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.WOODCUTTING, 25); }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getStats().woodcuttingSpeedSkillMomentumModifier.setIsEnabled(true, false); return true; }),
                 new SkillGuiInfo(140, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x9f6a16, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 4, 0)))
         {
             @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                skill.blockling.getStats().woodcuttingSpeedSkillMomentumModifier.setIsEnabled(true, false);
+
+                return true;
+            }
+
+            @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(EFFICIENCY);
             }
 
             @Override
+            @Nonnull
             public List<SkillInfo> conflicts()
             {
                 return Arrays.asList(ADRENALINE, HASTY, NIGHT_OWL);
@@ -470,16 +679,25 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.STAT, "woodcutting.hasty"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.WOODCUTTING, 25); }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getStats().woodcuttingSpeedSkillHastyModifier.setIsEnabled(true, false); return true; }),
                 new SkillGuiInfo(210, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x4eb2aa, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 5, 0)))
         {
             @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                skill.blockling.getStats().woodcuttingSpeedSkillHastyModifier.setIsEnabled(true, false);
+
+                return true;
+            }
+
+            @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(EFFICIENCY);
             }
 
             @Override
+            @Nonnull
             public List<SkillInfo> conflicts()
             {
                 return Arrays.asList(ADRENALINE, MOMENTUM, NIGHT_OWL);
@@ -490,23 +708,18 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.STAT, "woodcutting.night_owl"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.WOODCUTTING, 25); }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getStats().woodcuttingSpeedSkillNightOwlModifier.setIsEnabled(true, false); return true; }),
                 new SkillGuiInfo(210, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x2b2a3d, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 6, 0)))
         {
             @Override
-            public List<SkillInfo> parents()
+            public boolean onTryBuy(@Nonnull Skill skill)
             {
-                return Collections.singletonList(EFFICIENCY);
+                skill.blockling.getStats().woodcuttingSpeedSkillNightOwlModifier.setIsEnabled(true, false);
+
+                return true;
             }
 
             @Override
-            public List<SkillInfo> conflicts()
-            {
-                return Arrays.asList(ADRENALINE, MOMENTUM, HASTY);
-            }
-
-            @Override
-            public void tick(Skill skill)
+            public void tick(@Nonnull Skill skill)
             {
                 if (!skill.blockling.level.isClientSide)
                 {
@@ -517,6 +730,48 @@ public class BlocklingSkills
                         skill.blockling.getStats().woodcuttingSpeedSkillNightOwlModifier.setValue(value, true);
                     }
                 }
+            }
+
+            @Override
+            @Nonnull
+            public List<SkillInfo> parents()
+            {
+                return Collections.singletonList(EFFICIENCY);
+            }
+
+            @Override
+            @Nonnull
+            public List<SkillInfo> conflicts()
+            {
+                return Arrays.asList(ADRENALINE, MOMENTUM, HASTY);
+            }
+        };
+
+        public static final SkillInfo LEAF_BLOWER = new SkillInfo("c4443300-1004-4527-904f-ef097b65e816",
+                new SkillGeneralInfo(Skill.Type.STAT, "woodcutting.leaf_blower"),
+                new SkillDefaultsInfo(Skill.State.LOCKED),
+                new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.WOODCUTTING, 15); }}),
+                new SkillGuiInfo(-210, -100, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x227010, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 7, 0)))
+        {
+            @Override
+            @Nonnull
+            public List<SkillInfo> parents()
+            {
+                return Collections.singletonList(NOVICE_LUMBERJACK);
+            }
+        };
+
+        public static final SkillInfo TREE_SURGEON = new SkillInfo("07168fe8-6434-446a-ad37-09f41fa9b9d9",
+                new SkillGeneralInfo(Skill.Type.STAT, "woodcutting.tree_surgeon"),
+                new SkillDefaultsInfo(Skill.State.LOCKED),
+                new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.WOODCUTTING, 30); }}),
+                new SkillGuiInfo(-210, -170, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x5f6d18, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 8, 0)))
+        {
+            @Override
+            @Nonnull
+            public List<SkillInfo> parents()
+            {
+                return Collections.singletonList(LEAF_BLOWER);
             }
         };
 
@@ -529,6 +784,8 @@ public class BlocklingSkills
             add(group -> new Skill(MOMENTUM, group));
             add(group -> new Skill(HASTY, group));
             add(group -> new Skill(NIGHT_OWL, group));
+            add(group -> new Skill(LEAF_BLOWER, group));
+            add(group -> new Skill(TREE_SURGEON, group));
         }};
     }
 
@@ -541,17 +798,33 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.AI, "farming.novice_farmer"),
                 new SkillDefaultsInfo(Skill.State.UNLOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{  }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.FARM, true, false); return true; }),
-                new SkillGuiInfo(0, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 0, 0)));
+                new SkillGuiInfo(0, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 0, 0)))
+        {
+            @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.FARM, true, false);
+
+                return true;
+            }
+        };
 
         public static final SkillInfo CROP_WHITELIST = new SkillInfo("0d9f7b71-3930-4848-9329-8994b0ce7cd1",
                 new SkillGeneralInfo(Skill.Type.OTHER, "farming.crop_whitelist"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.FARMING, 5); }}),
-                new SkillCallbackInfo(skill -> { unlockExistingWhitelists(skill, "25140edf-f60e-459e-b1f0-9ff82108ec0b"); return true; }),
                 new SkillGuiInfo(0, 70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 1, 0)))
         {
             @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                unlockExistingWhitelists(skill, "25140edf-f60e-459e-b1f0-9ff82108ec0b");
+
+                return true;
+            }
+
+            @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(NOVICE_FARMER);
@@ -562,10 +835,18 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.STAT, "farming.efficiency"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.FARMING, 10); }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getStats().farmingSpeedSkillEfficiencyModifier.setIsEnabled(true, false); return true; }),
                 new SkillGuiInfo(70, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xffd56d, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 2, 0)))
         {
             @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                skill.blockling.getStats().farmingSpeedSkillEfficiencyModifier.setIsEnabled(true, false);
+
+                return true;
+            }
+
+            @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(NOVICE_FARMER);
@@ -576,10 +857,10 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.AI, "farming.replanter"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.FARMING, 10); }}),
-                new SkillCallbackInfo(skill -> true),
                 new SkillGuiInfo(-70, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x64de10, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 3, 0)))
         {
             @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(NOVICE_FARMER);
@@ -590,13 +871,21 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.OTHER, "farming.seed_whitelist"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.FARMING, 15); }}),
-                new SkillCallbackInfo(skill -> { unlockExistingWhitelists(skill, "d77bf1c1-7718-4733-b763-298b03340eea"); return true; }),
                 new SkillGuiInfo(-70, 70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 1, 0)))
         {
             @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(REPLANTER);
+            }
+
+            @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                unlockExistingWhitelists(skill, "d77bf1c1-7718-4733-b763-298b03340eea");
+
+                return true;
             }
         };
 
@@ -604,25 +893,34 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.STAT, "farming.adrenaline"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.FARMING, 25); }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getStats().farmingSpeedSkillAdrenalineModifier.setIsEnabled(true, false); return true; }),
                 new SkillGuiInfo(140, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xb72626, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 4, 0)))
         {
             @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                skill.blockling.getStats().farmingSpeedSkillAdrenalineModifier.setIsEnabled(true, false);
+
+                return true;
+            }
+
+            @Override
+            public void tick(@Nonnull Skill skill)
+            {
+                skill.blockling.getStats().farmingSpeedSkillAdrenalineModifier.setValue(10.0f * (1.0f - ((Math.max(skill.blockling.getHealth() - 1.0f, 0.0f)) / (skill.blockling.getMaxHealth() - 1.0f))), false);
+            }
+
+            @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(EFFICIENCY);
             }
 
             @Override
+            @Nonnull
             public List<SkillInfo> conflicts()
             {
                 return Arrays.asList(MOMENTUM, HASTY, NIGHT_OWL);
-            }
-
-            @Override
-            public void tick(Skill skill)
-            {
-                skill.blockling.getStats().farmingSpeedSkillAdrenalineModifier.setValue(10.0f * (1.0f - ((Math.max(skill.blockling.getHealth() - 1.0f, 0.0f)) / (skill.blockling.getMaxHealth() - 1.0f))), false);
             }
         };
 
@@ -630,16 +928,25 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.STAT, "farming.momentum"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.FARMING, 25); }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getStats().farmingSpeedSkillMomentumModifier.setIsEnabled(true, false); return true; }),
                 new SkillGuiInfo(140, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x39bb39, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 5, 0)))
         {
             @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                skill.blockling.getStats().farmingSpeedSkillMomentumModifier.setIsEnabled(true, false);
+
+                return true;
+            }
+
+            @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(EFFICIENCY);
             }
 
             @Override
+            @Nonnull
             public List<SkillInfo> conflicts()
             {
                 return Arrays.asList(ADRENALINE, HASTY, NIGHT_OWL);
@@ -650,16 +957,25 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.STAT, "farming.hasty"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.FARMING, 25); }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getStats().farmingSpeedSkillHastyModifier.setIsEnabled(true, false); return true; }),
                 new SkillGuiInfo(210, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x4eb2aa, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 6, 0)))
         {
             @Override
+            public boolean onTryBuy(@Nonnull Skill skill)
+            {
+                skill.blockling.getStats().farmingSpeedSkillHastyModifier.setIsEnabled(true, false);
+
+                return true;
+            }
+
+            @Override
+            @Nonnull
             public List<SkillInfo> parents()
             {
                 return Collections.singletonList(EFFICIENCY);
             }
 
             @Override
+            @Nonnull
             public List<SkillInfo> conflicts()
             {
                 return Arrays.asList(ADRENALINE, MOMENTUM, NIGHT_OWL);
@@ -670,23 +986,18 @@ public class BlocklingSkills
                 new SkillGeneralInfo(Skill.Type.STAT, "farming.night_owl"),
                 new SkillDefaultsInfo(Skill.State.LOCKED),
                 new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.FARMING, 25); }}),
-                new SkillCallbackInfo(skill -> { skill.blockling.getStats().farmingSpeedSkillNightOwlModifier.setIsEnabled(true, false); return true; }),
                 new SkillGuiInfo(210, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x2b2a3d, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 7, 0)))
         {
             @Override
-            public List<SkillInfo> parents()
+            public boolean onTryBuy(@Nonnull Skill skill)
             {
-                return Collections.singletonList(EFFICIENCY);
+                skill.blockling.getStats().farmingSpeedSkillNightOwlModifier.setIsEnabled(true, false);
+
+                return true;
             }
 
             @Override
-            public List<SkillInfo> conflicts()
-            {
-                return Arrays.asList(ADRENALINE, MOMENTUM, HASTY);
-            }
-
-            @Override
-            public void tick(Skill skill)
+            public void tick(@Nonnull Skill skill)
             {
                 if (!skill.blockling.level.isClientSide)
                 {
@@ -697,6 +1008,20 @@ public class BlocklingSkills
                         skill.blockling.getStats().farmingSpeedSkillNightOwlModifier.setValue(value, true);
                     }
                 }
+            }
+
+            @Override
+            @Nonnull
+            public List<SkillInfo> parents()
+            {
+                return Collections.singletonList(EFFICIENCY);
+            }
+
+            @Override
+            @Nonnull
+            public List<SkillInfo> conflicts()
+            {
+                return Arrays.asList(ADRENALINE, MOMENTUM, HASTY);
             }
         };
 
