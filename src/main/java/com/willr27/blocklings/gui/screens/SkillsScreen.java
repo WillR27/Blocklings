@@ -8,8 +8,8 @@ import com.willr27.blocklings.gui.*;
 import com.willr27.blocklings.gui.controls.TexturedControl;
 import com.willr27.blocklings.gui.controls.skills.SkillsControl;
 import com.willr27.blocklings.gui.controls.TabbedControl;
-import com.willr27.blocklings.skills.SkillGroup;
-import com.willr27.blocklings.skills.info.SkillGroupInfo;
+import com.willr27.blocklings.skill.SkillGroup;
+import com.willr27.blocklings.skill.info.SkillGroupInfo;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 

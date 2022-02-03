@@ -9,7 +9,7 @@ import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.controls.TexturedControl;
-import com.willr27.blocklings.skills.Skill;
+import com.willr27.blocklings.skill.Skill;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.text.TextFormatting;
 

@@ -1,11 +1,11 @@
-package com.willr27.blocklings.skills;
+package com.willr27.blocklings.skill;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.network.messages.SkillStateMessage;
 import com.willr27.blocklings.network.messages.SkillTryBuyMessage;
-import com.willr27.blocklings.skills.info.SkillInfo;
+import com.willr27.blocklings.skill.info.SkillInfo;
 
 import javax.annotation.Nonnull;
 import java.awt.*;

@@ -3,7 +3,7 @@ package com.willr27.blocklings.goal.goals;
 import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
-import com.willr27.blocklings.skills.BlocklingSkills;
+import com.willr27.blocklings.skill.skills.CombatSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.goal.IHasTargetGoal;
 import com.willr27.blocklings.goal.BlocklingGoal;
@@ -50,7 +50,7 @@ public abstract class BlocklingMeleeAttackGoal<T extends BlocklingTargetGoal<?>>
         setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
 
         GoalWhitelist whitelist = new GoalWhitelist("540241cd-085a-4c1f-9e90-8aea973568a8", "targets", Whitelist.Type.ENTITY, this);
-        whitelist.setIsUnlocked(blockling.getSkills().getSkill(BlocklingSkills.Combat.WHITELIST).isBought(), false);
+        whitelist.setIsUnlocked(blockling.getSkills().getSkill(CombatSkills.WHITELIST).isBought(), false);
         EntityUtil.VALID_ATTACK_TARGETS.keySet().forEach(type -> whitelist.put(type, true));
         whitelists.add(whitelist);
     }
@@ -142,25 +142,7 @@ public abstract class BlocklingMeleeAttackGoal<T extends BlocklingTargetGoal<?>>
 
             if (blockling.getActions().attack.tryStart(attackingHand))
             {
-                ItemStack mainStack = blockling.getMainHandItem();
-                ItemStack offStack = blockling.getOffhandItem();
-
-                if (mainStack.hurt(attackingHand == BlocklingHand.MAIN ? blockling.getSkills().getSkill(BlocklingSkills.Combat.WRECKLESS).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
-                {
-                    mainStack.shrink(1);
-                }
-
-                if (offStack.hurt(attackingHand == BlocklingHand.OFF ? blockling.getSkills().getSkill(BlocklingSkills.Combat.WRECKLESS).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
-                {
-                    offStack.shrink(1);
-                }
-
-                blockling.incAttacksRecently();
-
-                blockling.doHurtTarget(target);
-                path = blockling.getNavigation().createPath(target, 0);
-                blockling.getNavigation().moveTo(path, 1.0);
-                recalcPathCounter = 0;
+                attack(target, attackingHand);
             }
         }
         else if (recalcPathCounter >= 20)
@@ -171,6 +153,37 @@ public abstract class BlocklingMeleeAttackGoal<T extends BlocklingTargetGoal<?>>
         }
 
         recalcPathCounter++;
+    }
+
+    /**
+     * Performs the necessary actions that occur when a blockling attacks its target.
+     *
+     * @param target the attack target.
+     * @param attackingHand the attacking hand.
+     */
+    protected void attack(@Nonnull LivingEntity target, @Nonnull BlocklingHand attackingHand)
+    {
+        ItemStack mainStack = blockling.getMainHandItem();
+        ItemStack offStack = blockling.getOffhandItem();
+
+        if (mainStack.hurt(attackingHand == BlocklingHand.MAIN ? blockling.getSkills().getSkill(CombatSkills.WRECKLESS).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
+        {
+            mainStack.shrink(1);
+        }
+
+        if (offStack.hurt(attackingHand == BlocklingHand.OFF ? blockling.getSkills().getSkill(CombatSkills.WRECKLESS).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
+        {
+            offStack.shrink(1);
+        }
+
+        blockling.incAttacksRecently();
+
+        blockling.doHurtTarget(target);
+        path = blockling.getNavigation().createPath(target, 0);
+        blockling.getNavigation().moveTo(path, 1.0);
+        recalcPathCounter = 0;
+
+        blockling.wasLastAttackHunt = false;
     }
 
     /**

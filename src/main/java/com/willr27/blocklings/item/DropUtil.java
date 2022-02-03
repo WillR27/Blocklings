@@ -1,13 +1,12 @@
 package com.willr27.blocklings.item;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.skills.BlocklingSkills;
+import com.willr27.blocklings.skill.skills.MiningSkills;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CookingRecipeSerializer;
 import net.minecraft.item.crafting.FurnaceRecipe;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.util.math.BlockPos;
@@ -52,7 +51,7 @@ public class DropUtil
 
         if (context == Context.MINING)
         {
-            if (blockling.getSkills().getSkill(BlocklingSkills.Mining.HOT_HANDS).isBought())
+            if (blockling.getSkills().getSkill(MiningSkills.HOT_HANDS).isBought())
             {
                 List<ItemStack> newDrops = new ArrayList<>();
 

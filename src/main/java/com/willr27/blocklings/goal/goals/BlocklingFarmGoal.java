@@ -3,13 +3,13 @@ package com.willr27.blocklings.goal.goals;
 import com.willr27.blocklings.block.BlockUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
+import com.willr27.blocklings.skill.skills.FarmingSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.goal.goals.target.BlocklingFarmTargetGoal;
 import com.willr27.blocklings.goal.IHasTargetGoal;
 import com.willr27.blocklings.item.DropUtil;
 import com.willr27.blocklings.item.ToolType;
 import com.willr27.blocklings.item.ToolUtil;
-import com.willr27.blocklings.skills.BlocklingSkills;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
 import net.minecraft.block.Block;
@@ -55,12 +55,12 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGo
         targetGoal = new BlocklingFarmTargetGoal(this);
 
         cropWhitelist = new GoalWhitelist("25140edf-f60e-459e-b1f0-9ff82108ec0b", "crops", Whitelist.Type.BLOCK, this);
-        cropWhitelist.setIsUnlocked(blockling.getSkills().getSkill(BlocklingSkills.Farming.CROP_WHITELIST).isBought(), false);
+        cropWhitelist.setIsUnlocked(blockling.getSkills().getSkill(FarmingSkills.CROP_WHITELIST).isBought(), false);
         BlockUtil.CROPS.forEach(crop -> cropWhitelist.put(crop.getRegistryName(), true));
         whitelists.add(cropWhitelist);
 
         seedWhitelist = new GoalWhitelist("d77bf1c1-7718-4733-b763-298b03340eea", "seeds", Whitelist.Type.ITEM, this);
-        seedWhitelist.setIsUnlocked(blockling.getSkills().getSkill(BlocklingSkills.Farming.SEED_WHITELIST).isBought(), false);
+        seedWhitelist.setIsUnlocked(blockling.getSkills().getSkill(FarmingSkills.SEED_WHITELIST).isBought(), false);
         BlockUtil.CROPS.forEach(crop ->
         {
             if (crop instanceof CropsBlock)
@@ -162,12 +162,12 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGo
                         blockling.dropItemStack(stack);
                     }
 
-                    if (mainStack.hurt(mainCanHarvest ? blockling.getSkills().getSkill(BlocklingSkills.Farming.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
+                    if (mainStack.hurt(mainCanHarvest ? blockling.getSkills().getSkill(FarmingSkills.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
                     {
                         mainStack.shrink(1);
                     }
 
-                    if (offStack.hurt(offCanHarvest ? blockling.getSkills().getSkill(BlocklingSkills.Farming.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
+                    if (offStack.hurt(offCanHarvest ? blockling.getSkills().getSkill(FarmingSkills.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
                     {
                         offStack.shrink(1);
                     }
@@ -176,7 +176,7 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGo
 
                     ItemStack seedStack = ItemStack.EMPTY;
 
-                    if (blockling.getSkills().getSkill(BlocklingSkills.Farming.REPLANTER).isBought() && targetBlock instanceof CropsBlock)
+                    if (blockling.getSkills().getSkill(FarmingSkills.REPLANTER).isBought() && targetBlock instanceof CropsBlock)
                     {
                         CropsBlock cropsBlock = (CropsBlock) targetBlock;
                         seedStack = cropsBlock.getCloneItemStack(world, targetBlockPos, targetBlockState);

@@ -11,7 +11,8 @@ import com.willr27.blocklings.network.messages.BlocklingAttackTargetMessage;
 import com.willr27.blocklings.network.messages.BlocklingNameMessage;
 import com.willr27.blocklings.network.messages.BlocklingScaleMessage;
 import com.willr27.blocklings.network.messages.BlocklingTypeMessage;
-import com.willr27.blocklings.skills.BlocklingSkills;
+import com.willr27.blocklings.skill.*;
+import com.willr27.blocklings.skill.skills.*;
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.task.Task;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -19,6 +20,8 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.monster.MonsterEntity;
+import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -30,6 +33,8 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
@@ -110,7 +115,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     public final BlocklingGuiHandler guiHandler = new BlocklingGuiHandler(this);
 
     /**
-     *
+     * The blockling's scale (size).
      */
     private float scale;
 
@@ -137,6 +142,12 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
      * Used by the momentum skill.
      */
     private int cropsHarvestedRecently = 0;
+
+    /**
+     * Whether the last attack the blockling performed was via a hunt task.
+     * NOT synced to the client/server.
+     */
+    public boolean wasLastAttackHunt = false;
 
     /**
      * @param type the blockling entity type.
@@ -321,15 +332,15 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     {
         if (actions.regenerationCooldown.tryStart())
         {
-            if (skills.getSkill(BlocklingSkills.Combat.REGENERATION_3).isBought())
+            if (skills.getSkill(CombatSkills.REGENERATION_3).isBought())
             {
                 heal(5.0f);
             }
-            else if (skills.getSkill(BlocklingSkills.Combat.REGENERATION_2).isBought())
+            else if (skills.getSkill(CombatSkills.REGENERATION_2).isBought())
             {
                 heal(3.0f);
             }
-            else if (skills.getSkill(BlocklingSkills.Combat.REGENERATION_1).isBought())
+            else if (skills.getSkill(CombatSkills.REGENERATION_1).isBought())
             {
                 heal(1.0f);
             }
@@ -395,6 +406,35 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
             target.setSecondsOnFire(fireAspect * 4);
         }
 
+        if (target instanceof LivingEntity)
+        {
+            LivingEntity livingTarget = (LivingEntity) target;
+
+            if (skills.getSkill(CombatSkills.POISON_ATTACKS).isBought())
+            {
+                livingTarget.addEffect(new EffectInstance(Effects.POISON, 100));
+            }
+            else if (skills.getSkill(CombatSkills.WITHER_ATTACKS).isBought())
+            {
+                livingTarget.addEffect(new EffectInstance(Effects.WITHER, 60));
+            }
+        }
+
+        if (skills.getSkill(CombatSkills.ANIMAL_HUNTER).isBought())
+        {
+            if (target instanceof AnimalEntity)
+            {
+                damage *= 1.25f;
+            }
+        }
+        else if (skills.getSkill(CombatSkills.MONSTER_HUNTER).isBought())
+        {
+            if (target instanceof MonsterEntity)
+            {
+                damage *= 1.25f;
+            }
+        }
+
         int invulnerableTime = target.invulnerableTime;
         boolean hasHurt = target.hurt(DamageSource.mobAttack(this), damage);
         target.invulnerableTime = invulnerableTime;
@@ -442,7 +482,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         if (!level.isClientSide)
         {
-            if (skills.getSkill(BlocklingSkills.General.ARMADILLO).isBought())
+            if (skills.getSkill(GeneralSkills.ARMADILLO).isBought())
             {
                 if (isDeadOrDying())
                 {
@@ -505,7 +545,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 }
                 else
                 {
-                    if (skills.getSkill(BlocklingSkills.General.PACKLING).isBought())
+                    if (skills.getSkill(GeneralSkills.PACKLING).isBought())
                     {
                         if (player == getOwner())
                         {
@@ -530,7 +570,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                         }
                     }
 
-                    if (skills.getSkill(BlocklingSkills.General.HEAL).isBought())
+                    if (skills.getSkill(GeneralSkills.HEAL).isBought())
                     {
                         if (getHealth() < getMaxHealth())
                         {
@@ -684,7 +724,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     @Override
     protected void dropAllDeathLoot(@Nonnull DamageSource damageSource)
     {
-        if (!skills.getSkill(BlocklingSkills.General.ARMADILLO).isBought())
+        if (!skills.getSkill(GeneralSkills.ARMADILLO).isBought())
         {
             super.dropAllDeathLoot(damageSource);
         }
@@ -1053,7 +1093,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         attacksRecently++;
         actions.attacksCooldown.start();
 
-        if (skills.getSkill(BlocklingSkills.Combat.MOMENTUM).isBought())
+        if (skills.getSkill(CombatSkills.MOMENTUM).isBought())
         {
             int cappedCount = Math.min(attacksRecently, 20);
             stats.attackSpeedSkillMomentumModifier.setValue((float) cappedCount);
@@ -1068,7 +1108,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         oresMinedRecently++;
         actions.oresMinedCooldown.start();
 
-        if (skills.getSkill(BlocklingSkills.Mining.MOMENTUM).isBought())
+        if (skills.getSkill(MiningSkills.MOMENTUM).isBought())
         {
             int cappedCount = Math.min(oresMinedRecently, 20);
             stats.miningSpeedSkillMomentumModifier.setValue((float) cappedCount);
@@ -1083,7 +1123,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         logsChoppedRecently++;
         actions.logsChoppedCooldown.start();
 
-        if (skills.getSkill(BlocklingSkills.Woodcutting.MOMENTUM).isBought())
+        if (skills.getSkill(WoodcuttingSkills.MOMENTUM).isBought())
         {
             int cappedCount = Math.min(logsChoppedRecently, 20);
             stats.woodcuttingSpeedSkillMomentumModifier.setValue((float) cappedCount);
@@ -1098,7 +1138,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         cropsHarvestedRecently++;
         actions.cropsHarvestedCooldown.start();
 
-        if (skills.getSkill(BlocklingSkills.Farming.MOMENTUM).isBought())
+        if (skills.getSkill(FarmingSkills.MOMENTUM).isBought())
         {
             int cappedCount = Math.min(cropsHarvestedRecently, 20);
             stats.farmingSpeedSkillMomentumModifier.setValue((float) cappedCount);

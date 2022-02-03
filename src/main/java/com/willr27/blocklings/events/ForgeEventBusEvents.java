@@ -5,9 +5,14 @@ import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingType;
 import com.willr27.blocklings.item.ToolUtil;
+import com.willr27.blocklings.skill.skills.CombatSkills;
 import net.minecraft.entity.EntitySize;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -41,6 +46,30 @@ public class ForgeEventBusEvents
         {
             float scale = ((BlocklingEntity) event.getEntity()).getScale();
             event.setNewSize(new EntitySize(scale * 1.0f, scale * 1.0f, true), true);
+        }
+    }
+
+    /**
+     * Handles an entity dropping items.
+     */
+    @SubscribeEvent
+    public static void onLivingDropsEvent(@Nonnull LivingDropsEvent event)
+    {
+        if (event.getSource().getEntity() instanceof BlocklingEntity)
+        {
+            BlocklingEntity blockling = (BlocklingEntity) event.getSource().getEntity();
+
+            if (blockling.getSkills().getSkill(CombatSkills.HUNTER).isBought() && blockling.wasLastAttackHunt)
+            {
+                for (ItemEntity itemEntity : event.getDrops())
+                {
+                    ItemStack itemStack = blockling.getEquipment().addItem(itemEntity.getItem());
+
+                    blockling.level.addFreshEntity(new ItemEntity(blockling.level, event.getEntity().getX(), event.getEntity().getY() + 0.2f, event.getEntity().getZ(), itemStack));
+                }
+
+                event.setCanceled(true);
+            }
         }
     }
 }

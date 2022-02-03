@@ -1,8 +1,8 @@
-package com.willr27.blocklings.skills;
+package com.willr27.blocklings.skill;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.skills.info.SkillGroupInfo;
-import com.willr27.blocklings.skills.info.SkillInfo;
+import com.willr27.blocklings.skill.info.SkillGroupInfo;
+import com.willr27.blocklings.skill.info.SkillInfo;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

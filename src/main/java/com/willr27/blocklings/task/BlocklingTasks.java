@@ -26,9 +26,10 @@ import java.util.stream.Collectors;
 public class BlocklingTasks
 {
     public static final TaskType NULL = new TaskType("1c330075-19af-4c12-ac20-6de50e7b84a9", "null", false, false, new GuiTexture(GuiTextures.TASKS, 176, 166, 20, 20), ((i, b, t) -> null));
-    public static final TaskType MELEE_ATTACK_HURT_BY = new TaskType("2888dde5-f6ee-439d-ab8d-ea9a91470c64", "hurt_by_melee", true, true, new GuiTexture.GoalGuiTexture(4, 0), BlocklingMeleeAttackHurtByGoal::new);
-    public static final TaskType MELEE_ATTACK_OWNER_HURT_BY = new TaskType("72b27eb1-e5bd-48e0-b562-74dece3d144a", "owner_hurt_by_melee", false, false, new GuiTexture.GoalGuiTexture(3, 0), BlocklingMeleeAttackOwnerHurtByGoal::new);
-    public static final TaskType MELEE_ATTACK_OWNER_HURT = new TaskType("51d0ae15-8605-4240-a515-89f47b2f450a", "owner_hurt_melee", false, false, new GuiTexture.GoalGuiTexture(3, 0), BlocklingMeleeAttackOwnerHurtGoal::new);
+    public static final TaskType MELEE_ATTACK_HURT_BY = new TaskType("2888dde5-f6ee-439d-ab8d-ea9a91470c64", "hurt_by_melee", true, true, new GuiTexture.GoalGuiTexture(3, 0), BlocklingMeleeAttackHurtByGoal::new);
+    public static final TaskType MELEE_ATTACK_OWNER_HURT_BY = new TaskType("72b27eb1-e5bd-48e0-b562-74dece3d144a", "owner_hurt_by_melee", false, false, new GuiTexture.GoalGuiTexture(4, 0), BlocklingMeleeAttackOwnerHurtByGoal::new);
+    public static final TaskType MELEE_ATTACK_OWNER_HURT = new TaskType("51d0ae15-8605-4240-a515-89f47b2f450a", "owner_hurt_melee", false, false, new GuiTexture.GoalGuiTexture(5, 0), BlocklingMeleeAttackOwnerHurtGoal::new);
+    public static final TaskType MELEE_ATTACK_HUNT = new TaskType("283e92b8-5cb8-4d19-afc7-88869a60a214", "hunt_melee", false, false, new GuiTexture.GoalGuiTexture(6, 0), BlocklingMeleeAttackHuntGoal::new);
     public static final TaskType MINE = new TaskType("657c60cf-9fac-408e-ad8d-3335409301d6", "mine_ores", false, false, new GuiTexture.GoalGuiTexture(7, 0), BlocklingMineGoal::new);
     public static final TaskType WOODCUT = new TaskType("9701e1f6-99e0-4772-88a1-906778499a8c", "chop_trees", false, false, new GuiTexture.GoalGuiTexture(8, 0), BlocklingWoodcutGoal::new);
     public static final TaskType FARM = new TaskType("190bb949-6fb0-456b-9009-991c8db9be10", "farm_crops", false, false, new GuiTexture.GoalGuiTexture(9, 0), BlocklingFarmGoal::new);
@@ -44,6 +45,7 @@ public class BlocklingTasks
         add(MELEE_ATTACK_HURT_BY);
         add(MELEE_ATTACK_OWNER_HURT_BY);
         add(MELEE_ATTACK_OWNER_HURT);
+        add(MELEE_ATTACK_HUNT);
         add(MINE);
         add(WOODCUT);
         add(FARM);

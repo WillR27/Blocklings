@@ -3,12 +3,12 @@ package com.willr27.blocklings.goal.goals;
 import com.willr27.blocklings.block.BlockUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
+import com.willr27.blocklings.skill.skills.MiningSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.goal.goals.target.BlocklingMineTargetGoal;
 import com.willr27.blocklings.goal.IHasTargetGoal;
 import com.willr27.blocklings.item.DropUtil;
 import com.willr27.blocklings.item.ToolUtil;
-import com.willr27.blocklings.skills.BlocklingSkills;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
 import net.minecraft.block.BlockState;
@@ -49,7 +49,7 @@ public class BlocklingMineGoal extends BlocklingGatherGoal<BlocklingMineTargetGo
         targetGoal = new BlocklingMineTargetGoal(this);
 
         oreWhitelist = new GoalWhitelist("24d7135e-607b-413b-a2a7-00d19119b9de", "ores", Whitelist.Type.BLOCK, this);
-        oreWhitelist.setIsUnlocked(blockling.getSkills().getSkill(BlocklingSkills.Mining.WHITELIST).isBought(), false);
+        oreWhitelist.setIsUnlocked(blockling.getSkills().getSkill(MiningSkills.WHITELIST).isBought(), false);
         BlockUtil.ORES.forEach(ore -> oreWhitelist.put(ore.getRegistryName(), true));
         whitelists.add(oreWhitelist);
 
@@ -142,12 +142,12 @@ public class BlocklingMineGoal extends BlocklingGatherGoal<BlocklingMineTargetGo
                         blockling.dropItemStack(stack);
                     }
 
-                    if (mainStack.hurt(mainCanHarvest ? blockling.getSkills().getSkill(BlocklingSkills.Mining.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
+                    if (mainStack.hurt(mainCanHarvest ? blockling.getSkills().getSkill(MiningSkills.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
                     {
                         mainStack.shrink(1);
                     }
 
-                    if (offStack.hurt(offCanHarvest ? blockling.getSkills().getSkill(BlocklingSkills.Mining.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
+                    if (offStack.hurt(offCanHarvest ? blockling.getSkills().getSkill(MiningSkills.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
                     {
                         offStack.shrink(1);
                     }

@@ -1,7 +1,7 @@
 package com.willr27.blocklings.gui;
 
-import com.willr27.blocklings.skills.BlocklingSkillGroups;
-import com.willr27.blocklings.skills.info.SkillGroupInfo;
+import com.willr27.blocklings.skill.BlocklingSkills;
+import com.willr27.blocklings.skill.info.SkillGroupInfo;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
@@ -15,11 +15,11 @@ public enum Tab
     EQUIPMENT("equipment", BlocklingGuiHandler.EQUIPMENT_ID, null, 2, 0, true),
 //    UTILITY_1("utility_1", GuiHandler.UTILITY_ID, "", 3, 0, true),
 //    UTILITY_2("utility_2", GuiHandler.UTILITY_ID, "", 3, 0, true);
-    GENERAL("general", BlocklingGuiHandler.GENERAL_ID, BlocklingSkillGroups.GENERAL, 0, 1, false),
-    COMBAT("combat", BlocklingGuiHandler.COMBAT_ID, BlocklingSkillGroups.COMBAT, 1, 1, false),
-    MINING("mining", BlocklingGuiHandler.MINING_ID, BlocklingSkillGroups.MINING, 2, 1, false),
-    WOODCUTTING("woodcutting", BlocklingGuiHandler.WOODCUTTING_ID, BlocklingSkillGroups.WOODCUTTING, 3, 1, false),
-    FARMING("farming", BlocklingGuiHandler.FARMING_ID, BlocklingSkillGroups.FARMING, 4, 1, false);
+    GENERAL("general", BlocklingGuiHandler.GENERAL_ID, BlocklingSkills.Groups.GENERAL, 0, 1, false),
+    COMBAT("combat", BlocklingGuiHandler.COMBAT_ID, BlocklingSkills.Groups.COMBAT, 1, 1, false),
+    MINING("mining", BlocklingGuiHandler.MINING_ID, BlocklingSkills.Groups.MINING, 2, 1, false),
+    WOODCUTTING("woodcutting", BlocklingGuiHandler.WOODCUTTING_ID, BlocklingSkills.Groups.WOODCUTTING, 3, 1, false),
+    FARMING("farming", BlocklingGuiHandler.FARMING_ID, BlocklingSkills.Groups.FARMING, 4, 1, false);
 
     public final TranslationTextComponent name;
     public final int guiId;

@@ -3,14 +3,15 @@ package com.willr27.blocklings.goal.goals;
 import com.willr27.blocklings.block.BlockUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
+import com.willr27.blocklings.skill.skills.WoodcuttingSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.goal.goals.target.BlocklingWoodcutTargetGoal;
 import com.willr27.blocklings.goal.IHasTargetGoal;
 import com.willr27.blocklings.item.DropUtil;
 import com.willr27.blocklings.item.ToolUtil;
-import com.willr27.blocklings.skills.BlocklingSkills;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.Path;
@@ -52,7 +53,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTa
         targetGoal = new BlocklingWoodcutTargetGoal(this);
 
         logWhitelist = new GoalWhitelist("fbfbfd44-c1b0-4420-824a-270b34c866f7", "logs", Whitelist.Type.BLOCK, this);
-        logWhitelist.setIsUnlocked(blockling.getSkills().getSkill(BlocklingSkills.Woodcutting.WHITELIST).isBought(), false);
+        logWhitelist.setIsUnlocked(blockling.getSkills().getSkill(WoodcuttingSkills.WHITELIST).isBought(), false);
         BlockUtil.LOGS.forEach(log -> logWhitelist.put(log.getRegistryName(), true));
         whitelists.add(logWhitelist);
 
@@ -114,6 +115,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTa
 
         BlockPos targetBlockPos = targetGoal.getTargetPos();
         BlockState targetBlockState = world.getBlockState(targetBlockPos);
+        Block targetBlock = targetBlockState.getBlock();
 
         boolean mainCanHarvest = ToolUtil.canToolHarvestBlock(mainStack, targetBlockState);
         boolean offCanHarvest = ToolUtil.canToolHarvestBlock(offStack, targetBlockState);
@@ -147,12 +149,12 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTa
                         blockling.dropItemStack(stack);
                     }
 
-                    if (mainStack.hurt(mainCanHarvest ? blockling.getSkills().getSkill(BlocklingSkills.Woodcutting.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
+                    if (mainStack.hurt(mainCanHarvest ? blockling.getSkills().getSkill(WoodcuttingSkills.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
                     {
                         mainStack.shrink(1);
                     }
 
-                    if (offStack.hurt(offCanHarvest ? blockling.getSkills().getSkill(BlocklingSkills.Woodcutting.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
+                    if (offStack.hurt(offCanHarvest ? blockling.getSkills().getSkill(WoodcuttingSkills.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
                     {
                         offStack.shrink(1);
                     }
@@ -162,20 +164,43 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTa
                     world.destroyBlock(targetBlockPos, false);
                     world.destroyBlockProgress(blockling.getId(), targetBlockPos, 0);
 
-                    if (blockling.getSkills().getSkill(BlocklingSkills.Woodcutting.LEAF_BLOWER).isBought())
+                    if (blockling.getSkills().getSkill(WoodcuttingSkills.REPLANTER).isBought())
+                    {
+                        if (BlockUtil.DIRTS.contains(world.getBlockState(targetBlockPos.below()).getBlock()))
+                        {
+                            Block saplingBlock = BlockUtil.getSaplingFromLog(targetBlock);
+
+                            if (saplingBlock != null)
+                            {
+                                ItemStack itemStack = new ItemStack(saplingBlock);
+
+                                if (blockling.getEquipment().has(itemStack))
+                                {
+                                    blockling.getEquipment().take(itemStack);
+
+                                    world.setBlock(targetBlockPos, saplingBlock. defaultBlockState(), 3);
+                                }
+                            }
+                        }
+                    }
+
+                    if (blockling.getSkills().getSkill(WoodcuttingSkills.LEAF_BLOWER).isBought())
                     {
                         for (BlockPos surroundingPos : BlockUtil.getSurroundingBlockPositions(targetBlockPos))
                         {
-                            if (blockling.getSkills().getSkill(BlocklingSkills.Woodcutting.TREE_SURGEON).isBought())
+                            if (BlockUtil.isLeaf(world.getBlockState(surroundingPos).getBlock()))
                             {
-                                for (ItemStack stack : DropUtil.getDrops(DropUtil.Context.WOODCUTTING, blockling, surroundingPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
+                                if (blockling.getSkills().getSkill(WoodcuttingSkills.TREE_SURGEON).isBought())
                                 {
-                                    stack = blockling.getEquipment().addItem(stack);
-                                    blockling.dropItemStack(stack);
+                                    for (ItemStack stack : DropUtil.getDrops(DropUtil.Context.WOODCUTTING, blockling, surroundingPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
+                                    {
+                                        stack = blockling.getEquipment().addItem(stack);
+                                        blockling.dropItemStack(stack);
+                                    }
                                 }
-                            }
 
-                            world.destroyBlock(surroundingPos, false);
+                                world.destroyBlock(surroundingPos, false);
+                            }
                         }
                     }
 

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.IControl;
-import com.willr27.blocklings.skills.Skill;
+import com.willr27.blocklings.skill.Skill;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
