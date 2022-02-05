@@ -23,7 +23,7 @@ public abstract class BlocklingGatherTargetGoal<T extends BlocklingGatherGoal<?>
     /**
      * How many recalcs are called before a block is no longer marked bad.
      */
-    private static final int RECALC_BAD_INTERVAL = 20;
+    private static final int RECALC_BAD_INTERVAL = 10;
 
     /**
      * The current position to try to gather.

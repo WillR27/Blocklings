@@ -328,7 +328,7 @@ public class CombatSkills
             new SkillGeneralInfo(Skill.Type.OTHER, "combat.poison_attacks"),
             new SkillDefaultsInfo(Skill.State.LOCKED),
             new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.COMBAT, 30); }}),
-            new SkillGuiInfo(-140, -70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x3a6e18, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 3, 1)))
+            new SkillGuiInfo(-70, -70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x3a6e18, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 3, 1)))
     {
         @Override
         @Nonnull
@@ -349,7 +349,7 @@ public class CombatSkills
             new SkillGeneralInfo(Skill.Type.OTHER, "combat.wither_attacks"),
             new SkillDefaultsInfo(Skill.State.LOCKED),
             new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.COMBAT, 30); }}),
-            new SkillGuiInfo(-140, 70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x2d2122, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 4, 1)))
+            new SkillGuiInfo(-70, 70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x2d2122, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 4, 1)))
     {
         @Override
         @Nonnull
