@@ -143,6 +143,66 @@ public class EquipmentInventory extends AbstractInventory
         return ToolUtil.canToolHarvestBlock(getHandStack(hand), blockState);
     }
 
+    public boolean trySwitchToBestTool(BlocklingHand hand, ToolType toolType)
+    {
+        if (hand == BlocklingHand.NONE)
+        {
+            return false;
+        }
+        else if (hand == BlocklingHand.BOTH)
+        {
+            return trySwitchToBestTool(BlocklingHand.MAIN, toolType) | trySwitchToBestTool(BlocklingHand.OFF, toolType);
+        }
+
+        int bestSlot = -1;
+        int handSlot = hand == BlocklingHand.MAIN ? TOOL_MAIN_HAND : TOOL_OFF_HAND;
+        ItemStack handStack = getItem(handSlot);
+
+        if (toolType == ToolType.WEAPON)
+        {
+            float bestAttackPower = ToolUtil.getToolAttackSpeed(handStack) * ToolUtil.getToolBaseDamage(handStack);
+
+            for (int i = TOOL_OFF_HAND + 1; i < getContainerSize(); i++)
+            {
+                ItemStack stack = stacks[i];
+
+                float attackPower = ToolUtil.getToolAttackSpeed(stack) * ToolUtil.getToolBaseDamage(stack);
+
+                if (attackPower > bestAttackPower)
+                {
+                    bestSlot = i;
+                    bestAttackPower = attackPower;
+                }
+            }
+        }
+        else
+        {
+            float bestSpeed = ToolUtil.getToolSpeed(handStack, toolType);
+
+            for (int i = TOOL_OFF_HAND + 1; i < getContainerSize(); i++)
+            {
+                ItemStack stack = stacks[i];
+
+                float speed = ToolUtil.getToolSpeed(stack, toolType);
+
+                if (speed > bestSpeed)
+                {
+                    bestSlot = i;
+                    bestSpeed = speed;
+                }
+            }
+        }
+
+        if (bestSlot != -1)
+        {
+            swapItems(handSlot, bestSlot);
+
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
     public ItemStack addItem(ItemStack stack)
     {

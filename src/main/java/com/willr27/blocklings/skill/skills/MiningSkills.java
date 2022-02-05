@@ -217,7 +217,21 @@ public class MiningSkills
             new SkillGeneralInfo(Skill.Type.OTHER, "mining.hot_hands"),
             new SkillDefaultsInfo(Skill.State.LOCKED),
             new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.MINING, 40); }}),
-            new SkillGuiInfo(0, -70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdd3355, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 7, 0)))
+            new SkillGuiInfo(-70, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdd3355, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 7, 0)))
+    {
+        @Override
+        @Nonnull
+        public List<SkillInfo> parents()
+        {
+            return Collections.singletonList(NOVICE_MINER);
+        }
+    };
+
+    public static final SkillInfo HAMMER = new SkillInfo("f3f2a413-5324-4a87-9d5f-83a5a2df0b5e",
+            new SkillGeneralInfo(Skill.Type.OTHER, "mining.hammer"),
+            new SkillDefaultsInfo(Skill.State.LOCKED),
+            new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.MINING, 50); }}),
+            new SkillGuiInfo(0, -70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x6b4e49, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 8, 0)))
     {
         @Override
         @Nonnull
@@ -237,5 +251,6 @@ public class MiningSkills
         add(group -> new Skill(HASTY, group));
         add(group -> new Skill(NIGHT_OWL, group));
         add(group -> new Skill(HOT_HANDS, group));
+        add(group -> new Skill(HAMMER, group));
     }};
 }

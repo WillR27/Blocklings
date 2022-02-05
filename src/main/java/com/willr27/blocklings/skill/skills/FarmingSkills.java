@@ -249,6 +249,20 @@ public class FarmingSkills
         }
     };
 
+    public static final SkillInfo SCYTHE = new SkillInfo("b5131481-6530-4733-bfa2-ab6b3cfeb76e",
+            new SkillGeneralInfo(Skill.Type.AI, "farming.scythe"),
+            new SkillDefaultsInfo(Skill.State.LOCKED),
+            new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.FARMING, 50); }}),
+            new SkillGuiInfo(0, -70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x6b4e49, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 8, 0)))
+    {
+        @Override
+        @Nonnull
+        public List<SkillInfo> parents()
+        {
+            return Collections.singletonList(NOVICE_FARMER);
+        }
+    };
+
     public static final List<Function<SkillGroup, Skill>> SKILLS = new ArrayList<Function<SkillGroup, Skill>>()
     {{
         add(group -> new Skill(NOVICE_FARMER, group));
@@ -260,5 +274,6 @@ public class FarmingSkills
         add(group -> new Skill(MOMENTUM, group));
         add(group -> new Skill(HASTY, group));
         add(group -> new Skill(NIGHT_OWL, group));
+        add(group -> new Skill(SCYTHE, group));
     }};
 }

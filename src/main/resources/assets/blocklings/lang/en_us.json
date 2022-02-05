@@ -69,6 +69,14 @@
   "blocklings.skill.general.packling.desc": "Sneak and right-click to pick up your blockling in item form.",
   "blocklings.skill.general.armadillo.name": "Armadillo",
   "blocklings.skill.general.armadillo.desc": "Your blockling will drop in item form instead of dying.",
+  "blocklings.skill.general.speed_1.name": "Speedy",
+  "blocklings.skill.general.speed_1.desc": "Your blockling moves 5% faster.",
+  "blocklings.skill.general.speed_2.name": "Speedier",
+  "blocklings.skill.general.speed_2.desc": "Your blockling moves 10% faster.",
+  "blocklings.skill.general.speed_3.name": "Speedest",
+  "blocklings.skill.general.speed_3.desc": "Your blockling moves 20% faster.",
+  "blocklings.skill.general.autoswitch.name": "Autoswitch",
+  "blocklings.skill.general.autoswitch.desc": "Your blockling will switch to the best tools they have for their current task.",
 
   "blocklings.skill.combat.novice_guard.name": "Novice Guard",
   "blocklings.skill.combat.novice_guard.desc": "Unlocks the \"Attack Owner''s Attacker\" and \"Attack Owner''s Target\" tasks.",
@@ -117,6 +125,8 @@
   "blocklings.skill.mining.night_owl.desc": "Your blockling mines faster the lower the light level.",
   "blocklings.skill.mining.hot_hands.name": "Hot Hands",
   "blocklings.skill.mining.hot_hands.desc": "Your blockling's hands are so hot they seem to smelt the ores they mine.",
+  "blocklings.skill.mining.hammer.name": "Hammer",
+  "blocklings.skill.mining.hammer.desc": "Your blockling mines ores in a 3x3x3 area.",
 
   "blocklings.skill.woodcutting.novice_lumberjack.name": "Novice Lumberjack",
   "blocklings.skill.woodcutting.novice_lumberjack.desc": "Unlocks the \"Chop Trees\" task.",
@@ -138,6 +148,8 @@
   "blocklings.skill.woodcutting.tree_surgeon.desc": "Broken leaves will now drop items.",
   "blocklings.skill.woodcutting.replanter.name": "Replanter",
   "blocklings.skill.woodcutting.replanter.desc": "Your blockling will replant the trees they cut if they have the saplings.",
+  "blocklings.skill.woodcutting.lumber_axe.name": "Lumber Axe",
+  "blocklings.skill.woodcutting.lumber_axe.desc": "Your blockling chops logs in a 3x3x3 area.",
 
   "blocklings.skill.farming.novice_farmer.name": "Novice Farmer",
   "blocklings.skill.farming.novice_farmer.desc": "Unlocks the \"Farm Crops\" task.",
@@ -157,6 +169,8 @@
   "blocklings.skill.farming.hasty.desc": "Your blockling harvests faster but their pickaxes use 2x the durability.",
   "blocklings.skill.farming.night_owl.name": "Night Owl",
   "blocklings.skill.farming.night_owl.desc": "Your blockling harvests faster the lower the light level.",
+  "blocklings.skill.farming.scythe.name": "Scythe",
+  "blocklings.skill.farming.scythe.desc": "Your blockling farms crops in a 3x3x3 area.",
 
   "blocklings.requirements": "Requirements:",
   "blocklings.conflicts": "Conflicts:",

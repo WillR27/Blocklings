@@ -3,7 +3,10 @@ package com.willr27.blocklings.goal.goals;
 import com.willr27.blocklings.block.BlockUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
+import com.willr27.blocklings.item.ToolType;
+import com.willr27.blocklings.skill.skills.GeneralSkills;
 import com.willr27.blocklings.skill.skills.MiningSkills;
+import com.willr27.blocklings.skill.skills.WoodcuttingSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.goal.goals.target.BlocklingMineTargetGoal;
 import com.willr27.blocklings.goal.IHasTargetGoal;
@@ -71,6 +74,16 @@ public class BlocklingMineGoal extends BlocklingGatherGoal<BlocklingMineTargetGo
             return false;
         }
 
+        if (blockling.getSkills().getSkill(GeneralSkills.AUTOSWITCH).isBought())
+        {
+            blockling.getEquipment().trySwitchToBestTool(BlocklingHand.BOTH, ToolType.PICKAXE);
+        }
+
+        if (!canHarvestTargetPos())
+        {
+            return false;
+        }
+
         setPathTargetPos(targetGoal.getTargetPos(), null);
 
         if (isStuck())
@@ -103,6 +116,11 @@ public class BlocklingMineGoal extends BlocklingGatherGoal<BlocklingMineTargetGo
     protected void tickGather()
     {
         super.tickGather();
+
+        if (blockling.getSkills().getSkill(GeneralSkills.AUTOSWITCH).isBought())
+        {
+            blockling.getEquipment().trySwitchToBestTool(BlocklingHand.BOTH, ToolType.PICKAXE);
+        }
 
         ItemStack mainStack = blockling.getMainHandItem();
         ItemStack offStack = blockling.getOffhandItem();
@@ -155,7 +173,24 @@ public class BlocklingMineGoal extends BlocklingGatherGoal<BlocklingMineTargetGo
                     blockling.incOresMinedRecently();
 
                     world.destroyBlock(targetBlockPos, false);
-                    world.destroyBlockProgress(blockling.getId(), targetBlockPos, 0);
+                    world.destroyBlockProgress(blockling.getId(), targetBlockPos, -1);
+
+                    if (blockling.getSkills().getSkill(MiningSkills.HAMMER).isBought())
+                    {
+                        for (BlockPos surroundingPos : BlockUtil.getSurroundingBlockPositions(targetBlockPos))
+                        {
+                            if (targetGoal.isValidTarget(surroundingPos))
+                            {
+                                for (ItemStack stack : DropUtil.getDrops(DropUtil.Context.MINING, blockling, surroundingPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
+                                {
+                                    stack = blockling.getEquipment().addItem(stack);
+                                    blockling.dropItemStack(stack);
+                                }
+
+                                world.destroyBlock(surroundingPos, false);
+                            }
+                        }
+                    }
 
                     recalc();
                 }

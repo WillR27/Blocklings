@@ -217,7 +217,7 @@ public class WoodcuttingSkills
             new SkillGeneralInfo(Skill.Type.OTHER, "woodcutting.leaf_blower"),
             new SkillDefaultsInfo(Skill.State.LOCKED),
             new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.WOODCUTTING, 15); }}),
-            new SkillGuiInfo(-70, -140, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x227010, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 7, 0)))
+            new SkillGuiInfo(-70, -70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x227010, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 7, 0)))
     {
         @Override
         @Nonnull
@@ -231,7 +231,7 @@ public class WoodcuttingSkills
             new SkillGeneralInfo(Skill.Type.OTHER, "woodcutting.tree_surgeon"),
             new SkillDefaultsInfo(Skill.State.LOCKED),
             new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.WOODCUTTING, 30); }}),
-            new SkillGuiInfo(-70, -70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x5f6d18, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 8, 0)))
+            new SkillGuiInfo(-70, -140, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x5f6d18, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 8, 0)))
     {
         @Override
         @Nonnull
@@ -255,6 +255,20 @@ public class WoodcuttingSkills
         }
     };
 
+    public static final SkillInfo LUMBER_AXE = new SkillInfo("e28a9248-7265-478c-8fbf-044b9f9db5e6",
+            new SkillGeneralInfo(Skill.Type.OTHER, "woodcutting.lumber_axe"),
+            new SkillDefaultsInfo(Skill.State.LOCKED),
+            new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.WOODCUTTING, 50); }}),
+            new SkillGuiInfo(0, -70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x6b4e49, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 0, 1)))
+    {
+        @Override
+        @Nonnull
+        public List<SkillInfo> parents()
+        {
+            return Collections.singletonList(NOVICE_LUMBERJACK);
+        }
+    };
+
     public static final List<Function<SkillGroup, Skill>> SKILLS = new ArrayList<Function<SkillGroup, Skill>>()
     {{
         add(group -> new Skill(NOVICE_LUMBERJACK, group));
@@ -267,5 +281,6 @@ public class WoodcuttingSkills
         add(group -> new Skill(LEAF_BLOWER, group));
         add(group -> new Skill(TREE_SURGEON, group));
         add(group -> new Skill(REPLANTER, group));
+        add(group -> new Skill(LUMBER_AXE, group));
     }};
 }

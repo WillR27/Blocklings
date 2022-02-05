@@ -6,10 +6,7 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingType;
 import com.willr27.blocklings.skill.info.SkillInfo;
-import com.willr27.blocklings.skill.skills.CombatSkills;
-import com.willr27.blocklings.skill.skills.FarmingSkills;
-import com.willr27.blocklings.skill.skills.MiningSkills;
-import com.willr27.blocklings.skill.skills.WoodcuttingSkills;
+import com.willr27.blocklings.skill.skills.*;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.nbt.CompoundNBT;
@@ -104,6 +101,7 @@ public class BlocklingAttributes
     @Nonnull public final ModifiableFloatAttribute moveSpeed;
     @Nonnull public final ModifiableFloatAttributeModifier moveSpeedBlocklingModifier;
     @Nonnull public final FloatAttributeModifier moveSpeedTypeModifier;
+    @Nonnull public final FloatAttributeModifier moveSpeedSkillSpeedModifier;
 
     @Nonnull public final ModifiableFloatAttribute miningRange;
     @Nonnull public final ModifiableFloatAttribute miningRangeSq;
@@ -248,6 +246,7 @@ public class BlocklingAttributes
         addAttribute(moveSpeed = new ModifiableFloatAttribute("9a0bb639-8543-4725-9be1-8a8ce688da70", "move_speed", blockling, 0.0f, null, null, true));
         addModifier(moveSpeedBlocklingModifier = new ModifiableFloatAttributeModifier("f4300b1a-ee93-4d36-a457-4d71c349a4ab", "move_speed_blockling", moveSpeed, blockling, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString(), true));
         addModifier(moveSpeedTypeModifier = new FloatAttributeModifier("6f685317-7be6-4ea8-ae63-b1c907209040", "move_speed_type", moveSpeedBlocklingModifier, blockling, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString(), true));
+        addModifier(moveSpeedSkillSpeedModifier = new FloatAttributeModifier("38ae3f89-349e-4b99-a8a1-d2b7a7b585c2", "move_speed_skill_speed", moveSpeed, blockling, 1.0f, Operation.MULTIPLY_TOTAL, (v) -> String.format("%.0f%%", (v - 1.0f) * 100.0f), this::speedSkillDisplayNameProvider, true));
 
         addAttribute(miningRange = new ModifiableFloatAttribute("76e044ca-e73e-4004-b576-920a8446612d", "mining_range", blockling, 2.5f, null, null, true));
         addAttribute(miningRangeSq = new ModifiableFloatAttribute("55af3992-cf8d-4d5d-8634-fbc1e05d30fe", "mining_range_sq", blockling, miningRange.getValue() * miningRange.getValue(), null, null, true));
@@ -307,6 +306,21 @@ public class BlocklingAttributes
     private String skillDisplayNameProvider(@Nonnull SkillInfo skillInfo)
     {
         return skillInfo.general.name.getString() + " ("+ new BlocklingsTranslationTextComponent("skill.name").getString() +")";
+    }
+
+    @Nonnull
+    private String speedSkillDisplayNameProvider()
+    {
+        if (blockling.getSkills().getSkill(GeneralSkills.SPEED_2).isBought())
+        {
+            return skillDisplayNameProvider(GeneralSkills.SPEED_2);
+        }
+        else if (blockling.getSkills().getSkill(GeneralSkills.SPEED_3).isBought())
+        {
+            return skillDisplayNameProvider(GeneralSkills.SPEED_3);
+        }
+
+        return skillDisplayNameProvider(GeneralSkills.SPEED_1);
     }
 
     /**

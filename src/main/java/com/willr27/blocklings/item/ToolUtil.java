@@ -105,18 +105,21 @@ public class ToolUtil
 
     public static float getToolAttackSpeed(ItemStack stack)
     {
-        Multimap<Attribute, AttributeModifier> multimap = stack.getAttributeModifiers(EquipmentSlotType.MAINHAND);
-
-        for (Map.Entry<Attribute, AttributeModifier> entry : multimap.entries())
+        if (isTool(stack))
         {
-            AttributeModifier attributemodifier = entry.getValue();
-            UUID baseAttackSpeedAttributeId = ObfuscationReflectionHelper.getPrivateValue(Item.class, Items.ACACIA_BOAT, "field_185050_h");
+            Multimap<Attribute, AttributeModifier> multimap = stack.getAttributeModifiers(EquipmentSlotType.MAINHAND);
 
-            if (attributemodifier.getId() == baseAttackSpeedAttributeId)
+            for (Map.Entry<Attribute, AttributeModifier> entry : multimap.entries())
             {
-                // Add on 4.0f as this seems to be the default value the player has
-                // This is why the item tooltips say +1.6f instead of -2.4f for example
-                return (float) attributemodifier.getAmount() + 4.0f;
+                AttributeModifier attributemodifier = entry.getValue();
+                UUID baseAttackSpeedAttributeId = ObfuscationReflectionHelper.getPrivateValue(Item.class, Items.ACACIA_BOAT, "field_185050_h");
+
+                if (attributemodifier.getId() == baseAttackSpeedAttributeId)
+                {
+                    // Add on 4.0f as this seems to be the default value the player has
+                    // This is why the item tooltips say +1.6f instead of -2.4f for example
+                    return (float) attributemodifier.getAmount() + 4.0f;
+                }
             }
         }
 
@@ -125,34 +128,25 @@ public class ToolUtil
 
     public static float getToolBaseDamage(ItemStack stack)
     {
-        Multimap<Attribute, AttributeModifier> multimap = stack.getAttributeModifiers(EquipmentSlotType.MAINHAND);
-
-        for (Map.Entry<Attribute, AttributeModifier> entry : multimap.entries())
+        if (isTool(stack))
         {
-            AttributeModifier attributemodifier = entry.getValue();
-            UUID baseAttackDamageAttributeId = ObfuscationReflectionHelper.getPrivateValue(Item.class, Items.ACACIA_BOAT, "field_111210_e");
+            Multimap<Attribute, AttributeModifier> multimap = stack.getAttributeModifiers(EquipmentSlotType.MAINHAND);
 
-            if (attributemodifier.getId() == baseAttackDamageAttributeId)
+            for (Map.Entry<Attribute, AttributeModifier> entry : multimap.entries())
             {
-                // Add on 1.0f as this seems to be the default value the player has
-                // This is why the item tooltips say +8.0 instead of -7.0 for example
-                return (float) attributemodifier.getAmount() + 1.0f;
+                AttributeModifier attributemodifier = entry.getValue();
+                UUID baseAttackDamageAttributeId = ObfuscationReflectionHelper.getPrivateValue(Item.class, Items.ACACIA_BOAT, "field_111210_e");
+
+                if (attributemodifier.getId() == baseAttackDamageAttributeId)
+                {
+                    // Add on 1.0f as this seems to be the default value the player has
+                    // This is why the item tooltips say +8.0 instead of -7.0 for example
+                    return (float) attributemodifier.getAmount() + 1.0f;
+                }
             }
         }
 
         return 0.0f;
-    }
-
-    public static float getBaseDamageIfTool(ItemStack stack)
-    {
-        if (isTool(stack))
-        {
-            return getToolBaseDamage(stack);
-        }
-        else
-        {
-            return 0.0f;
-        }
     }
 
     public static float getToolEnchantmentDamage(ItemStack stack, CreatureAttribute creatureAttribute)
@@ -217,6 +211,21 @@ public class ToolUtil
     public static float getToolFarmingSpeed(ItemStack stack)
     {
         return stack.getDestroySpeed(Blocks.HAY_BLOCK.defaultBlockState());
+    }
+
+    /**
+     * @return the attack/mining/woodcutting/farming speed for the given tool and tool type.
+     */
+    public static float getToolSpeed(ItemStack stack, com.willr27.blocklings.item.ToolType toolType)
+    {
+        switch (toolType)
+        {
+            case WEAPON: return getToolAttackSpeed(stack);
+            case PICKAXE: return getToolMiningSpeed(stack);
+            case AXE: return getToolWoodcuttingSpeed(stack);
+            case HOE: return getToolFarmingSpeed(stack);
+            default: return 0.0f;
+        }
     }
 
     /**

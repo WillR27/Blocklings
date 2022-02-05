@@ -3,6 +3,9 @@ package com.willr27.blocklings.goal.goals;
 import com.willr27.blocklings.block.BlockUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
+import com.willr27.blocklings.item.ToolType;
+import com.willr27.blocklings.skill.skills.GeneralSkills;
+import com.willr27.blocklings.skill.skills.MiningSkills;
 import com.willr27.blocklings.skill.skills.WoodcuttingSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.goal.goals.target.BlocklingWoodcutTargetGoal;
@@ -75,6 +78,16 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTa
             return false;
         }
 
+        if (blockling.getSkills().getSkill(GeneralSkills.AUTOSWITCH).isBought())
+        {
+            blockling.getEquipment().trySwitchToBestTool(BlocklingHand.BOTH, ToolType.AXE);
+        }
+
+        if (!canHarvestTargetPos())
+        {
+            return false;
+        }
+
         calculatePathToTree();
 
         if (isStuck())
@@ -109,6 +122,11 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTa
     protected void tickGather()
     {
         super.tickGather();
+
+        if (blockling.getSkills().getSkill(GeneralSkills.AUTOSWITCH).isBought())
+        {
+            blockling.getEquipment().trySwitchToBestTool(BlocklingHand.BOTH, ToolType.AXE);
+        }
 
         ItemStack mainStack = blockling.getMainHandItem();
         ItemStack offStack = blockling.getOffhandItem();
@@ -162,7 +180,24 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTa
                     blockling.incLogsChoppedRecently();
 
                     world.destroyBlock(targetBlockPos, false);
-                    world.destroyBlockProgress(blockling.getId(), targetBlockPos, 0);
+                    world.destroyBlockProgress(blockling.getId(), targetBlockPos, -1);
+
+                    if (blockling.getSkills().getSkill(WoodcuttingSkills.LUMBER_AXE).isBought())
+                    {
+                        for (BlockPos surroundingPos : BlockUtil.getSurroundingBlockPositions(targetBlockPos))
+                        {
+                            if (targetGoal.isValidTarget(surroundingPos))
+                            {
+                                for (ItemStack stack : DropUtil.getDrops(DropUtil.Context.WOODCUTTING, blockling, surroundingPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
+                                {
+                                    stack = blockling.getEquipment().addItem(stack);
+                                    blockling.dropItemStack(stack);
+                                }
+
+                                world.destroyBlock(surroundingPos, false);
+                            }
+                        }
+                    }
 
                     if (blockling.getSkills().getSkill(WoodcuttingSkills.REPLANTER).isBought())
                     {

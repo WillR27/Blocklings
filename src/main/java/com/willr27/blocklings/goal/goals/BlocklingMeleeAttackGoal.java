@@ -3,7 +3,9 @@ package com.willr27.blocklings.goal.goals;
 import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
+import com.willr27.blocklings.item.ToolType;
 import com.willr27.blocklings.skill.skills.CombatSkills;
+import com.willr27.blocklings.skill.skills.GeneralSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.goal.IHasTargetGoal;
 import com.willr27.blocklings.goal.BlocklingGoal;
@@ -132,6 +134,11 @@ public abstract class BlocklingMeleeAttackGoal<T extends BlocklingTargetGoal<?>>
     public void tick()
     {
         super.tick();
+
+        if (blockling.getSkills().getSkill(GeneralSkills.AUTOSWITCH).isBought())
+        {
+            blockling.getEquipment().trySwitchToBestTool(BlocklingHand.BOTH, ToolType.WEAPON);
+        }
 
         LivingEntity target = blockling.getTarget();
 

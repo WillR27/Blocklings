@@ -72,11 +72,6 @@ public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>
             return false;
         }
 
-        if (!canHarvestTargetPos())
-        {
-            return false;
-        }
-
         return true;
     }
 

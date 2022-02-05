@@ -146,6 +146,13 @@ public abstract class AbstractInventory implements IInventory
         stacks[index] = stack;
     }
 
+    public void swapItems(int slot1, int slot2)
+    {
+        ItemStack stack1 = getItem(slot1);
+        setItem(slot1, getItem(slot2));
+        setItem(slot2, stack1);
+    }
+
     @Override
     public boolean stillValid(PlayerEntity player)
     {

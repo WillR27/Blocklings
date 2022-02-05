@@ -4,6 +4,8 @@ import com.willr27.blocklings.block.BlockUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.skill.skills.FarmingSkills;
+import com.willr27.blocklings.skill.skills.GeneralSkills;
+import com.willr27.blocklings.skill.skills.WoodcuttingSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.goal.goals.target.BlocklingFarmTargetGoal;
 import com.willr27.blocklings.goal.IHasTargetGoal;
@@ -108,6 +110,16 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGo
             return false;
         }
 
+        if (blockling.getSkills().getSkill(GeneralSkills.AUTOSWITCH).isBought())
+        {
+            blockling.getEquipment().trySwitchToBestTool(BlocklingHand.BOTH, ToolType.HOE);
+        }
+
+        if (!canHarvestTargetPos())
+        {
+            return false;
+        }
+
         if (isStuck())
         {
             getTargetGoal().markTargetBad();
@@ -122,6 +134,11 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGo
     protected void tickGather()
     {
         super.tickGather();
+
+        if (blockling.getSkills().getSkill(GeneralSkills.AUTOSWITCH).isBought())
+        {
+            blockling.getEquipment().trySwitchToBestTool(BlocklingHand.BOTH, ToolType.HOE);
+        }
 
         ItemStack mainStack = blockling.getMainHandItem();
         ItemStack offStack = blockling.getOffhandItem();
@@ -183,7 +200,24 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGo
                     }
 
                     world.destroyBlock(targetBlockPos, false);
-                    world.destroyBlockProgress(blockling.getId(), targetBlockPos, 0);
+                    world.destroyBlockProgress(blockling.getId(), targetBlockPos, -1);
+
+                    if (blockling.getSkills().getSkill(FarmingSkills.SCYTHE).isBought())
+                    {
+                        for (BlockPos surroundingPos : BlockUtil.getSurroundingBlockPositions(targetBlockPos))
+                        {
+                            if (targetGoal.isValidTarget(surroundingPos))
+                            {
+                                for (ItemStack stack : DropUtil.getDrops(DropUtil.Context.FARMING, blockling, surroundingPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
+                                {
+                                    stack = blockling.getEquipment().addItem(stack);
+                                    blockling.dropItemStack(stack);
+                                }
+
+                                world.destroyBlock(surroundingPos, false);
+                            }
+                        }
+                    }
 
                     if (!seedStack.isEmpty() && blockling.getEquipment().take(seedStack) && seedWhitelist.isEntryWhitelisted(seedStack.getItem()))
                     {
