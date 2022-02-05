@@ -285,7 +285,7 @@ public class CombatSkills
     public static final SkillInfo ANIMAL_HUNTER = new SkillInfo("a623122a-04f2-41a1-ac70-c5cb7fb04ee4",
             new SkillGeneralInfo(Skill.Type.STAT, "combat.animal_hunter"),
             new SkillDefaultsInfo(Skill.State.LOCKED),
-            new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.COMBAT, 40); }}),
+            new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.COMBAT, 50); }}),
             new SkillGuiInfo(-70, -210, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdb6da9, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 1, 1)))
     {
         @Override
@@ -306,7 +306,7 @@ public class CombatSkills
     public static final SkillInfo MONSTER_HUNTER = new SkillInfo("7af5b098-eada-40b5-9c57-595a436fcd47",
             new SkillGeneralInfo(Skill.Type.STAT, "combat.monster_hunter"),
             new SkillDefaultsInfo(Skill.State.LOCKED),
-            new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.COMBAT, 40); }}),
+            new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.COMBAT, 50); }}),
             new SkillGuiInfo(70, -210, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x1e681f, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 2, 1)))
     {
         @Override

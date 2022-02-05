@@ -186,6 +186,8 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTa
                     {
                         for (BlockPos surroundingPos : BlockUtil.getSurroundingBlockPositions(targetBlockPos))
                         {
+                            Block surroundingBlock = world.getBlockState(surroundingPos).getBlock();
+
                             if (targetGoal.isValidTarget(surroundingPos))
                             {
                                 for (ItemStack stack : DropUtil.getDrops(DropUtil.Context.WOODCUTTING, blockling, surroundingPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
@@ -195,25 +197,47 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTa
                                 }
 
                                 world.destroyBlock(surroundingPos, false);
+
+                                if (blockling.getSkills().getSkill(WoodcuttingSkills.REPLANTER).isBought())
+                                {
+                                    if (BlockUtil.DIRTS.contains(world.getBlockState(surroundingPos.below()).getBlock()))
+                                    {
+                                        Block saplingBlock = BlockUtil.getSaplingFromLog(surroundingBlock);
+
+                                        if (saplingBlock != null)
+                                        {
+                                            ItemStack itemStack = new ItemStack(saplingBlock);
+
+                                            if (blockling.getEquipment().has(itemStack))
+                                            {
+                                                blockling.getEquipment().take(itemStack);
+
+                                                world.setBlock(surroundingPos, saplingBlock.defaultBlockState(), 3);
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
-
-                    if (blockling.getSkills().getSkill(WoodcuttingSkills.REPLANTER).isBought())
+                    else
                     {
-                        if (BlockUtil.DIRTS.contains(world.getBlockState(targetBlockPos.below()).getBlock()))
+                        if (blockling.getSkills().getSkill(WoodcuttingSkills.REPLANTER).isBought())
                         {
-                            Block saplingBlock = BlockUtil.getSaplingFromLog(targetBlock);
-
-                            if (saplingBlock != null)
+                            if (BlockUtil.DIRTS.contains(world.getBlockState(targetBlockPos.below()).getBlock()))
                             {
-                                ItemStack itemStack = new ItemStack(saplingBlock);
+                                Block saplingBlock = BlockUtil.getSaplingFromLog(targetBlock);
 
-                                if (blockling.getEquipment().has(itemStack))
+                                if (saplingBlock != null)
                                 {
-                                    blockling.getEquipment().take(itemStack);
+                                    ItemStack itemStack = new ItemStack(saplingBlock);
 
-                                    world.setBlock(targetBlockPos, saplingBlock. defaultBlockState(), 3);
+                                    if (blockling.getEquipment().has(itemStack))
+                                    {
+                                        blockling.getEquipment().take(itemStack);
+
+                                        world.setBlock(targetBlockPos, saplingBlock.defaultBlockState(), 3);
+                                    }
                                 }
                             }
                         }

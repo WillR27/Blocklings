@@ -206,6 +206,9 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGo
                     {
                         for (BlockPos surroundingPos : BlockUtil.getSurroundingBlockPositions(targetBlockPos))
                         {
+                            BlockState surroundingBlockState = world.getBlockState(surroundingPos);
+                            Block surroundingBlock = surroundingBlockState.getBlock();
+
                             if (targetGoal.isValidTarget(surroundingPos))
                             {
                                 for (ItemStack stack : DropUtil.getDrops(DropUtil.Context.FARMING, blockling, surroundingPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
@@ -215,6 +218,19 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGo
                                 }
 
                                 world.destroyBlock(surroundingPos, false);
+
+                                ItemStack seedStack2 = ItemStack.EMPTY;
+
+                                if (blockling.getSkills().getSkill(FarmingSkills.REPLANTER).isBought() && surroundingBlock instanceof CropsBlock)
+                                {
+                                    CropsBlock cropsBlock = (CropsBlock) surroundingBlock;
+                                    seedStack2 = cropsBlock.getCloneItemStack(world, surroundingPos, surroundingBlockState);
+                                }
+
+                                if (!seedStack2.isEmpty() && blockling.getEquipment().take(seedStack2) && seedWhitelist.isEntryWhitelisted(seedStack2.getItem()))
+                                {
+                                    world.setBlock(surroundingPos, Block.byItem(seedStack2.getItem()).defaultBlockState(), 3);
+                                }
                             }
                         }
                     }

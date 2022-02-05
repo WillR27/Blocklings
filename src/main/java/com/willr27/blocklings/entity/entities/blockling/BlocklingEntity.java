@@ -420,21 +420,6 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
             }
         }
 
-        if (skills.getSkill(CombatSkills.ANIMAL_HUNTER).isBought())
-        {
-            if (target instanceof AnimalEntity)
-            {
-                damage *= 1.25f;
-            }
-        }
-        else if (skills.getSkill(CombatSkills.MONSTER_HUNTER).isBought())
-        {
-            if (target instanceof MonsterEntity)
-            {
-                damage *= 1.25f;
-            }
-        }
-
         int invulnerableTime = target.invulnerableTime;
         boolean hasHurt = target.hurt(DamageSource.mobAttack(this), damage);
         target.invulnerableTime = invulnerableTime;

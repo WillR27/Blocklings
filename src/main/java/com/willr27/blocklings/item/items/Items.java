@@ -14,7 +14,7 @@ public class Items
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Blocklings.MODID);
 
     public static final RegistryObject<Item> BLOCKLING_SPAWN_EGG = ITEMS.register("blockling_spawn_egg",
-            () -> new BlocklingSpawnEgg(EntityTypes.BLOCKLING_ENTITY, 0x464F56, 0x000FFF,
+            () -> new BlocklingSpawnEgg(EntityTypes.BLOCKLING_ENTITY, 0x633a11, 0x124a14,
                     new Item.Properties().tab(ItemGroup.TAB_MISC)));
 
     public static final RegistryObject<Item> BLOCKLING = ITEMS.register("blockling", () -> new BlocklingItem(

@@ -6,8 +6,12 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingType;
 import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.skill.skills.CombatSkills;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntitySize;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -64,6 +68,15 @@ public class ForgeEventBusEvents
                 for (ItemEntity itemEntity : event.getDrops())
                 {
                     ItemStack itemStack = blockling.getEquipment().addItem(itemEntity.getItem());
+
+                    if (blockling.getSkills().getSkill(CombatSkills.ANIMAL_HUNTER).isBought() && event.getEntity() instanceof AnimalEntity)
+                    {
+                        itemStack.setCount(itemStack.getCount() * 2);
+                    }
+                    else if (blockling.getSkills().getSkill(CombatSkills.MONSTER_HUNTER).isBought() && event.getEntity() instanceof MobEntity)
+                    {
+                        itemStack.setCount(itemStack.getCount() * 2);
+                    }
 
                     blockling.level.addFreshEntity(new ItemEntity(blockling.level, event.getEntity().getX(), event.getEntity().getY() + 0.2f, event.getEntity().getZ(), itemStack));
                 }
