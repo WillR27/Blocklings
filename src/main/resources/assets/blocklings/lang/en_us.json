@@ -11,6 +11,7 @@
   "blocklings.type.gold": "Gold",
   "blocklings.type.emerald": "Emerald",
   "blocklings.type.diamond": "Diamond",
+  "blocklings.type.netherite": "Netherite",
   "blocklings.type.obsidian": "Obsidian",
 
   "blocklings.tab.stats": "Stats",

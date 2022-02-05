@@ -33,26 +33,17 @@ public class BlocklingType
     @Nonnull
     public static final List<BlocklingType> TYPES = new ArrayList<>();
 
-    @Nonnull
-    public static final BlocklingType GRASS = create("grass", 8).addCombatStats(2.0f, 1.0f, 3.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 1.0f, 2.0f);
-    @Nonnull
-    public static final BlocklingType OAK_LOG = create("oak_log", 2).addCombatStats(3.0f, 1.0f, 3.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 2.0f, 1.0f);
-    @Nonnull
-    public static final BlocklingType STONE = create("stone", 12).addCombatStats(5.0f, 1.0f, 3.0f, 2.0f, 1.0f, 0.3f, 2.5f).addGatheringStats(1.5f, 0.5f, 0.5f);
-    @Nonnull
-    public static final BlocklingType IRON = create("iron", 2).addCombatStats(6.0f, 2.0f, 3.0f, 2.0f, 1.0f, 0.1f, 3.0f).addGatheringStats(2.0f, 0.5f, 0.5f);
-    @Nonnull
-    public static final BlocklingType QUARTZ = create("quartz", 0).addCombatStats(3.0f, 4.0f, 3.0f, 1.0f, 0.5f, 0.1f, 3.5f).addGatheringStats(2.0f, 0.5f, 0.5f);
-    @Nonnull
-    public static final BlocklingType LAPIS = create("lapis", 0).addCombatStats(5.0f, 3.0f, 3.0f, 1.0f, 0.5f, 0.1f, 3.0f).addGatheringStats(2.0f, 0.5f, 0.5f);
-    @Nonnull
-    public static final BlocklingType GOLD = create("gold", 0).addCombatStats(1.0f, 4.0f, 3.0f, 1.0f, 0.5f, 0.1f, 4.0f).addGatheringStats(2.5f, 0.5f, 0.5f);
-    @Nonnull
-    public static final BlocklingType EMERALD = create("emerald", 0).addCombatStats(5.0f, 3.0f, 3.0f, 2.0f, 1.0f, 0.2f, 3.0f).addGatheringStats(2.5f, 0.5f, 0.5f);
-    @Nonnull
-    public static final BlocklingType DIAMOND = create("diamond", 0).addCombatStats(8.0f, 6.0f, 3.0f, 3.0f, 1.5f, 0.2f, 3.0f).addGatheringStats(3.0f, 0.5f, 0.5f);
-    @Nonnull
-    public static final BlocklingType OBSIDIAN = create("obsidian", 0).addCombatStats(25.0f, 5.0f, 2.0f, 4.0f, 2.0f, 0.8f, 2.0f).addGatheringStats(1.0f, 0.5f, 0.5f);
+    @Nonnull public static final BlocklingType GRASS = create("grass", 8).addCombatStats(2.0f, 1.0f, 3.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 1.0f, 2.0f);
+    @Nonnull public static final BlocklingType OAK_LOG = create("oak_log", 2).addCombatStats(3.0f, 1.0f, 3.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 2.0f, 1.0f);
+    @Nonnull public static final BlocklingType STONE = create("stone", 12).addCombatStats(5.0f, 1.0f, 3.0f, 2.0f, 1.0f, 0.3f, 2.5f).addGatheringStats(1.5f, 0.5f, 0.5f);
+    @Nonnull public static final BlocklingType IRON = create("iron", 2).addCombatStats(6.0f, 2.0f, 3.0f, 2.0f, 1.0f, 0.1f, 3.0f).addGatheringStats(2.0f, 0.5f, 0.5f);
+    @Nonnull public static final BlocklingType QUARTZ = create("quartz", 0).addCombatStats(3.0f, 4.0f, 3.0f, 1.0f, 0.5f, 0.1f, 3.5f).addGatheringStats(2.0f, 0.5f, 0.5f);
+    @Nonnull public static final BlocklingType LAPIS = create("lapis", 0).addCombatStats(5.0f, 3.0f, 3.0f, 1.0f, 0.5f, 0.1f, 3.0f).addGatheringStats(2.0f, 0.5f, 0.5f);
+    @Nonnull public static final BlocklingType GOLD = create("gold", 0).addCombatStats(1.0f, 4.0f, 3.0f, 1.0f, 0.5f, 0.1f, 4.0f).addGatheringStats(2.5f, 0.5f, 0.5f);
+    @Nonnull public static final BlocklingType EMERALD = create("emerald", 0).addCombatStats(5.0f, 3.0f, 3.0f, 2.0f, 1.0f, 0.2f, 3.0f).addGatheringStats(2.5f, 0.5f, 0.5f);
+    @Nonnull public static final BlocklingType DIAMOND = create("diamond", 0).addCombatStats(8.0f, 6.0f, 3.0f, 3.0f, 1.5f, 0.2f, 3.0f).addGatheringStats(3.0f, 0.5f, 0.5f);
+    @Nonnull public static final BlocklingType NETHERITE = create("netherite", 0).addCombatStats(15.0f, 7.0f, 3.0f, 4.0f, 2.0f, 0.3f, 2.5f).addGatheringStats(2.5f, 1.0f, 1.0f);
+    @Nonnull public static final BlocklingType OBSIDIAN = create("obsidian", 0).addCombatStats(25.0f, 5.0f, 2.0f, 4.0f, 2.0f, 0.8f, 2.0f).addGatheringStats(1.0f, 0.5f, 0.5f);
 
     /**
      * Initialises the additional properties for each blockling type.
@@ -106,6 +97,11 @@ public class BlocklingType
         DIAMOND.addFoods(Blocks.DIAMOND_ORE);
         DIAMOND.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
         DIAMOND.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 5, Blocks.DIAMOND_ORE));
+
+        NETHERITE.addFoods(Items.NETHERITE_SCRAP, Items.NETHERITE_INGOT);
+        NETHERITE.addFoods(Blocks.ANCIENT_DEBRIS);
+        NETHERITE.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.NETHER));
+        NETHERITE.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 20, Blocks.ANCIENT_DEBRIS));
 
         OBSIDIAN.addFoods(Blocks.OBSIDIAN);
         OBSIDIAN.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));

@@ -11,6 +11,7 @@ import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -73,7 +74,7 @@ public class ForgeEventBusEvents
                     {
                         itemStack.setCount(itemStack.getCount() * 2);
                     }
-                    else if (blockling.getSkills().getSkill(CombatSkills.MONSTER_HUNTER).isBought() && event.getEntity() instanceof MobEntity)
+                    else if (blockling.getSkills().getSkill(CombatSkills.MONSTER_HUNTER).isBought() && event.getEntity() instanceof MonsterEntity)
                     {
                         itemStack.setCount(itemStack.getCount() * 2);
                     }

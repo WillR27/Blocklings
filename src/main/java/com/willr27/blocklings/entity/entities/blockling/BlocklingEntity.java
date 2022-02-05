@@ -11,7 +11,7 @@ import com.willr27.blocklings.network.messages.BlocklingAttackTargetMessage;
 import com.willr27.blocklings.network.messages.BlocklingNameMessage;
 import com.willr27.blocklings.network.messages.BlocklingScaleMessage;
 import com.willr27.blocklings.network.messages.BlocklingTypeMessage;
-import com.willr27.blocklings.skill.*;
+import com.willr27.blocklings.skill.BlocklingSkills;
 import com.willr27.blocklings.skill.skills.*;
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.task.Task;
@@ -20,8 +20,6 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -33,6 +31,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.pathfinding.GroundPathNavigator;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.ActionResultType;
@@ -321,7 +320,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         actions.tick();
 
         checkAndUpdateCooldowns();
-
+        
         equipmentInv.detectAndSendChanges();
     }
 
@@ -866,6 +865,12 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     public void dropItemStack(@Nonnull ItemStack stack)
     {
         level.addFreshEntity(new ItemEntity(level, getX(), getY() + 0.2f, getZ(), stack));
+    }
+
+    @Override
+    public boolean fireImmune()
+    {
+        return blocklingType == BlocklingType.NETHERITE || blocklingType == BlocklingType.OBSIDIAN;
     }
 
     /**

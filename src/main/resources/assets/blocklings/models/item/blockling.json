@@ -62,6 +62,12 @@
       "predicate": {
         "blocklings:type": 9
       },
+      "model": "blocklings:item/blockling_netherite"
+    },
+    {
+      "predicate": {
+        "blocklings:type": 10
+      },
       "model": "blocklings:item/blockling_obsidian"
     }
   ]

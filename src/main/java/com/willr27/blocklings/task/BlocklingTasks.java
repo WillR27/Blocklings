@@ -16,6 +16,7 @@ import com.willr27.blocklings.whitelist.GoalWhitelist;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.ai.goal.PrioritizedGoal;
+import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
@@ -100,6 +101,8 @@ public class BlocklingTasks
         goalLockedFlags.clear();
         targetLockedFlags.clear();
 
+        goalSelector.addGoal(0, new SwimGoal(blockling));
+
         for (Task task : prioritisedTasks)
         {
             if (!task.isConfigured())
@@ -115,7 +118,7 @@ public class BlocklingTasks
             {
                 IHasTargetGoal hasTargetGoal = (IHasTargetGoal) goal;
 
-                targetSelector.addGoal(task.getPriority(), hasTargetGoal.getTargetGoal());
+                targetSelector.addGoal(task.getPriority() + 1, hasTargetGoal.getTargetGoal());
             }
         }
     }
