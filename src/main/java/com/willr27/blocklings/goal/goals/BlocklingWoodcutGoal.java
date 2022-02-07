@@ -159,7 +159,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTa
                 if (blockling.getActions().gather.isFinished())
                 {
                     blockling.getActions().gather.stop();
-                    blockling.getStats().woodcuttingXp.incrementValue((int) (blockStrength * 2.0f));
+                    blockling.getStats().woodcuttingXp.incrementValue((int) blockStrength);
 
                     for (ItemStack stack : DropUtil.getDrops(DropUtil.Context.WOODCUTTING, blockling, targetBlockPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
                     {
@@ -336,45 +336,6 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTa
         {
             setPathTargetPos(closestPos, closestPath);
         }
-    }
-
-    /**
-     * Creates a path to the given block or a surrounding block.
-     *
-     * @param blockPos the pos to create a path to.
-     * @return the path.
-     */
-    @Nullable
-    private Path createPath(@Nonnull BlockPos blockPos)
-    {
-        Path closestPath = null;
-        double closestDistanceSq = Double.MAX_VALUE;
-
-        Path path = blockling.getNavigation().createPath(blockPos, 0);
-
-        if (path != null)
-        {
-            closestPath = path;
-            closestDistanceSq = blockPos.distSqr(path.getTarget());
-        }
-
-        for (BlockPos adjacentPos : BlockUtil.getSurroundingBlockPositions(blockPos))
-        {
-            path = blockling.getNavigation().createPath(adjacentPos, 0);
-
-            if (path != null)
-            {
-                double distanceSq = adjacentPos.distSqr(path.getTarget());
-
-                if (distanceSq < closestDistanceSq)
-                {
-                    closestPath = path;
-                    closestDistanceSq = distanceSq;
-                }
-            }
-        }
-
-        return closestPath;
     }
 
     @Override

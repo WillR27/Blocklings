@@ -116,7 +116,7 @@ public class BlocklingTasks
 
             if (goal instanceof IHasTargetGoal)
             {
-                IHasTargetGoal hasTargetGoal = (IHasTargetGoal) goal;
+                IHasTargetGoal<?> hasTargetGoal = (IHasTargetGoal<?>) goal;
 
                 targetSelector.addGoal(task.getPriority() + 1, hasTargetGoal.getTargetGoal());
             }

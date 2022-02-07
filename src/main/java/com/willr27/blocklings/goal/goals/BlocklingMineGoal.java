@@ -88,6 +88,8 @@ public class BlocklingMineGoal extends BlocklingGatherGoal<BlocklingMineTargetGo
 
         if (isStuck())
         {
+            targetGoal.markTargetBad();
+
             return false;
         }
 

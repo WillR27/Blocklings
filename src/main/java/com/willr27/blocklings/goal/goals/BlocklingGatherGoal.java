@@ -1,5 +1,6 @@
 package com.willr27.blocklings.goal.goals;
 
+import com.willr27.blocklings.block.BlockUtil;
 import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.task.BlocklingTasks;
@@ -25,7 +26,7 @@ public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>
     /**
      * The number of ticks between each recalc.
      */
-    private static final int RECALC_INTERVAL = 20;
+    private static final int RECALC_INTERVAL = 10;
 
     /**
      * Counts the number of ticks since the last recalc.
@@ -240,7 +241,7 @@ public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>
      * @param blockPos the new pos to path to.
      * @param pathToPos an optional path to the given pos.
      */
-    protected void setPathTargetPos(@Nonnull BlockPos blockPos, Path pathToPos)
+    protected void setPathTargetPos(@Nonnull BlockPos blockPos, @Nullable Path pathToPos)
     {
         pathTargetPos = blockPos;
 
@@ -250,14 +251,57 @@ public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>
         }
         else
         {
-            Path newPath = blockling.getNavigation().createPath(pathTargetPos, -1);
+            Path newPath = createPath(pathTargetPos);
 
             if (newPath != null)
             {
-                path = newPath;
+                // If the target of path is going to be in range of the target block then we can use it
+                if (newPath.getTarget().distSqr(pathTargetPos) < getRangeSq())
+                {
+                    path = newPath;
+                }
             }
         }
 
         blockling.getNavigation().moveTo(path, 1.0);
+    }
+
+    /**
+     * Creates a path to the given block or a surrounding block.
+     *
+     * @param blockPos the pos to create a path to.
+     * @return the path.
+     */
+    @Nullable
+    protected Path createPath(@Nonnull BlockPos blockPos)
+    {
+        Path closestPath = null;
+        double closestDistanceSq = Double.MAX_VALUE;
+
+        Path path = blockling.getNavigation().createPath(blockPos, 0);
+
+        if (path != null)
+        {
+            closestPath = path;
+            closestDistanceSq = blockPos.distSqr(path.getTarget());
+        }
+
+        for (BlockPos adjacentPos : BlockUtil.getSurroundingBlockPositions(blockPos))
+        {
+            path = blockling.getNavigation().createPath(adjacentPos, 0);
+
+            if (path != null)
+            {
+                double distanceSq = adjacentPos.distSqr(path.getTarget());
+
+                if (distanceSq < closestDistanceSq)
+                {
+                    closestPath = path;
+                    closestDistanceSq = distanceSq;
+                }
+            }
+        }
+
+        return closestPath;
     }
 }
