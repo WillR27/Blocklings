@@ -112,7 +112,7 @@ public class NetworkHandler
      */
     public static void sendToServer(IMessage message)
     {
-        Log.info("Sending to server: " + message.getClass());
+//        Log.info("Sending to server: " + message.getClass());
 
         HANDLER.sendToServer(message);
     }
@@ -125,7 +125,7 @@ public class NetworkHandler
      */
     public static void sendToClient(PlayerEntity player, IMessage message)
     {
-        Log.info("Sending to client: " + message.getClass());
+//        Log.info("Sending to client: " + message.getClass());
 
         HANDLER.sendTo(message, ((ServerPlayerEntity) player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
     }

@@ -6,14 +6,10 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import java.util.EnumSet;
 
 public abstract class BlocklingTargetGoal<T extends BlocklingGoal> extends Goal
 {
-    /**
-     * The number of ticks between each recalc.
-     */
-    private static final int RECALC_INTERVAL = 20;
-
     /**
      * The associated goal instance.
      */
@@ -39,12 +35,7 @@ public abstract class BlocklingTargetGoal<T extends BlocklingGoal> extends Goal
     public final BlocklingTasks tasks;
 
     /**
-     * Counts the number of ticks since the last recalc.
-     */
-    private int recalcCounter = 0;
-
-    /**
-     * @param goal the associate goal instance.
+     * @param goal the associated goal instance.
      */
     public BlocklingTargetGoal(@Nonnull T goal)
     {
@@ -52,18 +43,13 @@ public abstract class BlocklingTargetGoal<T extends BlocklingGoal> extends Goal
         this.tasks = goal.tasks;
         this.blockling = goal.blockling;
         this.world = blockling.level;
+
+        setFlags(EnumSet.of(Flag.TARGET));
     }
 
     @Override
     public boolean canUse()
     {
-        if (!tickRecalc())
-        {
-            return false;
-        }
-
-        recalc();
-
         if (goal.getState() == BlocklingGoal.State.DISABLED)
         {
             return false;
@@ -86,59 +72,16 @@ public abstract class BlocklingTargetGoal<T extends BlocklingGoal> extends Goal
     @Override
     public void tick()
     {
-        if (tickRecalc())
-        {
-            recalc();
 
-            if (!isTargetValid())
-            {
-                recalcTarget();
-            }
-        }
-    }
-
-    /**
-     * Recalculates the state of the target goal.
-     */
-    protected void recalc()
-    {
-
-    }
-
-    /**
-     * Recalculates the current target.
-     */
-    public void recalcTarget()
-    {
-
-    }
-
-    /**
-     * Increments the recalc counter and checks if it has reached the recalc interval.
-     *
-     * @return true if recalc counter has reached the recalc interval.
-     */
-    private boolean tickRecalc()
-    {
-        recalcCounter++;
-
-        if (recalcCounter < RECALC_INTERVAL)
-        {
-            return false;
-        }
-        else
-        {
-            recalcCounter = 0;
-        }
-
-        return true;
     }
 
     /**
      * Returns whether the current target is valid or not.
      */
-    protected boolean isTargetValid()
-    {
-        return true;
-    }
+    protected abstract boolean isTargetValid();
+
+    /**
+     * @return true if the target goal currently has a target.
+     */
+    protected abstract boolean hasTarget();
 }

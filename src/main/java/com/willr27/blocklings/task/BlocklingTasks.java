@@ -1,13 +1,12 @@
 package com.willr27.blocklings.task;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.goal.IHasTargetGoal;
 import com.willr27.blocklings.goal.BlocklingGoal;
+import com.willr27.blocklings.goal.BlocklingTargetGoal;
+import com.willr27.blocklings.goal.IHasTargetGoal;
 import com.willr27.blocklings.goal.goals.*;
-import com.willr27.blocklings.gui.GuiTextures;
-import com.willr27.blocklings.task.Task;
-import com.willr27.blocklings.task.TaskType;
 import com.willr27.blocklings.gui.GuiTexture;
+import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.network.messages.TaskCreateMessage;
 import com.willr27.blocklings.network.messages.TaskRemoveMessage;
 import com.willr27.blocklings.network.messages.TaskTypeIsUnlockedMessage;
@@ -91,9 +90,9 @@ public class BlocklingTasks
     {
         Set<PrioritizedGoal> goals = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, goalSelector, "field_220892_d");
         Set<PrioritizedGoal> targets = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, targetSelector, "field_220892_d");
-        goals.forEach(prioritizedGoal -> prioritizedGoal.stop());
+        goals.forEach(PrioritizedGoal::stop);
         goals.clear();
-        targets.forEach(prioritizedGoal -> prioritizedGoal.stop());
+        targets.forEach(PrioritizedGoal::stop);
         targets.clear();
 
         Map<Goal.Flag, PrioritizedGoal> goalLockedFlags  = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, goalSelector, "field_220891_c");
@@ -117,10 +116,19 @@ public class BlocklingTasks
             if (goal instanceof IHasTargetGoal)
             {
                 IHasTargetGoal<?> hasTargetGoal = (IHasTargetGoal<?>) goal;
+                BlocklingTargetGoal<?> targetGoal = hasTargetGoal.getTargetGoal();
 
-                targetSelector.addGoal(task.getPriority() + 1, hasTargetGoal.getTargetGoal());
+                targetSelector.addGoal(task.getPriority() + 1, targetGoal);
             }
         }
+    }
+
+    /**
+     * Called once per tick the blockling is alive.
+     */
+    public void tick()
+    {
+
     }
 
     public void writeToNBT(CompoundNBT c)

@@ -31,7 +31,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.pathfinding.GroundPathNavigator;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.ActionResultType;
@@ -156,6 +155,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     {
         super(type, world);
 
+        setTame(false);
         setCustomName(new StringTextComponent("Blockling"), false);
 
         stats.initUpdateCallbacks();
@@ -322,6 +322,15 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         checkAndUpdateCooldowns();
         
         equipmentInv.detectAndSendChanges();
+    }
+
+    @Override
+    public void customServerAiStep()
+    {
+        super.customServerAiStep();
+
+        // Tick the tasks just after the goal and target selectors have ticked
+        tasks.tick();
     }
 
     /**

@@ -1,10 +1,12 @@
 package com.willr27.blocklings.entity;
 
+import com.willr27.blocklings.block.BlockUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FlyingEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.passive.WaterMobEntity;
+import net.minecraft.pathfinding.Path;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -15,6 +17,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -117,6 +120,71 @@ public class EntityUtil
      */
     public static boolean isInRange(@Nonnull LivingEntity entity, @Nonnull BlockPos blockPos, float rangeSq)
     {
-        return (float) entity.distanceToSqr(blockPos.getX() + 0.5f, blockPos.getY() + 0.5f, blockPos.getZ() + 0.5f) < rangeSq;
+        return (float) BlockUtil.distanceSq(entity.blockPosition(), blockPos) < rangeSq;
+    }
+
+    /**
+     * Creates the closest path to the given block.
+     *
+     * @param entity the entity to create a path for.
+     * @param blockPos the pos to create a path to.
+     * @return the path or null if no path was found.
+     */
+    @Nullable
+    public static Path createPathTo(@Nonnull MobEntity entity, @Nonnull BlockPos blockPos)
+    {
+        return createPathTo(entity, blockPos, 0);
+    }
+
+    /**
+     * Creates a path to the given block.
+     *
+     * @param entity the entity to create a path for.
+     * @param blockPos the pos to create a path to.
+     * @param stopDistanceSq if the distance between the path's target and target block is within this range we can return (0 to just find the closest path).
+     * @return the path or null if no path was found.
+     */
+    @Nullable
+    public static Path createPathTo(@Nonnull MobEntity entity, @Nonnull BlockPos blockPos, float stopDistanceSq)
+    {
+        Path closestPath = null;
+        double closestDistanceSq = Double.MAX_VALUE;
+
+        Path path = entity.getNavigation().createPath(blockPos, 0);
+
+        if (path != null)
+        {
+            closestPath = path;
+            closestDistanceSq = BlockUtil.distanceSq(blockPos, path.getTarget());
+
+            if (closestDistanceSq < stopDistanceSq)
+            {
+                return closestPath;
+            }
+        }
+
+        for (BlockPos adjacentPos : BlockUtil.getSurroundingBlockPositions(blockPos))
+        {
+            path = entity.getNavigation().createPath(adjacentPos, 0);
+
+            if (path != null)
+            {
+                double distanceSq = BlockUtil.distanceSq(blockPos, path.getTarget());
+
+                if (distanceSq < closestDistanceSq)
+                {
+                    closestPath = path;
+                    closestDistanceSq = distanceSq;
+
+                    if (closestDistanceSq < stopDistanceSq)
+                    {
+                        return closestPath;
+                    }
+                }
+            }
+        }
+
+        // If we get here with a stop distance > 0 then return null as we didn't find a path within range
+        return stopDistanceSq > 0 ? null : closestPath;
     }
 }

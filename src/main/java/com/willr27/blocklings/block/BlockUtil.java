@@ -5,13 +5,11 @@ import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class BlockUtil
 {
@@ -324,6 +322,18 @@ public class BlockUtil
     }
 
     /**
+     * Checks whether all adjacent blocks are solid.
+     *
+     * @param world the world the block is in.
+     * @param blockPos the block position to test.
+     * @return true if all adjacent blocks are solid.
+     */
+    public static boolean areAllAdjacentBlocksSolid(@Nonnull World world, @Nonnull BlockPos blockPos)
+    {
+        return !Arrays.stream(getAdjacentBlockPositions(blockPos)).anyMatch(blockPos1 -> !world.getBlockState(blockPos1).getMaterial().isSolid());
+    }
+
+    /**
      * Gets the positions adjacent to the given block pos.
      * Does not include diagonals.
      *
@@ -383,5 +393,13 @@ public class BlockUtil
             blockPos.offset(1, 1, 0),
             blockPos.offset(1, 1, 1),
         };
+    }
+
+    /**
+     * @return the distance squared between two blocks from center to center.
+     */
+    public static double distanceSq(@Nonnull BlockPos blockPos1, @Nonnull BlockPos blockPos2)
+    {
+        return blockPos1.distSqr(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ(), false);
     }
 }

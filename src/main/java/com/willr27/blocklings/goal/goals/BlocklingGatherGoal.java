@@ -3,10 +3,11 @@ package com.willr27.blocklings.goal.goals;
 import com.willr27.blocklings.block.BlockUtil;
 import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.task.BlocklingTasks;
+import com.willr27.blocklings.goal.BlockChunk;
 import com.willr27.blocklings.goal.BlocklingGoal;
-import com.willr27.blocklings.goal.goals.target.BlocklingGatherTargetGoal;
 import com.willr27.blocklings.goal.IHasTargetGoal;
+import com.willr27.blocklings.goal.goals.target.BlocklingGatherTargetGoal;
+import com.willr27.blocklings.task.BlocklingTasks;
 import net.minecraft.command.arguments.EntityAnchorArgument;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.math.BlockPos;
@@ -14,12 +15,10 @@ import net.minecraft.util.math.vector.Vector3d;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Contains common behaviour shared between gathering goals.
- *
- * @param <T>
  */
 public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>> extends BlocklingGoal implements IHasTargetGoal<T>
 {
@@ -29,6 +28,11 @@ public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>
     private static final int RECALC_INTERVAL = 10;
 
     /**
+     * The number of ticks a bad path target needs elapse before it is removed.
+     */
+    private static final int BAD_PATH_TARGET_COOLDOWN_INTERVAL = 10 * 20;
+
+    /**
      * Counts the number of ticks since the last recalc.
      */
     private int recalcCounter = 0;
@@ -36,14 +40,20 @@ public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>
     /**
      * The current pos to path to.
      */
-    @Nonnull
+    @Nullable
     private BlockPos pathTargetPos = blockling.blockPosition();
 
     /**
      * The current path to the target.
      */
     @Nullable
-    protected Path path;
+    protected Path path = null;
+
+    /**
+     * The map of block positions to ignore as they led to the blockling getting stuck and their cooldowns.
+     */
+    @Nonnull
+    protected final Map<BlockChunk, Integer> badPathTargetChunks = new HashMap<>();
 
     /**
      * The distance the blockling had moved last check.
@@ -55,7 +65,7 @@ public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>
      * @param blockling the blockling the goal is assigned to.
      * @param tasks the associated tasks.
      */
-    public BlocklingGatherGoal(UUID id, BlocklingEntity blockling, BlocklingTasks tasks)
+    public BlocklingGatherGoal(@Nonnull UUID id, @Nonnull BlocklingEntity blockling, @Nonnull BlocklingTasks tasks)
     {
         super(id, blockling, tasks);
     }
@@ -89,11 +99,6 @@ public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>
             return false;
         }
 
-        if (!canHarvestTargetPos())
-        {
-            return false;
-        }
-
         return true;
     }
 
@@ -101,8 +106,6 @@ public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>
     public void start()
     {
         super.start();
-
-        blockling.getNavigation().moveTo(path, 1.0);
     }
 
     @Override
@@ -110,7 +113,8 @@ public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>
     {
         super.stop();
 
-        blockling.getNavigation().stop();
+        setPathTargetPos(null, null);
+
         blockling.getActions().gather.stop();
     }
 
@@ -122,34 +126,49 @@ public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>
         // Tick to make sure isFinished() is only true for a single tick
         blockling.getActions().gather.tick(0.0f);
 
-        if (isInRangeOfPathTarget())
+        boolean recalc = tickRecalc();
+
+        // First try a normal recalc
+        if (recalc)
+        {
+            recalcPath(false);
+        }
+
+        // If we are still stuck force a recalc
+        if (isStuck() || (isInRangeOfPathTarget() && !isValidPathTargetPos(getPathTargetPos())))
+        {
+             recalcPath(true);
+        }
+
+        // If we are still stuck, give up and mark it as bad
+        if (isStuck())
+        {
+            blockling.getActions().gather.stop();
+
+            markPathTargetPosBad();
+            getTargetGoal().markTargetBad();
+        }
+        else if (isInRangeOfPathTarget())
         {
             tickGather();
         }
 
-        if (tickRecalc())
+        if (recalc)
         {
-            recalc();
-
-            recalcCounter = RECALC_INTERVAL;
+            recalcCounter = 0;
             prevMoveDist = blockling.moveDist;
         }
     }
 
     /**
-     * Called every tick when in range of the target pos.
+     * Called every tick when in range of the path target pos.
      */
     protected void tickGather()
     {
-        blockling.lookAt(EntityAnchorArgument.Type.EYES, new Vector3d(getPathTargetPos().getX() + 0.5, getPathTargetPos().getY() + 0.5, getPathTargetPos().getZ() + 0.5));
-    }
-
-    /**
-     * Recalculates the current state of the goal.
-     */
-    protected void recalc()
-    {
-
+        if (!hasMovedSinceLastRecalc())
+        {
+            blockling.lookAt(EntityAnchorArgument.Type.EYES, new Vector3d(getTargetGoal().getTargetPos().getX() + 0.5, getTargetGoal().getTargetPos().getY() + 0.5, getTargetGoal().getTargetPos().getZ() + 0.5));
+        }
     }
 
     /**
@@ -174,19 +193,70 @@ public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>
     }
 
     /**
+     * Recalculates the path and path target pos.
+     *
+     * @param force forces the recalculation to take place.
+     */
+    protected abstract void recalcPath(boolean force);
+
+    /**
+     * Updates the cooldowns for the bad path target positions.
+     * Removes them from the map if their cooldown has expired or they have changed.
+     */
+    public void updateBadPathTargetPositions()
+    {
+        Set<BlockChunk> blockChunksToRemove = new HashSet<>();
+
+        badPathTargetChunks.forEach((blockChunk, cooldown) ->
+        {
+            cooldown--;
+
+            if (cooldown <= 0 || blockChunk.hasChanged())
+            {
+                blockChunksToRemove.add(blockChunk);
+            }
+
+            badPathTargetChunks.put(blockChunk, cooldown);
+        });
+
+        blockChunksToRemove.forEach(badPathTargetChunks::remove);
+    }
+
+    /**
+     * @return true if the given block pos is a bad target path pos.
+     */
+    public boolean isBadPathTargetPos(@Nonnull BlockPos blockPos)
+    {
+        return badPathTargetChunks.get(new BlockChunk(blockPos, world)) != null;
+    }
+
+    /**
+     * Marks the path target pos as a bad path target pos.
+     */
+    public void markPathTargetPosBad()
+    {
+        if (hasPathTargetPos())
+        {
+            markPathTargetPosBad(pathTargetPos);
+        }
+    }
+
+    /**
+     * Marks the given block pos as a bad path target pos.
+     *
+     * @param blockPos the block pos to mark as bad.
+     */
+    public void markPathTargetPosBad(@Nonnull BlockPos blockPos)
+    {
+        badPathTargetChunks.put(new BlockChunk(blockPos, world), BAD_PATH_TARGET_COOLDOWN_INTERVAL);
+    }
+
+    /**
      * @return true if the blockling has moved since the last recalc (within 0.01 of a block).
      */
     protected boolean hasMovedSinceLastRecalc()
     {
         return !blockling.isOnGround() || blockling.moveDist - prevMoveDist > 0.01f;
-    }
-
-    /**
-     * @return true if the blockling can harvest the block at the target pos.
-     */
-    public boolean canHarvestTargetPos()
-    {
-        return blockling.getEquipment().canHarvestBlockWithEquippedTools(world.getBlockState(getTargetGoal().getTargetPos()));
     }
 
     /**
@@ -208,9 +278,9 @@ public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>
     /**
      * @return true if the blockling is within range of the center of the given block pos.
      */
-    public  boolean isInRange(@Nonnull BlockPos blockPos, float rangeSq)
+    public boolean isInRange(@Nonnull BlockPos blockPos, float rangeSq)
     {
-        return EntityUtil.isInRange(blockling, blockPos, rangeSq);
+        return BlockUtil.distanceSq(blockling.blockPosition(), blockPos) <= rangeSq;
     }
 
     /**
@@ -223,13 +293,27 @@ public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>
      */
     public boolean isStuck()
     {
-        return (path == null || path.isDone() || !hasMovedSinceLastRecalc() || blockling.getNavigation().isStuck()) && !isInRange(pathTargetPos);
+        return (!hasPath() || path.isDone() || !hasMovedSinceLastRecalc() || blockling.getNavigation().isStuck()) && (!hasPathTargetPos() || !isInRange(pathTargetPos));
+    }
+
+    /**
+     * @param blockPos the block position to test.
+     * @return true if the block position is a valid path target.
+     */
+    protected abstract boolean isValidPathTargetPos(@Nonnull BlockPos blockPos);
+
+    /**
+     * @return true if we have a path target position.
+     */
+    public boolean hasPathTargetPos()
+    {
+        return pathTargetPos != null;
     }
 
     /**
      * @return the current pos to path to.
      */
-    @Nonnull
+    @Nullable
     public BlockPos getPathTargetPos()
     {
         return pathTargetPos;
@@ -241,29 +325,45 @@ public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>
      * @param blockPos the new pos to path to.
      * @param pathToPos an optional path to the given pos.
      */
-    protected void setPathTargetPos(@Nonnull BlockPos blockPos, @Nullable Path pathToPos)
+    public void setPathTargetPos(@Nullable BlockPos blockPos, @Nullable Path pathToPos)
+    {
+        setPathTargetPos(blockPos, pathToPos, true);
+    }
+
+    /**
+     * Sets the current pos to path to and recalculates the path if none is given.
+     *
+     * @param blockPos the new pos to path to.
+     * @param pathToPos an optional path to the given pos.
+     * @param updateBlocklingPath whether to also set the blockling's path.
+     */
+    public void setPathTargetPos(@Nullable BlockPos blockPos, @Nullable Path pathToPos, boolean updateBlocklingPath)
     {
         pathTargetPos = blockPos;
+        path = pathToPos;
 
-        if (pathToPos != null)
+        if (hasPathTargetPos())
         {
-            path = pathToPos;
-        }
-        else
-        {
-            Path newPath = createPath(pathTargetPos);
+            Path newPath = EntityUtil.createPathTo(blockling, pathTargetPos, getRangeSq());
 
             if (newPath != null)
             {
-                // If the target of path is going to be in range of the target block then we can use it
-                if (newPath.getTarget().distSqr(pathTargetPos) < getRangeSq())
-                {
-                    path = newPath;
-                }
+                path = newPath;
             }
         }
 
-        blockling.getNavigation().moveTo(path, 1.0);
+        if (updateBlocklingPath)
+        {
+            blockling.getNavigation().moveTo(path, 1.0);
+        }
+    }
+
+    /**
+     * @return true if we have a path.
+     */
+    public boolean hasPath()
+    {
+        return path != null;
     }
 
     /**

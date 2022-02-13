@@ -1,66 +1,57 @@
 package com.willr27.blocklings.goal.goals;
 
 import com.willr27.blocklings.block.BlockUtil;
-import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
-import com.willr27.blocklings.goal.IHasTargetGoal;
-import com.willr27.blocklings.goal.goals.target.BlocklingWoodcutTargetGoal;
-import com.willr27.blocklings.item.DropUtil;
 import com.willr27.blocklings.item.ToolType;
-import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.skill.skills.GeneralSkills;
 import com.willr27.blocklings.skill.skills.WoodcuttingSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
+import com.willr27.blocklings.goal.goals.target.BlocklingWoodcutTargetGoalOLD;
+import com.willr27.blocklings.goal.IHasTargetGoalOLD;
+import com.willr27.blocklings.item.DropUtil;
+import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
-import javafx.util.Pair;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3i;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.Comparator;
 import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
- * Chops the targeted tree.
+ * Chops the targeted log/tree.
  */
-public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTargetGoal> implements IHasTargetGoal<BlocklingWoodcutTargetGoal>
+public class BlocklingWoodcutGoalOLD extends BlocklingGatherGoalOLD<BlocklingWoodcutTargetGoalOLD> implements IHasTargetGoalOLD<BlocklingWoodcutTargetGoalOLD>
 {
     /**
      * The log whitelist.
      */
-    @Nonnull
     public final GoalWhitelist logWhitelist;
 
     /**
      * The associated target goal.
      */
-    @Nonnull
-    private final BlocklingWoodcutTargetGoal targetGoal;
-
-    /**
-     * The set of positions we have attempted to use as path targets so far.
-     */
-    @Nonnull
-    private final Set<BlockPos> pathTargetPositionsTested = new HashSet<>();
+    private final BlocklingWoodcutTargetGoalOLD targetGoal;
 
     /**
      * @param id the id associated with the owning task of this goal.
      * @param blockling the blockling the goal is assigned to.
      * @param tasks the associated tasks.
      */
-    public BlocklingWoodcutGoal(@Nonnull UUID id, @Nonnull BlocklingEntity blockling, @Nonnull BlocklingTasks tasks)
+    public BlocklingWoodcutGoalOLD(UUID id, BlocklingEntity blockling, BlocklingTasks tasks)
     {
         super(id, blockling, tasks);
 
-        targetGoal = new BlocklingWoodcutTargetGoal(this);
+        targetGoal = new BlocklingWoodcutTargetGoalOLD(this);
 
         logWhitelist = new GoalWhitelist("fbfbfd44-c1b0-4420-824a-270b34c866f7", "logs", Whitelist.Type.BLOCK, this);
         logWhitelist.setIsUnlocked(blockling.getSkills().getSkill(WoodcuttingSkills.WHITELIST).isBought(), false);
@@ -72,7 +63,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTa
 
     @Override
     @Nonnull
-    public BlocklingWoodcutTargetGoal getTargetGoal()
+    public BlocklingWoodcutTargetGoalOLD getTargetGoal()
     {
         return targetGoal;
     }
@@ -80,19 +71,49 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTa
     @Override
     public boolean canUse()
     {
-        return super.canUse();
+        if (!super.canUse())
+        {
+            return false;
+        }
+
+        if (blockling.getSkills().getSkill(GeneralSkills.AUTOSWITCH).isBought())
+        {
+            blockling.getEquipment().trySwitchToBestTool(BlocklingHand.BOTH, ToolType.AXE);
+        }
+
+        if (!canHarvestTargetPos())
+        {
+            return false;
+        }
+
+        calculatePathToTree();
+
+        if (isStuck())
+        {
+            getTargetGoal().markBad();
+
+            return false;
+        }
+
+        return true;
     }
 
     @Override
     public boolean canContinueToUse()
     {
-        return super.canContinueToUse();
-    }
+        if (!super.canContinueToUse())
+        {
+            return false;
+        }
 
-    @Override
-    public void tick()
-    {
-        super.tick();
+        if (isStuck())
+        {
+            getTargetGoal().markBad();
+
+            return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -159,26 +180,6 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTa
                     world.destroyBlock(targetBlockPos, false);
                     world.destroyBlockProgress(blockling.getId(), targetBlockPos, -1);
 
-                    if (blockling.getSkills().getSkill(WoodcuttingSkills.LEAF_BLOWER).isBought())
-                    {
-                        for (BlockPos surroundingPos : BlockUtil.getSurroundingBlockPositions(targetBlockPos))
-                        {
-                            if (BlockUtil.isLeaf(world.getBlockState(surroundingPos).getBlock()))
-                            {
-                                if (blockling.getSkills().getSkill(WoodcuttingSkills.TREE_SURGEON).isBought())
-                                {
-                                    for (ItemStack stack : DropUtil.getDrops(DropUtil.Context.WOODCUTTING, blockling, surroundingPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
-                                    {
-                                        stack = blockling.getEquipment().addItem(stack);
-                                        blockling.dropItemStack(stack);
-                                    }
-                                }
-
-                                world.destroyBlock(surroundingPos, false);
-                            }
-                        }
-                    }
-
                     if (blockling.getSkills().getSkill(WoodcuttingSkills.LUMBER_AXE).isBought())
                     {
                         for (BlockPos surroundingPos : BlockUtil.getSurroundingBlockPositions(targetBlockPos))
@@ -217,26 +218,50 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTa
                             }
                         }
                     }
-
-                    if (blockling.getSkills().getSkill(WoodcuttingSkills.REPLANTER).isBought())
+                    else
                     {
-                        if (BlockUtil.DIRTS.contains(world.getBlockState(targetBlockPos.below()).getBlock()))
+                        if (blockling.getSkills().getSkill(WoodcuttingSkills.REPLANTER).isBought())
                         {
-                            Block saplingBlock = BlockUtil.getSaplingFromLog(targetBlock);
-
-                            if (saplingBlock != null)
+                            if (BlockUtil.DIRTS.contains(world.getBlockState(targetBlockPos.below()).getBlock()))
                             {
-                                ItemStack itemStack = new ItemStack(saplingBlock);
+                                Block saplingBlock = BlockUtil.getSaplingFromLog(targetBlock);
 
-                                if (blockling.getEquipment().has(itemStack))
+                                if (saplingBlock != null)
                                 {
-                                    blockling.getEquipment().take(itemStack);
+                                    ItemStack itemStack = new ItemStack(saplingBlock);
 
-                                    world.setBlock(targetBlockPos, saplingBlock.defaultBlockState(), 3);
+                                    if (blockling.getEquipment().has(itemStack))
+                                    {
+                                        blockling.getEquipment().take(itemStack);
+
+                                        world.setBlock(targetBlockPos, saplingBlock.defaultBlockState(), 3);
+                                    }
                                 }
                             }
                         }
                     }
+
+                    if (blockling.getSkills().getSkill(WoodcuttingSkills.LEAF_BLOWER).isBought())
+                    {
+                        for (BlockPos surroundingPos : BlockUtil.getSurroundingBlockPositions(targetBlockPos))
+                        {
+                            if (BlockUtil.isLeaf(world.getBlockState(surroundingPos).getBlock()))
+                            {
+                                if (blockling.getSkills().getSkill(WoodcuttingSkills.TREE_SURGEON).isBought())
+                                {
+                                    for (ItemStack stack : DropUtil.getDrops(DropUtil.Context.WOODCUTTING, blockling, surroundingPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
+                                    {
+                                        stack = blockling.getEquipment().addItem(stack);
+                                        blockling.dropItemStack(stack);
+                                    }
+                                }
+
+                                world.destroyBlock(surroundingPos, false);
+                            }
+                        }
+                    }
+
+                    recalc();
                 }
                 else
                 {
@@ -252,74 +277,67 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal<BlocklingWoodcutTa
     }
 
     @Override
-    protected void recalcPath(boolean force)
+    protected void recalc()
     {
-        if (force)
+        if (isStuck())
         {
-            Pair<BlockPos, Path> result = targetGoal.findPathToTree();
-
-            if (result != null)
-            {
-                setPathTargetPos(result.getKey(), result.getValue());
-            }
-            else
-            {
-                setPathTargetPos(null, null);
-            }
-
-            return;
+            targetGoal.markBad();
         }
 
-        // Try to improve our path each recalc by testing different logs in the tree
-        for (BlockPos logBlockPos : targetGoal.getTree().logs)
+        if (!getTargetGoal().isTargetValid())
         {
-            if (pathTargetPositionsTested.contains(logBlockPos))
-            {
-                continue;
-            }
+            getTargetGoal().recalcTarget();
+        }
 
-            pathTargetPositionsTested.add(logBlockPos);
+        if (targetGoal.hasTarget())
+        {
+            calculatePathToTree();
+        }
+    }
 
-            if (BlockUtil.areAllAdjacentBlocksSolid(world, logBlockPos))
-            {
-                continue;
-            }
+    /**
+     * Finds a path towards the tree.
+     */
+    private void calculatePathToTree()
+    {
+        List<BlockPos> sortedLogBlockPositions = targetGoal.getTree().logs.stream().sorted(Comparator.comparingInt(Vector3i::getY)).collect(Collectors.toList());
 
-            Path path = EntityUtil.createPathTo(blockling, logBlockPos, getRangeSq());
+        BlockPos closestPos = null;
+        Path closestPath = null;
+        double closestDistanceSq = Double.MAX_VALUE;
+
+        for (BlockPos testPathTargetPos : sortedLogBlockPositions)
+        {
+            Path path = createPath(testPathTargetPos);
 
             if (path != null)
             {
-                if (path.getDistToTarget() < this.path.getDistToTarget())
+                if (isInRange(testPathTargetPos))
                 {
-                    setPathTargetPos(logBlockPos, path);
+                    setPathTargetPos(testPathTargetPos, path);
+
+                    return;
+                }
+
+                double distanceSq = testPathTargetPos.distSqr(path.getTarget());
+
+                if (distanceSq < closestDistanceSq)
+                {
+                    closestPos = testPathTargetPos;
+                    closestPath = path;
+                    closestDistanceSq = distanceSq;
                 }
             }
-
-            return;
         }
 
-        pathTargetPositionsTested.clear();
-    }
-
-    @Override
-    protected boolean isValidPathTargetPos(@Nonnull BlockPos blockPos)
-    {
-        return targetGoal.getTree().logs.contains(blockPos);
-    }
-
-    @Override
-    public void setPathTargetPos(@Nullable BlockPos blockPos, @Nullable Path pathToPos)
-    {
-        super.setPathTargetPos(blockPos, pathToPos);
-
-        if (hasPathTargetPos())
+        if (closestPath != null)
         {
-            targetGoal.changeTreeRootTo(getPathTargetPos());
+            setPathTargetPos(closestPos, closestPath);
         }
     }
 
     @Override
-    public float getRangeSq()
+    float getRangeSq()
     {
         return blockling.getStats().woodcuttingRangeSq.getValue();
     }

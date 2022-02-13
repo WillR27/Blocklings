@@ -1,33 +1,31 @@
 package com.willr27.blocklings.goal.goals;
 
 import com.willr27.blocklings.block.BlockUtil;
-import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
-import com.willr27.blocklings.goal.IHasTargetGoal;
-import com.willr27.blocklings.goal.goals.target.BlocklingMineTargetGoal;
-import com.willr27.blocklings.item.DropUtil;
 import com.willr27.blocklings.item.ToolType;
-import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.skill.skills.GeneralSkills;
 import com.willr27.blocklings.skill.skills.MiningSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
+import com.willr27.blocklings.goal.goals.target.BlocklingMineTargetGoalOLD;
+import com.willr27.blocklings.goal.IHasTargetGoalOLD;
+import com.willr27.blocklings.item.DropUtil;
+import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
-import javafx.util.Pair;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.ItemStack;
-import net.minecraft.pathfinding.Path;
 import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.UUID;
 
 /**
  * Mines the targeted ore/vein.
  */
-public class BlocklingMineGoal extends BlocklingGatherGoal<BlocklingMineTargetGoal> implements IHasTargetGoal<BlocklingMineTargetGoal>
+public class BlocklingMineGoalOLD extends BlocklingGatherGoalOLD<BlocklingMineTargetGoalOLD> implements IHasTargetGoalOLD<BlocklingMineTargetGoalOLD>
 {
     /**
      * The ore whitelist.
@@ -39,36 +37,30 @@ public class BlocklingMineGoal extends BlocklingGatherGoal<BlocklingMineTargetGo
      * The associated target goal.
      */
     @Nonnull
-    private final BlocklingMineTargetGoal targetGoal;
-
-    /**
-     * The set of positions we have attempted to use as path targets so far.
-     */
-    @Nonnull
-    private final Set<BlockPos> pathTargetPositionsTested = new HashSet<>();
+    private final BlocklingMineTargetGoalOLD targetGoal;
 
     /**
      * @param id the id associated with the owning task of this goal.
      * @param blockling the blockling the goal is assigned to.
      * @param tasks the associated tasks.
      */
-    public BlocklingMineGoal(@Nonnull UUID id, @Nonnull BlocklingEntity blockling, @Nonnull BlocklingTasks tasks)
+    public BlocklingMineGoalOLD(UUID id, BlocklingEntity blockling, BlocklingTasks tasks)
     {
         super(id, blockling, tasks);
 
-        targetGoal = new BlocklingMineTargetGoal(this);
+        targetGoal = new BlocklingMineTargetGoalOLD(this);
 
         oreWhitelist = new GoalWhitelist("24d7135e-607b-413b-a2a7-00d19119b9de", "ores", Whitelist.Type.BLOCK, this);
         oreWhitelist.setIsUnlocked(blockling.getSkills().getSkill(MiningSkills.WHITELIST).isBought(), false);
         BlockUtil.ORES.forEach(ore -> oreWhitelist.put(ore.getRegistryName(), true));
         whitelists.add(oreWhitelist);
 
-        setFlags(EnumSet.of(Flag.JUMP, Flag.MOVE));
+        setFlags(EnumSet.of(Goal.Flag.JUMP, Goal.Flag.MOVE));
     }
 
     @Override
     @Nonnull
-    public BlocklingMineTargetGoal getTargetGoal()
+    public BlocklingMineTargetGoalOLD getTargetGoal()
     {
         return targetGoal;
     }
@@ -76,19 +68,49 @@ public class BlocklingMineGoal extends BlocklingGatherGoal<BlocklingMineTargetGo
     @Override
     public boolean canUse()
     {
-        return super.canUse();
+        if (!super.canUse())
+        {
+            return false;
+        }
+
+        if (blockling.getSkills().getSkill(GeneralSkills.AUTOSWITCH).isBought())
+        {
+            blockling.getEquipment().trySwitchToBestTool(BlocklingHand.BOTH, ToolType.PICKAXE);
+        }
+
+        if (!canHarvestTargetPos())
+        {
+            return false;
+        }
+
+        setPathTargetPos(targetGoal.getTargetPos(), null);
+
+        if (isStuck())
+        {
+            targetGoal.markTargetBad();
+
+            return false;
+        }
+
+        return true;
     }
 
     @Override
     public boolean canContinueToUse()
     {
-        return super.canContinueToUse();
-    }
+        if (!super.canContinueToUse())
+        {
+            return false;
+        }
 
-    @Override
-    public void tick()
-    {
-        super.tick();
+        if (isStuck())
+        {
+            getTargetGoal().markTargetBad();
+
+            return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -170,6 +192,8 @@ public class BlocklingMineGoal extends BlocklingGatherGoal<BlocklingMineTargetGo
                             }
                         }
                     }
+
+                    recalc();
                 }
                 else
                 {
@@ -185,69 +209,21 @@ public class BlocklingMineGoal extends BlocklingGatherGoal<BlocklingMineTargetGo
     }
 
     @Override
-    protected void recalcPath(boolean force)
+    protected void recalc()
     {
-        if (force)
+        if (isStuck())
         {
-            Pair<BlockPos, Path> result = targetGoal.findPathToVein();
-
-            if (result != null)
-            {
-                setPathTargetPos(result.getKey(), result.getValue());
-            }
-            else
-            {
-                setPathTargetPos(null, null);
-            }
-
-            return;
+            targetGoal.markTargetBad();
         }
 
-        // Try to improve our path each recalc by testing different blocks in the vein
-        for (BlockPos veinBlockPos : targetGoal.veinBlockPositions)
+        if (!getTargetGoal().isTargetValid())
         {
-            if (pathTargetPositionsTested.contains(veinBlockPos))
-            {
-                continue;
-            }
-
-            pathTargetPositionsTested.add(veinBlockPos);
-
-            if (BlockUtil.areAllAdjacentBlocksSolid(world, veinBlockPos))
-            {
-                continue;
-            }
-
-            Path path = EntityUtil.createPathTo(blockling, veinBlockPos, getRangeSq());
-
-            if (path != null)
-            {
-                if (path.getDistToTarget() < this.path.getDistToTarget())
-                {
-                    setPathTargetPos(veinBlockPos, path);
-                }
-            }
-
-            return;
+            getTargetGoal().recalcTarget();
         }
 
-        pathTargetPositionsTested.clear();
-    }
-
-    @Override
-    protected boolean isValidPathTargetPos(@Nonnull BlockPos blockPos)
-    {
-        return targetGoal.veinBlockPositions.contains(blockPos);
-    }
-
-    @Override
-    public void setPathTargetPos(@Nullable BlockPos blockPos, @Nullable Path pathToPos)
-    {
-        super.setPathTargetPos(blockPos, pathToPos);
-
-        if (hasPathTargetPos())
+        if (targetGoal.hasTarget())
         {
-            targetGoal.changeVeinRootTo(getPathTargetPos());
+            setPathTargetPos(targetGoal.getTargetPos(), null);
         }
     }
 

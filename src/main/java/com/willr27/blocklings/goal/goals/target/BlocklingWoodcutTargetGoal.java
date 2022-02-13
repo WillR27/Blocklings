@@ -1,19 +1,23 @@
 package com.willr27.blocklings.goal.goals.target;
 
 import com.willr27.blocklings.block.BlockUtil;
+import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.goal.goals.BlocklingWoodcutGoal;
+import com.willr27.blocklings.item.ToolType;
+import javafx.util.Pair;
 import net.minecraft.block.Block;
+import net.minecraft.pathfinding.Path;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3i;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
- * Targets the nearest tree to chop.
+ * Used to target nearby tree.
  */
 public class BlocklingWoodcutTargetGoal extends BlocklingGatherTargetGoal<BlocklingWoodcutGoal>
 {
@@ -43,84 +47,119 @@ public class BlocklingWoodcutTargetGoal extends BlocklingGatherTargetGoal<Blockl
     @Override
     public boolean canUse()
     {
-        if (!super.canUse())
-        {
-            return false;
-        }
-
-        tree = findTree();
-
-        if (tree.logs.isEmpty())
-        {
-            return false;
-        }
-
-        return true;
+        return super.canUse();
     }
 
     @Override
     public boolean canContinueToUse()
     {
-        if (!super.canContinueToUse())
-        {
-            return false;
-        }
-
-        if (!hasTarget())
-        {
-            return false;
-        }
-
-        return true;
+        return super.canContinueToUse();
     }
 
     @Override
     public void stop()
     {
+        super.stop();
+
         tree.logs.clear();
         tree.leaves.clear();
     }
 
     @Override
-    public void recalcTarget()
+    public void checkForAndRemoveInvalidTargets()
     {
-        tree.logs.remove(getTargetPos());
-
-        super.recalcTarget();
+        for (BlockPos blockPos : new ArrayList<>(tree.logs))
+        {
+            if (!isValidTarget(blockPos))
+            {
+                markPosBad(blockPos);
+            }
+        }
     }
 
     @Override
-    protected BlockPos findNextTargetPos()
+    public boolean tryRecalcTargetPos()
     {
-        return tree.logs.stream().max(Comparator.comparingInt(Vector3i::getY)).orElse(null);
+        if (isTargetValid())
+        {
+            return true;
+        }
+        else
+        {
+            markTargetPosBad();
+        }
+
+        if (tree.logs.isEmpty())
+        {
+            if (!tryFindTree())
+            {
+                return false;
+            }
+
+            Pair<BlockPos, Path> pathToTree = findPathToTree();
+
+            if (pathToTree == null)
+            {
+                return false;
+            }
+
+            goal.setPathTargetPos(pathToTree.getKey(), pathToTree.getValue());
+        }
+
+        setTargetPos((BlockPos) tree.logs.toArray()[tree.logs.size() - 1]);
+
+        return true;
     }
 
     @Override
-    protected boolean isValidTargetBlock(@Nullable Block block)
+    public void markTargetBad()
     {
-        return block != null && goal.logWhitelist.isEntryWhitelisted(block);
+        while (!tree.logs.isEmpty())
+        {
+            markPosBad(tree.logs.get(0));
+        }
+
+        while (!tree.leaves.isEmpty())
+        {
+            markPosBad(tree.leaves.get(0));
+        }
     }
 
     @Override
-    public void markBad()
+    public void markPosBad(@Nonnull BlockPos blockPos)
     {
-        tree.logs.forEach(blockPos -> markPosBad(blockPos));
+        super.markPosBad(blockPos);
+
+        tree.logs.remove(blockPos);
+        tree.leaves.remove(blockPos);
+    }
+
+    @Override
+    protected boolean isValidTargetBlock(@Nonnull Block block)
+    {
+        return goal.logWhitelist.isEntryWhitelisted(block);
+    }
+
+    @Nonnull
+    @Override
+    protected ToolType getToolType()
+    {
+        return ToolType.AXE;
     }
 
     /**
-     * Finds the nearest tree.
+     * Tries to find the nearest tree.
      *
-     * @return the tree.
+     * @return true if a tree was found.
      */
-    @Nonnull
-    private Tree findTree()
+    private boolean tryFindTree()
     {
         BlockPos blocklingBlockPos = blockling.blockPosition();
 
         Tree tree = new Tree();
-        Set<BlockPos> testedBlockPositions = new HashSet<>();
+        List<BlockPos> testedBlockPositions = new ArrayList<>();
 
-        float closestTreeDistSq = Float.MAX_VALUE;
+        double closestTreeDistSq = Float.MAX_VALUE;
 
         for (int i = -SEARCH_RADIUS_X; i <= SEARCH_RADIUS_X; i++)
         {
@@ -137,31 +176,57 @@ public class BlocklingWoodcutTargetGoal extends BlocklingGatherTargetGoal<Blockl
 
                     if (isValidTarget(testBlockPos))
                     {
-                        Tree treeBlockPositionsToTest = findTreeFrom(testBlockPos);
-                        testedBlockPositions.addAll(treeBlockPositionsToTest.logs);
-                        testedBlockPositions.addAll(treeBlockPositionsToTest.leaves);
-
-                        if (treeBlockPositionsToTest.logs.stream().anyMatch(blockPos -> !isValidTargetPos(blockPos)))
-                        {
-                            continue;
-                        }
+                        Tree treeToTest = findTreeFrom(testBlockPos);
 
                         // How many leaves we need per log for it to be a valid tree.
-                        float leafToLogRatio = 1.0f;
+                        final float leafToLogRatio = 0.8f;
 
-                        if (treeBlockPositionsToTest.logs.size() / (float) treeBlockPositionsToTest.leaves.size() > leafToLogRatio)
+                        if (treeToTest.logs.size() / (float) treeToTest.leaves.size() > leafToLogRatio)
                         {
                             continue;
                         }
 
-                        for (BlockPos logBlockPos : treeBlockPositionsToTest.logs)
+                        boolean canSeeTree = false;
+
+                        for (BlockPos logBlockPos : treeToTest.logs)
+                        {
+                            if (!testedBlockPositions.contains(logBlockPos))
+                            {
+                                testedBlockPositions.add(logBlockPos);
+                            }
+
+                            if (!canSeeTree && EntityUtil.canSee(blockling, logBlockPos))
+                            {
+                                canSeeTree = true;
+                            }
+                        }
+
+                        for (BlockPos leafBlockPos : treeToTest.leaves)
+                        {
+                            if (!testedBlockPositions.contains(leafBlockPos))
+                            {
+                                testedBlockPositions.add(leafBlockPos);
+                            }
+
+                            if (!canSeeTree && EntityUtil.canSee(blockling, leafBlockPos))
+                            {
+                                canSeeTree = true;
+                            }
+                        }
+
+                        if (!canSeeTree)
+                        {
+                            continue;
+                        }
+
+                        for (BlockPos logBlockPos : treeToTest.logs)
                         {
                             float distanceSq = (float) blockling.distanceToSqr(logBlockPos.getX() + 0.5f, logBlockPos.getY() + 0.5f, logBlockPos.getZ() + 0.5f);
 
                             if (distanceSq < closestTreeDistSq)
                             {
                                 closestTreeDistSq = distanceSq;
-                                tree = treeBlockPositionsToTest;
+                                tree = treeToTest;
 
                                 break;
                             }
@@ -171,7 +236,17 @@ public class BlocklingWoodcutTargetGoal extends BlocklingGatherTargetGoal<Blockl
             }
         }
 
-        return tree;
+        if (!tree.logs.isEmpty())
+        {
+            this.tree.logs.clear();
+            this.tree.leaves.clear();
+            this.tree.logs.addAll(tree.logs);
+            this.tree.logs.addAll(tree.leaves);
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -181,7 +256,7 @@ public class BlocklingWoodcutTargetGoal extends BlocklingGatherTargetGoal<Blockl
      * @return the tree.
      */
     @Nonnull
-    private Tree findTreeFrom(BlockPos blockPos)
+    private Tree findTreeFrom(@Nonnull BlockPos blockPos)
     {
         Tree tree = new Tree();
         Set<BlockPos> logBlockPositionsToTest = new HashSet<>();
@@ -197,14 +272,18 @@ public class BlocklingWoodcutTargetGoal extends BlocklingGatherTargetGoal<Blockl
             {
                 if (isValidTarget(surroundingPos))
                 {
-                    if (tree.logs.add(surroundingPos))
+                    if (!tree.logs.contains(surroundingPos))
                     {
+                        tree.logs.add(surroundingPos);
                         logBlockPositionsToTest.add(surroundingPos);
                     }
                 }
                 else if (isValidLeafPos(surroundingPos))
                 {
-                    tree.leaves.add(surroundingPos);
+                    if (!tree.leaves.contains(surroundingPos))
+                    {
+                        tree.leaves.add(surroundingPos);
+                    }
                 }
             }
 
@@ -212,6 +291,54 @@ public class BlocklingWoodcutTargetGoal extends BlocklingGatherTargetGoal<Blockl
         }
 
         return tree;
+    }
+
+    /**
+     * Finds the first valid path to the tree, not necessarily the most optimal.
+     *
+     * @return the path target position and the path to the tree, or null if no path could be found.
+     */
+    @Nullable
+    public Pair<BlockPos, Path> findPathToTree()
+    {
+        for (BlockPos logBlockPos : tree.logs)
+        {
+            if (BlockUtil.areAllAdjacentBlocksSolid(world, logBlockPos))
+            {
+                continue;
+            }
+
+            if (goal.isBadPathTargetPos(logBlockPos))
+            {
+                continue;
+            }
+
+            Path path = EntityUtil.createPathTo(blockling, logBlockPos, goal.getRangeSq());
+
+            if (path != null)
+            {
+                return new Pair<>(logBlockPos, path);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Sets the tree's root position to the given block pos.
+     * Will then recalculate the tree.
+     *
+     * @param blockPos the block pos to use as the tree's root.
+     */
+    public void changeTreeRootTo(@Nonnull BlockPos blockPos)
+    {
+        tree.logs.clear();
+        tree.leaves.clear();
+
+        Tree newTree = findTreeFrom(blockPos);
+
+        tree.logs.addAll(newTree.logs);
+        tree.leaves.addAll(newTree.leaves);
     }
 
     /**
@@ -246,7 +373,7 @@ public class BlocklingWoodcutTargetGoal extends BlocklingGatherTargetGoal<Blockl
      */
     public static class Tree
     {
-        public final Set<BlockPos> logs = new HashSet<>();
-        public final Set<BlockPos> leaves = new HashSet<>();
+        public final List<BlockPos> logs = new ArrayList<>();
+        public final List<BlockPos> leaves = new ArrayList<>();
     }
 }

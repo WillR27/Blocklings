@@ -1,16 +1,18 @@
 package com.willr27.blocklings.goal.goals.target;
 
+import com.willr27.blocklings.block.BlockUtil;
 import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.goal.goals.BlocklingMineGoal;
+import com.willr27.blocklings.item.ToolType;
+import javafx.util.Pair;
 import net.minecraft.block.Block;
+import net.minecraft.pathfinding.Path;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3i;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Used to target nearby veins of ore.
@@ -28,10 +30,10 @@ public class BlocklingMineTargetGoal extends BlocklingGatherTargetGoal<Blockling
     private static final int SEARCH_RADIUS_Y = 8;
 
     /**
-     * The set of block positions in the current vein.
+     * The list of block positions in the current vein.
      */
     @Nonnull
-    private final Set<BlockPos> veinBlockPositions = new HashSet<>();
+    public final List<BlockPos> veinBlockPositions = new ArrayList<>();
 
     /**
      * @param goal The associated goal instance.
@@ -44,19 +46,13 @@ public class BlocklingMineTargetGoal extends BlocklingGatherTargetGoal<Blockling
     @Override
     public boolean canUse()
     {
-        if (!super.canUse())
-        {
-            return false;
-        }
+        return super.canUse();
+    }
 
-        veinBlockPositions.addAll(findVein());
-
-        if (veinBlockPositions.isEmpty())
-        {
-            return false;
-        }
-
-        return true;
+    @Override
+    public boolean canContinueToUse()
+    {
+        return super.canContinueToUse();
     }
 
     @Override
@@ -68,45 +64,94 @@ public class BlocklingMineTargetGoal extends BlocklingGatherTargetGoal<Blockling
     }
 
     @Override
-    public void recalcTarget()
+    public void checkForAndRemoveInvalidTargets()
     {
-        veinBlockPositions.remove(getTargetPos());
-
-        super.recalcTarget();
+        for (BlockPos blockPos : new ArrayList<>(veinBlockPositions))
+        {
+            if (!isValidTarget(blockPos))
+            {
+                markPosBad(blockPos);
+            }
+        }
     }
 
     @Override
-    protected BlockPos findNextTargetPos()
+    public boolean tryRecalcTargetPos()
     {
-        return veinBlockPositions.stream().max(Comparator.comparingInt(Vector3i::getY)).orElse(null);
+        if (isTargetValid())
+        {
+            return true;
+        }
+        else
+        {
+            markTargetPosBad();
+        }
+
+        if (veinBlockPositions.isEmpty())
+        {
+            if (!tryFindVein())
+            {
+                return false;
+            }
+
+            Pair<BlockPos, Path> pathToVein = findPathToVein();
+
+            if (pathToVein == null)
+            {
+                return false;
+            }
+
+            goal.setPathTargetPos(pathToVein.getKey(), pathToVein.getValue());
+        }
+
+        setTargetPos((BlockPos) veinBlockPositions.toArray()[veinBlockPositions.size() - 1]);
+
+        return true;
     }
 
     @Override
-    protected boolean isValidTargetBlock(@Nullable Block block)
+    public void markTargetBad()
     {
-        return block != null && goal.oreWhitelist.isEntryWhitelisted(block);
+        while (!veinBlockPositions.isEmpty())
+        {
+            markPosBad(veinBlockPositions.get(0));
+        }
     }
 
     @Override
-    public void markBad()
+    public void markPosBad(@Nonnull BlockPos blockPos)
     {
-        veinBlockPositions.forEach(blockPos -> markPosBad(blockPos));
+        super.markPosBad(blockPos);
+
+        veinBlockPositions.remove(blockPos);
+    }
+
+    @Override
+    protected boolean isValidTargetBlock(@Nonnull Block block)
+    {
+        return goal.oreWhitelist.isEntryWhitelisted(block);
+    }
+
+    @Nonnull
+    @Override
+    protected ToolType getToolType()
+    {
+        return ToolType.PICKAXE;
     }
 
     /**
-     * Attempts to find the nearest vein.
+     * Tries to find the nearest vein.
      *
-     * @return a set of block positions for the nearest vein.
+     * @return true if a vein was found.
      */
-    @Nonnull
-    private Set<BlockPos> findVein()
+    private boolean tryFindVein()
     {
         BlockPos blocklingBlockPos = blockling.blockPosition();
 
-        Set<BlockPos> veinBlockPositions = new HashSet<>();
-        Set<BlockPos> testedBlockPositions = new HashSet<>();
+        List<BlockPos> veinBlockPositions = new ArrayList<>();
+        List<BlockPos> testedBlockPositions = new ArrayList<>();
 
-        float closestVeinDistSq = Float.MAX_VALUE;
+        double closestVeinDistSq = Float.MAX_VALUE;
 
         for (int i = -SEARCH_RADIUS_X; i <= SEARCH_RADIUS_X; i++)
         {
@@ -123,18 +168,20 @@ public class BlocklingMineTargetGoal extends BlocklingGatherTargetGoal<Blockling
 
                     if (isValidTarget(testBlockPos))
                     {
-                        Set<BlockPos> veinBlockPositionsToTest = findVeinFrom(testBlockPos);
-                        testedBlockPositions.addAll(veinBlockPositionsToTest);
+                        List<BlockPos> veinBlockPositionsToTest = findVeinFrom(testBlockPos);
 
                         boolean canSeeVein = false;
 
                         for (BlockPos veinBlockPos : veinBlockPositionsToTest)
                         {
-                            if (EntityUtil.canSee(blockling, veinBlockPos))
+                            if (!testedBlockPositions.contains(veinBlockPos))
+                            {
+                                testedBlockPositions.add(veinBlockPos);
+                            }
+
+                            if (!canSeeVein && EntityUtil.canSee(blockling, veinBlockPos))
                             {
                                 canSeeVein = true;
-
-                                break;
                             }
                         }
 
@@ -160,20 +207,28 @@ public class BlocklingMineTargetGoal extends BlocklingGatherTargetGoal<Blockling
             }
         }
 
-        return veinBlockPositions;
+        if (!veinBlockPositions.isEmpty())
+        {
+            this.veinBlockPositions.clear();
+            this.veinBlockPositions.addAll(veinBlockPositions);
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
      * Returns a vein from the given starting block pos.
      *
      * @param startingBlockPos the starting block pos.
-     * @return the set of block positions in the vein.
+     * @return the list of block positions in the vein.
      */
     @Nonnull
-    private Set<BlockPos> findVeinFrom(@Nonnull BlockPos startingBlockPos)
+    private List<BlockPos> findVeinFrom(@Nonnull BlockPos startingBlockPos)
     {
-        Set<BlockPos> veinBlockPositionsToTest = new HashSet<>();
-        Set<BlockPos> veinBlockPositions = new HashSet<>();
+        List<BlockPos> veinBlockPositionsToTest = new ArrayList<>();
+        List<BlockPos> veinBlockPositions = new ArrayList<>();
 
         veinBlockPositionsToTest.add(startingBlockPos);
         veinBlockPositions.add(startingBlockPos);
@@ -196,8 +251,9 @@ public class BlocklingMineTargetGoal extends BlocklingGatherTargetGoal<Blockling
             {
                 if (isValidTarget(surroundingPos))
                 {
-                    if (veinBlockPositions.add(surroundingPos))
+                    if (!veinBlockPositions.contains(surroundingPos))
                     {
+                        veinBlockPositions.add(surroundingPos);
                         veinBlockPositionsToTest.add(surroundingPos);
                     }
                 }
@@ -207,5 +263,48 @@ public class BlocklingMineTargetGoal extends BlocklingGatherTargetGoal<Blockling
         }
 
         return veinBlockPositions;
+    }
+
+    /**
+     * Finds the first valid path to the vein, not necessarily the most optimal.
+     *
+     * @return the path target position and the path to the vein, or null if no path could be found.
+     */
+    @Nullable
+    public Pair<BlockPos, Path> findPathToVein()
+    {
+        for (BlockPos veinBlockPos : veinBlockPositions)
+        {
+            if (BlockUtil.areAllAdjacentBlocksSolid(world, veinBlockPos))
+            {
+                continue;
+            }
+
+            if (goal.isBadPathTargetPos(veinBlockPos))
+            {
+                continue;
+            }
+
+            Path path = EntityUtil.createPathTo(blockling, veinBlockPos, goal.getRangeSq());
+
+            if (path != null)
+            {
+                return new Pair<>(veinBlockPos, path);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Sets the root vein position to the given block pos.
+     * Will then recalculate the vein.
+     *
+     * @param blockPos the block pos to use as the vein root.
+     */
+    public void changeVeinRootTo(@Nonnull BlockPos blockPos)
+    {
+        veinBlockPositions.clear();
+        veinBlockPositions.addAll(findVeinFrom(blockPos));
     }
 }

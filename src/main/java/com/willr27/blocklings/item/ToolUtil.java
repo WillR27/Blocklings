@@ -1,6 +1,7 @@
 package com.willr27.blocklings.item;
 
 import com.google.common.collect.Multimap;
+import com.willr27.blocklings.block.BlockUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
@@ -248,6 +249,11 @@ public class ToolUtil
      */
     public static boolean canToolHarvestBlock(ItemStack stack, BlockState blockState)
     {
+        if (BlockUtil.isCrop(blockState.getBlock()) && ToolUtil.isHoe(stack))
+        {
+            return true;
+        }
+
         ToolType harvestTool = blockState.getHarvestTool();
 
         for (ToolType toolType : stack.getToolTypes())

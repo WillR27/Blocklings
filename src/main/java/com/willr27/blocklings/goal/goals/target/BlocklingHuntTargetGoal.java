@@ -1,7 +1,7 @@
 package com.willr27.blocklings.goal.goals.target;
 
 import com.willr27.blocklings.goal.BlocklingGoal;
-import com.willr27.blocklings.goal.BlocklingTargetGoal;
+import com.willr27.blocklings.goal.BlocklingTargetGoalOLD;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 /**
  * Targets the nearest entity to attack.
  */
-public class BlocklingHuntTargetGoal extends BlocklingTargetGoal<BlocklingGoal>
+public class BlocklingHuntTargetGoal extends BlocklingTargetGoalOLD<BlocklingGoal>
 {
     /**
      * The entity the blockling is hunting.

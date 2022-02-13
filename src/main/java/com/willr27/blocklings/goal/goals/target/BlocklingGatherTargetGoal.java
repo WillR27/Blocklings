@@ -1,16 +1,20 @@
 package com.willr27.blocklings.goal.goals.target;
 
-import com.willr27.blocklings.goal.goals.BlocklingGatherGoal;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.goal.BlocklingTargetGoal;
+import com.willr27.blocklings.goal.goals.BlocklingGatherGoal;
+import com.willr27.blocklings.item.ToolType;
+import com.willr27.blocklings.item.ToolUtil;
+import com.willr27.blocklings.skill.skills.GeneralSkills;
+import javafx.util.Pair;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -20,11 +24,6 @@ import java.util.Set;
  */
 public abstract class BlocklingGatherTargetGoal<T extends BlocklingGatherGoal<?>> extends BlocklingTargetGoal<T>
 {
-    /**
-     * How many recalcs are called before a block is no longer marked bad.
-     */
-    private static final int RECALC_BAD_INTERVAL = 20;
-
     /**
      * The current position to try to gather.
      */
@@ -38,18 +37,42 @@ public abstract class BlocklingGatherTargetGoal<T extends BlocklingGatherGoal<?>
     private BlockPos prevTargetPos = null;
 
     /**
-     * A map of block positions to counts.
-     * Used to determine which blocks to ignore as they have been deemed ungatherable.
+     * The set of block positions to ignore as they were recently deemed invalid.
      */
     @Nonnull
-    private final Map<BlockPos, Integer> badBlockPositions = new HashMap<>();
+    public final Set<BlockPos> badTargetPositions = new HashSet<>();
 
     /**
-     * @param goal The associated goal instance.
+     * @param goal the associated goal instance.
      */
     public BlocklingGatherTargetGoal(@Nonnull T goal)
     {
         super(goal);
+    }
+
+    @Override
+    public boolean canUse()
+    {
+        if (!super.canUse())
+        {
+            return false;
+        }
+
+        goal.updateBadPathTargetPositions();
+
+        if (!tryRecalcTargetPos() || !canHarvestTargetPos())
+        {
+            badTargetPositions.clear();
+
+            markTargetBad();
+            setTargetPos(null);
+
+            goal.setPathTargetPos(null, null, false);
+
+            return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -60,8 +83,19 @@ public abstract class BlocklingGatherTargetGoal<T extends BlocklingGatherGoal<?>
             return false;
         }
 
-        if (!hasTarget())
+        goal.updateBadPathTargetPositions();
+
+        checkForAndRemoveInvalidTargets();
+
+        if (!tryRecalcTargetPos() || !canHarvestTargetPos())
         {
+            badTargetPositions.clear();
+
+            markTargetBad();
+            setTargetPos(null);
+
+            goal.setPathTargetPos(null, null, false);
+
             return false;
         }
 
@@ -69,66 +103,60 @@ public abstract class BlocklingGatherTargetGoal<T extends BlocklingGatherGoal<?>
     }
 
     @Override
-    public void start()
-    {
-        recalcTarget();
-    }
-
-    @Override
     public void stop()
     {
+        super.stop();
+
         setTargetPos(null);
-        setPreviousTargetPos(null);
-    }
 
-    @Override
-    protected void recalc()
-    {
-        updateBadPositions();
-    }
-
-    @Override
-    public void recalcTarget()
-    {
-        setTargetPos(findNextTargetPos());
+        badTargetPositions.clear();
     }
 
     /**
-     * Increments the counters for each bad block pos.
-     * Removes a position if the counter exceeds the interval or the number of bad block positions.
+     * Checks for and removes any invalid targets.
      */
-    private void updateBadPositions()
-    {
-        Set<BlockPos> freshBlockPositions = new HashSet<>();
-
-        badBlockPositions.forEach((blockPos, time) ->
-        {
-            if (time >= Math.min(RECALC_BAD_INTERVAL, Math.max(badBlockPositions.size(), 5)))
-            {
-                freshBlockPositions.add(blockPos);
-            }
-
-            badBlockPositions.put(blockPos, time + 1);
-        });
-
-        freshBlockPositions.forEach(badBlockPositions::remove);
-    }
+    public abstract void checkForAndRemoveInvalidTargets();
 
     /**
-     * Clears all bad positions.
-     */
-    protected void clearBadPositions()
-    {
-        badBlockPositions.clear();
-    }
-
-    /**
-     * Finds the next target pos.
+     * Recalculates the current target pos.
      *
-     * @return a new target pos or null if none is found.
+     * @return whether a target was found.
      */
-    @Nullable
-    abstract BlockPos findNextTargetPos();
+    public abstract boolean tryRecalcTargetPos();
+
+    /**
+     * Marks the entire target bad.
+     * This could be an entire vein in the case of mining, or tree for woodcutting.
+     */
+    public abstract void markTargetBad();
+
+    /**
+     * Marks the current target pos as bad.
+     * It will then be ignored until the target goal starts again.
+     */
+    public void markTargetPosBad()
+    {
+        if (hasTarget())
+        {
+            markPosBad(getTargetPos());
+            setTargetPos(null);
+        }
+    }
+
+    /**
+     * Marks the given block pos as bad.
+     * It will then be ignored until the target goal starts again.
+     *
+     * @param blockPos the block pos to mark as bad.
+     */
+    public void markPosBad(@Nonnull BlockPos blockPos)
+    {
+        badTargetPositions.add(blockPos);
+
+        // Any position we have deemed to be bad is one we are no longer gathering
+        // So make sure to reset any block break progress
+        world.destroyBlockProgress(blockling.getId(), blockPos, -1);
+    }
 
     @Override
     public boolean isTargetValid()
@@ -151,34 +179,42 @@ public abstract class BlocklingGatherTargetGoal<T extends BlocklingGatherGoal<?>
      */
     protected boolean isValidTargetPos(@Nullable BlockPos blockPos)
     {
-        return blockPos != null && !badBlockPositions.containsKey(blockPos);
+        return blockPos != null && !badTargetPositions.contains(blockPos);
     }
 
     /**
+     * @param block the block to test.
      * @return true if the given block is a valid block.
      */
-    abstract boolean isValidTargetBlock(@Nullable Block block);
+    protected abstract boolean isValidTargetBlock(@Nonnull Block block);
 
     /**
-     * Marks the all block positions bad.
+     * @return true if the blockling can harvest the block at the target pos.
      */
-    abstract void markBad();
-
-    /**
-     * Marks the current target as bad, so it will be ignored temporarily when searching for a new target.
-     */
-    public void markTargetBad()
+    public boolean canHarvestTargetPos()
     {
-        markPosBad(targetPos);
+        if (blockling.getEquipment().canHarvestBlockWithEquippedTools(getTargetBlockState()))
+        {
+            return true;
+        }
+        else if (blockling.getSkills().getSkill(GeneralSkills.AUTOSWITCH).isBought())
+        {
+            Pair<ItemStack, ItemStack> bestTools = blockling.getEquipment().findBestToolsToSwitchTo(BlocklingHand.BOTH, getToolType());
+
+            if (ToolUtil.canToolHarvestBlock(bestTools.getKey(), getTargetBlockState()) || ToolUtil.canToolHarvestBlock(bestTools.getValue(), getTargetBlockState()))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
-     * Marks the given pos as bad, so it will be ignored temporarily when searching for a new target.
+     * @return the tool type used to harvest the targets.
      */
-    public void markPosBad(@Nonnull BlockPos blockPos)
-    {
-        badBlockPositions.put(blockPos, 0);
-    }
+    @Nonnull
+    protected abstract ToolType getToolType();
 
     /**
      * @return true if the current target position is not null.
@@ -229,13 +265,13 @@ public abstract class BlocklingGatherTargetGoal<T extends BlocklingGatherGoal<?>
 
     /**
      * Sets the previous target pos to the given target pos.
-     * Resets any break progress at the old previous target pos if not null.
+     * Resets any break progress at the old previous target pos if not null or the same.
      *
      * @param targetPos the new target pos.
      */
     private void setPreviousTargetPos(@Nullable BlockPos targetPos)
     {
-        if (prevTargetPos != null)
+        if (prevTargetPos != null && (targetPos == null || !targetPos.equals(prevTargetPos)))
         {
             world.destroyBlockProgress(blockling.getId(), prevTargetPos, -1);
         }

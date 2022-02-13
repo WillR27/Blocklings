@@ -6,9 +6,13 @@ import com.willr27.blocklings.attribute.BlocklingAttributes;
 import com.willr27.blocklings.item.ToolType;
 import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.network.messages.EquipmentInventoryMessage;
+import javafx.util.Pair;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
+import org.jline.utils.Log;
+
+import javax.annotation.Nonnull;
 
 public class EquipmentInventory extends AbstractInventory
 {
@@ -145,17 +149,88 @@ public class EquipmentInventory extends AbstractInventory
 
     public boolean trySwitchToBestTool(BlocklingHand hand, ToolType toolType)
     {
-        if (hand == BlocklingHand.NONE)
+        Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> bestToolSlots = findBestToolSlotsToSwitchTo(hand, toolType);
+
+        int mainHandSlot = bestToolSlots.getKey().getKey();
+        int mainBestSlot = bestToolSlots.getKey().getValue();
+        int offHandSlot = bestToolSlots.getValue().getKey();
+        int offBestSlot = bestToolSlots.getValue().getValue();
+
+        boolean result = false;
+
+        if (mainHandSlot != mainBestSlot)
         {
-            return false;
+            swapItems(mainHandSlot, mainBestSlot);
+
+            result = true;
+        }
+
+        if (offHandSlot != offBestSlot)
+        {
+            swapItems(offHandSlot, offBestSlot);
+
+            result = true;
+        }
+
+        return result;
+    }
+
+    public Pair<ItemStack, ItemStack> findBestToolsToSwitchTo(BlocklingHand hand, ToolType toolType)
+    {
+        Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> bestTools = findBestToolSlotsToSwitchTo(hand, toolType);
+
+        return new Pair<>(getItem(bestTools.getKey().getValue()), getItem(bestTools.getValue().getValue()));
+    }
+
+    public Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> findBestToolSlotsToSwitchTo(BlocklingHand hand, ToolType toolType)
+    {
+        if (hand == BlocklingHand.MAIN)
+        {
+            return new Pair<>(findBestToolSlotToSwitchTo(BlocklingHand.MAIN, toolType), new Pair<>(TOOL_OFF_HAND, TOOL_OFF_HAND));
+        }
+        else if (hand == BlocklingHand.OFF)
+        {
+            return new Pair<>(new Pair<>(TOOL_MAIN_HAND, TOOL_MAIN_HAND), findBestToolSlotToSwitchTo(BlocklingHand.OFF, toolType));
         }
         else if (hand == BlocklingHand.BOTH)
         {
-            return trySwitchToBestTool(BlocklingHand.MAIN, toolType) | trySwitchToBestTool(BlocklingHand.OFF, toolType);
+            Pair<Integer, Integer> toolSlotsMain = findBestToolSlotToSwitchTo(BlocklingHand.MAIN, toolType);
+
+            if (toolSlotsMain.getValue() != TOOL_MAIN_HAND)
+            {
+                swapItems(toolSlotsMain.getKey(), toolSlotsMain.getValue());
+            }
+
+            Pair<Integer, Integer> toolSlotsOff = findBestToolSlotToSwitchTo(BlocklingHand.OFF, toolType);
+
+            if (toolSlotsMain.getValue() != TOOL_MAIN_HAND)
+            {
+                swapItems(toolSlotsMain.getKey(), toolSlotsMain.getValue());
+            }
+
+            return new Pair<>(toolSlotsMain, toolSlotsOff);
         }
 
-        int bestSlot = -1;
-        int handSlot = hand == BlocklingHand.MAIN ? TOOL_MAIN_HAND : TOOL_OFF_HAND;
+        return new Pair<>(new Pair<>(TOOL_MAIN_HAND, TOOL_MAIN_HAND), new Pair<>(TOOL_OFF_HAND, TOOL_OFF_HAND));
+    }
+
+    /**
+     * @param hand the hand to find the tool for, should be either MAIN or OFF.
+     * @param toolType the tool type to find the tools for.
+     * @return a pair containing the slots to swap with the best items, hand slot first then the other slot to swap with.
+     */
+    @Nonnull
+    public Pair<Integer, Integer> findBestToolSlotToSwitchTo(@Nonnull BlocklingHand hand, @Nonnull ToolType toolType)
+    {
+        if (!(hand == BlocklingHand.MAIN || hand == BlocklingHand.OFF))
+        {
+            Log.warn("Tried to find the best tool to switch to with a hand that wasn't MAIN or OFF!");
+
+            return new Pair<>(TOOL_OFF_HAND, TOOL_OFF_HAND);
+        }
+
+        int bestSlot = hand == BlocklingHand.MAIN ? TOOL_MAIN_HAND : TOOL_OFF_HAND;
+        int handSlot = bestSlot;
         ItemStack handStack = getItem(handSlot);
 
         if (toolType == ToolType.WEAPON)
@@ -193,14 +268,7 @@ public class EquipmentInventory extends AbstractInventory
             }
         }
 
-        if (bestSlot != -1)
-        {
-            swapItems(handSlot, bestSlot);
-
-            return true;
-        }
-
-        return false;
+        return new Pair<>(handSlot, bestSlot);
     }
 
     @Override
