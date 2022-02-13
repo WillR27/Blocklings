@@ -148,6 +148,13 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     public boolean wasLastAttackHunt = false;
 
     /**
+     * Used to track whether the player has released crouch after interacting (changing blockling type).
+     * This stops a player picking up a blockling immediately after changing its type by accident.
+     * Should be replaced with a capability on the player to tell when they have stopped using an item.
+     */
+    private boolean hasPlayerResetCrouchBetweenInteractions = true;
+
+    /**
      * @param type the blockling entity type.
      * @param world the world the blockling is in.
      */
@@ -165,7 +172,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
             originalBlocklingType = BlocklingType.TYPES.get(getRandom().nextInt(BlocklingType.TYPES.size()));
             setBlocklingType(originalBlocklingType, false);
 
-            setScale(getRandom().nextFloat() * 0.5f + 0.49f, false);
+            setScale(getRandom().nextFloat() * 0.5f + 0.45f, false);
 
             stats.init();
         }
@@ -312,6 +319,11 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     public void tick()
     {
         super.tick();
+
+        if (!level.isClientSide && !hasPlayerResetCrouchBetweenInteractions)
+        {
+            hasPlayerResetCrouchBetweenInteractions = !isTame() || (getOwner() != null && !getOwner().isCrouching());
+        }
 
         skills.tick();
         actions.tick();
@@ -535,7 +547,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 }
                 else
                 {
-                    if (skills.getSkill(GeneralSkills.PACKLING).isBought())
+                    if (hasPlayerResetCrouchBetweenInteractions && skills.getSkill(GeneralSkills.PACKLING).isBought())
                     {
                         if (player == getOwner())
                         {
@@ -560,7 +572,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                         }
                     }
 
-                    if (skills.getSkill(GeneralSkills.HEAL).isBought())
+                    if (hasPlayerResetCrouchBetweenInteractions && skills.getSkill(GeneralSkills.HEAL).isBought())
                     {
                         if (getHealth() < getMaxHealth())
                         {
@@ -585,6 +597,8 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
             {
                 if (!level.isClientSide())
                 {
+                    hasPlayerResetCrouchBetweenInteractions = false;
+
                     if (random.nextInt(4) == 0)
                     {
                         setBlocklingType(BlocklingType.findTypeForFood(item));
@@ -636,7 +650,10 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 //            {
                 if (!level.isClientSide())
                 {
-                    guiHandler.openGui(player);
+                    if (hasPlayerResetCrouchBetweenInteractions)
+                    {
+                        guiHandler.openGui(player);
+                    }
                 }
 
                 return ActionResultType.CONSUME;
@@ -673,7 +690,6 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         if (random.nextInt(3) == 0 && !ForgeEventFactory.onAnimalTame(this, player))
         {
             tame(player);
-            setCustomName(new StringTextComponent("Blockling"), true);
 
             for (Task task : getTasks().getPrioritisedTasks())
             {
@@ -694,6 +710,17 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         }
 
         return false;
+    }
+
+    @Override
+    public void tame(@Nonnull PlayerEntity player)
+    {
+        super.tame(player);
+
+        if (!hasCustomName())
+        {
+            setCustomName(new StringTextComponent("Blockling"), true);
+        }
     }
 
     @Override
