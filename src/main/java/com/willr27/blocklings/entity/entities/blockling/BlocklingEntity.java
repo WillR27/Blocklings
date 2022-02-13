@@ -155,9 +155,6 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     {
         super(type, world);
 
-        setTame(false);
-        setCustomName(new StringTextComponent("Blockling"), false);
-
         stats.initUpdateCallbacks();
 
         // Set up any values that are determined randomly here
@@ -676,6 +673,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         if (random.nextInt(3) == 0 && !ForgeEventFactory.onAnimalTame(this, player))
         {
             tame(player);
+            setCustomName(new StringTextComponent("Blockling"), true);
 
             for (Task task : getTasks().getPrioritisedTasks())
             {
