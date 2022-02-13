@@ -1,8 +1,9 @@
 package com.willr27.blocklings.goal.goals.target;
 
 import com.willr27.blocklings.goal.BlocklingGoal;
-import com.willr27.blocklings.goal.BlocklingTargetGoalOLD;
+import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 
 import javax.annotation.Nonnull;
@@ -11,7 +12,7 @@ import javax.annotation.Nullable;
 /**
  * Targets the last entity to attack the blockling.
  */
-public class BlocklingHurtByTargetGoal extends BlocklingTargetGoalOLD<BlocklingGoal>
+public class BlocklingHurtByTargetGoal extends BlocklingTargetGoal<BlocklingGoal>
 {
     /**
      * The entity attacking the blockling.
@@ -85,5 +86,33 @@ public class BlocklingHurtByTargetGoal extends BlocklingTargetGoalOLD<BlocklingG
         timestamp = blockling.getLastHurtByMobTimestamp();
 
         blockling.setTarget(attacker);
+    }
+
+    @Override
+    protected boolean isTargetValid()
+    {
+        return hasTarget() && isValidTarget(attacker);
+    }
+
+    @Override
+    protected boolean hasTarget()
+    {
+        return attacker != null;
+    }
+
+    /**
+     * @return true if the entity is valid to target.
+     */
+    private boolean isValidTarget(@Nonnull Entity entity)
+    {
+        for (GoalWhitelist whitelist : goal.whitelists)
+        {
+            if (whitelist.isEntryBlacklisted(entity))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

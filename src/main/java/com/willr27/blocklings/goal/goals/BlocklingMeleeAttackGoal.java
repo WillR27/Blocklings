@@ -3,13 +3,13 @@ package com.willr27.blocklings.goal.goals;
 import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
+import com.willr27.blocklings.goal.BlocklingTargetGoal;
+import com.willr27.blocklings.goal.IHasTargetGoal;
 import com.willr27.blocklings.item.ToolType;
 import com.willr27.blocklings.skill.skills.CombatSkills;
 import com.willr27.blocklings.skill.skills.GeneralSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
-import com.willr27.blocklings.goal.IHasTargetGoalOLD;
 import com.willr27.blocklings.goal.BlocklingGoal;
-import com.willr27.blocklings.goal.BlocklingTargetGoalOLD;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
 import net.minecraft.entity.LivingEntity;
@@ -27,7 +27,7 @@ import java.util.UUID;
  *
  * @param <T> the type of the corresponding target goal.
  */
-public abstract class BlocklingMeleeAttackGoal<T extends BlocklingTargetGoalOLD<?>> extends BlocklingGoal implements IHasTargetGoalOLD<T>
+public abstract class BlocklingMeleeAttackGoal<T extends BlocklingTargetGoal<?>> extends BlocklingGoal implements IHasTargetGoal<T>
 {
     /**
      * The current path to the target.
