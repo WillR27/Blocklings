@@ -1,5 +1,6 @@
 package com.willr27.blocklings.goal.goals;
 
+import com.willr27.blocklings.entity.EntityTypes;
 import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
@@ -16,6 +17,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.Path;
+import net.minecraft.util.registry.Registry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -54,6 +56,7 @@ public abstract class BlocklingMeleeAttackGoal<T extends BlocklingTargetGoal<?>>
         GoalWhitelist whitelist = new GoalWhitelist("540241cd-085a-4c1f-9e90-8aea973568a8", "targets", Whitelist.Type.ENTITY, this);
         whitelist.setIsUnlocked(blockling.getSkills().getSkill(CombatSkills.WHITELIST).isBought(), false);
         EntityUtil.VALID_ATTACK_TARGETS.keySet().forEach(type -> whitelist.put(type, true));
+        whitelist.put(EntityTypes.BLOCKLING_ENTITY.getId(), false);
         whitelists.add(whitelist);
     }
 

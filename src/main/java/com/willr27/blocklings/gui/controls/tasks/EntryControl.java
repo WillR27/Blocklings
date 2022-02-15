@@ -3,6 +3,7 @@ package com.willr27.blocklings.gui.controls.tasks;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.entity.EntityUtil;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.*;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
@@ -88,24 +89,34 @@ public class EntryControl extends Control
             RenderSystem.color3f(0.5f, 0.5f, 0.5f);
         }
 
-        GuiUtil.scissor(screenX + 2, screenY + 2, width - 4, height - 4, true);
+//        GuiUtil.scissor(screenX + 2, screenY + 2, width - 4, height - 4, true);
 
         if (whitelist.type == Whitelist.Type.BLOCK)
         {
             Block block = Registry.BLOCK.get(entry.getKey());
             ItemStack stack = new ItemStack(block);
+
             GuiUtil.renderItemStack(matrixStack, stack, screenX, screenY, 10);
         }
         else if (whitelist.type == Whitelist.Type.ITEM)
         {
             Item item = Registry.ITEM.get(entry.getKey());
             ItemStack stack = new ItemStack(item);
+
             GuiUtil.renderItemStack(matrixStack, stack, screenX, screenY, 10);
         }
         else if (whitelist.type == Whitelist.Type.ENTITY)
         {
             LivingEntity entity = (LivingEntity) EntityUtil.VALID_ATTACK_TARGETS.get(entry.getKey());
-            GuiUtil.renderEntityOnScreen(screenX + width / 2, screenY + width / 2 + 11, 20, 25, -10, entity);
+
+            if (entity instanceof BlocklingEntity)
+            {
+                GuiUtil.renderEntityOnScreen(screenX + width / 2, screenY + width / 2 + 11, 20, 25, -10, whitelist.blockling);
+            }
+            else
+            {
+                GuiUtil.renderEntityOnScreen(screenX + width / 2, screenY + width / 2 + 11, 20, 25, -10, entity);
+            }
         }
     }
 

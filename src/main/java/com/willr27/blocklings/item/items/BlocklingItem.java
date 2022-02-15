@@ -96,9 +96,12 @@ public class BlocklingItem extends Item
             blockling.setPos(blockpos.getX() + 0.5, blockpos.getY(), blockpos.getZ() + 0.5);
             blockling.tame(context.getPlayer());
 
-            if (stack.getTag().contains("custom_name"))
+            if (stack.getTag() != null)
             {
-                blockling.setCustomName(new StringTextComponent(stack.getTag().getString("custom_name")));
+                if (stack.getTag().contains("custom_name"))
+                {
+                    blockling.setCustomName(new StringTextComponent(stack.getTag().getString("custom_name")));
+                }
             }
 
             world.addFreshEntity(blockling);
