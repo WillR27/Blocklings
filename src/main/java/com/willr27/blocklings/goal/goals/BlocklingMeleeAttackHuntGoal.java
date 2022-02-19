@@ -2,7 +2,7 @@ package com.willr27.blocklings.goal.goals;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
-import com.willr27.blocklings.goal.goals.target.BlocklingHuntTargetGoal;
+import com.willr27.blocklings.goal.goals.target.BlocklingAttackHuntTargetGoal;
 import com.willr27.blocklings.task.BlocklingTasks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -14,13 +14,13 @@ import java.util.UUID;
 /**
  * Attacks the nearest entity to the blockling using melee.
  */
-public class BlocklingMeleeAttackHuntGoal extends BlocklingMeleeAttackGoal<BlocklingHuntTargetGoal>
+public class BlocklingMeleeAttackHuntGoal extends BlocklingMeleeAttackGoal<BlocklingAttackHuntTargetGoal>
 {
     /**
      * The associated target goal.
      */
     @Nonnull
-    private final BlocklingHuntTargetGoal targetGoal;
+    private final BlocklingAttackHuntTargetGoal targetGoal;
 
     /**
      * @param id the id associated with the goal's task.
@@ -31,14 +31,14 @@ public class BlocklingMeleeAttackHuntGoal extends BlocklingMeleeAttackGoal<Block
     {
         super(id, blockling, tasks);
 
-        targetGoal = new BlocklingHuntTargetGoal(this);
+        targetGoal = new BlocklingAttackHuntTargetGoal(this);
 
         whitelists.get(0).setEntry(Registry.ENTITY_TYPE.getKey(EntityType.VILLAGER), false, false);
     }
 
     @Override
     @Nonnull
-    public BlocklingHuntTargetGoal getTargetGoal()
+    public BlocklingAttackHuntTargetGoal getTargetGoal()
     {
         return targetGoal;
     }

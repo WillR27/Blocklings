@@ -2,7 +2,7 @@ package com.willr27.blocklings.goal.goals;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.task.BlocklingTasks;
-import com.willr27.blocklings.goal.goals.target.BlocklingOwnerHurtByTargetGoal;
+import com.willr27.blocklings.goal.goals.target.BlocklingAttackOwnerHurtByTargetGoal;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;
@@ -10,13 +10,13 @@ import java.util.UUID;
 /**
  * Attacks the last entity to attack the blockling's owner using melee.
  */
-public class BlocklingMeleeAttackOwnerHurtByGoal extends BlocklingMeleeAttackGoal<BlocklingOwnerHurtByTargetGoal>
+public class BlocklingMeleeAttackOwnerHurtByGoal extends BlocklingMeleeAttackGoal<BlocklingAttackOwnerHurtByTargetGoal>
 {
     /**
      * The associated target goal.
      */
     @Nonnull
-    private final BlocklingOwnerHurtByTargetGoal targetGoal;
+    private final BlocklingAttackOwnerHurtByTargetGoal targetGoal;
 
     /**
      * @param id the id associated with the goal's task.
@@ -27,12 +27,12 @@ public class BlocklingMeleeAttackOwnerHurtByGoal extends BlocklingMeleeAttackGoa
     {
         super(id, blockling, tasks);
 
-        targetGoal = new BlocklingOwnerHurtByTargetGoal(this);
+        targetGoal = new BlocklingAttackOwnerHurtByTargetGoal(this);
     }
 
     @Override
     @Nonnull
-    public BlocklingOwnerHurtByTargetGoal getTargetGoal()
+    public BlocklingAttackOwnerHurtByTargetGoal getTargetGoal()
     {
         return targetGoal;
     }

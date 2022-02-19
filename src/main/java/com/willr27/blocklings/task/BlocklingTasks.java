@@ -213,10 +213,9 @@ public class BlocklingTasks
             }
         }
 
-        for (int i = 0; i < taskIds.size(); i++)
-        {
-            getTask(taskIds.get(i)).setPriority(taskPriorities.get(i), false);
-        }
+        prioritisedTasks = new TaskList(prioritisedTasks.stream().sorted((o1, o2) -> taskPriorities.get(taskIds.indexOf(o1.id)) > taskPriorities.get(taskIds.indexOf(o2.id)) ? 1 : -1).collect(Collectors.toList()));
+
+        reapplyGoals();
     }
 
     public void encode(PacketBuffer buf)

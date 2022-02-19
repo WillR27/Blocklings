@@ -3,28 +3,26 @@ package com.willr27.blocklings.goal.goals.target;
 import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.AxisAlignedBB;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Targets the nearest entity to attack.
+ * Targets an entity to attack.
  */
-public class BlocklingHuntTargetGoal extends BlocklingTargetGoal<BlocklingGoal>
+public class BlocklingAttackTargetGoal extends BlocklingTargetGoal<BlocklingGoal>
 {
     /**
-     * The entity the blockling is hunting.
+     * The entity to target.
      */
     @Nullable
-    private LivingEntity target = null;
+    protected LivingEntity target = null;
 
     /**
      * @param goal the associated goal.
      */
-    public BlocklingHuntTargetGoal(BlocklingGoal goal)
+    public BlocklingAttackTargetGoal(@Nonnull BlocklingGoal goal)
     {
         super(goal);
     }
@@ -37,56 +35,79 @@ public class BlocklingHuntTargetGoal extends BlocklingTargetGoal<BlocklingGoal>
             return false;
         }
 
-        if (!blockling.isTame())
-        {
-            return false;
-        }
-
-        for (Entity entity : world.getEntities(blockling, new AxisAlignedBB(blockling.position().add(-10.0, -10.0, -10.0), blockling.position().add(10.0, 10.0, 10.0))))
-        {
-            if (entity instanceof LivingEntity)
-            {
-                if (isValidTarget(entity))
-                {
-                    target = (LivingEntity) entity;
-
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return true;
     }
 
     @Override
     public boolean canContinueToUse()
     {
-        return false;
+        if (blockling.getTarget() != target)
+        {
+            return false;
+        }
+
+        if (!isTargetValid())
+        {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
     public void start()
     {
+        super.start();
+
         blockling.setTarget(target);
     }
 
     @Override
-    protected boolean isTargetValid()
+    public void stop()
+    {
+        super.stop();
+
+        target = null;
+
+        blockling.setTarget(target);
+    }
+
+    @Override
+    public boolean isTargetValid()
     {
         return hasTarget() && isValidTarget(target);
     }
 
     @Override
-    protected boolean hasTarget()
+    public boolean hasTarget()
     {
         return target != null;
     }
 
     /**
+     * @return the current target entity.
+     */
+    @Nullable
+    public LivingEntity getTarget()
+    {
+        return target;
+    }
+
+    /**
      * @return true if the entity is valid to target.
      */
-    private boolean isValidTarget(@Nonnull Entity entity)
+    public boolean isValidTarget(@Nonnull LivingEntity entity)
     {
+        if (entity == blockling)
+        {
+            return false;
+        }
+
+        if (entity.isDeadOrDying())
+        {
+            return false;
+        }
+
         for (GoalWhitelist whitelist : goal.whitelists)
         {
             if (whitelist.isEntryBlacklisted(entity))

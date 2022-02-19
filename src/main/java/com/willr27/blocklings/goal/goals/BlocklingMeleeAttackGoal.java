@@ -6,6 +6,7 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.goal.IHasTargetGoal;
+import com.willr27.blocklings.goal.goals.target.BlocklingAttackTargetGoal;
 import com.willr27.blocklings.item.ToolType;
 import com.willr27.blocklings.skill.skills.CombatSkills;
 import com.willr27.blocklings.skill.skills.GeneralSkills;
@@ -29,7 +30,7 @@ import java.util.UUID;
  *
  * @param <T> the type of the corresponding target goal.
  */
-public abstract class BlocklingMeleeAttackGoal<T extends BlocklingTargetGoal<?>> extends BlocklingGoal implements IHasTargetGoal<T>
+public abstract class BlocklingMeleeAttackGoal<T extends BlocklingAttackTargetGoal> extends BlocklingGoal implements IHasTargetGoal<T>
 {
     /**
      * The current path to the target.
@@ -68,12 +69,24 @@ public abstract class BlocklingMeleeAttackGoal<T extends BlocklingTargetGoal<?>>
             return false;
         }
 
-        LivingEntity target = blockling.getTarget();
-
-        if (target == null || !target.isAlive())
+        if (!getTargetGoal().isTargetValid())
         {
             return false;
         }
+
+        if (!tryUse())
+        {
+            getTargetGoal().stop();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean tryUse()
+    {
+        LivingEntity target = getTargetGoal().getTarget();
 
         path = blockling.getNavigation().createPath(target, 0);
 
@@ -96,12 +109,12 @@ public abstract class BlocklingMeleeAttackGoal<T extends BlocklingTargetGoal<?>>
             return false;
         }
 
-        LivingEntity target = blockling.getTarget();
-
-        if (target == null || !target.isAlive())
+        if (!getTargetGoal().isTargetValid())
         {
             return false;
         }
+
+        LivingEntity target = getTargetGoal().getTarget();
 
         if (path == null)
         {
@@ -128,7 +141,8 @@ public abstract class BlocklingMeleeAttackGoal<T extends BlocklingTargetGoal<?>>
     {
         super.stop();
 
-        blockling.setTarget(null);
+        getTargetGoal().stop();
+
         blockling.setAggressive(false);
         blockling.getNavigation().stop();
     }
@@ -143,7 +157,7 @@ public abstract class BlocklingMeleeAttackGoal<T extends BlocklingTargetGoal<?>>
             blockling.getEquipment().trySwitchToBestTool(BlocklingHand.BOTH, ToolType.WEAPON);
         }
 
-        LivingEntity target = blockling.getTarget();
+        LivingEntity target = getTargetGoal().getTarget();
 
         if (isInRange(target))
         {
