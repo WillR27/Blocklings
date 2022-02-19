@@ -79,7 +79,12 @@ public class ForgeEventBusEvents
                         itemStack.setCount(itemStack.getCount() * 2);
                     }
 
-                    blockling.level.addFreshEntity(new ItemEntity(blockling.level, event.getEntity().getX(), event.getEntity().getY() + 0.2f, event.getEntity().getZ(), itemStack));
+                    itemStack = blockling.getEquipment().addItem(itemStack);
+
+                    if (!itemStack.isEmpty())
+                    {
+                        blockling.level.addFreshEntity(new ItemEntity(blockling.level, event.getEntity().getX(), event.getEntity().getY() + 0.2f, event.getEntity().getZ(), itemStack));
+                    }
                 }
 
                 event.setCanceled(true);
