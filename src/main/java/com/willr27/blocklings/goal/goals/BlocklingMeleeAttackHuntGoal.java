@@ -4,7 +4,9 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.goal.goals.target.BlocklingHuntTargetGoal;
 import com.willr27.blocklings.task.BlocklingTasks;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.registry.Registry;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;
@@ -30,6 +32,8 @@ public class BlocklingMeleeAttackHuntGoal extends BlocklingMeleeAttackGoal<Block
         super(id, blockling, tasks);
 
         targetGoal = new BlocklingHuntTargetGoal(this);
+
+        whitelists.get(0).setEntry(Registry.ENTITY_TYPE.getKey(EntityType.VILLAGER), false, false);
     }
 
     @Override
