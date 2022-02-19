@@ -83,7 +83,7 @@ public class ForgeEventBusEvents
 
                     if (!itemStack.isEmpty())
                     {
-                        blockling.level.addFreshEntity(new ItemEntity(blockling.level, event.getEntity().getX(), event.getEntity().getY() + 0.2f, event.getEntity().getZ(), itemStack));
+                        blockling.dropItemStack(itemStack);
                     }
                 }
 
