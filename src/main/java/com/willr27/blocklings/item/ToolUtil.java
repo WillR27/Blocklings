@@ -254,6 +254,15 @@ public class ToolUtil
             return true;
         }
 
+        if (BlockUtil.isOre(blockState.getBlock()) && !ToolUtil.isPickaxe(stack))
+        {
+            return false;
+        }
+        else if (BlockUtil.isLog(blockState.getBlock()) && !ToolUtil.isAxe(stack))
+        {
+            return false;
+        }
+
         ToolType harvestTool = blockState.getHarvestTool();
 
         for (ToolType toolType : stack.getToolTypes())

@@ -90,7 +90,7 @@ public class BlocklingFarmTargetGoal extends BlocklingGatherTargetGoal<Blockling
                 return false;
             }
 
-            goal.setPathTargetPos(pathToCrop.getKey(), pathToCrop.getValue());
+            goal.setPathTargetPos(pathToCrop.getKey(), pathToCrop.getValue(), false);
         }
 
         return true;

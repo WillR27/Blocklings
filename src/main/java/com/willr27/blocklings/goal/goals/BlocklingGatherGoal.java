@@ -106,6 +106,8 @@ public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>
     public void start()
     {
         super.start();
+
+        setPathTargetPos(getPathTargetPos(), path);
     }
 
     @Override

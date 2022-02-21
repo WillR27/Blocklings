@@ -101,7 +101,7 @@ public class BlocklingMineTargetGoal extends BlocklingGatherTargetGoal<Blockling
                 return false;
             }
 
-            goal.setPathTargetPos(pathToVein.getKey(), pathToVein.getValue());
+            goal.setPathTargetPos(pathToVein.getKey(), pathToVein.getValue(), false);
         }
 
         setTargetPos((BlockPos) veinBlockPositions.toArray()[veinBlockPositions.size() - 1]);

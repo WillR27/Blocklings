@@ -34,7 +34,8 @@ public class BlocklingWoodcutTargetGoal extends BlocklingGatherTargetGoal<Blockl
     /**
      * The current target tree.
      */
-    private Tree tree = new Tree();
+    @Nonnull
+    private final Tree tree = new Tree();
 
     /**
      * @param goal The associated goal instance.
@@ -103,7 +104,7 @@ public class BlocklingWoodcutTargetGoal extends BlocklingGatherTargetGoal<Blockl
                 return false;
             }
 
-            goal.setPathTargetPos(pathToTree.getKey(), pathToTree.getValue());
+            goal.setPathTargetPos(pathToTree.getKey(), pathToTree.getValue(), false);
         }
 
         setTargetPos((BlockPos) tree.logs.toArray()[tree.logs.size() - 1]);
@@ -241,7 +242,7 @@ public class BlocklingWoodcutTargetGoal extends BlocklingGatherTargetGoal<Blockl
             this.tree.logs.clear();
             this.tree.leaves.clear();
             this.tree.logs.addAll(tree.logs);
-            this.tree.logs.addAll(tree.leaves);
+            this.tree.leaves.addAll(tree.leaves);
 
             return true;
         }
