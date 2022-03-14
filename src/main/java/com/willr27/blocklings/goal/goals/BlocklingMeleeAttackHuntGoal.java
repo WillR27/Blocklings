@@ -2,10 +2,11 @@ package com.willr27.blocklings.goal.goals;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
-import com.willr27.blocklings.goal.goals.target.BlocklingAttackHuntTargetGoal;
 import com.willr27.blocklings.task.BlocklingTasks;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.registry.Registry;
 
 import javax.annotation.Nonnull;
@@ -14,14 +15,8 @@ import java.util.UUID;
 /**
  * Attacks the nearest entity to the blockling using melee.
  */
-public class BlocklingMeleeAttackHuntGoal extends BlocklingMeleeAttackGoal<BlocklingAttackHuntTargetGoal>
+public class BlocklingMeleeAttackHuntGoal extends BlocklingMeleeAttackGoal
 {
-    /**
-     * The associated target goal.
-     */
-    @Nonnull
-    private final BlocklingAttackHuntTargetGoal targetGoal;
-
     /**
      * @param id the id associated with the goal's task.
      * @param blockling the blockling.
@@ -31,16 +26,40 @@ public class BlocklingMeleeAttackHuntGoal extends BlocklingMeleeAttackGoal<Block
     {
         super(id, blockling, tasks);
 
-        targetGoal = new BlocklingAttackHuntTargetGoal(this);
-
         whitelists.get(0).setEntry(Registry.ENTITY_TYPE.getKey(EntityType.VILLAGER), false, false);
     }
 
     @Override
-    @Nonnull
-    public BlocklingAttackHuntTargetGoal getTargetGoal()
+    public boolean tryRecalcTarget()
     {
-        return targetGoal;
+        if (!blockling.isTame())
+        {
+            return false;
+        }
+
+        for (Entity entity : world.getEntities(blockling, new AxisAlignedBB(blockling.position().add(-10.0, -10.0, -10.0), blockling.position().add(10.0, 10.0, 10.0))))
+        {
+            if (entity instanceof LivingEntity)
+            {
+                LivingEntity livingEntity = (LivingEntity) entity;
+
+                if (isValidTarget(livingEntity))
+                {
+                    setTarget(livingEntity);
+
+                    if (super.tryRecalcTarget())
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        setTarget(null);
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     @Override

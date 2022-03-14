@@ -1,24 +1,22 @@
 package com.willr27.blocklings.goal.goals;
 
+import com.willr27.blocklings.block.BlockUtil;
 import com.willr27.blocklings.entity.EntityTypes;
 import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.goal.BlocklingTargetGoal;
-import com.willr27.blocklings.goal.IHasTargetGoal;
-import com.willr27.blocklings.goal.goals.target.BlocklingAttackTargetGoal;
 import com.willr27.blocklings.item.ToolType;
 import com.willr27.blocklings.skill.skills.CombatSkills;
 import com.willr27.blocklings.skill.skills.GeneralSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
-import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.Path;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,22 +25,9 @@ import java.util.UUID;
 
 /**
  * Contains common behaviour shared between melee attack goals.
- *
- * @param <T> the type of the corresponding target goal.
  */
-public abstract class BlocklingMeleeAttackGoal<T extends BlocklingAttackTargetGoal> extends BlocklingGoal implements IHasTargetGoal<T>
+public abstract class BlocklingMeleeAttackGoal extends BlocklingTargetGoal<LivingEntity>
 {
-    /**
-     * The current path to the target.
-     */
-    @Nullable
-    private Path path = null;
-
-    /**
-     * Counts the number of ticks elapsed between path recalcs.
-     */
-    private int recalcPathCounter = 0;
-
     /**
      * @param id the id associated with the goal's task.
      * @param blockling the blockling.
@@ -69,35 +54,6 @@ public abstract class BlocklingMeleeAttackGoal<T extends BlocklingAttackTargetGo
             return false;
         }
 
-        if (!getTargetGoal().isTargetValid())
-        {
-            return false;
-        }
-
-        if (!tryUse())
-        {
-            getTargetGoal().stop();
-
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean tryUse()
-    {
-        LivingEntity target = getTargetGoal().getTarget();
-
-        path = blockling.getNavigation().createPath(target, 0);
-
-        if (path == null)
-        {
-            if (!isInRange(target))
-            {
-                return false;
-            }
-        }
-
         return true;
     }
 
@@ -109,21 +65,6 @@ public abstract class BlocklingMeleeAttackGoal<T extends BlocklingAttackTargetGo
             return false;
         }
 
-        if (!getTargetGoal().isTargetValid())
-        {
-            return false;
-        }
-
-        LivingEntity target = getTargetGoal().getTarget();
-
-        if (path == null)
-        {
-            if (!isInRange(target))
-            {
-                return false;
-            }
-        }
-
         return true;
     }
 
@@ -133,7 +74,7 @@ public abstract class BlocklingMeleeAttackGoal<T extends BlocklingAttackTargetGo
         super.start();
 
         blockling.setAggressive(true);
-        blockling.getNavigation().moveTo(path, 1.0);
+        blockling.setTarget(getTarget());
     }
 
     @Override
@@ -141,23 +82,50 @@ public abstract class BlocklingMeleeAttackGoal<T extends BlocklingAttackTargetGo
     {
         super.stop();
 
-        getTargetGoal().stop();
-
         blockling.setAggressive(false);
-        blockling.getNavigation().stop();
+        blockling.setTarget(null);
     }
 
     @Override
-    public void tick()
+    public boolean tryRecalcTarget()
     {
-        super.tick();
+        if (hasTarget())
+        {
+            recalcPath(true);
+        }
+        else
+        {
+            markPathTargetPosBad();
+
+            return false;
+        }
+
+        if (isStuck())
+        {
+            markPathTargetPosBad();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public void tickGoal()
+    {
+        if (isStuck())
+        {
+            markEntireTargetBad();
+
+            return;
+        }
 
         if (blockling.getSkills().getSkill(GeneralSkills.AUTOSWITCH).isBought())
         {
             blockling.getEquipment().trySwitchToBestTool(BlocklingHand.BOTH, ToolType.WEAPON);
         }
 
-        LivingEntity target = getTargetGoal().getTarget();
+        LivingEntity target = getTarget();
 
         if (isInRange(target))
         {
@@ -169,14 +137,26 @@ public abstract class BlocklingMeleeAttackGoal<T extends BlocklingAttackTargetGo
                 attack(target, attackingHand);
             }
         }
-        else if (recalcPathCounter >= 20)
+    }
+
+    @Override
+    protected void recalcPath(boolean force)
+    {
+        if (isBadPathTargetPos(getTarget().blockPosition()))
         {
-            path = blockling.getNavigation().createPath(target, 0);
-            blockling.getNavigation().moveTo(path, 1.0);
-            recalcPathCounter = 0;
+            setPathTargetPos(null, null, false);
+
+            return;
         }
 
-        recalcPathCounter++;
+        Path path = blockling.getNavigation().createPath(getTarget(), 0);
+
+        if (path != null && BlockUtil.distanceSq(getTarget().blockPosition(), path.getTarget()) > getRangeSq())
+        {
+            path = null;
+        }
+
+        setPathTargetPos(getTarget().blockPosition(), path);
     }
 
     /**
@@ -201,13 +181,86 @@ public abstract class BlocklingMeleeAttackGoal<T extends BlocklingAttackTargetGo
         }
 
         blockling.incAttacksRecently();
-
         blockling.doHurtTarget(target);
-        path = blockling.getNavigation().createPath(target, 0);
-        blockling.getNavigation().moveTo(path, 1.0);
-        recalcPathCounter = 0;
+
+        recalcPath(true);
 
         blockling.wasLastAttackHunt = false;
+    }
+
+    @Override
+    protected void checkForAndRemoveInvalidTargets()
+    {
+        if (hasTarget() && !isTargetValid())
+        {
+            markTargetBad();
+        }
+    }
+
+    @Override
+    public void markEntireTargetBad()
+    {
+        if (hasTarget())
+        {
+            markTargetBad();
+        }
+    }
+
+    @Override
+    protected boolean isValidPathTargetPos(@Nonnull BlockPos blockPos)
+    {
+        return true;
+    }
+
+    @Override
+    public boolean isValidTarget(@Nullable LivingEntity entity)
+    {
+        if (entity == null)
+        {
+            return false;
+        }
+
+        if (entity == blockling)
+        {
+            return false;
+        }
+
+        if (entity.isDeadOrDying())
+        {
+            return false;
+        }
+
+        if (badTargets.contains(entity))
+        {
+            return false;
+        }
+
+        for (GoalWhitelist whitelist : whitelists)
+        {
+            if (whitelist.isEntryBlacklisted(entity))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    protected void setTarget(@Nullable LivingEntity target)
+    {
+        super.setTarget(target);
+
+        blockling.setTarget(target, false);
+    }
+
+    /**
+     * @return the attack range squared.
+     */
+    @Override
+    public float getRangeSq()
+    {
+        return 2.5f * 2.5f;
     }
 
     /**

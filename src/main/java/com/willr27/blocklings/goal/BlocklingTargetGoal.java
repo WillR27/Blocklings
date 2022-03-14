@@ -2,56 +2,71 @@ package com.willr27.blocklings.goal;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.task.BlocklingTasks;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
-import java.util.EnumSet;
+import javax.annotation.Nullable;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
-public abstract class BlocklingTargetGoal<T extends BlocklingGoal> extends Goal
+/**
+ * Contains common behaviour between target goals.
+ *
+ * @param <T> the type of the target.
+ */
+public abstract class BlocklingTargetGoal<T> extends BlocklingPathGoal
 {
     /**
-     * The associated goal instance.
+     * The current target (block position, entity etc.).
      */
-    @Nonnull
-    public final T goal;
+    @Nullable
+    private T target;
 
     /**
-     * The blockling.
+     * The previous target (block position, entity etc.).
      */
-    @Nonnull
-    public final BlocklingEntity blockling;
+    @Nullable
+    private T prevTarget;
 
     /**
-     * The world.
+     * The set of targets to ignore as they were recently deemed invalid.
      */
     @Nonnull
-    public final World world;
+    public final Set<T> badTargets = new HashSet<>();
 
     /**
-     * The blockling tasks.
+     * @param id the id associated with the owning task of this goal.
+     * @param blockling the blockling the goal is assigned to.
+     * @param tasks the associated tasks.
      */
-    @Nonnull
-    public final BlocklingTasks tasks;
-
-    /**
-     * @param goal the associated goal instance.
-     */
-    public BlocklingTargetGoal(@Nonnull T goal)
+    public BlocklingTargetGoal(@Nonnull UUID id, @Nonnull BlocklingEntity blockling, @Nonnull BlocklingTasks tasks)
     {
-        this.goal = goal;
-        this.tasks = goal.tasks;
-        this.blockling = goal.blockling;
-        this.world = blockling.level;
+        super(id, blockling, tasks);
 
-        setFlags(EnumSet.of(Flag.TARGET));
+        getFlags().add(Flag.TARGET);
+        getFlags().add(Flag.LOOK);
     }
 
     @Override
     public boolean canUse()
     {
-        if (goal.getState() == BlocklingGoal.State.DISABLED)
+        if (!super.canUse())
         {
+            return false;
+        }
+
+        if (!tryRecalcTarget())
+        {
+            badTargets.clear();
+
+            markEntireTargetBad();
+            setTarget(null);
+
+            if (hasPath() || hasPathTargetPos())
+            {
+                setPathTargetPos(null, null, false);
+            }
+
             return false;
         }
 
@@ -61,8 +76,25 @@ public abstract class BlocklingTargetGoal<T extends BlocklingGoal> extends Goal
     @Override
     public boolean canContinueToUse()
     {
-        if (goal.getState() == BlocklingGoal.State.DISABLED)
+        if (!super.canContinueToUse())
         {
+            return false;
+        }
+
+        checkForAndRemoveInvalidTargets();
+
+        if (!tryRecalcTarget())
+        {
+            badTargets.clear();
+
+            markEntireTargetBad();
+            setTarget(null);
+
+            if (hasPath() || hasPathTargetPos())
+            {
+                setPathTargetPos(null, null, false);
+            }
+
             return false;
         }
 
@@ -70,18 +102,125 @@ public abstract class BlocklingTargetGoal<T extends BlocklingGoal> extends Goal
     }
 
     @Override
-    public void tick()
+    public void stop()
     {
+        super.stop();
 
+        setTarget(null);
+
+        badTargets.clear();
     }
 
     /**
-     * Returns whether the current target is valid or not.
+     * Recalculates the current target.
+     *
+     * @return true if a target was found.
      */
-    protected abstract boolean isTargetValid();
+    public abstract boolean tryRecalcTarget();
 
     /**
-     * @return true if the target goal currently has a target.
+     * Checks for and removes any invalid targets.
      */
-    protected abstract boolean hasTarget();
+    protected abstract void checkForAndRemoveInvalidTargets();
+
+    /**
+     * Marks the entire target bad.
+     * This could be an entire vein in the case of mining, or tree for woodcutting.
+     */
+    public abstract void markEntireTargetBad();
+
+    /**
+     * Marks the current target as bad.
+     * It will then be ignored until the goal starts again.
+     */
+    public void markTargetBad()
+    {
+        if (hasTarget())
+        {
+            markBad(getTarget());
+            setTarget(null);
+        }
+    }
+
+    /**
+     * Marks the given target as bad.
+     * It will then be ignored until the target goal starts again.
+     *
+     * @param target the target to mark as bad.
+     */
+    public void markBad(@Nonnull T target)
+    {
+        badTargets.add(target);
+    }
+
+    /**
+     * @return whether the current target is valid or not.
+     */
+    public boolean isTargetValid()
+    {
+        return isValidTarget(getTarget());
+    }
+
+    /**
+     * @param target the target to test.
+     * @return true if the given target is a valid target.
+     */
+    public abstract boolean isValidTarget(@Nullable T target);
+
+    /**
+     * @return true if the goal currently has a target.
+     */
+    public final boolean hasTarget()
+    {
+        return target != null;
+    }
+
+    /**
+     * @return the current target.
+     */
+    @Nullable
+    protected final T getTarget()
+    {
+        return target;
+    }
+
+    /**
+     * Sets the current target to the given target.
+     * Sets the previous target to the old target.
+     *
+     * @param target the new target.
+     */
+    protected void setTarget(@Nullable T target)
+    {
+        setPreviousTarget(this.target);
+
+        this.target = target;
+    }
+
+    /**
+     * @return true if the goal has a previous target.
+     */
+    public final boolean hasPrevTarget()
+    {
+        return prevTarget != null;
+    }
+
+    /**
+     * @return the previous target.
+     */
+    @Nullable
+    public final T getPrevTarget()
+    {
+        return prevTarget;
+    }
+
+    /**
+     * Sets the previous target to the given target.
+     *
+     * @param target the new target.
+     */
+    protected void setPreviousTarget(@Nullable T target)
+    {
+        prevTarget = target;
+    }
 }

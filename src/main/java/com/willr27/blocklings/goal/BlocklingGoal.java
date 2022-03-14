@@ -1,10 +1,12 @@
 package com.willr27.blocklings.goal;
 
+import com.willr27.blocklings.block.BlockUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.network.messages.GoalStateMessage;
+import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -136,6 +138,14 @@ public abstract class BlocklingGoal extends Goal
         {
             new GoalStateMessage(blockling, id, state).sync();
         }
+    }
+
+    /**
+     * @return true if the blockling is within range of the center of the given block pos.
+     */
+    public boolean isInRange(@Nonnull BlockPos blockPos, float rangeSq)
+    {
+        return BlockUtil.distanceSq(blockling.blockPosition(), blockPos) <= rangeSq;
     }
 
     /**

@@ -1,65 +1,29 @@
 package com.willr27.blocklings.goal.goals;
 
-import com.willr27.blocklings.block.BlockUtil;
-import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.goal.BlockChunk;
-import com.willr27.blocklings.goal.BlocklingGoal;
-import com.willr27.blocklings.goal.IHasTargetGoal;
-import com.willr27.blocklings.goal.goals.target.BlocklingGatherTargetGoal;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
+import com.willr27.blocklings.goal.BlocklingTargetGoal;
+import com.willr27.blocklings.item.ToolType;
+import com.willr27.blocklings.item.ToolUtil;
+import com.willr27.blocklings.skill.skills.GeneralSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
+import javafx.util.Pair;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.command.arguments.EntityAnchorArgument;
-import net.minecraft.pathfinding.Path;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.UUID;
 
 /**
  * Contains common behaviour shared between gathering goals.
  */
-public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>> extends BlocklingGoal implements IHasTargetGoal<T>
+public abstract class BlocklingGatherGoal extends BlocklingTargetGoal<BlockPos>
 {
-    /**
-     * The number of ticks between each recalc.
-     */
-    private static final int RECALC_INTERVAL = 10;
-
-    /**
-     * The number of ticks a bad path target needs elapse before it is removed.
-     */
-    private static final int BAD_PATH_TARGET_COOLDOWN_INTERVAL = 10 * 20;
-
-    /**
-     * Counts the number of ticks since the last recalc.
-     */
-    private int recalcCounter = 0;
-
-    /**
-     * The current pos to path to.
-     */
-    @Nullable
-    private BlockPos pathTargetPos = blockling.blockPosition();
-
-    /**
-     * The current path to the target.
-     */
-    @Nullable
-    protected Path path = null;
-
-    /**
-     * The map of block positions to ignore as they led to the blockling getting stuck and their cooldowns.
-     */
-    @Nonnull
-    protected final Map<BlockChunk, Integer> badPathTargetChunks = new HashMap<>();
-
-    /**
-     * The distance the blockling had moved last check.
-     */
-    private float prevMoveDist = 0.0f;
-
     /**
      * @param id the id associated with the owning task of this goal.
      * @param blockling the blockling the goal is assigned to.
@@ -78,23 +42,13 @@ public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>
             return false;
         }
 
-        if (!getTargetGoal().hasTarget())
-        {
-            return false;
-        }
-
         return true;
     }
 
     @Override
     public boolean canContinueToUse()
     {
-        if (!super.canUse())
-        {
-            return false;
-        }
-
-        if (!getTargetGoal().hasTarget())
+        if (!super.canContinueToUse())
         {
             return false;
         }
@@ -106,8 +60,6 @@ public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>
     public void start()
     {
         super.start();
-
-        setPathTargetPos(getPathTargetPos(), path);
     }
 
     @Override
@@ -121,44 +73,20 @@ public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>
     }
 
     @Override
-    public void tick()
+    public void tickGoal()
     {
-        super.tick();
-
         // Tick to make sure isFinished() is only true for a single tick
         blockling.getActions().gather.tick(0.0f);
 
-        boolean recalc = tickRecalc();
-
-        // First try a normal recalc
-        if (recalc)
-        {
-            recalcPath(false);
-        }
-
-        // If we are still stuck force a recalc
-        if (isStuck() || (isInRangeOfPathTarget() && !isValidPathTargetPos(getPathTargetPos())))
-        {
-             recalcPath(true);
-        }
-
-        // If we are still stuck, give up and mark it as bad
         if (isStuck())
         {
             blockling.getActions().gather.stop();
 
-            markPathTargetPosBad();
-            getTargetGoal().markTargetBad();
+            markEntireTargetBad();
         }
         else if (isInRangeOfPathTarget())
         {
             tickGather();
-        }
-
-        if (recalc)
-        {
-            recalcCounter = 0;
-            prevMoveDist = blockling.moveDist;
         }
     }
 
@@ -169,241 +97,102 @@ public abstract class BlocklingGatherGoal<T extends BlocklingGatherTargetGoal<?>
     {
         if (!hasMovedSinceLastRecalc())
         {
-            blockling.lookAt(EntityAnchorArgument.Type.EYES, new Vector3d(getTargetGoal().getTargetPos().getX() + 0.5, getTargetGoal().getTargetPos().getY() + 0.5, getTargetGoal().getTargetPos().getZ() + 0.5));
+            blockling.lookAt(EntityAnchorArgument.Type.EYES, new Vector3d(getTarget().getX() + 0.5, getTarget().getY() + 0.5, getTarget().getZ() + 0.5));
+        }
+
+        if (blockling.getSkills().getSkill(GeneralSkills.AUTOSWITCH).isBought())
+        {
+            blockling.getEquipment().trySwitchToBestTool(BlocklingHand.BOTH, getToolType());
         }
     }
 
     /**
-     * Increments the recalc counter and checks if it has reached the recalc interval.
-     *
-     * @return true if recalc counter has reached the recalc interval.
+     * @return true if the blockling can harvest the block at the target pos.
      */
-    private boolean tickRecalc()
+    public boolean canHarvestTargetPos()
     {
-        recalcCounter++;
-
-        if (recalcCounter < RECALC_INTERVAL)
+        if (blockling.getEquipment().canHarvestBlockWithEquippedTools(getTargetBlockState()))
         {
-            return false;
+            return true;
         }
-        else
+        else if (blockling.getSkills().getSkill(GeneralSkills.AUTOSWITCH).isBought())
         {
-            recalcCounter = 0;
-        }
+            Pair<ItemStack, ItemStack> bestTools = blockling.getEquipment().findBestToolsToSwitchTo(BlocklingHand.BOTH, getToolType());
 
-        return true;
-    }
-
-    /**
-     * Recalculates the path and path target pos.
-     *
-     * @param force forces the recalculation to take place.
-     */
-    protected abstract void recalcPath(boolean force);
-
-    /**
-     * Updates the cooldowns for the bad path target positions.
-     * Removes them from the map if their cooldown has expired or they have changed.
-     */
-    public void updateBadPathTargetPositions()
-    {
-        Set<BlockChunk> blockChunksToRemove = new HashSet<>();
-
-        badPathTargetChunks.forEach((blockChunk, cooldown) ->
-        {
-            cooldown--;
-
-            if (cooldown <= 0 || blockChunk.hasChanged())
+            if (ToolUtil.canToolHarvestBlock(bestTools.getKey(), getTargetBlockState()) || ToolUtil.canToolHarvestBlock(bestTools.getValue(), getTargetBlockState()))
             {
-                blockChunksToRemove.add(blockChunk);
+                return true;
             }
-
-            badPathTargetChunks.put(blockChunk, cooldown);
-        });
-
-        blockChunksToRemove.forEach(badPathTargetChunks::remove);
-    }
-
-    /**
-     * @return true if the given block pos is a bad target path pos.
-     */
-    public boolean isBadPathTargetPos(@Nonnull BlockPos blockPos)
-    {
-        return badPathTargetChunks.get(new BlockChunk(blockPos, world)) != null;
-    }
-
-    /**
-     * Marks the path target pos as a bad path target pos.
-     */
-    public void markPathTargetPosBad()
-    {
-        if (hasPathTargetPos())
-        {
-            markPathTargetPosBad(pathTargetPos);
         }
+
+        return false;
     }
 
     /**
-     * Marks the given block pos as a bad path target pos.
-     *
-     * @param blockPos the block pos to mark as bad.
+     * @return the tool type used to harvest the targets.
      */
-    public void markPathTargetPosBad(@Nonnull BlockPos blockPos)
+    @Nonnull
+    protected abstract ToolType getToolType();
+
+    @Override
+    public boolean isValidTarget(@Nullable BlockPos target)
     {
-        badPathTargetChunks.put(new BlockChunk(blockPos, world), BAD_PATH_TARGET_COOLDOWN_INTERVAL);
+        return isValidTargetPos(target) && isValidTargetBlock(world.getBlockState(target).getBlock());
     }
 
     /**
-     * @return true if the blockling has moved since the last recalc (within 0.01 of a block).
+     * @param blockPos the pos to test.
+     * @return true if the given pos is a valid target position.
      */
-    protected boolean hasMovedSinceLastRecalc()
+    protected boolean isValidTargetPos(@Nullable BlockPos blockPos)
     {
-        return !blockling.isOnGround() || blockling.moveDist - prevMoveDist > 0.01f;
+        return blockPos != null && !badTargets.contains(blockPos);
     }
 
     /**
-     * @return true if the blockling is within range of the center of the path pos;
+     * @param block the block to test.
+     * @return true if the given block is a valid block.
      */
-    public boolean isInRangeOfPathTarget()
+    protected abstract boolean isValidTargetBlock(@Nonnull Block block);
+
+    @Override
+    public void markBad(@Nonnull BlockPos target)
     {
-        return isInRange(pathTargetPos);
+        super.markBad(target);
+
+        // Any position we have deemed to be bad is one we are no longer gathering
+        // So make sure to reset any block break progress
+        world.destroyBlockProgress(blockling.getId(), target, -1);
     }
 
-    /**
-     * @return true if the blockling is within range of the center of the given block pos.
-     */
-    public boolean isInRange(@Nonnull BlockPos blockPos)
+    @Override
+    protected void setPreviousTarget(@Nullable BlockPos target)
     {
-        return isInRange(blockPos, getRangeSq());
+        if (target != null && (getTarget() == null || !getTarget().equals(target)))
+        {
+            world.destroyBlockProgress(blockling.getId(), target, -1);
+        }
+
+        super.setPreviousTarget(target);
     }
 
     /**
-     * @return true if the blockling is within range of the center of the given block pos.
-     */
-    public boolean isInRange(@Nonnull BlockPos blockPos, float rangeSq)
-    {
-        return BlockUtil.distanceSq(blockling.blockPosition(), blockPos) <= rangeSq;
-    }
-
-    /**
-     * @return the gathering range squared.
-     */
-    abstract float getRangeSq();
-
-    /**
-     * @return true if the blockling is stuck (i.e. not mining, not moving, not in range etc.).
-     */
-    public boolean isStuck()
-    {
-        return (!hasPath() || path.isDone() || !hasMovedSinceLastRecalc() || blockling.getNavigation().isStuck()) && (!hasPathTargetPos() || !isInRange(pathTargetPos));
-    }
-
-    /**
-     * @param blockPos the block position to test.
-     * @return true if the block position is a valid path target.
-     */
-    protected abstract boolean isValidPathTargetPos(@Nonnull BlockPos blockPos);
-
-    /**
-     * @return true if we have a path target position.
-     */
-    public boolean hasPathTargetPos()
-    {
-        return pathTargetPos != null;
-    }
-
-    /**
-     * @return the current pos to path to.
+     * @return the current target block.
      */
     @Nullable
-    public BlockPos getPathTargetPos()
+    public Block getTargetBlock()
     {
-        return pathTargetPos;
+        BlockState blockState = getTargetBlockState();
+
+        return blockState != null ? blockState.getBlock() : null;
     }
 
     /**
-     * Sets the current pos to path to and recalculates the path if none is given.
-     *
-     * @param blockPos the new pos to path to.
-     * @param pathToPos an optional path to the given pos.
-     */
-    public void setPathTargetPos(@Nullable BlockPos blockPos, @Nullable Path pathToPos)
-    {
-        setPathTargetPos(blockPos, pathToPos, true);
-    }
-
-    /**
-     * Sets the current pos to path to and recalculates the path if none is given.
-     *
-     * @param blockPos the new pos to path to.
-     * @param pathToPos an optional path to the given pos.
-     * @param updateBlocklingPath whether to also set the blockling's path.
-     */
-    public void setPathTargetPos(@Nullable BlockPos blockPos, @Nullable Path pathToPos, boolean updateBlocklingPath)
-    {
-        pathTargetPos = blockPos;
-        path = pathToPos;
-
-        if (hasPathTargetPos())
-        {
-            Path newPath = EntityUtil.createPathTo(blockling, pathTargetPos, getRangeSq());
-
-            if (newPath != null)
-            {
-                path = newPath;
-            }
-        }
-
-        if (updateBlocklingPath)
-        {
-            blockling.getNavigation().moveTo(path, 1.0);
-        }
-    }
-
-    /**
-     * @return true if we have a path.
-     */
-    public boolean hasPath()
-    {
-        return path != null;
-    }
-
-    /**
-     * Creates a path to the given block or a surrounding block.
-     *
-     * @param blockPos the pos to create a path to.
-     * @return the path.
+     * @return the current target block state.
      */
     @Nullable
-    protected Path createPath(@Nonnull BlockPos blockPos)
+    public BlockState getTargetBlockState()
     {
-        Path closestPath = null;
-        double closestDistanceSq = Double.MAX_VALUE;
-
-        Path path = blockling.getNavigation().createPath(blockPos, 0);
-
-        if (path != null)
-        {
-            closestPath = path;
-            closestDistanceSq = blockPos.distSqr(path.getTarget());
-        }
-
-        for (BlockPos adjacentPos : BlockUtil.getSurroundingBlockPositions(blockPos))
-        {
-            path = blockling.getNavigation().createPath(adjacentPos, 0);
-
-            if (path != null)
-            {
-                double distanceSq = adjacentPos.distSqr(path.getTarget());
-
-                if (distanceSq < closestDistanceSq)
-                {
-                    closestPath = path;
-                    closestDistanceSq = distanceSq;
-                }
-            }
-        }
-
-        return closestPath;
+        return hasTarget() ? world.getBlockState(getTarget()) : null;
     }
 }

@@ -2,7 +2,7 @@ package com.willr27.blocklings.goal.goals;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.task.BlocklingTasks;
-import com.willr27.blocklings.goal.goals.target.BlocklingAtackHurtByTargetGoal;
+import net.minecraft.entity.LivingEntity;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;
@@ -10,14 +10,8 @@ import java.util.UUID;
 /**
  * Attacks the last entity to attack the blockling using melee.
  */
-public class BlocklingMeleeAttackHurtByGoal extends BlocklingMeleeAttackGoal<BlocklingAtackHurtByTargetGoal>
+public class BlocklingMeleeAttackHurtByGoal extends BlocklingMeleeAttackGoal
 {
-    /**
-     * The associated target goal.
-     */
-    @Nonnull
-    private final BlocklingAtackHurtByTargetGoal targetGoal;
-
     /**
      * @param id the id associated with the goal's task.
      * @param blockling the blockling.
@@ -26,14 +20,30 @@ public class BlocklingMeleeAttackHurtByGoal extends BlocklingMeleeAttackGoal<Blo
     public BlocklingMeleeAttackHurtByGoal(@Nonnull UUID id, @Nonnull BlocklingEntity blockling, @Nonnull BlocklingTasks tasks)
     {
         super(id, blockling, tasks);
-
-        targetGoal = new BlocklingAtackHurtByTargetGoal(this);
     }
 
     @Override
-    @Nonnull
-    public BlocklingAtackHurtByTargetGoal getTargetGoal()
+    public boolean tryRecalcTarget()
     {
-        return targetGoal;
+        if (!blockling.isTame())
+        {
+            return false;
+        }
+
+        LivingEntity attacker = blockling.getLastHurtByMob();
+
+        if (attacker == null)
+        {
+            return false;
+        }
+
+        if (!isValidTarget(attacker))
+        {
+            return false;
+        }
+
+        setTarget(attacker);
+
+        return super.tryRecalcTarget();
     }
 }

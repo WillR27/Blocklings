@@ -3,7 +3,6 @@ package com.willr27.blocklings.task;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.goal.BlocklingTargetGoal;
-import com.willr27.blocklings.goal.IHasTargetGoal;
 import com.willr27.blocklings.goal.goals.*;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiTextures;
@@ -109,17 +108,7 @@ public class BlocklingTasks
                 continue;
             }
 
-            BlocklingGoal goal = task.getGoal();
-
-            goalSelector.addGoal(task.getPriority(), goal);
-
-            if (goal instanceof IHasTargetGoal)
-            {
-                IHasTargetGoal<?> hasTargetGoal = (IHasTargetGoal<?>) goal;
-                BlocklingTargetGoal<?> targetGoal = hasTargetGoal.getTargetGoal();
-
-                targetSelector.addGoal(task.getPriority() + 1, targetGoal);
-            }
+            goalSelector.addGoal(task.getPriority(), task.getGoal());
         }
     }
 

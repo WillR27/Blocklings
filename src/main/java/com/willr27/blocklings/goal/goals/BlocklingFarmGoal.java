@@ -1,15 +1,13 @@
 package com.willr27.blocklings.goal.goals;
 
 import com.willr27.blocklings.block.BlockUtil;
+import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
-import com.willr27.blocklings.goal.IHasTargetGoal;
-import com.willr27.blocklings.goal.goals.target.BlocklingFarmTargetGoal;
 import com.willr27.blocklings.item.DropUtil;
 import com.willr27.blocklings.item.ToolType;
 import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.skill.skills.FarmingSkills;
-import com.willr27.blocklings.skill.skills.GeneralSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
@@ -29,8 +27,18 @@ import java.util.UUID;
 /**
  * Harvests the targeted crop.
  */
-public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGoal> implements IHasTargetGoal<BlocklingFarmTargetGoal>
+public class BlocklingFarmGoal extends BlocklingGatherGoal
 {
+    /**
+     * The x and z search radius.
+     */
+    private static final int SEARCH_RADIUS_X = 8;
+
+    /**
+     * The y search radius.
+     */
+    private static final int SEARCH_RADIUS_Y = 8;
+
     /**
      * The crop whitelist.
      */
@@ -42,12 +50,6 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGo
     public final GoalWhitelist seedWhitelist;
 
     /**
-     * The associated target goal.
-     */
-    @Nonnull
-    private final BlocklingFarmTargetGoal targetGoal;
-
-    /**
      * @param id the id associated with the owning task of this goal.
      * @param blockling the blockling the goal is assigned to.
      * @param tasks the associated tasks.
@@ -55,8 +57,6 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGo
     public BlocklingFarmGoal(@Nonnull UUID id, @Nonnull BlocklingEntity blockling, @Nonnull BlocklingTasks tasks)
     {
         super(id, blockling, tasks);
-
-        targetGoal = new BlocklingFarmTargetGoal(this);
 
         cropWhitelist = new GoalWhitelist("25140edf-f60e-459e-b1f0-9ff82108ec0b", "crops", Whitelist.Type.BLOCK, this);
         cropWhitelist.setIsUnlocked(blockling.getSkills().getSkill(FarmingSkills.CROP_WHITELIST).isBought(), false);
@@ -78,13 +78,6 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGo
     }
 
     @Override
-    @Nonnull
-    public BlocklingFarmTargetGoal getTargetGoal()
-    {
-        return targetGoal;
-    }
-
-    @Override
     public boolean canUse()
     {
         return super.canUse();
@@ -97,26 +90,15 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGo
     }
 
     @Override
-    public void tick()
-    {
-        super.tick();
-    }
-
-    @Override
     protected void tickGather()
     {
         super.tickGather();
 
-        if (blockling.getSkills().getSkill(GeneralSkills.AUTOSWITCH).isBought())
-        {
-            blockling.getEquipment().trySwitchToBestTool(BlocklingHand.BOTH, ToolType.HOE);
-        }
-
         ItemStack mainStack = blockling.getMainHandItem();
         ItemStack offStack = blockling.getOffhandItem();
 
-        BlockPos targetBlockPos = targetGoal.getTargetPos();
-        BlockState targetBlockState = world.getBlockState(targetBlockPos);
+        BlockPos targetPos = getTarget();
+        BlockState targetBlockState = world.getBlockState(targetPos);
         Block targetBlock = targetBlockState.getBlock();
 
         boolean mainCanHarvest = ToolUtil.isHoe(mainStack);
@@ -133,7 +115,7 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGo
                 float offDestroySpeed = offCanHarvest ? ToolUtil.getToolFarmingSpeedWithEnchantments(offStack) : 0.0f;
 
                 float destroySpeed = blocklingDestroySpeed + mainDestroySpeed + offDestroySpeed;
-                float blockStrength = targetBlockState.getDestroySpeed(world, targetGoal.getTargetPos());
+                float blockStrength = targetBlockState.getDestroySpeed(world, targetPos);
 
                 blockling.getStats().hand.setValue(BlocklingHand.fromBooleans(mainCanHarvest, offCanHarvest));
 
@@ -145,7 +127,7 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGo
                     blockling.getActions().gather.stop();
                     blockling.getStats().farmingXp.incrementValue((int) ((blockStrength + 1.0f) * 3.0f));
 
-                    for (ItemStack stack : DropUtil.getDrops(DropUtil.Context.FARMING, blockling, targetBlockPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
+                    for (ItemStack stack : DropUtil.getDrops(DropUtil.Context.FARMING, blockling, targetPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
                     {
                         stack = blockling.getEquipment().addItem(stack);
                         blockling.dropItemStack(stack);
@@ -168,20 +150,20 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGo
                     if (blockling.getSkills().getSkill(FarmingSkills.REPLANTER).isBought() && targetBlock instanceof CropsBlock)
                     {
                         CropsBlock cropsBlock = (CropsBlock) targetBlock;
-                        seedStack = cropsBlock.getCloneItemStack(world, targetBlockPos, targetBlockState);
+                        seedStack = cropsBlock.getCloneItemStack(world, targetPos, targetBlockState);
                     }
 
-                    world.destroyBlock(targetBlockPos, false);
-                    world.destroyBlockProgress(blockling.getId(), targetBlockPos, -1);
+                    world.destroyBlock(targetPos, false);
+                    world.destroyBlockProgress(blockling.getId(), targetPos, -1);
 
                     if (blockling.getSkills().getSkill(FarmingSkills.SCYTHE).isBought())
                     {
-                        for (BlockPos surroundingPos : BlockUtil.getSurroundingBlockPositions(targetBlockPos))
+                        for (BlockPos surroundingPos : BlockUtil.getSurroundingBlockPositions(targetPos))
                         {
                             BlockState surroundingBlockState = world.getBlockState(surroundingPos);
                             Block surroundingBlock = surroundingBlockState.getBlock();
 
-                            if (targetGoal.isValidTarget(surroundingPos))
+                            if (isValidTarget(surroundingPos))
                             {
                                 for (ItemStack stack : DropUtil.getDrops(DropUtil.Context.FARMING, blockling, surroundingPos, mainCanHarvest ? mainStack : ItemStack.EMPTY, offCanHarvest ? offStack : ItemStack.EMPTY))
                                 {
@@ -209,26 +191,58 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGo
 
                     if (!seedStack.isEmpty() && blockling.getEquipment().take(seedStack) && seedWhitelist.isEntryWhitelisted(seedStack.getItem()))
                     {
-                        world.setBlock(targetBlockPos, Block.byItem(seedStack.getItem()).defaultBlockState(), 3);
+                        world.setBlock(targetPos, Block.byItem(seedStack.getItem()).defaultBlockState(), 3);
                     }
                 }
                 else if (targetBlockState.getMaterial().isSolid())
                 {
-                    world.destroyBlockProgress(blockling.getId(), targetBlockPos, BlockUtil.calcBlockBreakProgress(blockling.getActions().gather.count()));
+                    world.destroyBlockProgress(blockling.getId(), targetPos, BlockUtil.calcBlockBreakProgress(blockling.getActions().gather.count()));
                 }
             }
         }
         else
         {
-            world.destroyBlockProgress(blockling.getId(), targetBlockPos, -1);
+            world.destroyBlockProgress(blockling.getId(), targetPos, -1);
             blockling.getActions().gather.stop();
         }
     }
 
     @Override
+    public boolean tryRecalcTarget()
+    {
+        if (isTargetValid())
+        {
+            return canHarvestTargetPos();
+        }
+        else
+        {
+            markTargetBad();
+        }
+
+        if (!hasTarget())
+        {
+            if (!tryFindCrop())
+            {
+                return false;
+            }
+
+            Pair<BlockPos, Path> pathToCrop = findPathToCrop();
+
+            if (pathToCrop == null)
+            {
+                return false;
+            }
+
+            setPathTargetPos(pathToCrop.getKey(), pathToCrop.getValue(), false);
+        }
+
+        return canHarvestTargetPos();
+    }
+
+    @Override
     protected void recalcPath(boolean force)
     {
-        Pair<BlockPos, Path> result = targetGoal.findPathToCrop();
+        Pair<BlockPos, Path> result = findPathToCrop();
 
         if (result != null)
         {
@@ -240,16 +254,139 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal<BlocklingFarmTargetGo
         }
     }
 
-    @Override
-    protected boolean isValidPathTargetPos(@Nonnull BlockPos blockPos)
+    /**
+     * Tries to find the nearest tree.
+     *
+     * @return true if a tree was found.
+     */
+    private boolean tryFindCrop()
     {
-        return targetGoal.hasTarget() && targetGoal.getTargetPos().equals(blockPos);
+        BlockPos blocklingBlockPos = blockling.blockPosition();
+
+        BlockPos closestPos = null;
+        double closestCropDistSq = Float.MAX_VALUE;
+
+        for (int i = -SEARCH_RADIUS_X; i <= SEARCH_RADIUS_X; i++)
+        {
+            for (int j = -SEARCH_RADIUS_Y; j <= SEARCH_RADIUS_Y; j++)
+            {
+                for (int k = -SEARCH_RADIUS_X; k <= SEARCH_RADIUS_X; k++)
+                {
+                    BlockPos testBlockPos = blocklingBlockPos.offset(i, j, k);
+
+                    if (isValidTarget(testBlockPos))
+                    {
+                        float distanceSq = (float) blockling.distanceToSqr(testBlockPos.getX() + 0.5f, testBlockPos.getY() + 0.5f, testBlockPos.getZ() + 0.5f);
+
+                        if (distanceSq < closestCropDistSq)
+                        {
+                            closestPos = testBlockPos;
+                            closestCropDistSq = distanceSq;
+
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (closestPos != null)
+        {
+            setTarget(closestPos);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Finds the first valid path to the crop, not necessarily the most optimal.
+     *
+     * @return the path target position and the path to the crop, or null if no path could be found.
+     */
+    @Nullable
+    public Pair<BlockPos, Path> findPathToCrop()
+    {
+        if (BlockUtil.areAllAdjacentBlocksSolid(world, getTarget()))
+        {
+            return null;
+        }
+
+        if (isBadPathTargetPos(getTarget()))
+        {
+            return null;
+        }
+
+        Path path = EntityUtil.createPathTo(blockling, getTarget(), getRangeSq());
+
+        if (path != null)
+        {
+            return new Pair<>(getTarget(), path);
+        }
+
+        return null;
     }
 
     @Override
-    public void setPathTargetPos(@Nullable BlockPos blockPos, @Nullable Path pathToPos)
+    public void checkForAndRemoveInvalidTargets()
     {
-        super.setPathTargetPos(blockPos, pathToPos);
+        if (!isTargetValid())
+        {
+            markEntireTargetBad();
+        }
+    }
+
+    @Override
+    public void markEntireTargetBad()
+    {
+        if (hasTarget())
+        {
+            markBad(getTarget());
+        }
+    }
+
+    @Override
+    protected boolean isValidTargetBlock(@Nonnull Block block)
+    {
+        return cropWhitelist.isEntryWhitelisted(block);
+    }
+
+    @Override
+    protected boolean isValidPathTargetPos(@Nonnull BlockPos blockPos)
+    {
+        return hasTarget() && getTarget().equals(blockPos);
+    }
+
+    @Override
+    public boolean isValidTarget(@Nullable BlockPos target)
+    {
+        if (!super.isValidTarget(target))
+        {
+            return false;
+        }
+
+        BlockState blockState = world.getBlockState(target);
+        Block block = blockState.getBlock();
+
+        if (block instanceof CropsBlock)
+        {
+            CropsBlock cropsBlock = (CropsBlock) block;
+
+            if (!cropsBlock.isMaxAge(blockState))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Nonnull
+    @Override
+    protected ToolType getToolType()
+    {
+        return ToolType.HOE;
     }
 
     @Override
