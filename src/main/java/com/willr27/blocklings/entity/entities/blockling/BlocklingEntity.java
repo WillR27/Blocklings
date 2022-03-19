@@ -543,6 +543,11 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 {
                     tryTame((ServerPlayerEntity) player, stack);
 
+                    if (!player.abilities.instabuild)
+                    {
+                        stack.shrink(1);
+                    }
+
                     return ActionResultType.SUCCESS;
                 }
                 else
