@@ -55,17 +55,18 @@ public abstract class BlocklingTargetGoal<T> extends BlocklingPathGoal
             return false;
         }
 
-        if (!tryRecalcTarget())
+        boolean recalulatedTarget = tryRecalcTarget();
+
+        if (!recalulatedTarget || !recalcPath(false) || isStuck())
         {
-            badTargets.clear();
+            if (!recalulatedTarget)
+            {
+                badTargets.clear();
+            }
 
             markEntireTargetBad();
+            markPathTargetPosBad();
             setTarget(null);
-
-            if (hasPath() || hasPathTargetPos())
-            {
-                setPathTargetPos(null, null, false);
-            }
 
             return false;
         }
@@ -85,15 +86,12 @@ public abstract class BlocklingTargetGoal<T> extends BlocklingPathGoal
 
         if (!tryRecalcTarget())
         {
-            badTargets.clear();
-
+            return false;
+        }
+        else if (isStuck())
+        {
             markEntireTargetBad();
-            setTarget(null);
-
-            if (hasPath() || hasPathTargetPos())
-            {
-                setPathTargetPos(null, null, false);
-            }
+            markPathTargetPosBad();
 
             return false;
         }
@@ -102,13 +100,17 @@ public abstract class BlocklingTargetGoal<T> extends BlocklingPathGoal
     }
 
     @Override
+    public void start()
+    {
+        super.start();
+    }
+
+    @Override
     public void stop()
     {
         super.stop();
 
         setTarget(null);
-
-        badTargets.clear();
     }
 
     /**

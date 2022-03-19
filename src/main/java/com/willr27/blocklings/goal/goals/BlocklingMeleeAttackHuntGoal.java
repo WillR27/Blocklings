@@ -37,6 +37,11 @@ public class BlocklingMeleeAttackHuntGoal extends BlocklingMeleeAttackGoal
             return false;
         }
 
+        if (isTargetValid())
+        {
+            return true;
+        }
+
         for (Entity entity : world.getEntities(blockling, new AxisAlignedBB(blockling.position().add(-10.0, -10.0, -10.0), blockling.position().add(10.0, 10.0, 10.0))))
         {
             if (entity instanceof LivingEntity)
@@ -47,14 +52,7 @@ public class BlocklingMeleeAttackHuntGoal extends BlocklingMeleeAttackGoal
                 {
                     setTarget(livingEntity);
 
-                    if (super.tryRecalcTarget())
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        setTarget(null);
-                    }
+                    return true;
                 }
             }
         }

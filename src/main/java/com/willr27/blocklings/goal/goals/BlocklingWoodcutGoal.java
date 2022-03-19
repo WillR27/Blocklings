@@ -258,13 +258,9 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
     @Override
     public boolean tryRecalcTarget()
     {
-        if (isTargetValid())
+        if (super.tryRecalcTarget())
         {
-            return canHarvestTargetPos();
-        }
-        else
-        {
-            markTargetBad();
+            return true;
         }
 
         if (tree.logs.isEmpty())
@@ -281,12 +277,12 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
                 return false;
             }
 
-            setPathTargetPos(pathToTree.getKey(), pathToTree.getValue(), false);
+            setPathTargetPos(pathToTree.getKey(), pathToTree.getValue());
         }
 
         setTarget((BlockPos) tree.logs.toArray()[tree.logs.size() - 1]);
 
-        return canHarvestTargetPos();
+        return true;
     }
 
     @Override
@@ -539,7 +535,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
 
 
     @Override
-    protected void recalcPath(boolean force)
+    protected boolean recalcPath(boolean force)
     {
         if (force)
         {
@@ -552,9 +548,11 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
             else
             {
                 setPathTargetPos(null, null);
+
+                return false;
             }
 
-            return;
+            return true;
         }
 
         // Try to improve our path each recalc by testing different logs in the tree
@@ -579,13 +577,17 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
                 if (path.getDistToTarget() < this.path.getDistToTarget())
                 {
                     setPathTargetPos(logBlockPos, path);
+
+                    return true;
                 }
             }
 
-            return;
+            return hasPath();
         }
 
         pathTargetPositionsTested.clear();
+
+        return false;
     }
 
     @Override

@@ -84,10 +84,25 @@ public abstract class BlocklingGatherGoal extends BlocklingTargetGoal<BlockPos>
 
             markEntireTargetBad();
         }
-        else if (isInRangeOfPathTarget())
+        else if (isInRangeOfPathTargetPos())
         {
             tickGather();
         }
+    }
+
+    @Override
+    public boolean tryRecalcTarget()
+    {
+        if (isTargetValid())
+        {
+            return true;
+        }
+        else
+        {
+            markTargetBad();
+        }
+
+        return false;
     }
 
     /**
@@ -111,7 +126,23 @@ public abstract class BlocklingGatherGoal extends BlocklingTargetGoal<BlockPos>
      */
     public boolean canHarvestTargetPos()
     {
-        if (blockling.getEquipment().canHarvestBlockWithEquippedTools(getTargetBlockState()))
+        return canHarvestPos(getTarget());
+    }
+
+    /**
+     * @param blockPos the block pos to test.
+     * @return true if the blockling can harvest the block at the given pos.
+     */
+    public boolean canHarvestPos(@Nullable BlockPos blockPos)
+    {
+        if (blockPos == null)
+        {
+            return false;
+        }
+
+        BlockState blockState = world.getBlockState(blockPos);
+
+        if (blockling.getEquipment().canHarvestBlockWithEquippedTools(blockState))
         {
             return true;
         }
@@ -119,7 +150,7 @@ public abstract class BlocklingGatherGoal extends BlocklingTargetGoal<BlockPos>
         {
             Pair<ItemStack, ItemStack> bestTools = blockling.getEquipment().findBestToolsToSwitchTo(BlocklingHand.BOTH, getToolType());
 
-            if (ToolUtil.canToolHarvestBlock(bestTools.getKey(), getTargetBlockState()) || ToolUtil.canToolHarvestBlock(bestTools.getValue(), getTargetBlockState()))
+            if (ToolUtil.canToolHarvestBlock(bestTools.getKey(), blockState) || ToolUtil.canToolHarvestBlock(bestTools.getValue(), blockState))
             {
                 return true;
             }
@@ -137,7 +168,7 @@ public abstract class BlocklingGatherGoal extends BlocklingTargetGoal<BlockPos>
     @Override
     public boolean isValidTarget(@Nullable BlockPos target)
     {
-        return isValidTargetPos(target) && isValidTargetBlock(world.getBlockState(target).getBlock());
+        return isValidTargetPos(target) && isValidTargetBlock(world.getBlockState(target).getBlock()) && canHarvestPos(target);
     }
 
     /**

@@ -37,8 +37,6 @@ public abstract class BlocklingMeleeAttackGoal extends BlocklingTargetGoal<Livin
     {
         super(id, blockling, tasks);
 
-        setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
-
         GoalWhitelist whitelist = new GoalWhitelist("540241cd-085a-4c1f-9e90-8aea973568a8", "targets", Whitelist.Type.ENTITY, this);
         whitelist.setIsUnlocked(blockling.getSkills().getSkill(CombatSkills.WHITELIST).isBought(), false);
         EntityUtil.VALID_ATTACK_TARGETS.keySet().forEach(type -> whitelist.put(type, true));
@@ -87,30 +85,6 @@ public abstract class BlocklingMeleeAttackGoal extends BlocklingTargetGoal<Livin
     }
 
     @Override
-    public boolean tryRecalcTarget()
-    {
-        if (hasTarget())
-        {
-            recalcPath(true);
-        }
-        else
-        {
-            markPathTargetPosBad();
-
-            return false;
-        }
-
-        if (isStuck())
-        {
-            markPathTargetPosBad();
-
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
     public void tickGoal()
     {
         if (isStuck())
@@ -140,13 +114,13 @@ public abstract class BlocklingMeleeAttackGoal extends BlocklingTargetGoal<Livin
     }
 
     @Override
-    protected void recalcPath(boolean force)
+    protected boolean recalcPath(boolean force)
     {
         if (isBadPathTargetPos(getTarget().blockPosition()))
         {
-            setPathTargetPos(null, null, false);
+            setPathTargetPos(null, null);
 
-            return;
+            return false;
         }
 
         Path path = blockling.getNavigation().createPath(getTarget(), 0);
@@ -157,6 +131,8 @@ public abstract class BlocklingMeleeAttackGoal extends BlocklingTargetGoal<Livin
         }
 
         setPathTargetPos(getTarget().blockPosition(), path);
+
+        return true;
     }
 
     /**
@@ -269,6 +245,6 @@ public abstract class BlocklingMeleeAttackGoal extends BlocklingTargetGoal<Livin
      */
     private boolean isInRange(@Nonnull LivingEntity target)
     {
-        return blockling.distanceToSqr(target.getX(), target.getY() + target.getBbHeight() / 2.0f, target.getZ()) < 4.0f;
+        return blockling.distanceToSqr(target.getX(), target.getY() + target.getBbHeight() / 2.0f, target.getZ()) < getRangeSq();
     }
 }

@@ -68,7 +68,6 @@ public abstract class BlocklingPathGoal extends BlocklingGoal
         super(id, blockling, tasks);
 
         getFlags().add(Flag.MOVE);
-        getFlags().add(Flag.JUMP);
     }
 
     @Override
@@ -110,6 +109,8 @@ public abstract class BlocklingPathGoal extends BlocklingGoal
     {
         super.stop();
 
+        setPathTargetPos(null, null);
+
         prevMoveDist = 0.0f;
     }
 
@@ -125,7 +126,7 @@ public abstract class BlocklingPathGoal extends BlocklingGoal
             recalcPath(false);
         }
 
-        if (isStuck() || (isInRangeOfPathTarget() && !isValidPathTargetPos(getPathTargetPos())))
+        if (isStuck() || (isInRangeOfPathTargetPos() && !isValidPathTargetPos(getPathTargetPos())))
         {
             recalcPath(true);
         }
@@ -135,6 +136,7 @@ public abstract class BlocklingPathGoal extends BlocklingGoal
             markPathTargetPosBad();
         }
 
+        moveBlocklingToPath();
         tickGoal();
 
         if (shouldRecalc)
@@ -197,8 +199,9 @@ public abstract class BlocklingPathGoal extends BlocklingGoal
      * Recalculates the path and path target pos.
      *
      * @param force forces the recalculation to take place.
+     * @return true if a path was found.
      */
-    protected abstract void recalcPath(boolean force);
+    protected abstract boolean recalcPath(boolean force);
 
     /**
      * @return true if the blockling has moved since the last recalc (within 0.01 of a block).
@@ -213,7 +216,7 @@ public abstract class BlocklingPathGoal extends BlocklingGoal
      */
     public boolean isStuck()
     {
-        return (!hasPathTargetPos() || !isInRangeOfPathTarget()) && (!hasPath() || path.isDone() || !hasMovedSinceLastRecalc() || blockling.getNavigation().isStuck());
+        return (!hasPathTargetPos() || !isInRangeOfPathTargetPos()) && (!hasPath() || path.isDone() || !hasMovedSinceLastRecalc() || blockling.getNavigation().isStuck());
     }
 
     /**
@@ -254,7 +257,7 @@ public abstract class BlocklingPathGoal extends BlocklingGoal
     /**
      * @return true if the blockling is within range of the center of the path pos;
      */
-    public boolean isInRangeOfPathTarget()
+    public boolean isInRangeOfPathTargetPos()
     {
         return BlockUtil.distanceSq(blockling.blockPosition(), pathTargetPos) <= getRangeSq();
     }
@@ -301,18 +304,6 @@ public abstract class BlocklingPathGoal extends BlocklingGoal
      */
     public void setPathTargetPos(@Nullable BlockPos blockPos, @Nullable Path pathToPos)
     {
-        setPathTargetPos(blockPos, pathToPos, true);
-    }
-
-    /**
-     * Sets the current pos to path to and recalculates the path if none is given.
-     *
-     * @param blockPos the new pos to path to.
-     * @param pathToPos an optional path to the given pos.
-     * @param moveBlocklingToPath whether to also make the blockling move to the path.
-     */
-    public void setPathTargetPos(@Nullable BlockPos blockPos, @Nullable Path pathToPos, boolean moveBlocklingToPath)
-    {
         pathTargetPos = blockPos;
         path = pathToPos;
 
@@ -325,11 +316,6 @@ public abstract class BlocklingPathGoal extends BlocklingGoal
                 path = newPath;
             }
         }
-
-        if (moveBlocklingToPath)
-        {
-            moveBlocklingToPath();
-        }
     }
 
     /**
@@ -337,7 +323,10 @@ public abstract class BlocklingPathGoal extends BlocklingGoal
      */
     public void moveBlocklingToPath()
     {
-        blockling.getNavigation().moveTo(path, 1.0);
+        if (blockling.getNavigation().getPath() != getPath())
+        {
+            blockling.getNavigation().moveTo(path, 1.0);
+        }
     }
 
     /**

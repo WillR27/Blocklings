@@ -210,37 +210,30 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal
     @Override
     public boolean tryRecalcTarget()
     {
-        if (isTargetValid())
+        if (super.tryRecalcTarget())
         {
-            return canHarvestTargetPos();
-        }
-        else
-        {
-            markTargetBad();
+            return true;
         }
 
-        if (!hasTarget())
+        if (!tryFindCrop())
         {
-            if (!tryFindCrop())
-            {
-                return false;
-            }
-
-            Pair<BlockPos, Path> pathToCrop = findPathToCrop();
-
-            if (pathToCrop == null)
-            {
-                return false;
-            }
-
-            setPathTargetPos(pathToCrop.getKey(), pathToCrop.getValue(), false);
+            return false;
         }
 
-        return canHarvestTargetPos();
+        Pair<BlockPos, Path> pathToCrop = findPathToCrop();
+
+        if (pathToCrop == null)
+        {
+            return false;
+        }
+
+        setPathTargetPos(pathToCrop.getKey(), pathToCrop.getValue());
+
+        return true;
     }
 
     @Override
-    protected void recalcPath(boolean force)
+    protected boolean recalcPath(boolean force)
     {
         Pair<BlockPos, Path> result = findPathToCrop();
 
@@ -251,7 +244,11 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal
         else
         {
             setPathTargetPos(null, null);
+
+            return false;
         }
+
+        return true;
     }
 
     /**

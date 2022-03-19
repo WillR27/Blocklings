@@ -195,13 +195,9 @@ public class BlocklingMineGoal extends BlocklingGatherGoal
     @Override
     public boolean tryRecalcTarget()
     {
-        if (isTargetValid())
+        if (super.tryRecalcTarget())
         {
-            return canHarvestTargetPos();
-        }
-        else
-        {
-            markTargetBad();
+            return true;
         }
 
         if (veinBlockPositions.isEmpty())
@@ -218,12 +214,12 @@ public class BlocklingMineGoal extends BlocklingGatherGoal
                 return false;
             }
 
-            setPathTargetPos(pathToVein.getKey(), pathToVein.getValue(), false);
+            setPathTargetPos(pathToVein.getKey(), pathToVein.getValue());
         }
 
         setTarget((BlockPos) veinBlockPositions.toArray()[veinBlockPositions.size() - 1]);
 
-        return canHarvestTargetPos();
+        return true;
     }
 
     @Override
@@ -426,7 +422,7 @@ public class BlocklingMineGoal extends BlocklingGatherGoal
     }
 
     @Override
-    protected void recalcPath(boolean force)
+    protected boolean recalcPath(boolean force)
     {
         if (force)
         {
@@ -439,9 +435,11 @@ public class BlocklingMineGoal extends BlocklingGatherGoal
             else
             {
                 setPathTargetPos(null, null);
+
+                return false;
             }
 
-            return;
+            return true;
         }
 
         // Try to improve our path each recalc by testing different blocks in the vein
@@ -466,13 +464,17 @@ public class BlocklingMineGoal extends BlocklingGatherGoal
                 if (path.getDistToTarget() < this.path.getDistToTarget())
                 {
                     setPathTargetPos(veinBlockPos, path);
+
+                    return true;
                 }
             }
 
-            return;
+            return hasPath();
         }
 
         pathTargetPositionsTested.clear();
+
+        return false;
     }
 
     @Override

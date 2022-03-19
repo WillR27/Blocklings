@@ -51,6 +51,6 @@ public class BlocklingMeleeAttackOwnerHurtByGoal extends BlocklingMeleeAttackGoa
 
         setTarget(ownersAttacker);
 
-        return super.tryRecalcTarget();
+        return true;
     }
 }
