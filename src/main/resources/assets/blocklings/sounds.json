@@ -1,0 +1,6 @@
+{
+  "blockling_whistle": {
+    "subtitle": "blocklings.subtitle.blockling_whistle",
+    "sounds": [ "blocklings:blockling_whistle" ]
+  }
+}

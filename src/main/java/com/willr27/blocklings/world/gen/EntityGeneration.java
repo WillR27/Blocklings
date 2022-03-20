@@ -1,7 +1,7 @@
 package com.willr27.blocklings.world.gen;
 
 import com.willr27.blocklings.Blocklings;
-import com.willr27.blocklings.entity.EntityTypes;
+import com.willr27.blocklings.entity.BlocklingsEntityTypes;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.world.biome.Biome;
@@ -20,7 +20,7 @@ public class EntityGeneration
     @SubscribeEvent
     public static void onBiomeLoad(final BiomeLoadingEvent event)
     {
-        addEntityToAllBiomes(event.getSpawns(), EntityTypes.BLOCKLING_ENTITY.get(), 200, 1, 2);
+        addEntityToAllBiomes(event.getSpawns(), BlocklingsEntityTypes.BLOCKLING_ENTITY.get(), 200, 1, 2);
     }
 
     private static void addEntityToAllBiomesExceptThese(BiomeLoadingEvent event, EntityType<?> type, int weight, int minCount, int maxCount, RegistryKey<Biome>... biomes)

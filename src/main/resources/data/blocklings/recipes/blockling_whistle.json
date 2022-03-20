@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XX",
+    "#X"
+  ],
+  "key": {
+    "#": {
+      "tag": "minecraft:flowers"
+    },
+    "X": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "blocklings:blockling_whistle"
+  }
+}

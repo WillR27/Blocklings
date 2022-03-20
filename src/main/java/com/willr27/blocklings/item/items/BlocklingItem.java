@@ -1,7 +1,7 @@
 package com.willr27.blocklings.item.items;
 
 import com.willr27.blocklings.attribute.BlocklingAttributes;
-import com.willr27.blocklings.entity.EntityTypes;
+import com.willr27.blocklings.entity.BlocklingsEntityTypes;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.task.Task;
@@ -9,10 +9,7 @@ import com.willr27.blocklings.util.BlocklingsResourceLocation;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemModelsProperties;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
+import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
@@ -27,16 +24,31 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * An item used to spawn blocklings with data preserved.
+ */
 public class BlocklingItem extends Item
 {
-    public BlocklingItem(Properties properties)
+    /**
+     * The default constructor.
+     */
+    public BlocklingItem()
     {
-        super(properties);
+        super(new Item.Properties()
+                .tab(ItemGroup.TAB_MISC)
+                .stacksTo(1));
     }
 
-    public static ItemStack create(BlocklingEntity blockling)
+    /**
+     * Creates a blockling item from a blockling.
+     *
+     * @param blockling the blockling to create the item from.
+     * @return the blockling item.
+     */
+    @Nonnull
+    public static ItemStack create(@Nonnull BlocklingEntity blockling)
     {
-        ItemStack stack = new ItemStack(Items.BLOCKLING.get(), 1);
+        ItemStack stack = new ItemStack(BlocklingsItems.BLOCKLING.get(), 1);
         stack.setHoverName(new StringTextComponent(TextFormatting.GOLD + blockling.getCustomName().getString()));
 
         CompoundNBT stackTag = stack.getOrCreateTag();
@@ -57,6 +69,7 @@ public class BlocklingItem extends Item
         return stack;
     }
 
+    @Nonnull
     @Override
     public ActionResultType useOn(ItemUseContext context)
     {
@@ -76,7 +89,7 @@ public class BlocklingItem extends Item
 
 //            BlocklingEntity blockling = (BlocklingEntity) EntityTypes.BLOCKLING_ENTITY.get().spawn((ServerWorld) world, stack, context.getPlayer(), blockpos, SpawnReason.SPAWN_EGG, true, true);
 
-            BlocklingEntity blockling = new BlocklingEntity(EntityTypes.BLOCKLING_ENTITY.get(), world);
+            BlocklingEntity blockling = new BlocklingEntity(BlocklingsEntityTypes.BLOCKLING_ENTITY.get(), world);
 
             if (stack.getTag() != null)
             {
@@ -118,8 +131,6 @@ public class BlocklingItem extends Item
     @Override
     public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, @Nonnull List<ITextComponent> tooltip, @Nonnull ITooltipFlag flag)
     {
-        super.appendHoverText(stack, world, tooltip, flag);
-
         CompoundNBT stackTag = stack.getTag();
 
         if (stackTag != null && stackTag.contains("entity"))
@@ -130,14 +141,17 @@ public class BlocklingItem extends Item
             tooltip.add(new StringTextComponent(TextFormatting.GRAY + new BlocklingsTranslationTextComponent("attribute.woodcutting_level.name").getString() + ": " + stackTag.getInt("woodcutting_level")));
             tooltip.add(new StringTextComponent(TextFormatting.GRAY + new BlocklingsTranslationTextComponent("attribute.farming_level.name").getString() + ": " + stackTag.getInt("farming_level")));
             tooltip.add(new StringTextComponent(TextFormatting.GRAY + new BlocklingsTranslationTextComponent("attribute.total_level.name").getString() + ": " + stackTag.getInt("total_level")));
+            tooltip.add(new StringTextComponent(""));
         }
+
+        super.appendHoverText(stack, world, tooltip, flag);
     }
 
     public static void registerItemModelsProperties()
     {
         DeferredWorkQueue.runLater(() ->
         {
-            ItemModelsProperties.register(Items.BLOCKLING.get(), new BlocklingsResourceLocation("type"), (stack, world, entity) ->
+            ItemModelsProperties.register(BlocklingsItems.BLOCKLING.get(), new BlocklingsResourceLocation("type"), (stack, world, entity) ->
             {
                 CompoundNBT c = stack.getTag();
 

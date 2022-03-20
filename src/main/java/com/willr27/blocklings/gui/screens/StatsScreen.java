@@ -15,7 +15,7 @@ import com.willr27.blocklings.gui.controls.stats.EnumeratingStatControl;
 import com.willr27.blocklings.gui.controls.stats.HealthBarControl;
 import com.willr27.blocklings.gui.controls.stats.LevelControl;
 import com.willr27.blocklings.gui.controls.TabbedControl;
-import com.willr27.blocklings.item.items.Items;
+import com.willr27.blocklings.item.items.BlocklingsItems;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -175,7 +175,7 @@ public class StatsScreen extends TabbedScreen
                     }
                     else
                     {
-                        ITextComponent name = Items.BLOCKLING.get().getName(Items.BLOCKLING.get().getDefaultInstance());
+                        ITextComponent name = BlocklingsItems.BLOCKLING.get().getName(BlocklingsItems.BLOCKLING.get().getDefaultInstance());
                         blockling.setCustomName(new StringTextComponent(name.getString()), true);
                         setValue(name.getString());
                     }

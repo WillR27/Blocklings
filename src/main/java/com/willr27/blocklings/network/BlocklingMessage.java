@@ -112,7 +112,12 @@ public abstract class BlocklingMessage<T extends BlocklingMessage<T>> implements
             Objects.requireNonNull(player, "No player entity found when handling message.");
 
             blockling = (BlocklingEntity) player.level.getEntity(blocklingId);
-            Objects.requireNonNull(blockling, String.format("No blockling entity found when handling message with id: %d.", blocklingId));
+
+            // The client may unload the blockling before the server.
+            if (blockling == null)
+            {
+                return;
+            }
 
             handle(player, blockling);
 

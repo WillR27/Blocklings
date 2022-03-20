@@ -1,8 +1,10 @@
 {
   "entity.blocklings.blockling": "Blockling",
 
-  "item.blocklings.blockling": "Blockling",
   "item.blocklings.blockling_spawn_egg": "Blockling Spawn Egg",
+  "item.blocklings.blockling": "Blockling",
+  "item.blocklings.blockling_whistle": "Blockling Whistle",
+  "item.blocklings.blockling_whistle.location": "Location: ",
 
   "blocklings.type.grass": "Grass",
   "blocklings.type.oak_log": "Oak Log",
@@ -224,5 +226,7 @@
   "blocklings.attribute.farming.speed": "Speed: %.1f",
   "blocklings.attribute.mining.range": "Range: %.1f",
   "blocklings.attribute.woodcutting.range": "Range: %.1f",
-  "blocklings.attribute.farming.range": "Range: %.1f"
+  "blocklings.attribute.farming.range": "Range: %.1f",
+
+  "blocklings.subtitle.blockling_whistle": "Blockling whistle"
 }

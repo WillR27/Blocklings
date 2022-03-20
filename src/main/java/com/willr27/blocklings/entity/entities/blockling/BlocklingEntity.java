@@ -7,6 +7,7 @@ import com.willr27.blocklings.gui.BlocklingGuiHandler;
 import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
 import com.willr27.blocklings.item.ToolUtil;
 import com.willr27.blocklings.item.items.BlocklingItem;
+import com.willr27.blocklings.item.items.BlocklingWhistleItem;
 import com.willr27.blocklings.network.messages.BlocklingAttackTargetMessage;
 import com.willr27.blocklings.network.messages.BlocklingNameMessage;
 import com.willr27.blocklings.network.messages.BlocklingScaleMessage;
@@ -53,6 +54,8 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.BiPredicate;
+
+import static com.willr27.blocklings.item.items.BlocklingsItems.BLOCKLING_WHISTLE;
 
 /**
  * The blockling entity.
@@ -535,6 +538,15 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         ItemStack stack = player.getItemInHand(Hand.MAIN_HAND);
         Item item = stack.getItem();
 
+        if (item == BLOCKLING_WHISTLE.get())
+        {
+            if (player == getOwner())
+            {
+                BlocklingWhistleItem.setBlockling(stack, this);
+
+                return ActionResultType.SUCCESS;
+            }
+        }
         if (blocklingType.isFoodForType(item))
         {
             if (!level.isClientSide())

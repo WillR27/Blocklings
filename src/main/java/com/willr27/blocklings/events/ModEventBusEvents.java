@@ -1,27 +1,23 @@
 package com.willr27.blocklings.events;
 
 import com.willr27.blocklings.Blocklings;
-import com.willr27.blocklings.entity.EntityTypes;
+import com.willr27.blocklings.entity.BlocklingsEntityTypes;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingType;
-import com.willr27.blocklings.item.items.BlocklingSpawnEgg;
 import com.willr27.blocklings.util.BlocklingsResourceLocation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.client.renderer.texture.SimpleTexture;
-import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Resource;
 import java.io.IOException;
 
 /**
@@ -36,7 +32,7 @@ public class ModEventBusEvents
     @SubscribeEvent
     public static void addEntityAttributes(@Nonnull EntityAttributeCreationEvent event)
     {
-        event.put(EntityTypes.BLOCKLING_ENTITY.get(), BlocklingEntity.createAttributes().build());
+        event.put(BlocklingsEntityTypes.BLOCKLING_ENTITY.get(), BlocklingEntity.createAttributes().build());
     }
 
     /**
