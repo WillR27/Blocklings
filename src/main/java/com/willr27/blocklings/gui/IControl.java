@@ -516,7 +516,18 @@ public interface IControl
      * @return the parent control.
      */
     @Nullable
-    IControl getParent();
+    default IControl getParent()
+    {
+        return null;
+    }
+
+    /**
+     * Sets the parent control.
+     */
+    default void setParent(@Nullable IControl parent)
+    {
+
+    }
 
     /**
      * @return the list of child controls.

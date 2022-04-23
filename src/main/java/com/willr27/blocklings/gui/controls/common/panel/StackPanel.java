@@ -34,7 +34,7 @@ public class StackPanel extends Control
      * @param width the width.
      * @param height the height.
      */
-    public StackPanel(@Nonnull IControl parent, int x, int y, int width, int height)
+    public StackPanel(@Nullable IControl parent, int x, int y, int width, int height)
     {
         super(parent, x, y, width, height);
 

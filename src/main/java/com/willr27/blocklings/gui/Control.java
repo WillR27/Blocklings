@@ -40,7 +40,7 @@ public class Control extends AbstractGui implements IControl
     /**
      * The parent control (might be a screen).
      */
-    @Nonnull
+    @Nullable
     public IControl parent;
 
     /**
@@ -198,15 +198,22 @@ public class Control extends AbstractGui implements IControl
     private final EventHandler<CharEvent> onControlCharTyped = new EventHandler<>();
 
     /**
+     * Default constructor.
+     */
+    public Control()
+    {
+        this(null, 0, 0, 0, 0);
+    }
+
+    /**
      * @param parent the parent control.
      * @param x the local x position.
      * @param y the local y position.
-     * @param width the width.
-     * @param height the height.
+     * @param width the width of the control.
+     * @param height the height of the control.
      */
-    public Control(@Nonnull IControl parent, int x, int y, int width, int height)
+    public Control(@Nullable IControl parent, int x, int y, int width, int height)
     {
-        this.parent = parent;
         this.screen = Objects.requireNonNull(Minecraft.getInstance().screen);
         this.font = Minecraft.getInstance().font;
         this.width = width;
@@ -222,10 +229,10 @@ public class Control extends AbstractGui implements IControl
         margins.put(Side.RIGHT, 0);
         margins.put(Side.BOTTOM, 0);
 
+        setParent(parent);
+
         setX(x);
         setY(y);
-
-        parent.addChild(this);
 
         setupEventHandlers();
     }
@@ -302,7 +309,7 @@ public class Control extends AbstractGui implements IControl
      */
     public void renderText(MatrixStack matrixStack, String text, int dx, int dy, boolean right, int colour)
     {
-        int bonusX = right ? -font.width(text) - dx : dx;
+        int bonusX = right ? -font.width(text) - dx + width : dx;
         font.draw(matrixStack, text, screenX + bonusX, screenY + dy, colour);
         RenderSystem.enableDepthTest(); // Apparently depth test gets turned off so turn it back on
     }
@@ -319,7 +326,7 @@ public class Control extends AbstractGui implements IControl
      */
     public void renderShadowedText(MatrixStack matrixStack, String text, int dx, int dy, boolean right, int colour)
     {
-        int bonusX = right ? -font.width(text) - dx : dx;
+        int bonusX = right ? -font.width(text) - dx + width : dx;
 
 //        String shadowText = text;
 //        List<Integer> toRemove = new ArrayList<>();
@@ -399,7 +406,7 @@ public class Control extends AbstractGui implements IControl
     @Override
     public ScrollbarControl getScrollbarY()
     {
-        return scrollbarControlY != null ? scrollbarControlY : parent.getScrollbarY();
+        return scrollbarControlY != null ? scrollbarControlY : parent != null ? parent.getScrollbarY() : null;
     }
 
     @Override
@@ -491,10 +498,26 @@ public class Control extends AbstractGui implements IControl
     }
 
     @Override
-    @Nonnull
+    @Nullable
     public IControl getParent()
     {
         return parent;
+    }
+
+    @Override
+    public void setParent(@Nullable IControl parent)
+    {
+        if (this.parent != null)
+        {
+            this.parent.removeChild(this);
+        }
+
+        this.parent = parent;
+
+        if (this.parent != null)
+        {
+            this.parent.addChild(this);
+        }
     }
 
     @Override
@@ -507,13 +530,21 @@ public class Control extends AbstractGui implements IControl
     @Override
     public void addChild(@Nonnull Control control)
     {
-        children.add(control);
+        if (!children.contains(control))
+        {
+            children.add(control);
+            control.parent = this;
+        }
     }
 
     @Override
     public void removeChild(@Nullable Control control)
     {
-        children.remove(control);
+        if (control != null)
+        {
+            control.parent = null;
+            children.remove(control);
+        }
     }
 
     /**
@@ -621,7 +652,14 @@ public class Control extends AbstractGui implements IControl
      */
     public void recalcScreenX()
     {
-        screenX = parent.getScreenX() - parent.getScrollX() + parent.getPadding(Side.LEFT) + getMargin(Side.LEFT) + x;
+        int parentOffset = 0;
+
+        if (parent != null)
+        {
+            parentOffset = parent.getScreenX() - parent.getScrollX() + parent.getPadding(Side.LEFT);
+        }
+
+        screenX = parentOffset + getMargin(Side.LEFT) + x;
 
         getChildren().forEach(Control::recalcScreenX);
     }
@@ -637,7 +675,14 @@ public class Control extends AbstractGui implements IControl
      */
     public void recalcScreenY()
     {
-        screenY = parent.getScreenY() - parent.getScrollY() + parent.getPadding(Side.TOP) + getMargin(Side.TOP) + y;
+        int parentOffset = 0;
+
+        if (parent != null)
+        {
+            parentOffset = parent.getScreenY() - parent.getScrollY() + parent.getPadding(Side.TOP);
+        }
+
+        screenY = parentOffset + getMargin(Side.TOP) + y;
 
         getChildren().forEach(Control::recalcScreenY);
     }
@@ -827,6 +872,11 @@ public class Control extends AbstractGui implements IControl
      */
     public void setZIndex(int index)
     {
+        if (parent == null)
+        {
+            return;
+        }
+
         ArrayList<Control> children = parent.getChildren();
 
         if (index > children.size())

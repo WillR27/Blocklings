@@ -215,7 +215,7 @@ public class SkillControl extends Control
             texturedControl = new TexturedControl(this, endX, descY + i * gap, new GuiTexture(GuiTextures.SKILLS, HOVER_BOX_WIDTH - OUTER_WIDTH, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH, OUTER_WIDTH, gap));
             texturedControl.render(matrixStack, 0, 0, 0);
             removeChild(texturedControl);
-            lineControl.renderShadowedText(matrixStack, str, -font.width(str) - PADDING, 0, true, 0xffffffff);
+            lineControl.renderShadowedText(matrixStack, str, PADDING, 0, false, 0xffffffff);
             removeChild(lineControl);
             i++;
         }

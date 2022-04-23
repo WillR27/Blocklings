@@ -243,13 +243,21 @@ public abstract class TabbedContainerScreen<T extends Container> extends Contain
     @Override
     public void addChild(@Nonnull Control control)
     {
-        children.add(control);
+        if (!children.contains(control))
+        {
+            children.add(control);
+            control.parent = this;
+        }
     }
 
     @Override
     public void removeChild(@Nullable Control control)
     {
-        children.remove(control);
+        if (control != null)
+        {
+            control.parent = null;
+            children.remove(control);
+        }
     }
 
     @Override
