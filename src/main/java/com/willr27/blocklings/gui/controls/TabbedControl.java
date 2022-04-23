@@ -1,25 +1,20 @@
 package com.willr27.blocklings.gui.controls;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.gui.Control;
-import com.willr27.blocklings.gui.GuiTexture;
-import com.willr27.blocklings.gui.GuiTextures;
-import com.willr27.blocklings.gui.Tab;
-import net.minecraft.client.gui.AbstractGui;
+import com.willr27.blocklings.gui.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The control for the tabs in the blockling's gui.
  * This is a control instead of a screen, so it can be used with containers screens as well as regular screens.
  */
 @OnlyIn(Dist.CLIENT)
-public class TabbedControl extends AbstractGui
+public class TabbedControl extends Control
 {
     /**
      * The offset for the entire gui.
@@ -47,76 +42,19 @@ public class TabbedControl extends AbstractGui
     public static final int CONTENT_HEIGHT = 166;
 
     /**
-     * The x position at the left-hand side of the tabs.
-     */
-    private int left;
-
-    /**
-     * The y position at the top of the gui.
-     */
-    private int top;
-
-    /**
-     * The x position at the right-hand side of the tabs.
-     */
-    private int right;
-
-    /**
-     * The tab controls.
-     */
-    @Nonnull
-    private final List<TabControl> tabControls = new ArrayList<>();
-
-    /**
+     * @param parent the parent control.
      * @param blockling the blockling.
-     * @param centerX the x position at the center of the screen.
-     * @param centerY the y position at the center of the screen.
+     * @param x the x position.
+     * @param y the y position.
      */
-    public TabbedControl(@Nonnull BlocklingEntity blockling, int centerX, int centerY)
+    public TabbedControl(@Nonnull IControl parent, @Nonnull BlocklingEntity blockling, int x, int y)
     {
-        this.left = centerX - GUI_WIDTH / 2;
-        this.top = centerY - GUI_HEIGHT / 2;
-        this.right = left + GUI_WIDTH;
+        super(parent, x, y, GUI_WIDTH, GUI_HEIGHT);
 
         for (Tab tab : Tab.values())
         {
-            tabControls.add(new TabControl(tab, blockling, left, top, right));
+            new TabControl(this, tab, blockling, 0, 0, width);
         }
-    }
-
-    /**
-     * Renders the tabs.
-     *
-     * @param matrixStack the matrix stack.
-     * @param mouseX the current mouse x position.
-     * @param mouseY the current mouse y position.
-     */
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY)
-    {
-        tabControls.forEach(tabControl -> tabControl.render(matrixStack, mouseX, mouseY));
-    }
-
-    /**
-     * Handles the mouse being clicked anywhere on the screen.
-     *
-     * @param mouseX the mouse x position.
-     * @param mouseY the mouse y position.
-     * @param state the mouse state.
-     * @return true if the click is handled.
-     */
-    public boolean mouseClicked(int mouseX, int mouseY, int state)
-    {
-        boolean result = false;
-
-        for (TabControl tabControl : tabControls)
-        {
-            if (tabControl.mouseClicked(mouseX, mouseY, state))
-            {
-                result = true;
-            }
-        }
-
-        return result;
     }
 
     /**
@@ -184,15 +122,16 @@ public class TabbedControl extends AbstractGui
         private final GuiTexture iconTexture;
 
         /**
+         * @param parent the parent control.
          * @param tab the tab.
          * @param blockling the blockling.
-         * @param left the x position at the left-hand side of the tab.
+         * @param left the x position at the left-hand side of the left-most tab.
          * @param top the y position at the top of the gui.
-         * @param right the x position at the right-hand side of the tab.
+         * @param right the x position at the right-hand side of the right-most tab.
          */
-        public TabControl(@Nonnull Tab tab, @Nonnull BlocklingEntity blockling, int left, int top, int right)
+        public TabControl(@Nonnull IControl parent, @Nonnull Tab tab, @Nonnull BlocklingEntity blockling, int left, int top, int right)
         {
-            super(tab.left ? left : right - SELECTED_BACKGROUND_TEXTURE_LEFT.width, top + tab.getIndex() * (SELECTED_BACKGROUND_TEXTURE_LEFT.height + 4) + 5, SELECTED_BACKGROUND_TEXTURE_LEFT.width, SELECTED_BACKGROUND_TEXTURE_LEFT.height);
+            super(parent, tab.left ? left : right - SELECTED_BACKGROUND_TEXTURE_LEFT.width, top + tab.getIndex() * (SELECTED_BACKGROUND_TEXTURE_LEFT.height + 4) + 5, SELECTED_BACKGROUND_TEXTURE_LEFT.width, SELECTED_BACKGROUND_TEXTURE_LEFT.height);
             this.tab = tab;
             this.blockling = blockling;
             this.selectedBackgroundTexture = tab.left ? SELECTED_BACKGROUND_TEXTURE_LEFT : SELECTED_BACKGROUND_TEXTURE_RIGHT;
@@ -201,36 +140,36 @@ public class TabbedControl extends AbstractGui
         }
 
         @Override
-        public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+        public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
         {
+            RenderSystem.enableDepthTest();
+
             if (isSelected())
             {
+                matrixStack.translate(0.0, 0.0, 5.0);
+
                 renderTexture(matrixStack, selectedBackgroundTexture);
                 renderTexture(matrixStack, tab.left ? 6 : 4, 3, iconTexture);
             }
             else
             {
-                renderTexture(matrixStack, tab.left ? 5 : 3, 0, unselectedBackgroundTexture);
-                renderTexture(matrixStack, tab.left ? 8 : 3, 3, iconTexture);
-            }
-
-            if (isMouseOver(mouseX, mouseY))
-            {
-                screen.renderTooltip(matrixStack, tab.name, mouseX, mouseY);
+                renderTexture(matrixStack, tab.left ? 4 : 3, 0, unselectedBackgroundTexture);
+                renderTexture(matrixStack, tab.left ? 7 : 3, 3, iconTexture);
             }
         }
 
         @Override
-        public boolean mouseClicked(int mouseX, int mouseY, int button)
+        public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
         {
-            if (isMouseOver(mouseX, mouseY))
-            {
-                blockling.guiHandler.openGui(tab.guiId, screen.getMinecraft().player);
+            screen.renderTooltip(matrixStack, tab.name, mouseX, mouseY);
+        }
 
-                return true;
-            }
+        @Override
+        public void controlMouseClicked(@Nonnull MouseButtonEvent e)
+        {
+            blockling.guiHandler.openGui(tab.guiId, screen.getMinecraft().player);
 
-            return super.mouseClicked(mouseX, mouseY, button);
+            e.setIsHandled(true);
         }
 
         /**

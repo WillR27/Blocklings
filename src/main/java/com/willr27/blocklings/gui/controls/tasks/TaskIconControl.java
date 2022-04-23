@@ -7,6 +7,8 @@ import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.task.Task;
+import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -78,7 +80,7 @@ public class TaskIconControl extends Control
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         if (isPressed() || isCreateControl)
         {
@@ -104,13 +106,22 @@ public class TaskIconControl extends Control
     }
 
     @Override
-    public boolean mouseReleased(int mouseX, int mouseY, int button)
+    public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
-        if (isMouseOver(mouseX, mouseY))
+        if (!taskControl.isAddControl)
+        {
+            screen.renderTooltip(matrixStack, new BlocklingsTranslationTextComponent("task.ui.configure"), mouseX, mouseY);
+        }
+    }
+
+    @Override
+    public void controlMouseReleased(@Nonnull MouseButtonEvent e)
+    {
+        if (!taskControl.isAddControl)
         {
             onConfigure.accept(taskControl.task);
-        }
 
-        return super.mouseReleased(mouseX, mouseY, button);
+            e.setIsHandled(true);
+        }
     }
 }

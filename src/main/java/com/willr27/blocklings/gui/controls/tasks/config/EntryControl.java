@@ -1,4 +1,4 @@
-package com.willr27.blocklings.gui.controls.tasks;
+package com.willr27.blocklings.gui.controls.tasks.config;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -65,9 +65,12 @@ public class EntryControl extends Control
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
-        GuiUtil.scissor(screenX, screenY, width, height, true);
+        RenderSystem.enableDepthTest();
+
+        GuiUtil.addScissorBounds(screenX, screenY, width, height);
+        GuiUtil.enableStackedScissor();
 
         if (entry.getValue())
         {
@@ -89,7 +92,8 @@ public class EntryControl extends Control
             RenderSystem.color3f(0.5f, 0.5f, 0.5f);
         }
 
-//        GuiUtil.scissor(screenX + 2, screenY + 2, width - 4, height - 4, true);
+        GuiUtil.addScissorBounds(screenX + 2, screenY + 2, width - 4, height - 4);
+        GuiUtil.enableStackedScissor();
 
         if (whitelist.type == Whitelist.Type.BLOCK)
         {
@@ -118,15 +122,12 @@ public class EntryControl extends Control
                 GuiUtil.renderEntityOnScreen(screenX + width / 2, screenY + width / 2 + 11, 20, 25, -10, entity);
             }
         }
+
+        GuiUtil.removeScissorBounds(screenX + 2, screenY + 2, width - 4, height - 4);
+        GuiUtil.removeScissorBounds(screenX, screenY, width, height);
     }
 
-    /**
-     * Renders the tooltip for the entry.
-     *
-     * @param matrixStack the matrix stack.
-     * @param mouseX the mouse x position.
-     * @param mouseY the mouse y position.
-     */
+    @Override
     public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
         if (whitelist.type == Whitelist.Type.BLOCK)
@@ -147,13 +148,13 @@ public class EntryControl extends Control
     }
 
     @Override
-    public boolean mouseReleased(int mouseX, int mouseY, int button)
+    public void controlMouseReleased(@Nonnull MouseButtonEvent e)
     {
-        if (isPressed() && isMouseOver(mouseX, mouseY))
+        if (isPressed())
         {
             whitelist.toggleEntry(entry.getKey());
         }
 
-        return super.mouseReleased(mouseX, mouseY, button);
+        e.setIsHandled(true);
     }
 }

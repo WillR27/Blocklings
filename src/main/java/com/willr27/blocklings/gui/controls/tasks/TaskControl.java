@@ -1,16 +1,20 @@
 package com.willr27.blocklings.gui.controls.tasks;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.gui.*;
-import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.gui.controls.TexturedControl;
+import com.willr27.blocklings.task.Task;
+import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * A control to display a task in the task list.
@@ -35,30 +39,9 @@ public class TaskControl extends Control
     public final Task task;
 
     /**
-     * The task controls being displayed.
-     */
-    @Nonnull
-    public final List<TaskControl> taskControls;
-
-    /**
      * Whether the control is add or remove.
      */
     public final boolean isAddControl;
-
-    /**
-     * Whether the control is currently being dragged.
-     */
-    public boolean isDragging = false;
-
-    /**
-     * Whether we are attempting to drag the control.
-     */
-    private boolean isTryingToDrag = false;
-
-    /**
-     * The y position where a drag was started.
-     */
-    private int dragStartY;
 
     /**
      * The task name control.
@@ -87,129 +70,55 @@ public class TaskControl extends Control
     /**
      * @param parent the parent control.
      * @param task the task to display.
-     * @param x the x position of the control.
-     * @param y the y position of the control.
-     * @param taskControls the task controls being displayed.
-     * @param isAddControl whether the control is add or remove.
+     * @param isAddControl whether the control is for adding or removing.
      * @param onConfigure the callback called when the configure button is pressed.
      */
-    public TaskControl(@Nonnull IControl parent, @Nonnull Task task, int x, int y, @Nonnull List<TaskControl> taskControls, boolean isAddControl, @Nonnull Consumer<Task> onConfigure)
+    public TaskControl(@Nonnull IControl parent, @Nonnull Task task, boolean isAddControl, @Nonnull Consumer<Task> onConfigure)
     {
-        super(parent, x, y, WIDTH, HEIGHT);
+        super(parent, 0, 0, WIDTH, HEIGHT);
         this.task = task;
-        this.taskControls = taskControls;
         this.isAddControl = isAddControl;
 
-        nameControl = new TexturedControl(this, x + 20, y, new GuiTexture(GuiTextures.TASKS, 40, 166, 96, HEIGHT));
+        setMargins(4, 4, 4, isAddControl ? 4 : 0);
+
+        nameControl = new TexturedControl(this, getX() + 20, getY(), new GuiTexture(GuiTextures.TASKS, 40, 166, 96, HEIGHT))
+        {
+            @Override
+            public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+            {
+                super.render(matrixStack, mouseX, mouseY, partialTicks);
+
+                renderShadowedText(matrixStack, GuiUtil.trimWithEllipses(font, task.getCustomName(), width - 24), 4, 6, false, 0xffffff);
+            }
+
+            @Override
+            public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+            {
+                parent.renderTooltip(matrixStack, mouseX, mouseY);
+            }
+
+            @Override
+            public void controlMouseClicked(@Nonnull MouseButtonEvent e)
+            {
+                e.setIsHandled(false);
+            }
+        };
         iconControl = new TaskIconControl(this, isAddControl, onConfigure);
         stateControl = new TaskStateControl(this);
         addRemoveControl = new TaskAddRemoveControl(this, isAddControl);
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY)
+    public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
-        matrixStack.pushPose();
-
-        int y = this.screenY;
-
-        if (isTryingToDrag)
+        if (!isAddControl)
         {
-            if (Math.abs(dragStartY - mouseY) > 4)
-            {
-                isDragging = true;
-                isTryingToDrag = false;
-            }
+            List<IReorderingProcessor> text = new ArrayList<>();
+            text.add(new StringTextComponent(TextFormatting.GOLD + task.getCustomName()).getVisualOrderText());
+            text.add(new StringTextComponent("").getVisualOrderText());
+            text.addAll(GuiUtil.splitText(font, task.getType().desc.getString(), 150).stream().map(s -> new StringTextComponent(s).getVisualOrderText()).collect(Collectors.toList()));
+
+            screen.renderTooltip(matrixStack, text, mouseX, mouseY);
         }
-        else if (isDragging)
-        {
-            matrixStack.translate(0.0f, 0.0f, 10.0f);
-
-            y = Math.min(taskControls.get(taskControls.size() - 1).screenY, Math.max(taskControls.get(0).screenY, mouseY - height / 2));
-
-            TaskControl closestTaskControl = null;
-            int closestDifY = Integer.MAX_VALUE;
-            int closestAbsDifY = Integer.MAX_VALUE;
-            int midY = y + height / 2;
-
-            for (TaskControl taskControl : taskControls)
-            {
-                int testMidY = taskControl.screenY + taskControl.height / 2;
-                int difY = testMidY - midY;
-                int difAbsY = Math.abs(difY);
-
-                if (difAbsY < closestAbsDifY)
-                {
-                    closestDifY = difY;
-                    closestAbsDifY = difAbsY;
-                    closestTaskControl = taskControl;
-                }
-            }
-
-            if (this != closestTaskControl)
-            {
-                if (closestDifY > 0)
-                {
-                    task.setPriority(closestTaskControl.task.getPriority());
-                }
-                else if (closestDifY < 0)
-                {
-                    closestTaskControl.task.setPriority(task.getPriority());
-                }
-            }
-        }
-
-        nameControl.screenX = screenX + 20;
-        nameControl.screenY = y;
-        iconControl.screenX = screenX;
-        iconControl.screenY = y;
-        stateControl.screenX = screenX + width - 42;
-        stateControl.screenY = y;
-        addRemoveControl.screenX = screenX + width - 20;
-        addRemoveControl.screenY = y;
-
-        RenderSystem.color3f(0.8f, 0.8f, 0.8f);
-        nameControl.render(matrixStack, mouseX, mouseY);
-        RenderSystem.color3f(1.0f, 1.0f, 1.0f);
-
-        iconControl.render(matrixStack, mouseX, mouseY);
-        stateControl.render(matrixStack, mouseX, mouseY);
-        addRemoveControl.render(matrixStack, mouseX, mouseY);
-
-        font.drawShadow(matrixStack, GuiUtil.trimWithEllipses(font, task.getCustomName(), width - 65), screenX + iconControl.width + 4, y + 6, 0xffffff);
-        RenderSystem.enableDepthTest();
-
-        matrixStack.popPose();
-    }
-
-    @Override
-    public boolean mouseClicked(int mouseX, int mouseY, int button)
-    {
-        iconControl.mouseClickedNoHandle(mouseX, mouseY, button);
-        stateControl.mouseClickedNoHandle(mouseX, mouseY, button);
-        addRemoveControl.mouseClickedNoHandle(mouseX, mouseY, button);
-
-        if (isMouseOver(mouseX, mouseY) && !addRemoveControl.isMouseOver(mouseX, mouseY) && taskControls.size() > 1 && !isAddControl)
-        {
-            isTryingToDrag = true;
-            dragStartY = mouseY;
-
-            return true;
-        }
-
-        return super.mouseClicked(mouseX, mouseY, button);
-    }
-
-    @Override
-    public boolean mouseReleased(int mouseX, int mouseY, int button)
-    {
-        iconControl.mouseReleased(mouseX, mouseY, button);
-        stateControl.mouseReleased(mouseX, mouseY, button);
-        addRemoveControl.mouseReleased(mouseX, mouseY, button);
-
-        isTryingToDrag = false;
-        isDragging = false;
-
-        return super.mouseReleased(mouseX, mouseY, button);
     }
 }

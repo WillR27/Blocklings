@@ -58,18 +58,21 @@ public class LevelControl extends Control
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         int level = blockling.getStats().getLevelAttribute(this.level).getValue();
 
         renderTexture(matrixStack, getTexture(level));
         renderTexture(matrixStack, width - getTexture(level + 1).width, 0, getTexture(level + 1));
-        xpBar.render(matrixStack, mouseX, mouseY);
+        xpBar.render(matrixStack, mouseX, mouseY, 0);
+    }
 
-        if (isMouseOver(mouseX, mouseY))
-        {
-            screen.renderTooltip(matrixStack, new StringTextComponent(blockling.getStats().getLevelXpAttribute(this.level).getValue() + "/" + BlocklingAttributes.getXpForLevel(level)), mouseX, mouseY);
-        }
+    @Override
+    public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+    {
+        int level = blockling.getStats().getLevelAttribute(this.level).getValue();
+
+        screen.renderTooltip(matrixStack, new StringTextComponent(blockling.getStats().getLevelXpAttribute(this.level).getValue() + "/" + BlocklingAttributes.getXpForLevel(level)), mouseX, mouseY);
     }
 
     /**

@@ -5,6 +5,7 @@ import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiTextures;
+import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -61,7 +62,7 @@ public class TaskAddRemoveControl extends Control
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         if (isAddControl)
         {
@@ -74,9 +75,22 @@ public class TaskAddRemoveControl extends Control
     }
 
     @Override
-    public boolean mouseReleased(int mouseX, int mouseY, int button)
+    public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
-        if (isPressed() && isMouseOver(mouseX, mouseY))
+        if (isAddControl)
+        {
+            screen.renderTooltip(matrixStack, new BlocklingsTranslationTextComponent("task.ui.add"), mouseX, mouseY);
+        }
+        else
+        {
+            screen.renderTooltip(matrixStack, new BlocklingsTranslationTextComponent("task.ui.remove"), mouseX, mouseY);
+        }
+    }
+
+    @Override
+    public void controlMouseReleased(@Nonnull MouseButtonEvent e)
+    {
+        if (isPressed())
         {
             if (isAddControl)
             {
@@ -84,10 +98,11 @@ public class TaskAddRemoveControl extends Control
             }
             else
             {
+                taskControl.remove();
                 taskControl.task.blockling.getTasks().removeTask(taskControl.task);
             }
         }
 
-        return super.mouseReleased(mouseX, mouseY, button);
+        e.setIsHandled(true);
     }
 }

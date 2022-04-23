@@ -67,8 +67,21 @@ public class SkillControl extends Control
         this.skill = skill;
     }
 
-    public void render(@Nonnull MatrixStack matrixStack)
+    @Override
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
+        matrixStack.pushPose();
+        matrixStack.scale(skillsControl.scale, skillsControl.scale, 1.0f);
+
+        if (!skillsControl.skillBuyConfirmationControl.isVisible() && skillsControl.isMouseOver(mouseX, mouseY) && isMouseOver(mouseX, mouseY, skillsControl.scale))
+        {
+            GuiUtil.disableScissor();
+
+            matrixStack.translate(0.0, 0.0, 10.0);
+
+            renderHover(matrixStack);
+        }
+
         Skill.State state = skill.getState();
         Color colour = state.colour;
 
@@ -111,8 +124,20 @@ public class SkillControl extends Control
         renderTexture(matrixStack, skill.info.gui.iconTexture);
 
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
+
+        if (isMouseOver(mouseX, mouseY, skillsControl.scale))
+        {
+            matrixStack.popPose();
+
+            GuiUtil.enableStackedScissor();
+        }
     }
 
+    /**
+     * Renders the hovered UI.
+     *
+     * @param matrixStack the matrix stack.
+     */
     public void renderHover(@Nonnull MatrixStack matrixStack)
     {
         Skill.State state = skill.getState();
@@ -175,31 +200,43 @@ public class SkillControl extends Control
         RenderSystem.enableDepthTest();
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
 
-        new TexturedControl(this, startX, descY - DESCRIPTION_START_OFFSET_Y, new GuiTexture(GuiTextures.SKILLS, 0, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH, maxWidth, DESCRIPTION_START_OFFSET_Y)).render(matrixStack, 0, 0);
-        new TexturedControl(this, endX, descY - DESCRIPTION_START_OFFSET_Y, new GuiTexture(GuiTextures.SKILLS, HOVER_BOX_WIDTH - OUTER_WIDTH, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH, OUTER_WIDTH, DESCRIPTION_START_OFFSET_Y)).render(matrixStack, 0, 0);
+        TexturedControl texturedControl = new TexturedControl(this, startX, descY - DESCRIPTION_START_OFFSET_Y, new GuiTexture(GuiTextures.SKILLS, 0, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH, maxWidth, DESCRIPTION_START_OFFSET_Y));
+        texturedControl.render(matrixStack, 0, 0, 0);
+        removeChild(texturedControl);
+        texturedControl = new TexturedControl(this, endX, descY - DESCRIPTION_START_OFFSET_Y, new GuiTexture(GuiTextures.SKILLS, HOVER_BOX_WIDTH - OUTER_WIDTH, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH, OUTER_WIDTH, DESCRIPTION_START_OFFSET_Y));
+        texturedControl.render(matrixStack, 0, 0, 0);
+        removeChild(texturedControl);
         int gap = 10;
         int i = 0;
         for (String str : description)
         {
             TexturedControl lineControl = new TexturedControl(this, startX, descY + i * gap, new GuiTexture(GuiTextures.SKILLS, 0, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH, maxWidth, gap));
-            lineControl.render(matrixStack, 0, 0);
-            new TexturedControl(this, endX, descY + i * gap, new GuiTexture(GuiTextures.SKILLS, HOVER_BOX_WIDTH - OUTER_WIDTH, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH, OUTER_WIDTH, gap)).render(matrixStack, 0, 0);
-            lineControl.renderText(matrixStack, str, -font.width(str) - PADDING, 0, true, 0xffffffff);
+            lineControl.render(matrixStack, 0, 0, 0);
+            texturedControl = new TexturedControl(this, endX, descY + i * gap, new GuiTexture(GuiTextures.SKILLS, HOVER_BOX_WIDTH - OUTER_WIDTH, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH, OUTER_WIDTH, gap));
+            texturedControl.render(matrixStack, 0, 0, 0);
+            removeChild(texturedControl);
+            lineControl.renderShadowedText(matrixStack, str, -font.width(str) - PADDING, 0, true, 0xffffffff);
+            removeChild(lineControl);
             i++;
         }
-        new TexturedControl(this, startX, descY + i * gap - 1, new GuiTexture(GuiTextures.SKILLS, 0, DESCRIPTION_TEXTURE_Y + (HOVER_BOX_HEIGHT - OUTER_WIDTH - 1), maxWidth, OUTER_WIDTH + 1)).render(matrixStack, 0, 0);
-        new TexturedControl(this, endX, descY + i * gap - 1, new GuiTexture(GuiTextures.SKILLS, HOVER_BOX_WIDTH - OUTER_WIDTH, DESCRIPTION_TEXTURE_Y + (HOVER_BOX_HEIGHT - OUTER_WIDTH - 1), OUTER_WIDTH, OUTER_WIDTH + 1)).render(matrixStack, 0, 0);
+        texturedControl = new TexturedControl(this, startX, descY + i * gap - 1, new GuiTexture(GuiTextures.SKILLS, 0, DESCRIPTION_TEXTURE_Y + (HOVER_BOX_HEIGHT - OUTER_WIDTH - 1), maxWidth, OUTER_WIDTH + 1));
+        texturedControl.render(matrixStack, 0, 0, 0);
+        removeChild(texturedControl);
+        texturedControl = new TexturedControl(this, endX, descY + i * gap - 1, new GuiTexture(GuiTextures.SKILLS, HOVER_BOX_WIDTH - OUTER_WIDTH, DESCRIPTION_TEXTURE_Y + (HOVER_BOX_HEIGHT - OUTER_WIDTH - 1), OUTER_WIDTH, OUTER_WIDTH + 1));
+        texturedControl.render(matrixStack, 0, 0, 0);
+        removeChild(texturedControl);
 
         TexturedControl nameControl = new TexturedControl(this, startX, nameY, new GuiTexture(GuiTextures.SKILLS, 0, NAME_TEXTURE_Y, maxWidth, HOVER_BOX_HEIGHT));
         TexturedControl nameControlEnd = new TexturedControl(this, endX, nameY, new GuiTexture(GuiTextures.SKILLS, HOVER_BOX_WIDTH - OUTER_WIDTH, NAME_TEXTURE_Y, OUTER_WIDTH, HOVER_BOX_HEIGHT));
 
         if (state == Skill.State.LOCKED) RenderSystem.color3f(0.5f, 0.5f, 0.5f);
         else RenderSystem.color3f(skill.info.gui.colour.getRed() / 255f, skill.info.gui.colour.getGreen() / 255f, skill.info.gui.colour.getBlue() / 255f);
-        nameControl.render(matrixStack, 0, 0);
-        nameControlEnd.render(matrixStack, 0, 0);
-        nameControl.renderText(matrixStack, name, skill.info.gui.iconTexture.width - nameControl.width, 6, false, 0xffffffff);
+        nameControl.render(matrixStack, 0, 0, 0);
+        nameControlEnd.render(matrixStack, 0, 0, 0);
+        nameControl.renderShadowedText(matrixStack, name, skill.info.gui.iconTexture.width, 6, false, 0xffffffff);
 
-        render(matrixStack);
+        removeChild(nameControl);
+        removeChild(nameControlEnd);
     }
 
     public void renderParentPathBackgrounds(@Nonnull MatrixStack matrixStack)
@@ -279,7 +316,8 @@ public class SkillControl extends Control
         }
     }
 
-    private Vec2i[] findPath(SkillControl ability, ConnectionType connectionType)
+    @Nonnull
+    private Vec2i[] findPath(@Nonnull SkillControl ability, @Nonnull ConnectionType connectionType)
     {
         Vec2i[] path = new Vec2i[3];
 
@@ -346,32 +384,23 @@ public class SkillControl extends Control
     }
 
     @Override
-    public void mouseReleasedNoHandle(int mouseX, int mouseY, int button)
+    public void globalMouseReleased(@Nonnull MouseButtonEvent e)
     {
-        super.mouseReleasedNoHandle(mouseX, mouseY, button);
-
-        if (!isMouseOver(mouseX, mouseY, skillsControl.scale) || (skillsControl.skillBuyConfirmationControl != null && !skillsControl.skillBuyConfirmationControl.closed))
+        if (!skillsControl.isMouseOver(e.mouseX, e.mouseY) || !isMouseOver(e.mouseX, e.mouseY, skillsControl.scale))
         {
             isSelected = false;
         }
-    }
-
-    @Override
-    public boolean mouseReleased(int mouseX, int mouseY, int button)
-    {
-        if (isMouseOver(mouseX, mouseY, skillsControl.scale) && skill.canBuy())
+        else if (!skill.isBought())
         {
             if (isSelected)
             {
-                skillsControl.openConfirmationDialog(skill);
+                skillsControl.openConfirmationDialog(this);
             }
-
-            isSelected = true;
-
-            return true;
+            else
+            {
+                isSelected = true;
+            }
         }
-
-        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     private enum Direction
@@ -387,7 +416,7 @@ public class SkillControl extends Control
         DOUBLE_SHORTEST_SPLIT;
     }
 
-    private class Vec2i
+    private static class Vec2i
     {
         public final int x, y;
 

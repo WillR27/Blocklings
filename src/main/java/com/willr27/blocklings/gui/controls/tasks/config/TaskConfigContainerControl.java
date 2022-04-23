@@ -1,4 +1,4 @@
-package com.willr27.blocklings.gui.controls.tasks;
+package com.willr27.blocklings.gui.controls.tasks.config;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -9,6 +9,9 @@ import com.willr27.blocklings.gui.IControl;
 import com.willr27.blocklings.gui.controls.common.ScrollbarControl;
 import com.willr27.blocklings.gui.controls.common.TextFieldControl;
 import com.willr27.blocklings.gui.controls.TabbedControl;
+import com.willr27.blocklings.gui.controls.tasks.config.configs.TaskMiscConfigControl;
+import com.willr27.blocklings.gui.controls.tasks.config.configs.TaskTypeConfigControl;
+import com.willr27.blocklings.gui.controls.tasks.config.configs.WhitelistConfigControl;
 import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import net.minecraft.util.text.StringTextComponent;
@@ -22,7 +25,7 @@ import javax.annotation.Nonnull;
  * A control to display the config options for a task.
  */
 @OnlyIn(Dist.CLIENT)
-public class TaskConfigControl extends Control
+public class TaskConfigContainerControl extends Control
 {
     /**
      * The task being configured.
@@ -64,7 +67,7 @@ public class TaskConfigControl extends Control
      * @param x the x position.
      * @param y the y position.
      */
-    public TaskConfigControl(@Nonnull IControl parent, @Nonnull Task task, int x, int y)
+    public TaskConfigContainerControl(@Nonnull IControl parent, @Nonnull Task task, int x, int y)
     {
         super(parent, x, y, 176, 166);
         this.task = task;
@@ -106,11 +109,11 @@ public class TaskConfigControl extends Control
     public void recreateTabs()
     {
         removeChild(currentConfigGui);
-        currentConfigGui = new TaskTypeConfigControl(this, task, 9, 49, 140, 109, contentScrollbarControl);
+        currentConfigGui = new TaskMiscConfigControl(this, task, 9, 46, 140, 112, contentScrollbarControl);
 
         removeChild(tabControl);
         tabControl = new TabControl(this,9, 33, 140);
-        tabControl.add("Type", () -> { removeChild(currentConfigGui); currentConfigGui = new TaskTypeConfigControl(this, task, 9, 49, 140, 109, contentScrollbarControl); });
+        tabControl.add("Type", () -> { removeChild(currentConfigGui); currentConfigGui = new TaskMiscConfigControl(this, task, 9, 46, 140, 112, contentScrollbarControl); });
 
         if (task.isConfigured() && !task.getGoal().whitelists.isEmpty())
         {
@@ -137,17 +140,6 @@ public class TaskConfigControl extends Control
         GuiUtil.bindTexture(GuiTextures.TASK_CONFIGURE);
         blit(matrixStack, screenX, screenY, 0, 0, TabbedControl.CONTENT_WIDTH, TabbedControl.CONTENT_HEIGHT);
 
-        contentControl.enableScissor();
-        GuiUtil.setScissorBounds(contentControl.screenX, contentControl.screenY, contentControl.screenX + contentControl.width, contentControl.screenY + contentControl.height);
-
-        currentConfigGui.render(matrixStack, mouseX, mouseY, partialTicks);
-
-        GuiUtil.disableScissor();
-
-        tabControl.render(matrixStack, mouseX, mouseY);
-
-        contentScrollbarControl.render(matrixStack, mouseX, mouseY);
-
         if (!nameTextFieldControl.isFocused())
         {
             nameTextFieldControl.setValue(task.getCustomName());
@@ -157,119 +149,68 @@ public class TaskConfigControl extends Control
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
     }
 
-    /**
-     * Renders the control's tooltips.
-     *
-     * @param matrixStack the matrix stack.
-     * @param mouseX the mouse x position.
-     * @param mouseY the mouse y position.
-     */
-    public void renderTooltips(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+    @Override
+    public void controlMouseClicked(@Nonnull MouseButtonEvent e)
     {
-        if (tabControl.isMouseOver(mouseX, mouseY))
-        {
-            tabControl.renderTooltips(matrixStack, mouseX, mouseY);
-        }
-        else if (contentControl.isMouseOver(mouseX, mouseY))
-        {
-            currentConfigGui.renderTooltips(matrixStack, mouseX, mouseY);
-        }
+        nameTextFieldControl.mouseClicked(e.mouseX, e.mouseY, e.button);
+
+        e.setIsHandled(true);
     }
 
     @Override
-    public boolean mouseClicked(int mouseX, int mouseY, int button)
+    public void controlMouseReleased(@Nonnull MouseButtonEvent e)
     {
-        if (nameTextFieldControl.mouseClicked(mouseX, mouseY, button))
+        if (nameTextFieldControl.isFocused())
         {
-            return true;
-        }
-        else if (tabControl.mouseClicked((int) mouseX, (int) mouseY, button))
-        {
-            return true;
-        }
-        else if (contentScrollbarControl.mouseClicked((int) mouseX, (int) mouseY, button))
-        {
-            return true;
-        }
-        else if (contentControl.isMouseOver((int) mouseX, (int) mouseY))
-        {
-            if (currentConfigGui.mouseClicked((int) mouseX, (int) mouseY, button))
-            {
-                return true;
-            }
+            nameTextFieldControl.mouseReleased(e.mouseX, e.mouseY, e.button);
         }
 
-        return false;
+        e.setIsHandled(true);
     }
 
     @Override
-    public boolean mouseReleased(int mouseX, int mouseY, int button)
+    public void controlMouseScrolled(@Nonnull MouseScrollEvent e)
     {
-        boolean ret = false;
-
-        if (nameTextFieldControl.isFocused() && nameTextFieldControl.mouseReleased(mouseX, mouseY, button))
-        {
-            ret = true;
-        }
-
-        if (tabControl.mouseReleased(mouseX, mouseY, button))
-        {
-            ret = true;
-        }
-
-        if (contentScrollbarControl.mouseReleased(mouseX, mouseY, button))
-        {
-            ret = true;
-        }
-
-        if (contentControl.isMouseOver(mouseX, mouseY))
-        {
-            if (currentConfigGui.mouseReleased(mouseX, mouseY, button))
-            {
-                ret = true;
-            }
-        }
-
-        return ret;
+        e.setIsHandled(contentScrollbarControl.scroll(e.scroll));
     }
 
     @Override
-    public boolean mouseScrolled(int mouseX, int mouseY, double scroll)
+    public void controlKeyPressed(@Nonnull KeyEvent e)
     {
-        if (contentControl.isMouseOver(mouseX, mouseY) || contentScrollbarControl.isMouseOver((int) mouseX, (int) mouseY))
+        if (!nameTextFieldControl.isFocused() && GuiUtil.isCloseInventoryKey(e.keyCode))
         {
-            if (contentScrollbarControl.scroll(scroll))
-            {
-                return true;
-            }
+            setIsVisible(false);
+
+            e.setIsHandled(true);
         }
-
-        return false;
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int mods)
-    {
-        if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_ESCAPE)
+        else if (e.keyCode == GLFW.GLFW_KEY_ENTER || e.keyCode == GLFW.GLFW_KEY_ESCAPE)
         {
             if (nameTextFieldControl.isFocused())
             {
                 nameTextFieldControl.setFocus(false);
 
-                return true;
+                e.setIsHandled(true);
             }
         }
         else
         {
-            nameTextFieldControl.keyPressed(keyCode, scanCode, mods);
+            e.setIsHandled(nameTextFieldControl.keyPressed(e.keyCode, e.scanCode, e.modifiers));
         }
-
-        return false;
     }
 
     @Override
-    public boolean charTyped(char character, int keyCode)
+    public void controlCharTyped(@Nonnull CharEvent e)
     {
-        return nameTextFieldControl.charTyped(character, keyCode);
+        e.setIsHandled(nameTextFieldControl.charTyped(e.character, e.keyCode));
+
+        if (!e.isHandled())
+        {
+            if (GuiUtil.isCloseInventoryKey(e.keyCode))
+            {
+                setIsVisible(false);
+
+                e.setIsHandled(true);
+            }
+        }
     }
 }

@@ -27,17 +27,9 @@ public class EquipmentScreen extends TabbedContainerScreen<EquipmentContainer>
     }
 
     @Override
-    protected void init()
-    {
-        super.init();
-    }
-
-    @Override
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-
-        renderTooltip(matrixStack, mouseX, mouseY);
     }
 
     @Override

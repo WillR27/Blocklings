@@ -6,6 +6,7 @@ import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiTextures;
+import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -55,7 +56,7 @@ public class TaskStateControl extends Control
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         if (taskControl.task.isConfigured())
         {
@@ -90,9 +91,25 @@ public class TaskStateControl extends Control
     }
 
     @Override
-    public boolean mouseReleased(int mouseX, int mouseY, int button)
+    public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
-        if (isPressed() && isMouseOver(mouseX, mouseY))
+        if (taskControl.task.isConfigured())
+        {
+            if (taskControl.task.getGoal().getState() == BlocklingGoal.State.DISABLED)
+            {
+                screen.renderTooltip(matrixStack, new BlocklingsTranslationTextComponent("task.ui.enable"), mouseX, mouseY);
+            }
+            else
+            {
+                screen.renderTooltip(matrixStack, new BlocklingsTranslationTextComponent("task.ui.disable"), mouseX, mouseY);
+            }
+        }
+    }
+
+    @Override
+    public void controlMouseReleased(@Nonnull MouseButtonEvent e)
+    {
+        if (isPressed())
         {
             if (taskControl.task.isConfigured())
             {
@@ -107,6 +124,6 @@ public class TaskStateControl extends Control
             }
         }
 
-        return super.mouseReleased(mouseX, mouseY, button);
+        e.setIsHandled(true);
     }
 }

@@ -1,12 +1,13 @@
-package com.willr27.blocklings.gui.controls.tasks;
+package com.willr27.blocklings.gui.controls.tasks.config.configs;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.willr27.blocklings.gui.controls.tasks.config.ConfigControl;
+import com.willr27.blocklings.gui.controls.tasks.config.TaskConfigContainerControl;
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
-import com.willr27.blocklings.gui.IControl;
 import com.willr27.blocklings.gui.controls.TexturedControl;
 import com.willr27.blocklings.gui.controls.common.ScrollbarControl;
 import com.willr27.blocklings.task.Task;
@@ -43,7 +44,7 @@ public class TaskTypeConfigControl extends ConfigControl
      * The parent task config control.
      */
     @Nonnull
-    private final TaskConfigControl taskConfigGui;
+    private final TaskConfigContainerControl taskConfigGui;
 
     /**
      * The list of all the task type controls.
@@ -60,7 +61,7 @@ public class TaskTypeConfigControl extends ConfigControl
      * @param height the height.
      * @param contentScrollbarControl the scrollbar control to use.
      */
-    public TaskTypeConfigControl(@Nonnull TaskConfigControl parentTaskConfigControl, @Nonnull Task task, int x, int y, int width, int height, @Nonnull ScrollbarControl contentScrollbarControl)
+    public TaskTypeConfigControl(@Nonnull TaskConfigContainerControl parentTaskConfigControl, @Nonnull Task task, int x, int y, int width, int height, @Nonnull ScrollbarControl contentScrollbarControl)
     {
         super(parentTaskConfigControl, x, y, width, height);
         this.contentScrollbarControl = contentScrollbarControl;
@@ -75,36 +76,9 @@ public class TaskTypeConfigControl extends ConfigControl
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void preRender(int mouseX, int mouseY, float partialTicks)
     {
         updateTaskTypePositions();
-
-        for (TaskTypeControl taskTypeControl : taskTypeControls)
-        {
-            taskTypeControl.render(matrixStack, mouseX, mouseY);
-        }
-    }
-
-    /**
-     * Renders the tooltips.
-     *
-     * @param matrixStack the matrix stack.
-     * @param mouseX the mouse x position.
-     * @param mouseY the mouse y potision.
-     */
-    public void renderTooltips(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
-    {
-        TaskTypeControl hoveredTaskTypeControl = getHoveredTypeControl(mouseX, mouseY);
-
-        if (hoveredTaskTypeControl != null)
-        {
-            List<IReorderingProcessor> text = new ArrayList<>();
-            text.add(new StringTextComponent(TextFormatting.GOLD + hoveredTaskTypeControl.taskType.name.getString()).getVisualOrderText());
-            text.add(new StringTextComponent("").getVisualOrderText());
-            text.addAll(GuiUtil.splitText(font, hoveredTaskTypeControl.taskType.desc.getString(), 150).stream().map(s -> new StringTextComponent(s).getVisualOrderText()).collect(Collectors.toList()));
-
-            screen.renderTooltip(matrixStack, text, mouseX, mouseY);
-        }
     }
 
     /**
@@ -112,7 +86,7 @@ public class TaskTypeConfigControl extends ConfigControl
      */
     private void updateTaskTypePositions()
     {
-        contentScrollbarControl.isDisabled = true;
+        contentScrollbarControl.setIsDisabled(true);
 
         for (int i = 0; i < taskTypeControls.size(); i++)
         {
@@ -128,7 +102,7 @@ public class TaskTypeConfigControl extends ConfigControl
 
             if (taskControlsHeightDif > 0)
             {
-                contentScrollbarControl.isDisabled = false;
+                contentScrollbarControl.setIsDisabled(false);
 
                 for (int i = 0; i < taskTypeControls.size(); i++)
                 {
@@ -139,38 +113,12 @@ public class TaskTypeConfigControl extends ConfigControl
         }
     }
 
-    @Override
-    public boolean mouseClicked(int mouseX, int mouseY, int button)
-    {
-        if (taskTypeControls.stream().map(taskTypeControl -> taskTypeControl.mouseClicked((int) mouseX, (int) mouseY, button)).filter(b -> b).findAny().isPresent())
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean mouseReleased(int mouseX, int mouseY, int button)
-    {
-        boolean ret = false;
-
-        if (taskTypeControls.stream().map(taskTypeControl -> taskTypeControl.mouseReleased((int) mouseX, (int) mouseY, button)).filter(b -> b).findAny().isPresent())
-        {
-            taskConfigGui.recreateTabs();
-
-            ret = true;
-        }
-
-        return ret;
-    }
-
     /**
-     * @return the task type control underneath the mouse, else null.
+     * Called when the task type changes.
      */
-    private TaskTypeControl getHoveredTypeControl(int mouseX, int mouseY)
+    public void onTaskTypeChanged()
     {
-        return taskTypeControls.stream().filter(taskTypeControl -> taskTypeControl.isMouseOver(mouseX, mouseY)).findFirst().orElse(null);
+        taskConfigGui.recreateTabs();
     }
 
     /**
@@ -201,6 +149,12 @@ public class TaskTypeConfigControl extends ConfigControl
         private static final GuiTexture RADIO_SELECTED_TEXTURE = new GuiTexture(GuiTextures.TASKS, 196, 166, 20, HEIGHT);
 
         /**
+         * The parent config control.
+         */
+        @Nonnull
+        private final TaskTypeConfigControl taskTypeConfigControl;
+
+        /**
          * The underlying task.
          */
         @Nonnull
@@ -212,17 +166,25 @@ public class TaskTypeConfigControl extends ConfigControl
         @Nonnull
         public final TaskType taskType;
 
-        public TaskTypeControl(@Nonnull IControl parent, @Nonnull Task task, @Nonnull TaskType taskType, int x, int y)
+        /**
+         * @param taskTypeConfigControl the parent control.
+         * @param task the underlying task.
+         * @param taskType the task type to display.
+         * @param x the x position.
+         * @param y the y position.
+         */
+        public TaskTypeControl(@Nonnull TaskTypeConfigControl taskTypeConfigControl, @Nonnull Task task, @Nonnull TaskType taskType, int x, int y)
         {
-            super(parent, x, y, new GuiTexture(GuiTextures.TASK_CONFIGURE, 0, 166, WIDTH, HEIGHT));
+            super(taskTypeConfigControl, x, y, new GuiTexture(GuiTextures.TASK_CONFIGURE, 0, 166, WIDTH, HEIGHT));
+            this.taskTypeConfigControl = taskTypeConfigControl;
             this.task = task;
             this.taskType = taskType;
         }
 
         @Override
-        public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+        public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
         {
-            super.render(matrixStack, mouseX, mouseY);
+            super.render(matrixStack, mouseX, mouseY, partialTicks);
 
             renderTexture(matrixStack, taskType.texture);
 
@@ -241,16 +203,26 @@ public class TaskTypeConfigControl extends ConfigControl
         }
 
         @Override
-        public boolean mouseReleased(int mouseX, int mouseY, int button)
+        public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
         {
-            if (isPressed() && isMouseOver(mouseX, mouseY))
+            List<IReorderingProcessor> text = new ArrayList<>();
+            text.add(new StringTextComponent(TextFormatting.GOLD + taskType.name.getString()).getVisualOrderText());
+            text.add(new StringTextComponent("").getVisualOrderText());
+            text.addAll(GuiUtil.splitText(font, taskType.desc.getString(), 150).stream().map(s -> new StringTextComponent(s).getVisualOrderText()).collect(Collectors.toList()));
+
+            screen.renderTooltip(matrixStack, text, mouseX, mouseY);
+        }
+
+        @Override
+        public void controlMouseReleased(@Nonnull MouseButtonEvent e)
+        {
+            if (isPressed())
             {
                 task.setType(taskType);
-
-                return true;
+                taskTypeConfigControl.onTaskTypeChanged();
             }
 
-            return super.mouseReleased(mouseX, mouseY, button);
+            e.setIsHandled(true);
         }
     }
 }

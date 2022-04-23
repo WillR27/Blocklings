@@ -125,6 +125,8 @@ public abstract class BlocklingMessage<T extends BlocklingMessage<T>> implements
             {
                 sendToAllClients(blockling.level.players().stream().filter(serverPlayer -> serverPlayer.getUUID().equals(clientPlayerId)).collect(Collectors.toList()));
             }
+
+            ctx.get().setPacketHandled(true);
         });
     }
 

@@ -1,10 +1,10 @@
-package com.willr27.blocklings.gui.controls.tasks;
+package com.willr27.blocklings.gui.controls.tasks.config.configs;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.gui.IControl;
-import com.willr27.blocklings.gui.controls.tasks.EntryControl;
 import com.willr27.blocklings.gui.controls.common.ScrollbarControl;
-import com.willr27.blocklings.gui.controls.tasks.ConfigControl;
+import com.willr27.blocklings.gui.controls.tasks.config.EntryControl;
+import com.willr27.blocklings.gui.controls.tasks.config.ConfigControl;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -64,27 +64,11 @@ public class WhitelistConfigControl extends ConfigControl
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         updateEntryPositions();
-
-        for (EntryControl entryControl : entryControls)
-        {
-            entryControl.render(matrixStack, mouseX, mouseY);
-        }
-    }
-
-    @Override
-    public void renderTooltips(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
-    {
-        EntryControl hoveredEntryControl = getHoveredEntryControl(mouseX, mouseY);
-
-        if (hoveredEntryControl != null)
-        {
-            hoveredEntryControl.renderTooltip(matrixStack, mouseX, mouseY);
-        }
     }
 
     private void updateEntryPositions()
     {
-        contentScrollbarControl.isDisabled = true;
+        contentScrollbarControl.setIsDisabled(true);
 
         for (int i = 0; i < entryControls.size(); i++)
         {
@@ -100,7 +84,7 @@ public class WhitelistConfigControl extends ConfigControl
 
             if (taskControlsHeightDif > 0)
             {
-                contentScrollbarControl.isDisabled = false;
+                contentScrollbarControl.setIsDisabled(false);
 
                 for (int i = 0; i < entryControls.size(); i++)
                 {
@@ -109,35 +93,5 @@ public class WhitelistConfigControl extends ConfigControl
                 }
             }
         }
-    }
-
-    @Override
-    public boolean mouseClicked(int mouseX, int mouseY, int button)
-    {
-        if (entryControls.stream().filter(entryControl -> entryControl.mouseClicked((int) mouseX, (int) mouseY, button)).findFirst().isPresent())
-        {
-            return true;
-        }
-
-        return super.mouseClicked(mouseX, mouseY, button);
-    }
-
-    @Override
-    public boolean mouseReleased(int mouseX, int mouseY, int button)
-    {
-        if (entryControls.stream().filter(entryControl -> entryControl.mouseReleased((int) mouseX, (int) mouseY, button)).findFirst().isPresent())
-        {
-            return true;
-        }
-
-        return super.mouseReleased(mouseX, mouseY, button);
-    }
-
-    /**
-     * @return the entry control under the mouse.
-     */
-    private EntryControl getHoveredEntryControl(int mouseX, int mouseY)
-    {
-        return entryControls.stream().filter(entryControl -> entryControl.isMouseOver(mouseX, mouseY)).findFirst().orElse(null);
     }
 }

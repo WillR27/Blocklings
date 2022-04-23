@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.util.BlocklingsResourceLocation;
+import javafx.util.Pair;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -28,6 +29,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @OnlyIn(Dist.CLIENT)
 public class GuiUtil
@@ -262,6 +264,76 @@ public class GuiUtil
         minScissorY = window.getHeight() - (maxY * scale);
         maxScissorX = maxX * scale;
         maxScissorY = window.getHeight() - (minY * scale);
+    }
+
+    private static class ScissorBounds
+    {
+        public int x, y, width, height;
+
+        public ScissorBounds(int x, int y, int width, int height)
+        {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (obj instanceof ScissorBounds)
+            {
+                ScissorBounds scissorBounds = (ScissorBounds) obj;
+
+                return x == scissorBounds.x && y == scissorBounds.y && width == scissorBounds.width && height == scissorBounds.height;
+            }
+
+            return super.equals(obj);
+        }
+    }
+
+    private static List<ScissorBounds> stackedScissors = new ArrayList<>();
+
+    public static void clearScissorBounds()
+    {
+        stackedScissors.clear();
+        disableScissor();
+    }
+
+    public static void addScissorBounds(int x, int y, int width, int height)
+    {
+        stackedScissors.add(new ScissorBounds(x, y, width, height));
+    }
+
+    public static void removeScissorBounds(int x, int y, int width, int height)
+    {
+        ScissorBounds scissorBounds1 = stackedScissors.stream().filter(scissorBounds -> scissorBounds.equals(new ScissorBounds(x, y, width, height))).findFirst().orElse(null);
+        stackedScissors.remove(scissorBounds1);
+    }
+
+    public static void enableStackedScissor()
+    {
+        int minX = 0;
+        int minY = 0;
+        int maxX = 10000;
+        int maxY = 10000;
+
+        for (ScissorBounds bounds : stackedScissors)
+        {
+            minX = Math.max(minX, bounds.x);
+            minY = Math.max(minY, bounds.y);
+            maxX = Math.min(maxX, bounds.x + bounds.width);
+            maxY = Math.min(maxY, bounds.y + bounds.height);
+        }
+
+        if (minX < maxX && minY < maxY)
+        {
+            scissor(minX, minY, maxX - minX, maxY - minY);
+        }
+        else
+        {
+            scissor(0, 0, 0, 0);
+        }
     }
 
     public static void scissor(int x, int y, int width, int height)

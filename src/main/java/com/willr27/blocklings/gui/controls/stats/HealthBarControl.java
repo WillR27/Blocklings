@@ -50,7 +50,7 @@ public class HealthBarControl extends Control
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         RenderSystem.color3f(0.5f, 0.5f, 0.5f);
         renderTexture(matrixStack, BACKGROUND_TEXTURE);
@@ -63,13 +63,14 @@ public class HealthBarControl extends Control
         int b = 50;
         String healthText = blockling.getStats().getHealth() + "/" + blockling.getStats().getMaxHealth();
         renderCenteredText(matrixStack, healthText, -width / 2, -1, false, (r << 16) + (g << 8) + b);
+    }
 
-        if (isMouseOver(mouseX, mouseY))
-        {
-            List<ITextComponent> tooltip = StatsScreen.createModifiableFloatAttributeTooltip(blockling.getStats().maxHealth, TextFormatting.DARK_GREEN);
-            tooltip.add(0, new StringTextComponent(TextFormatting.GOLD + new Attribute.AttributeTranslationTextComponent("health.name").getString()));
+    @Override
+    public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+    {
+        List<ITextComponent> tooltip = StatsScreen.createModifiableFloatAttributeTooltip(blockling.getStats().maxHealth, TextFormatting.DARK_GREEN);
+        tooltip.add(0, new StringTextComponent(TextFormatting.GOLD + new Attribute.AttributeTranslationTextComponent("health.name").getString()));
 
-            screen.renderTooltip(matrixStack, tooltip.stream().map(ITextComponent::getVisualOrderText).collect(Collectors.toList()), mouseX, mouseY);
-        }
+        screen.renderTooltip(matrixStack, tooltip.stream().map(ITextComponent::getVisualOrderText).collect(Collectors.toList()), mouseX, mouseY);
     }
 }

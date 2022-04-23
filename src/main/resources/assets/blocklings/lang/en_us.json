@@ -29,6 +29,11 @@
   "blocklings.tab.woodcutting": "Woodcutting",
   "blocklings.tab.farming": "Farming",
 
+  "blocklings.task.ui.configure": "Configure",
+  "blocklings.task.ui.disable": "Disable",
+  "blocklings.task.ui.enable": "Enable",
+  "blocklings.task.ui.add": "Add",
+  "blocklings.task.ui.remove": "Remove",
   "blocklings.task.null.name": "Blank",
   "blocklings.task.null.desc": "Click the configure button to set up this task.",
   "blocklings.task.sit.name": "Sit",

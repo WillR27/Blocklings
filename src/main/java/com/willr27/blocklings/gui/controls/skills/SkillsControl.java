@@ -1,12 +1,14 @@
 package com.willr27.blocklings.gui.controls.skills;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.IControl;
+import com.willr27.blocklings.gui.screens.SkillsScreen;
 import com.willr27.blocklings.skill.Skill;
 import com.willr27.blocklings.skill.SkillGroup;
 import com.willr27.blocklings.skill.info.SkillGuiInfo;
@@ -47,6 +49,12 @@ public class SkillsControl extends Control
      * The current y offset of the background.
      */
     private final int backgroundOffsetY;
+
+    /**
+     * The parent skills screen.
+     */
+    @Nonnull
+    private final SkillsScreen skillsScreen;
 
     /**
      * The skill group to display.
@@ -148,11 +156,11 @@ public class SkillsControl extends Control
     /**
      * The gui used to confirm buying a skill.
      */
-    @Nullable
+    @Nonnull
     public BuySkillConfirmationControl skillBuyConfirmationControl;
 
     /**
-     * @param parent the parent control.
+     * @param skillsScreen the skillsScreen control.
      * @param blockling the blockling.
      * @param group the skill group to display.
      * @param minimisedX the x position when minimised.
@@ -160,9 +168,10 @@ public class SkillsControl extends Control
      * @param minimisedWidth the width when minimised.
      * @param minimisedHeight the height when minimised.
      */
-    public SkillsControl(@Nonnull IControl parent, @Nonnull BlocklingEntity blockling, @Nonnull SkillGroup group, int minimisedX, int minimisedY, int minimisedWidth, int minimisedHeight)
+    public SkillsControl(@Nonnull SkillsScreen skillsScreen, @Nonnull BlocklingEntity blockling, @Nonnull SkillGroup group, int minimisedX, int minimisedY, int minimisedWidth, int minimisedHeight)
     {
-        super(parent, minimisedX, minimisedY, minimisedWidth, minimisedHeight);
+        super(skillsScreen, minimisedX, minimisedY, minimisedWidth, minimisedHeight);
+        this.skillsScreen = skillsScreen;
         this.group = group;
         this.minimisedX = minimisedX;
         this.minimisedY = minimisedY;
@@ -178,6 +187,9 @@ public class SkillsControl extends Control
         {
             skillControls.add(new SkillControl(this, skill));
         }
+
+        skillBuyConfirmationControl = new BuySkillConfirmationControl(this, skillControls.get(0), GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("skill.buy_confirmation", "").getString(), width < 200 ? width - 10 : width - 50), width, height, width, height);
+        skillBuyConfirmationControl.setIsVisible(false);
 
         for (SkillControl skillControl : skillControls)
         {
@@ -196,12 +208,20 @@ public class SkillsControl extends Control
      */
     public void maximise()
     {
+        SkillsScreen skillsScreen = (SkillsScreen) getScreen();
+        skillsScreen.tabbedControl.setIsVisible(false);
+
         setX(-parent.getScreenX() - 10);
         setY(-parent.getScreenY() - 10);
         resize(screen.width + 20, screen.height + 20, scale);
 
         moveOffsetX = (int) (((width - SKILL_SIZE) / 2) / scale);
         moveOffsetY = (int) (((height - SKILL_SIZE) / 2) / scale);
+
+        if (skillsScreen.borderControl != null)
+        {
+            skillsScreen.borderControl.setIsVisible(false);
+        }
     }
 
     /**
@@ -209,12 +229,20 @@ public class SkillsControl extends Control
      */
     public void minimise()
     {
+        SkillsScreen skillsScreen = (SkillsScreen) getScreen();
+        skillsScreen.tabbedControl.setIsVisible(true);
+
         setX(minimisedX);
         setY(minimisedY);
         resize(minimisedWidth, minimisedHeight, scale);
 
         moveOffsetX = (int) (((width - SKILL_SIZE) / 2) / scale);
         moveOffsetY = (int) (((height - SKILL_SIZE) / 2) / scale);
+
+        if (skillsScreen.borderControl != null)
+        {
+            skillsScreen.borderControl.setIsVisible(true);
+        }
     }
 
     /**
@@ -234,15 +262,10 @@ public class SkillsControl extends Control
 
         this.tilesX = width / tileSize;
         this.tilesY = height / tileSize;
-
-        if (skillBuyConfirmationControl != null && !skillBuyConfirmationControl.closed)
-        {
-            skillBuyConfirmationControl = new BuySkillConfirmationControl(skillBuyConfirmationControl);
-        }
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         matrixStack.pushPose();
         matrixStack.scale(scale, scale, 1.0f);
@@ -253,11 +276,6 @@ public class SkillsControl extends Control
         renderSkills(matrixStack, mouseX, mouseY);
 
         matrixStack.popPose();
-
-        if (skillBuyConfirmationControl != null && !skillBuyConfirmationControl.closed)
-        {
-            skillBuyConfirmationControl.render(matrixStack, mouseX, mouseY);
-        }
 
         prevMouseX = mouseX;
         prevMouseY = mouseY;
@@ -324,10 +342,10 @@ public class SkillsControl extends Control
                 int tileTextureX = (rand % TILE_SIZE) * TILE_SIZE;
                 int tileTextureY = (rand / TILE_SIZE) * TILE_SIZE;
 
-                GL11.glEnable(GL11.GL_SCISSOR_TEST);
-                GuiUtil.scissor(getScreenX(), getScreenY(), width, height);
+                GuiUtil.addScissorBounds(getScreenX(), getScreenY(), width, height);
+                GuiUtil.enableStackedScissor();
                 blit(matrixStack, x, y, tileTextureX, tileTextureY, TILE_SIZE, TILE_SIZE);
-                GL11.glDisable(GL11.GL_SCISSOR_TEST);
+                GuiUtil.removeScissorBounds(getScreenX(), getScreenY(), width, height);
             }
         }
     }
@@ -341,8 +359,6 @@ public class SkillsControl extends Control
      */
     private void renderSkills(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
-        enableScissor();
-
         GuiUtil.bindTexture(GuiTextures.SKILLS_WIDGETS);
 
         int x = (int) (getScreenX() / scale) + moveOffsetX;
@@ -365,122 +381,41 @@ public class SkillsControl extends Control
             skillControl.renderParentPathForegrounds(matrixStack);
         }
 
-        for (SkillControl skillControl : skillControls)
-        {
-            boolean isHover = false;
-
-            if ((skillBuyConfirmationControl == null || skillBuyConfirmationControl.closed) && isMouseOver(mouseX, mouseY))
-            {
-                if (skillControl.isMouseOver(mouseX, mouseY, scale))
-                {
-                    isHover = true;
-                }
-            }
-
-            if (isHover)
-            {
-                matrixStack.pushPose();
-                matrixStack.translate(0.0f, 0.0f, 20.0f);
-                disableScissor();
-
-                skillControl.renderHover(matrixStack);
-
-                enableScissor();
-                matrixStack.popPose();
-            }
-            else
-            {
-                skillControl.render(matrixStack);
-            }
-        }
-
-        disableScissor();
-
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int mods)
+    public void controlMouseClicked(@Nonnull MouseButtonEvent e)
     {
-        if (skillBuyConfirmationControl != null && !skillBuyConfirmationControl.closed)
-        {
-            if (skillBuyConfirmationControl.keyPressed(keyCode, scanCode, mods))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        dragStartX = e.mouseX;
+        dragStartY = e.mouseY;
+        mouseDown = true;
     }
 
     @Override
-    public boolean mouseClicked(int mouseX, int mouseY, int button)
+    public void globalMouseReleased(@Nonnull MouseButtonEvent e)
     {
-        if (skillBuyConfirmationControl != null && !skillBuyConfirmationControl.closed)
-        {
-            skillBuyConfirmationControl.mouseClicked(mouseX, mouseY, button);
-
-            return true;
-        }
-
-        if (isMouseOver(mouseX, mouseY))
-        {
-            dragStartX = mouseX;
-            dragStartY = mouseY;
-            mouseDown = true;
-
-            return true;
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean mouseReleased(int mouseX, int mouseY, int button)
-    {
-        boolean result = false;
-
-        if (skillBuyConfirmationControl!= null && !skillBuyConfirmationControl.closed)
-        {
-            if (skillBuyConfirmationControl.mouseReleased(mouseX, mouseY, button))
-            {
-                result = true;
-            }
-        }
-
-        if (!dragging && !result)
-        {
-            if (isMouseOver(mouseX, mouseY))
-            {
-                if (skillControls.stream().anyMatch(skillControl -> skillControl.mouseReleased(mouseX, mouseY, button)))
-                {
-                    result = true;
-                }
-            }
-        }
-
         mouseDown = false;
         dragging = false;
-
-        return result;
     }
 
     /**
      * Opens the buy skill confirmation dialog for the given skill.
      *
-     * @param skill the skill attempting to be bought.
+     * @param skillControl the skill attempting to be bought.
      */
-    public void openConfirmationDialog(@Nonnull Skill skill)
+    public void openConfirmationDialog(@Nonnull SkillControl skillControl)
     {
-        String name = TextFormatting.LIGHT_PURPLE + skill.info.general.name.getString() + TextFormatting.WHITE;
-        skillBuyConfirmationControl = new BuySkillConfirmationControl(this, skill, GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("skill.buy_confirmation", name).getString(), width < 200 ? width - 10 : width - 50), width, height, width, height);
+        removeChild(skillBuyConfirmationControl);
+        String name = TextFormatting.LIGHT_PURPLE + skillControl.skill.info.general.name.getString() + TextFormatting.WHITE;
+        skillBuyConfirmationControl = new BuySkillConfirmationControl(this, skillControl, GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("skill.buy_confirmation", name).getString(), width < 200 ? width - 10 : width - 50), width, height, width, height);
     }
 
     @Override
-    public boolean mouseScrolled(int mouseX, int mouseY, double scroll)
+    public void controlMouseScrolled(@Nonnull MouseScrollEvent e)
     {
-        int localMouseX = toLocalX(mouseX);
-        int localMouseY = toLocalY(mouseY);
+        int localMouseX = toLocalX(e.mouseX);
+        int localMouseY = toLocalY(e.mouseY);
 
         int midMoveX = (int) (moveOffsetX + (SKILL_SIZE / 2 * scale));
         int midMoveY = (int) (moveOffsetY + (SKILL_SIZE / 2 * scale));
@@ -495,7 +430,7 @@ public class SkillsControl extends Control
         int difMoveY2 = (int) ((mouseMoveY - midMoveY) / scale / scale);
 
         // Zoom in
-        if (scroll > 0)
+        if (e.scroll > 0)
         {
             scale *= 2.0f;
 
@@ -531,6 +466,6 @@ public class SkillsControl extends Control
 
         resize(width, height, scale);
 
-        return true;
+        e.setIsHandled(true);
     }
 }

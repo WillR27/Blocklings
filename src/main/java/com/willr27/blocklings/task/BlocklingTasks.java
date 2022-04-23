@@ -2,7 +2,6 @@ package com.willr27.blocklings.task;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.goal.BlocklingGoal;
-import com.willr27.blocklings.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.goal.goals.*;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiTextures;
@@ -10,6 +9,8 @@ import com.willr27.blocklings.network.messages.TaskCreateMessage;
 import com.willr27.blocklings.network.messages.TaskRemoveMessage;
 import com.willr27.blocklings.network.messages.TaskTypeIsUnlockedMessage;
 import com.willr27.blocklings.util.PacketBufferUtils;
+import com.willr27.blocklings.util.event.Event;
+import com.willr27.blocklings.util.event.EventHandler;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.GoalSelector;
@@ -19,6 +20,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -66,7 +68,20 @@ public class BlocklingTasks
 
     private TaskList prioritisedTasks = new TaskList();
 
-    public BlocklingTasks(BlocklingEntity blockling)
+    /**
+     * The event handler for task create events.
+     */
+    public final EventHandler<CreateTaskEvent> onCreateTask = new EventHandler<>();
+
+    /**
+     * The event handler for task remove events.
+     */
+    public final EventHandler<RemoveTaskEvent> onRemoveTask = new EventHandler<>();
+
+    /**
+     * @param blockling the associated blockling.
+     */
+    public BlocklingTasks(@Nonnull BlocklingEntity blockling)
     {
         this.blockling = blockling;
         this.goalSelector = blockling.goalSelector;
@@ -288,6 +303,8 @@ public class BlocklingTasks
 
             prioritisedTasks.add(task);
 
+            onCreateTask.handle(new CreateTaskEvent(task));
+
             reapplyGoals();
         }
 
@@ -307,6 +324,8 @@ public class BlocklingTasks
         Task task = getTask(id);
 
         prioritisedTasks.remove(task);
+
+        onRemoveTask.handle(new RemoveTaskEvent(task));
 
         reapplyGoals();
 
@@ -405,6 +424,46 @@ public class BlocklingTasks
             int oldIndex = indexOf(task2);
             set(indexOf(task1), task2);
             set(oldIndex, task1);
+        }
+    }
+
+    /**
+     * An event that occurs when a task is created.
+     */
+    public static class CreateTaskEvent extends Event
+    {
+        /**
+         * The task that was created.
+         */
+        @Nonnull
+        public final Task task;
+
+        /**
+         * @param task the task that was created.
+         */
+        public CreateTaskEvent(@Nonnull Task task)
+        {
+            this.task = task;
+        }
+    }
+
+    /**
+     * An event that occurs when a task is removed.
+     */
+    public static class RemoveTaskEvent extends Event
+    {
+        /**
+         * The task that was removed.
+         */
+        @Nonnull
+        public final Task task;
+
+        /**
+         * @param task the task that was removed.
+         */
+        public RemoveTaskEvent(@Nonnull Task task)
+        {
+            this.task = task;
         }
     }
 }

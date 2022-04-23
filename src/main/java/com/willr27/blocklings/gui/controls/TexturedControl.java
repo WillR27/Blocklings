@@ -32,8 +32,9 @@ public class TexturedControl extends Control
         super(parent, x, y, texture.width, texture.height);
         this.texture = texture;
     }
+
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         renderTexture(matrixStack, texture);
     }

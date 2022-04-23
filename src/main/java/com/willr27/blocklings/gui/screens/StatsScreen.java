@@ -129,38 +129,38 @@ public class StatsScreen extends TabbedScreen
         super.init();
 
         removeChild(healthBar);
-        healthBar = new HealthBarControl(this, blockling, 20, 36);
+        healthBar = new HealthBarControl(this, blockling, contentLeft + 20, contentTop + 36);
 
         removeChild(attackControl);
-        attackControl = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.attack.name"), ICON_X_OFFSET, TOP_ICON_Y, false, 60, true, blockling);
+        attackControl = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.attack.name"), contentLeft + ICON_X_OFFSET, contentTop + TOP_ICON_Y, false, 60, true, blockling);
         attackControl.addStat(() -> blockling.getEquipment().isAttackingWith(BlocklingHand.MAIN), () -> stats.mainHandAttackDamage.displayStringValueFunction.apply(stats.mainHandAttackDamage.getValue()), () -> createModifiableFloatAttributeTooltip(stats.mainHandAttackDamage, TextFormatting.DARK_RED), 12);
         attackControl.addStat(() -> blockling.getEquipment().isAttackingWith(BlocklingHand.OFF), () -> stats.offHandAttackDamage.displayStringValueFunction.apply(stats.offHandAttackDamage.getValue()), () -> createModifiableFloatAttributeTooltip(stats.offHandAttackDamage, TextFormatting.DARK_RED), 10);
         attackControl.addStat(() -> true, () -> stats.attackSpeed.displayStringValueFunction.apply(stats.attackSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.attackSpeed, TextFormatting.DARK_PURPLE),11);
 
         removeChild(defenceControl);
-        defenceControl = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.defence.name"), ICON_X_OFFSET, BOTTOM_ICON_Y, false, 60, true, blockling);
+        defenceControl = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.defence.name"), contentLeft + ICON_X_OFFSET, contentTop + BOTTOM_ICON_Y, false, 60, true, blockling);
         defenceControl.addStat(() -> true, () -> stats.armour.displayStringValueFunction.apply(stats.armour.getValue()), () -> createModifiableFloatAttributeTooltip(stats.armour, TextFormatting.DARK_AQUA), 5);
         defenceControl.addStat(() -> true, () -> stats.armourToughness.displayStringValueFunction.apply(stats.armourToughness.getValue()), () -> createModifiableFloatAttributeTooltip(stats.armourToughness, TextFormatting.AQUA), 6);
         defenceControl.addStat(() -> true, () -> stats.knockbackResistance.displayStringValueFunction.apply(stats.knockbackResistance.getValue()), () -> createModifiableFloatAttributeTooltip(stats.knockbackResistance, TextFormatting.YELLOW), 7);
 
         removeChild(gatheringControl);
-        gatheringControl = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.gathering.name"), TabbedControl.CONTENT_WIDTH - ICON_X_OFFSET - EnumeratingStatControl.ICON_SIZE, TOP_ICON_Y, true, 60, true, blockling);
+        gatheringControl = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.gathering.name"), contentLeft + TabbedControl.CONTENT_WIDTH - ICON_X_OFFSET - EnumeratingStatControl.ICON_SIZE, contentTop + TOP_ICON_Y, true, 60, true, blockling);
         gatheringControl.addStat(() -> true, () -> stats.miningSpeed.displayStringValueFunction.apply(stats.miningSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.miningSpeed, TextFormatting.BLUE), 1);
         gatheringControl.addStat(() -> true, () -> stats.woodcuttingSpeed.displayStringValueFunction.apply(stats.woodcuttingSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.woodcuttingSpeed, TextFormatting.DARK_GREEN), 2);
         gatheringControl.addStat(() -> true, () -> stats.farmingSpeed.displayStringValueFunction.apply(stats.farmingSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.farmingSpeed, TextFormatting.YELLOW), 3);
 
         removeChild(movementControl);
-        movementControl = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.movement.name"), TabbedControl.CONTENT_WIDTH - ICON_X_OFFSET - EnumeratingStatControl.ICON_SIZE, BOTTOM_ICON_Y, true, 60, true, blockling);
+        movementControl = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.movement.name"), contentLeft + TabbedControl.CONTENT_WIDTH - ICON_X_OFFSET - EnumeratingStatControl.ICON_SIZE, contentTop + BOTTOM_ICON_Y, true, 60, true, blockling);
         movementControl.addStat(() -> true, () -> stats.moveSpeed.displayStringValueFunction.apply(stats.moveSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.moveSpeed, TextFormatting.BLUE), 8);
 
         removeChild(combatLevelControl);
-        combatLevelControl = new LevelControl(this, BlocklingAttributes.Level.COMBAT, blockling, 15, 102);
+        combatLevelControl = new LevelControl(this, BlocklingAttributes.Level.COMBAT, blockling, contentLeft + 15, contentTop + 102);
         removeChild(miningLevelControl);
-        miningLevelControl = new LevelControl(this, BlocklingAttributes.Level.MINING, blockling, combatLevelControl.getX(), combatLevelControl.getY() + LEVEL_XP_GAP);
+        miningLevelControl = new LevelControl(this, BlocklingAttributes.Level.MINING, blockling, + combatLevelControl.getX(), combatLevelControl.getY() + LEVEL_XP_GAP);
         removeChild(woodcuttingLevelControl);
-        woodcuttingLevelControl = new LevelControl(this, BlocklingAttributes.Level.WOODCUTTING, blockling, combatLevelControl.getX(), miningLevelControl.getY() + LEVEL_XP_GAP);
+        woodcuttingLevelControl = new LevelControl(this, BlocklingAttributes.Level.WOODCUTTING, blockling, + combatLevelControl.getX(), miningLevelControl.getY() + LEVEL_XP_GAP);
         removeChild(farmingLevelControl);
-        farmingLevelControl = new LevelControl(this, BlocklingAttributes.Level.FARMING, blockling, combatLevelControl.getX(), woodcuttingLevelControl.getY() + LEVEL_XP_GAP);
+        farmingLevelControl = new LevelControl(this, BlocklingAttributes.Level.FARMING, blockling, + combatLevelControl.getX(), woodcuttingLevelControl.getY() + LEVEL_XP_GAP);
 
         nameField = new TextFieldControl(font, contentLeft + 11, contentTop + 11, 154, 14, new StringTextComponent(""))
         {
@@ -249,111 +249,50 @@ public class StatsScreen extends TabbedScreen
 
         GuiUtil.renderEntityOnScreen(centerX, centerY + 10, 35, centerX - mouseX, centerY - mouseY, blockling);
 
-        matrixStack.pushPose();
-        matrixStack.translate(0.0, 0.0, 100.0);
-
-        healthBar.render(matrixStack, mouseX, mouseY);
-
-        attackControl.render(matrixStack, mouseX, mouseY);
-        defenceControl.render(matrixStack, mouseX, mouseY);
-        gatheringControl.render(matrixStack, mouseX, mouseY);
-        movementControl.render(matrixStack, mouseX, mouseY);
-
-        combatLevelControl.render(matrixStack, mouseX, mouseY);
-        miningLevelControl.render(matrixStack, mouseX, mouseY);
-        woodcuttingLevelControl.render(matrixStack, mouseX, mouseY);
-        farmingLevelControl.render(matrixStack, mouseX, mouseY);
-
         nameField.render(matrixStack, mouseX, mouseY, partialTicks);
         RenderSystem.enableDepthTest();
 
-        matrixStack.popPose();
-
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-
-        attackControl.renderTooltip(matrixStack, mouseX, mouseY);
-        defenceControl.renderTooltip(matrixStack, mouseX, mouseY);
-        gatheringControl.renderTooltip(matrixStack, mouseX, mouseY);
-        movementControl.renderTooltip(matrixStack, mouseX, mouseY);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button)
+    public void globalMouseClicked(@Nonnull MouseButtonEvent e)
     {
-        mouseClickedNoHandle((int) mouseX, (int) mouseY, button);
-
-        if (nameField.mouseClicked(mouseX, mouseY, button))
-        {
-            return true;
-        }
-        else if (attackControl.mouseClicked((int) mouseX, (int) mouseY, button))
-        {
-            return true;
-        }
-        else if (defenceControl.mouseClicked((int) mouseX, (int) mouseY, button))
-        {
-            return true;
-        }
-        else if (gatheringControl.mouseClicked((int) mouseX, (int) mouseY, button))
-        {
-            return true;
-        }
-        else if (movementControl.mouseClicked((int) mouseX, (int) mouseY, button))
-        {
-            return true;
-        }
-
-        return super.mouseClicked(mouseX, mouseY, button);
+        nameField.mouseClicked(e.mouseX, e.mouseY, e.button);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button)
+    public void globalMouseReleased(@Nonnull MouseButtonEvent e)
     {
-        nameField.mouseReleased(mouseX, mouseY, button);
-
-        mouseReleasedNoHandle((int) mouseX, (int) mouseY, button);
-
-        return super.mouseReleased(mouseX, mouseY, button);
+        nameField.mouseReleased(e.mouseX, e.mouseY, e.button);
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int mods)
+    public void globalKeyPressed(@Nonnull KeyEvent e)
     {
-        if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_ESCAPE)
+        if (e.keyCode == GLFW.GLFW_KEY_ENTER || e.keyCode == GLFW.GLFW_KEY_ESCAPE)
         {
             if (nameField.isFocused())
             {
                 nameField.setFocus(false);
 
-                return true;
+                return;
             }
         }
         else
         {
-            nameField.keyPressed(keyCode, scanCode, mods);
+            nameField.keyPressed(e.keyCode, e.scanCode, e.modifiers);
         }
 
-        if (!nameField.isFocused() && GuiUtil.isCloseInventoryKey(keyCode))
+        if (!nameField.isFocused() && GuiUtil.isCloseInventoryKey(e.keyCode))
         {
             onClose();
-
-            return true;
         }
-
-        return super.keyPressed(keyCode, scanCode, scanCode);
     }
 
     @Override
-    public boolean charTyped(char character, int keyCode)
+    public void globalCharTyped(@Nonnull CharEvent e)
     {
-        nameField.charTyped(character, keyCode);
-
-        return super.charTyped(character, keyCode);
-    }
-
-    @Override
-    public boolean isPauseScreen()
-    {
-        return false;
+        nameField.charTyped(e.character, e.keyCode);
     }
 }

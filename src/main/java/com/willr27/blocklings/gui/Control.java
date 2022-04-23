@@ -2,6 +2,8 @@ package com.willr27.blocklings.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.willr27.blocklings.gui.controls.common.ScrollbarControl;
+import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
@@ -11,8 +13,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -43,7 +47,25 @@ public class Control extends AbstractGui implements IControl
      * The list of child controls.
      */
     @Nonnull
-    private final List<Control> children = new ArrayList<>();
+    protected final ArrayList<Control> children = new ArrayList<>();
+
+    /**
+     * The associated y-axis scrollbar control.
+     */
+    @Nullable
+    protected ScrollbarControl scrollbarControlY = null;
+
+    /**
+     * The background colour of the control.
+     */
+    @Nonnull
+    private Colour backgroundColour = new Colour(Color.white);
+
+    /**
+     * The foreground colour of the control.
+     */
+    @Nonnull
+    private Colour foregroundColour = new Colour(Color.white);
 
     /**
      * The x position relative to the parent.
@@ -54,6 +76,26 @@ public class Control extends AbstractGui implements IControl
      * The y position relative to the parent.
      */
     private int y;
+
+    /**
+     * The scroll offset in the x-axis.
+     */
+    private int scrollX;
+
+    /**
+     * The scroll offset in the y-axis.
+     */
+    private int scrollY;
+
+    /**
+     * The max scroll offset in the x-axis.
+     */
+    private int maxScrollX;
+
+    /**
+     * The max scroll offset in the y-axis.
+     */
+    private int maxScrollY;
 
     /**
      * The x position on the screen.
@@ -76,38 +118,84 @@ public class Control extends AbstractGui implements IControl
     public int height;
 
     /**
-     * Whether control is currently pressed.
+     * The padding of the control.
      */
-    private boolean isPressed = false;
+    private final Map<Side, Integer> padding = new HashMap<>(4);
 
     /**
-     * The default constructor.
+     * The margins of the control.
      */
-    @Deprecated
-    public Control()
-    {
-        this(null, 0, 0, 0, 0);
-    }
+    private final Map<Side, Integer> margins = new HashMap<>(4);
 
     /**
-     *
+     * Whether control is visible.
      */
-    @Deprecated
-    public Control(int screenX, int screenY, int width, int height)
-    {
-        this.parent = parent;
-        this.screen = Objects.requireNonNull(Minecraft.getInstance().screen);
-        this.font = Minecraft.getInstance().font;
-        this.screenX = screenX;
-        this.screenY = screenY;
-        this.width = width;
-        this.height = height;
+    private boolean isVisible = true;
 
-        if (parent != null)
-        {
-            parent.addChild(this);
-        }
-    }
+    /**
+     * Whether control is interactive.
+     */
+    private boolean isInteractive = true;
+
+    /**
+     * Whether control can be scrolled in the x-axis.
+     */
+    private boolean isScrollableX = false;
+
+    /**
+     * Whether control can be scrolled in the y-axis.
+     */
+    private boolean isScrollableY = false;
+
+    /**
+     * The event handler for hover events.
+     */
+    private final EventHandler<MouseEvent> onControlHover = new EventHandler<>();
+
+    /**
+     * The event handler for hover start events.
+     */
+    private final EventHandler<MouseEvent> onControlHoverStart = new EventHandler<>();
+
+    /**
+     * The event handler for hover stop events.
+     */
+    private final EventHandler<MouseEvent> onControlHoverStop = new EventHandler<>();
+
+    /**
+     * The event handler for mouse click events.
+     */
+    private final EventHandler<MouseButtonEvent> onControlMouseClicked = new EventHandler<>();
+
+    /**
+     * The event handler for mouse release events.
+     */
+    private final EventHandler<MouseButtonEvent> onControlMouseReleased = new EventHandler<>();
+
+    /**
+     * The event handler for mouse scroll events.
+     */
+    private final EventHandler<MouseScrollEvent> onControlMouseScrolled = new EventHandler<>();
+
+    /**
+     * The event handler for key pressed events.
+     */
+    private final EventHandler<KeyEvent> onControlKeyPressed = new EventHandler<>();
+
+    /**
+     * The event handler for key released events.
+     */
+    private final EventHandler<KeyEvent> onControlKeyReleased = new EventHandler<>();
+
+    /**
+     * The event handler for key held events.
+     */
+    private final EventHandler<KeyEvent> onControlKeyHeld = new EventHandler<>();
+
+    /**
+     * The event handler for char typed events.
+     */
+    private final EventHandler<CharEvent> onControlCharTyped = new EventHandler<>();
 
     /**
      * @param parent the parent control.
@@ -124,48 +212,43 @@ public class Control extends AbstractGui implements IControl
         this.width = width;
         this.height = height;
 
+        padding.put(Side.LEFT, 0);
+        padding.put(Side.TOP, 0);
+        padding.put(Side.RIGHT, 0);
+        padding.put(Side.BOTTOM, 0);
+
+        margins.put(Side.LEFT, 0);
+        margins.put(Side.TOP, 0);
+        margins.put(Side.RIGHT, 0);
+        margins.put(Side.BOTTOM, 0);
+
         setX(x);
         setY(y);
 
         parent.addChild(this);
+
+        setupEventHandlers();
     }
 
-    @Override
-    @Nonnull
-    public IControl getParent()
+    /**
+     * Removes the control from the parent.
+     */
+    public void remove()
     {
-        return parent;
-    }
-
-    @Override
-    @Nonnull
-    public List<Control> getChildren()
-    {
-        return new ArrayList<>(children);
-    }
-
-    @Override
-    public void addChild(@Nonnull Control control)
-    {
-        children.add(control);
-    }
-
-    @Override
-    public void removeChild(@Nullable Control control)
-    {
-        children.remove(control);
+        parent.removeChild(this);
     }
 
     /**
      * Renders the control.
-     *
      * @param matrixStack the current matrix stack.
      * @param mouseX the scaled mouse x position.
      * @param mouseY the scaled mouse y position.
+     * @param partialTicks the partial ticks.
      */
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+    @Override
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
-        // Leave blank as we might not actually want to do any rendering
+
     }
 
     /**
@@ -219,8 +302,48 @@ public class Control extends AbstractGui implements IControl
      */
     public void renderText(MatrixStack matrixStack, String text, int dx, int dy, boolean right, int colour)
     {
-        int bonusX = right ? -font.width(text) - dx : width + dx;
-        drawString(matrixStack, font, text, screenX + bonusX, screenY + dy, colour);
+        int bonusX = right ? -font.width(text) - dx : dx;
+        font.draw(matrixStack, text, screenX + bonusX, screenY + dy, colour);
+        RenderSystem.enableDepthTest(); // Apparently depth test gets turned off so turn it back on
+    }
+
+    /**
+     * Renders shadowed text.
+     *
+     * @param matrixStack the matrix stack.
+     * @param text the text to render.
+     * @param dx the x offset from the control's top left.
+     * @param dy the y offset from the control's top left.
+     * @param right whether to render from the right-hand side of the control.
+     * @param colour the colour of the text.
+     */
+    public void renderShadowedText(MatrixStack matrixStack, String text, int dx, int dy, boolean right, int colour)
+    {
+        int bonusX = right ? -font.width(text) - dx : dx;
+
+//        String shadowText = text;
+//        List<Integer> toRemove = new ArrayList<>();
+//
+//        for (int i = 0; i < shadowText.length(); i++)
+//        {
+//            byte[] bytes = shadowText.substring(i, i + 1).getBytes(StandardCharsets.UTF_8);
+//
+//            if (bytes[0] == -62 && bytes[1] == -89)
+//            {
+//                toRemove.add(i);
+//                toRemove.add(i + 1);
+//            };
+//        }
+//
+//        Collections.reverse(toRemove);
+//
+//        for (int i : toRemove)
+//        {
+//            shadowText = shadowText.substring(0, i) + shadowText.substring(i + 1);
+//        }
+//
+//        font.draw(matrixStack, shadowText, screenX + bonusX + 1, screenY + dy + 1, 0x222222);
+        font.draw(matrixStack, text, screenX + bonusX, screenY + dy, colour);
         RenderSystem.enableDepthTest(); // Apparently depth test gets turned off so turn it back on
     }
 
@@ -241,116 +364,82 @@ public class Control extends AbstractGui implements IControl
         RenderSystem.enableDepthTest(); // Apparently depth test gets turned off so turn it back on
     }
 
+    /**
+     * Resets the render colour back to white.
+     */
+    public void resetRenderColour()
+    {
+        setRenderColour(Color.white);
+    }
+
+    /**
+     * Sets the current colour of the render system.
+     */
+    public void setRenderColour(@Nonnull Color colour)
+    {
+        new Colour(colour).apply();
+    }
+
+    /**
+     * Sets the current colour of the render system.
+     */
+    public void setRenderColour(float r, float g, float b)
+    {
+        new Colour(r, g, b).apply();
+    }
+
+    /**
+     * Sets the current colour of the render system.
+     */
+    public void setRenderColour(float r, float g, float b, float a)
+    {
+        new Colour(r, g, b, a).apply();
+    }
+
     @Override
-    public void mouseClickedNoHandle(int mouseX, int mouseY, int button)
+    public ScrollbarControl getScrollbarY()
     {
-        getChildren().forEach(control -> control.mouseClickedNoHandle(mouseX, mouseY, button));
-
-        if (isMouseOver(mouseX, mouseY))
-        {
-            isPressed = true;
-        }
+        return scrollbarControlY != null ? scrollbarControlY : parent.getScrollbarY();
     }
 
     @Override
-    public void mouseReleasedNoHandle(int mouseX, int mouseY, int button)
+    public void setScrollbarY(@Nullable ScrollbarControl scrollbarControlY)
     {
-        getChildren().forEach(control -> control.mouseReleasedNoHandle(mouseX, mouseY, button));
-
-        isPressed = false;
+        this.scrollbarControlY = scrollbarControlY;
     }
 
     /**
-     * Handles the mouse being clicked.
-     *
-     * @param mouseX the mouse x.
-     * @param mouseY the mouse y.
-     * @param button the mouse button.
-     * @return true if the mouse click has been handled.
+     * @return the background colour of the control.
      */
-    public boolean mouseClicked(int mouseX, int mouseY, int button)
+    @Nonnull
+    public Colour getBackgroundColour()
     {
-        return false;
+        return backgroundColour;
     }
 
     /**
-     * Handles the mouse being released.
-     *
-     * @param mouseX the mouse x.
-     * @param mouseY the mouse y.
-     * @param button the mouse button.
-     * @return true if the mouse release has been handled.
+     * Sets the background colour to the given colour.
      */
-    public boolean mouseReleased(int mouseX, int mouseY, int button)
+    public void setBackgroundColour(float r, float g, float b)
     {
-        return false;
+        backgroundColour = new Colour(r, g, b);
     }
 
     /**
-     * Handles the mouse being scrolled.
-     *
-     * @param mouseX the mouse x.
-     * @param mouseY the mouse y.
-     * @param scroll the scroll amount.
-     * @return true if the mouse scroll has been handled.
+     * @return the foreground colour of the control.
      */
-    public boolean mouseScrolled(int mouseX, int mouseY, double scroll)
+    @Nonnull
+    public Colour getForegroundColour()
     {
-        return false;
+        return foregroundColour;
     }
 
     /**
-     * Handles a key being pressed.
-     *
-     * @param keyCode the key code.
-     * @param scanCode the scan code.
-     * @param mods the modifiers.
-     * @return true if the key press has been handled.
+     * Sets the foreground colour to the given colour.
      */
-    public boolean keyPressed(int keyCode, int scanCode, int mods)
+    public void setForegroundColour(float r, float g, float b)
     {
-        return false;
-    }
-
-    /**
-     * Handles a key being released.
-     *
-     * @param keyCode the key code.
-     * @param scanCode the scan code.
-     * @param mods the modifiers.
-     * @return true if the key release has been handled.
-     */
-    public boolean keyReleased(int keyCode, int scanCode, int mods)
-    {
-        return false;
-    }
-
-    /**
-     * Handles a character being typed.
-     *
-     * @param character the character.
-     * @param keyCode the underlying key code.
-     * @return true if the character type has been handled.
-     */
-    public boolean charTyped(char character, int keyCode)
-    {
-        return false;
-    }
-
-    /**
-     * Enables scissoring using the control's bounds.
-     */
-    public void enableScissor()
-    {
-        GuiUtil.scissor(screenX, screenY, width, height);
-    }
-
-    /**
-     * Disables scissoring.
-     */
-    public void disableScissor()
-    {
-        GuiUtil.disableScissor();
+        foregroundColour = new Colour(r, g, b);
     }
 
     /**
@@ -374,22 +463,57 @@ public class Control extends AbstractGui implements IControl
     /**
      * @param mouseX the mouse x position.
      * @param mouseY the mouse y position.
-     * @return true if the mouse is over the control.
-     */
-    public boolean isMouseOver(int mouseX, int mouseY)
-    {
-        return GuiUtil.isMouseOver(mouseX, mouseY, screenX, screenY, width, height);
-    }
-
-    /**
-     * @param mouseX the mouse x position.
-     * @param mouseY the mouse y position.
      * @param scale the gui scale.
      * @return true if the mouse is over the control after scaling.
      */
     public boolean isMouseOver(int mouseX, int mouseY, float scale)
     {
         return GuiUtil.isMouseOver((int) (mouseX / scale), (int) (mouseY / scale), screenX, screenY, width, height);
+    }
+
+    /**
+     * @param mouseX the mouse x position.
+     * @param mouseY the mouse y position.
+     * @return true if the mouse is over the control, and it is the top-most control.
+     */
+    public boolean isTopControlWithMouseOver(int mouseX, int mouseY)
+    {
+        boolean hasChildWithMouseOver = children.stream().anyMatch(control -> control.isTopControlWithMouseOver(mouseX, mouseY));
+
+        return !hasChildWithMouseOver && GuiUtil.isMouseOver(mouseX, mouseY, screenX, screenY, width, height);
+    }
+
+    @Nonnull
+    @Override
+    public IScreen getScreen()
+    {
+        return (IScreen) screen;
+    }
+
+    @Override
+    @Nonnull
+    public IControl getParent()
+    {
+        return parent;
+    }
+
+    @Override
+    @Nonnull
+    public ArrayList<Control> getChildren()
+    {
+        return children;
+    }
+
+    @Override
+    public void addChild(@Nonnull Control control)
+    {
+        children.add(control);
+    }
+
+    @Override
+    public void removeChild(@Nullable Control control)
+    {
+        children.remove(control);
     }
 
     /**
@@ -409,7 +533,7 @@ public class Control extends AbstractGui implements IControl
     {
         this.x = x;
 
-        screenX = parent.getScreenX() + x;
+        recalcScreenX();
     }
 
     /**
@@ -429,7 +553,77 @@ public class Control extends AbstractGui implements IControl
     {
         this.y = y;
 
-        screenY = parent.getScreenY() + y;
+        recalcScreenY();
+    }
+
+    @Override
+    public int getScrollX()
+    {
+        return scrollX;
+    }
+
+    @Override
+    public void setScrollX(int scroll)
+    {
+        scrollX = isScrollableX ? scroll : 0;
+        scrollX = Math.min(scrollX, maxScrollX);
+        scrollX = Math.max(scrollX, 0);
+
+        recalcScreenX();
+    }
+
+    @Override
+    public int getScrollY()
+    {
+        return scrollY;
+    }
+
+    @Override
+    public void setScrollY(int scroll)
+    {
+        scrollY = isScrollableY ? scroll : 0;
+        scrollY = Math.min(scrollY, maxScrollY);
+        scrollY = Math.max(scrollY, 0);
+
+        recalcScreenY();
+    }
+
+    @Override
+    public int getMaxScrollX()
+    {
+        return maxScrollX;
+    }
+
+    @Override
+    public void setMaxScrollX(int maxScroll)
+    {
+        maxScrollX = maxScroll;
+
+        setScrollX(getScrollX());
+    }
+
+    @Override
+    public int getMaxScrollY()
+    {
+        return maxScrollY;
+    }
+
+    @Override
+    public void setMaxScrollY(int maYScroll)
+    {
+        maxScrollY = maYScroll;
+
+        setScrollY(getScrollY());
+    }
+
+    /**
+     * Recalculates the screen x position.
+     */
+    public void recalcScreenX()
+    {
+        screenX = parent.getScreenX() - parent.getScrollX() + parent.getPadding(Side.LEFT) + getMargin(Side.LEFT) + x;
+
+        getChildren().forEach(Control::recalcScreenX);
     }
 
     @Override
@@ -438,17 +632,285 @@ public class Control extends AbstractGui implements IControl
         return screenX;
     }
 
+    /**
+     * Recalculates the screen y position.
+     */
+    public void recalcScreenY()
+    {
+        screenY = parent.getScreenY() - parent.getScrollY() + parent.getPadding(Side.TOP) + getMargin(Side.TOP) + y;
+
+        getChildren().forEach(Control::recalcScreenY);
+    }
+
     @Override
     public int getScreenY()
     {
         return screenY;
     }
 
-    /**
-     * @return true if the control is currently pressed.
-     */
-    public boolean isPressed()
+    @Override
+    public int getWidth()
     {
-        return isPressed;
+        return width;
+    }
+
+    /**
+     * Sets the width of the control.
+     */
+    public void setWidth(int width)
+    {
+        this.width = width;
+    }
+
+    /**
+     * Sets the height of the control.
+     */
+    public void setHeight(int height)
+    {
+        this.height = height;
+    }
+
+    @Override
+    public int getHeight()
+    {
+        return height;
+    }
+
+    /**
+     * @return the width of the control, including margins.
+     */
+    public int getEffectiveWidth()
+    {
+        return width + getMargin(Side.LEFT) + getMargin(Side.RIGHT);
+    }
+
+    /**
+     * @return the height of the control, including margins.
+     */
+    public int getEffectiveHeight()
+    {
+        return height + getMargin(Side.TOP) + getMargin(Side.BOTTOM);
+    }
+
+    @Override
+    public int getPadding(@Nonnull Side side)
+    {
+        return padding.get(side);
+    }
+
+    @Override
+    public void setPadding(@Nonnull Side side, int padding)
+    {
+        this.padding.put(side, padding);
+
+        if (side == Side.LEFT || side == Side.RIGHT)
+        {
+            recalcScreenX();
+        }
+        else
+        {
+            recalcScreenY();
+        }
+    }
+
+    /**
+     * Sets all the padding on the control.
+     */
+    public void setPadding(int left, int top, int right, int bottom)
+    {
+        padding.put(Side.LEFT, left);
+        padding.put(Side.TOP, top);
+        padding.put(Side.RIGHT, right);
+        padding.put(Side.BOTTOM, bottom);
+
+        recalcScreenX();
+        recalcScreenY();
+    }
+
+    @Override
+    public int getMargin(@Nonnull Side side)
+    {
+        return margins.get(side);
+    }
+
+    @Override
+    public void setMargin(@Nonnull Side side, int margin)
+    {
+        margins.put(side, margin);
+
+        if (side == Side.LEFT || side == Side.RIGHT)
+        {
+            recalcScreenX();
+        }
+        else
+        {
+            recalcScreenY();
+        }
+    }
+
+    /**
+     * Sets all the margins on the control.
+     */
+    public void setMargins(int left, int top, int right, int bottom)
+    {
+        margins.put(Side.LEFT, left);
+        margins.put(Side.TOP, top);
+        margins.put(Side.RIGHT, right);
+        margins.put(Side.BOTTOM, bottom);
+
+        recalcScreenX();
+        recalcScreenY();
+    }
+
+    @Override
+    public boolean isInteractive()
+    {
+        return isInteractive;
+    }
+
+    @Override
+    public void setIsInteractive(boolean isInteractive)
+    {
+        this.isInteractive = isInteractive;
+    }
+
+    @Override
+    public boolean isVisible()
+    {
+        return isVisible;
+    }
+
+    @Override
+    public void setIsVisible(boolean isVisible)
+    {
+        this.isVisible = isVisible;
+    }
+
+    @Override
+    public boolean isScrollableX()
+    {
+        return isScrollableX;
+    }
+
+    @Override
+    public void setIsScrollableX(boolean isScrollable)
+    {
+        isScrollableX = isScrollable;
+
+        if (!isScrollableX)
+        {
+            setScrollX(0);
+        }
+    }
+
+    @Override
+    public boolean isScrollableY()
+    {
+        return isScrollableY;
+    }
+
+    @Override
+    public void setIsScrollableY(boolean isScrollable)
+    {
+        isScrollableY = isScrollable;
+
+        if (!isScrollableY)
+        {
+            setScrollY(0);
+        }
+    }
+
+    /**
+     * Sets the index of the control in the list of children to the given index.
+     *
+     * @param index the index to move the control to.
+     */
+    public void setZIndex(int index)
+    {
+        ArrayList<Control> children = parent.getChildren();
+
+        if (index > children.size())
+        {
+            index = children.size();
+        }
+        else if (index < 0)
+        {
+            index = 0;
+        }
+
+        children.ensureCapacity(index + 1);
+        children.set(children.indexOf(this), null);
+        children.add(index, this);
+        children.remove(null);
+    }
+
+    @Nonnull
+    @Override
+    public EventHandler<MouseEvent> getOnControlHover()
+    {
+        return onControlHover;
+    }
+
+    @Nonnull
+    @Override
+    public EventHandler<MouseEvent> getOnControlHoverStart()
+    {
+        return onControlHoverStart;
+    }
+
+    @Nonnull
+    @Override
+    public EventHandler<MouseEvent> getOnControlHoverStop()
+    {
+        return onControlHoverStop;
+    }
+
+    @Nonnull
+    @Override
+    public EventHandler<MouseButtonEvent> getOnControlMouseClicked()
+    {
+        return onControlMouseClicked;
+    }
+
+    @Nonnull
+    @Override
+    public EventHandler<MouseButtonEvent> getOnControlMouseReleased()
+    {
+        return onControlMouseReleased;
+    }
+
+    @Nonnull
+    @Override
+    public EventHandler<MouseScrollEvent> getOnControlMouseScrolled()
+    {
+        return onControlMouseScrolled;
+    }
+
+    @Nonnull
+    @Override
+    public EventHandler<KeyEvent> getOnControlKeyPressed()
+    {
+        return onControlKeyPressed;
+    }
+
+    @Nonnull
+    @Override
+    public EventHandler<KeyEvent> getOnControlKeyReleased()
+    {
+        return onControlKeyReleased;
+    }
+
+    @Nonnull
+    @Override
+    public EventHandler<KeyEvent> getOnControlKeyHeld()
+    {
+        return onControlKeyHeld;
+    }
+
+    @Nonnull
+    @Override
+    public EventHandler<CharEvent> getOnControlCharTyped()
+    {
+        return onControlCharTyped;
     }
 }

@@ -5,7 +5,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.IControl;
+import com.willr27.blocklings.gui.IScreen;
 import com.willr27.blocklings.gui.controls.TabbedControl;
+import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,13 +18,14 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A screen that includes the blockling gui tabs.
  */
 @OnlyIn(Dist.CLIENT)
-public class TabbedScreen extends Screen implements IControl
+public class TabbedScreen extends Screen implements IControl, IScreen
 {
     /**
      * The blockling.
@@ -77,15 +80,111 @@ public class TabbedScreen extends Screen implements IControl
     protected int contentBottom;
 
     /**
-     * The gui used to the draw and handle the tabs.
+     * The control used to the draw and handle the tabs.
      */
-    private TabbedControl tabbedGui;
+    public TabbedControl tabbedControl;
 
     /**
-     * The list of guis to handle.
+     * The list of child controls.
      */
     @Nonnull
-    private final List<Control> children = new ArrayList<>();
+    private final ArrayList<Control> children = new ArrayList<>();
+
+    /**
+     * The currently held keys.
+     */
+    @Nonnull
+    private final Map<Integer, Integer> heldKeys = new HashMap<>();
+
+    /**
+     *  The most recent control that was pressed without being released.
+     */
+    @Nullable
+    private IControl recentlyPressedControl = null;
+
+    /**
+     *  The currently focused control.
+     */
+    @Nonnull
+    private IControl focusedControl = this;
+
+    /**
+     *  The currently hovered control.
+     */
+    @Nonnull
+    private IControl hoveredControl = this;
+
+    /**
+     *  The currently pressed control.
+     */
+    @Nullable
+    private IControl pressedControl = null;
+
+    /**
+     * The mouse x position the pressed control was pressed at.
+     */
+    private int pressedMouseX = 0;
+
+    /**
+     * The mouse y position the pressed control was pressed at.
+     */
+    private int pressedMouseY = 0;
+
+    /**
+     *  The currently dragged control.
+     */
+    @Nullable
+    private IControl draggedControl = null;
+
+    /**
+     * The event handler for hover events.
+     */
+    private final EventHandler<MouseEvent> onControlHover = new EventHandler<>();
+
+    /**
+     * The event handler for hover start events.
+     */
+    private final EventHandler<MouseEvent> onControlHoverStart = new EventHandler<>();
+
+    /**
+     * The event handler for hover stop events.
+     */
+    private final EventHandler<MouseEvent> onControlHoverStop = new EventHandler<>();
+
+    /**
+     * The event handler for mouse click events.
+     */
+    private final EventHandler<MouseButtonEvent> onControlMouseClicked = new EventHandler<>();
+
+    /**
+     * The event handler for mouse release events.
+     */
+    private final EventHandler<MouseButtonEvent> onControlMouseReleased = new EventHandler<>();
+
+    /**
+     * The event handler for mouse scroll events.
+     */
+    private final EventHandler<MouseScrollEvent> onControlMouseScrolled = new EventHandler<>();
+
+    /**
+     * The event handler for key pressed events.
+     */
+    private final EventHandler<KeyEvent> onControlKeyPressed = new EventHandler<>();
+
+    /**
+     * The event handler for key released events.
+     */
+    private final EventHandler<KeyEvent> onControlKeyReleased = new EventHandler<>();
+
+    /**
+     * The event handler for key held events.
+     */
+    private final EventHandler<KeyEvent> onControlKeyHeld = new EventHandler<>();
+
+    /**
+     * The event handler for char typed events.
+     */
+    private final EventHandler<CharEvent> onControlCharTyped = new EventHandler<>();
 
     /**
      * @param blockling the blockling.
@@ -95,44 +194,8 @@ public class TabbedScreen extends Screen implements IControl
         super(new StringTextComponent(""));
         this.blockling = blockling;
         this.player = Minecraft.getInstance().player;
-    }
 
-    @Override
-    @Nullable
-    public IControl getParent()
-    {
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public List<Control> getChildren()
-    {
-        return children;
-    }
-
-    @Override
-    public void addChild(@Nonnull Control control)
-    {
-        children.add(control);
-    }
-
-    @Override
-    public void removeChild(@Nonnull Control control)
-    {
-        children.remove(control);
-    }
-
-    @Override
-    public int getScreenX()
-    {
-        return contentLeft;
-    }
-
-    @Override
-    public int getScreenY()
-    {
-        return contentTop;
+        setupEventHandlers();
     }
 
     /**
@@ -154,7 +217,7 @@ public class TabbedScreen extends Screen implements IControl
         contentRight = contentLeft + TabbedControl.CONTENT_WIDTH;
         contentBottom = contentTop + TabbedControl.CONTENT_HEIGHT;
 
-        tabbedGui = new TabbedControl(blockling, centerX, centerY);
+        tabbedControl = new TabbedControl(this, blockling, left, top);
 
         Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
 
@@ -164,21 +227,357 @@ public class TabbedScreen extends Screen implements IControl
     @Override
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
-        tabbedGui.render(matrixStack, mouseX, mouseY);
-
         RenderSystem.enableDepthTest();
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         RenderSystem.enableDepthTest();
+
+        if (getPressedControl() != null)
+        {
+            int difX = Math.abs(mouseX - getPressedMouseX());
+            int difY = Math.abs(mouseY - getPressedMouseY());
+
+            if (difX >= 4 || difY >= 4)
+            {
+                setDraggedControl(getPressedControl());
+            }
+        }
+
+        forwardControlHover(new MouseEvent(mouseX, mouseY));
+        preRenderAll(mouseX, mouseY, partialTicks);
+        renderAll(matrixStack, mouseX, mouseY, partialTicks);
+
+        RenderSystem.enableDepthTest();
+        getHoveredControl().renderTooltip(matrixStack, mouseX, mouseY);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button)
+    public final boolean mouseClicked(double mouseX, double mouseY, int button)
     {
-        if (tabbedGui.mouseClicked((int) mouseX, (int) mouseY, button))
+        MouseButtonEvent e = new MouseButtonEvent((int) mouseX, (int) mouseY, button);
+
+        forwardControlMouseClicked(e);
+        forwardGlobalMouseClicked(e);
+
+        return e.isHandled() || super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public final boolean mouseReleased(double mouseX, double mouseY, int button)
+    {
+        MouseButtonEvent e = new MouseButtonEvent((int) mouseX, (int) mouseY, button);
+
+        forwardControlMouseReleased(e);
+        forwardGlobalMouseReleased(e);
+
+        setRecentlyClickedControl(null);
+        setPressedControl(null, (int) mouseX, (int) mouseY);
+        setDraggedControl(null);
+
+        return e.isHandled() || super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
+    public final boolean mouseScrolled(double mouseX, double mouseY, double scroll)
+    {
+        MouseScrollEvent e = new MouseScrollEvent((int) mouseX, (int) mouseY, scroll);
+
+        forwardGlobalMouseScrolled(e);
+        forwardControlMouseScrolled(e);
+
+        return e.isHandled() || super.mouseScrolled(mouseX, mouseY, scroll);
+    }
+
+    @Override
+    public final boolean keyPressed(int keyCode, int scanCode, int mods)
+    {
+        KeyEvent e = new KeyEvent(keyCode, scanCode, mods);
+
+        if (isKeyHeld(keyCode) && heldKeys.get(keyCode) > 10)
         {
-            return true;
+            forwardGlobalKeyHeld(e);
+
+            if (getFocusedControl().isVisible() && getFocusedControl().isInteractive())
+            {
+                getFocusedControl().controlKeyHeld(e);
+            }
+        }
+        else
+        {
+            forwardGlobalKeyPressed(e);
+
+            if (getFocusedControl().isVisible() && getFocusedControl().isInteractive())
+            {
+                getFocusedControl().controlKeyPressed(e);
+            }
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        Integer oldCount = heldKeys.put(keyCode, 0);
+
+        if (oldCount != null)
+        {
+            heldKeys.put(keyCode, oldCount + 1);
+        }
+
+        return e.isHandled() || super.keyPressed(keyCode, scanCode, mods);
+    }
+
+    @Override
+    public final boolean keyReleased(int keyCode, int scanCode, int mods)
+    {
+        KeyEvent e = new KeyEvent(keyCode, scanCode, mods);
+
+        if (getFocusedControl().isVisible() && getFocusedControl().isInteractive())
+        {
+            getFocusedControl().controlKeyReleased(e);
+        }
+
+        forwardGlobalKeyReleased(e);
+
+        heldKeys.remove(keyCode);
+
+        return e.isHandled() || super.keyReleased(keyCode, scanCode, mods);
+    }
+
+    @Override
+    public final boolean charTyped(char character, int keyCode)
+    {
+        CharEvent e = new CharEvent(character, keyCode);
+
+        forwardGlobalCharTyped(e);
+
+        if (getFocusedControl().isVisible() && getFocusedControl().isInteractive())
+        {
+            getFocusedControl().controlCharTyped(e);
+        }
+
+        return super.charTyped(character, keyCode);
+    }
+
+    @Nonnull
+    @Override
+    public IScreen getScreen()
+    {
+        return this;
+    }
+
+    @Override
+    @Nullable
+    public IControl getParent()
+    {
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public ArrayList<Control> getChildren()
+    {
+        return children;
+    }
+
+    @Override
+    public void addChild(@Nonnull Control control)
+    {
+        children.add(control);
+    }
+
+    @Override
+    public void removeChild(@Nullable Control control)
+    {
+        children.remove(control);
+    }
+
+    @Override
+    public int getScreenX()
+    {
+        return 0;
+    }
+
+    @Override
+    public int getScreenY()
+    {
+        return 0;
+    }
+
+    @Override
+    public int getWidth()
+    {
+        return width;
+    }
+
+    @Override
+    public int getHeight()
+    {
+        return height;
+    }
+
+    @Override
+    public boolean isPauseScreen()
+    {
+        return false;
+    }
+
+    @Override
+    public boolean isKeyHeld(int keyCode)
+    {
+        Integer count = heldKeys.get(keyCode);
+
+        return count != null && count > 0;
+    }
+
+    @Nonnull
+    @Override
+    public IControl getFocusedControl()
+    {
+        return focusedControl;
+    }
+
+    @Override
+    public void setFocusedControl(@Nullable IControl control)
+    {
+        this.focusedControl = control == null ? this : control;
+    }
+
+    @Nonnull
+    @Override
+    public IControl getHoveredControl()
+    {
+        return hoveredControl;
+    }
+
+    @Override
+    public void setHoveredControl(@Nullable IControl control, int mouseX, int mouseY)
+    {
+        control = control == null ? this : control;
+
+        if (control != hoveredControl)
+        {
+            hoveredControl.controlHoverStop(new MouseEvent(mouseX, mouseY));
+            control.controlHoverStart(new MouseEvent(mouseX, mouseY));
+        }
+
+        hoveredControl = control;
+    }
+
+    @Nullable
+    @Override
+    public IControl getPressedControl()
+    {
+        return pressedControl;
+    }
+
+    @Override
+    public int getPressedMouseX()
+    {
+        return pressedMouseX;
+    }
+
+    @Override
+    public int getPressedMouseY()
+    {
+        return pressedMouseY;
+    }
+
+    @Override
+    public void setPressedControl(@Nullable IControl control, int mouseX, int mouseY)
+    {
+        this.pressedControl = control;
+        this.pressedMouseX = mouseX;
+        this.pressedMouseY = mouseY;
+    }
+
+    @Nullable
+    @Override
+    public IControl getDraggedControl()
+    {
+        return draggedControl;
+    }
+
+    @Override
+    public void setDraggedControl(@Nullable IControl control)
+    {
+        draggedControl = control;
+    }
+
+    @Nonnull
+    @Override
+    public EventHandler<MouseEvent> getOnControlHover()
+    {
+        return onControlHover;
+    }
+
+    @Nonnull
+    @Override
+    public EventHandler<MouseEvent> getOnControlHoverStart()
+    {
+        return onControlHoverStart;
+    }
+
+    @Nonnull
+    @Override
+    public EventHandler<MouseEvent> getOnControlHoverStop()
+    {
+        return onControlHoverStop;
+    }
+
+    @Nonnull
+    @Override
+    public EventHandler<MouseButtonEvent> getOnControlMouseClicked()
+    {
+        return onControlMouseClicked;
+    }
+
+    @Nonnull
+    @Override
+    public EventHandler<MouseButtonEvent> getOnControlMouseReleased()
+    {
+        return onControlMouseReleased;
+    }
+
+    @Nonnull
+    @Override
+    public EventHandler<MouseScrollEvent> getOnControlMouseScrolled()
+    {
+        return onControlMouseScrolled;
+    }
+
+    @Nonnull
+    @Override
+    public EventHandler<KeyEvent> getOnControlKeyPressed()
+    {
+        return onControlKeyPressed;
+    }
+
+    @Nonnull
+    @Override
+    public EventHandler<KeyEvent> getOnControlKeyReleased()
+    {
+        return onControlKeyReleased;
+    }
+
+    @Nonnull
+    @Override
+    public EventHandler<KeyEvent> getOnControlKeyHeld()
+    {
+        return onControlKeyHeld;
+    }
+
+    @Nonnull
+    @Override
+    public EventHandler<CharEvent> getOnControlCharTyped()
+    {
+        return onControlCharTyped;
+    }
+
+    @Nullable
+    @Override
+    public IControl getRecentlyPressedControl()
+    {
+        return recentlyPressedControl;
+    }
+
+    @Override
+    public void setRecentlyClickedControl(@Nullable IControl control)
+    {
+        this.recentlyPressedControl = control;
     }
 }

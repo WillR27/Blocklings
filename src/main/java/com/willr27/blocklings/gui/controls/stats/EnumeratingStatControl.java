@@ -164,7 +164,7 @@ public class EnumeratingStatControl extends Control
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         if (blockling.tickCount - tickCount > enumerationInterval)
         {
@@ -179,25 +179,23 @@ public class EnumeratingStatControl extends Control
 
         RenderSystem.color3f(colours.get(currentEnumeration).getRed() / 255.0f, colours.get(currentEnumeration).getGreen() / 255.0f, colours.get(currentEnumeration).getBlue() / 255.0f);
         renderTexture(matrixStack, iconTextures.get(currentEnumeration));
-        renderText(matrixStack, valueSuppliers.get(currentEnumeration).get(), TEXT_OFFSET_X, TEXT_OFFSET_Y, shouldRightAlignText, 0xffe100);
+        renderShadowedText(matrixStack, valueSuppliers.get(currentEnumeration).get(), width + TEXT_OFFSET_X, TEXT_OFFSET_Y, shouldRightAlignText, 0xffe100);
     }
 
-    public void renderTooltip(MatrixStack matrixStack, int mouseX, int mouseY)
+    @Override
+    public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
-        if (isMouseOver(mouseX, mouseY))
+        if (shouldCombineTooltips)
         {
-            if (shouldCombineTooltips)
-            {
-                screen.renderTooltip(matrixStack, prependNameToTooltip(combineTooltips()).stream().map(t -> t.getVisualOrderText()).collect(Collectors.toList()), mouseX, mouseY);
-            }
-            else
-            {
-                screen.renderTooltip(matrixStack, prependNameToTooltip(tooltipSuppliers.get(currentEnumeration).get()).stream().map(t -> t.getVisualOrderText()).collect(Collectors.toList()), mouseX, mouseY);
-            }
+            screen.renderTooltip(matrixStack, prependNameToTooltip(combineTooltips()).stream().map(t -> t.getVisualOrderText()).collect(Collectors.toList()), mouseX, mouseY);
+        }
+        else
+        {
+            screen.renderTooltip(matrixStack, prependNameToTooltip(tooltipSuppliers.get(currentEnumeration).get()).stream().map(t -> t.getVisualOrderText()).collect(Collectors.toList()), mouseX, mouseY);
         }
     }
 
-    private List<ITextComponent> prependNameToTooltip(List<ITextComponent> tooltip)
+    private List<ITextComponent> prependNameToTooltip(@Nonnull List<ITextComponent> tooltip)
     {
 //            tooltip.add(0, new StringTextComponent("").getVisualOrderText());
         tooltip.add(0, name);
@@ -205,6 +203,7 @@ public class EnumeratingStatControl extends Control
         return tooltip;
     }
 
+    @Nonnull
     private List<ITextComponent> combineTooltips()
     {
         List<ITextComponent> tooltip = new ArrayList<>();
@@ -250,23 +249,16 @@ public class EnumeratingStatControl extends Control
     }
 
     @Override
-    public boolean mouseClicked(int mouseX, int mouseY, int button)
+    public void controlMouseClicked(@Nonnull MouseButtonEvent e)
     {
-        super.mouseClicked(mouseX, mouseY, button);
+        tickCount = blockling.tickCount;
+        currentEnumeration = (currentEnumeration + 1) % iconTextures.size();
 
-        if (isMouseOver(mouseX, mouseY))
+        while (!conditionSuppliers.get(currentEnumeration).get())
         {
-            tickCount = blockling.tickCount;
             currentEnumeration = (currentEnumeration + 1) % iconTextures.size();
-
-            while (!conditionSuppliers.get(currentEnumeration).get())
-            {
-                currentEnumeration = (currentEnumeration + 1) % iconTextures.size();
-            }
-
-            return true;
         }
 
-        return false;
+        e.setIsHandled(true);
     }
 }

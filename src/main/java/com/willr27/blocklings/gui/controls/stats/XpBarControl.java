@@ -60,7 +60,7 @@ public class XpBarControl extends Control
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         float percentage = Math.min(1.0f, blockling.getStats().getLevelXpAttribute(level).getValue() / (float) BlocklingAttributes.getXpForLevel(blockling.getStats().getLevelAttribute(level).getValue()));
         int middle = (int) (width * percentage);
@@ -68,6 +68,12 @@ public class XpBarControl extends Control
         renderTexture(matrixStack, backgroundTexture);
         renderTexture(matrixStack, 0, 0, new GuiTexture(GuiTextures.STATS, 0, 188 + level.ordinal() * height * 2, middle, height));
         renderCenteredText(matrixStack, "" + blockling.getStats().getLevelAttribute(level).getValue(), -width / 2 + 1, -1, false, getTextColour());
+    }
+
+    @Override
+    public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+    {
+        parent.renderTooltip(matrixStack, mouseX, mouseY);
     }
 
     /**

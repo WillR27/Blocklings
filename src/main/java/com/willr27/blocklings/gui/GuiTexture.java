@@ -19,6 +19,16 @@ public class GuiTexture
         this.height = height;
     }
 
+    public GuiTexture width(int newWidth)
+    {
+        return new GuiTexture(texture, x, y, newWidth, height);
+    }
+
+    public GuiTexture height(int newHeight)
+    {
+        return new GuiTexture(texture, x, y, width, newHeight);
+    }
+
     public GuiTexture shift(int dx, int dy)
     {
         return new GuiTexture(texture, x + dx, y + dy, width, height);

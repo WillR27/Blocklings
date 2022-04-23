@@ -1,10 +1,8 @@
-package com.willr27.blocklings.gui.controls.tasks;
+package com.willr27.blocklings.gui.controls.tasks.config;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.gui.*;
-import com.willr27.blocklings.task.Task;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -93,8 +91,11 @@ public class TabControl extends Control
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
+        RenderSystem.enableDepthTest();
+        RenderSystem.color3f(1.0f, 1.0f, 1.0f);
+
         if (tabs.isEmpty())
         {
             return;
@@ -125,6 +126,7 @@ public class TabControl extends Control
 
             String name = GuiUtil.trimWithEllipses(font, tab.name, tab.width - 10);
             font.draw(matrixStack, name, tab.x + tab.width / 2 - font.width(name) / 2 + 1, screenY + 2, 0x666666);
+            RenderSystem.enableDepthTest();
         }
 
         Tab tab = tabs.get(selectedTabIndex);
@@ -140,14 +142,8 @@ public class TabControl extends Control
         renderCenteredText(matrixStack, name, tab.x - screenX - width + tab.width / 2 + 1, 2, false, 0xffffff);
     }
 
-    /**
-     * Renders the tooltips for the tabs.
-     *
-     * @param matrixStack the matrix stack.
-     * @param mouseX the mouse x position.
-     * @param mouseY the mouse y position.
-     */
-    public void renderTooltips(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+    @Override
+    public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
         Tab hoveredTab = getHoveredTab(mouseX, mouseY);
 
@@ -158,22 +154,20 @@ public class TabControl extends Control
     }
 
     @Override
-    public boolean mouseReleased(int mouseX, int mouseY, int button)
+    public void controlMouseReleased(@Nonnull MouseButtonEvent e)
     {
-        if (isPressed() && isMouseOver(mouseX, mouseY))
+        if (isPressed())
         {
-            Tab clickedTab = getHoveredTab(mouseX, mouseY);
+            Tab clickedTab = getHoveredTab(e.mouseX, e.mouseY);
 
             if (clickedTab != null)
             {
                 selectedTabIndex = tabs.indexOf(clickedTab);
                 clickedTab.onSelect.run();
-
-                return true;
             }
         }
 
-        return super.mouseReleased(mouseX, mouseY, button);
+        e.setIsHandled(true);
     }
 
     /**
