@@ -158,7 +158,7 @@ public class TasksScreen extends TabbedScreen
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void renderScreen(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         GuiUtil.bindTexture(GuiTextures.TASKS);
         blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedControl.CONTENT_WIDTH, TabbedControl.CONTENT_HEIGHT);
@@ -167,8 +167,6 @@ public class TasksScreen extends TabbedScreen
         {
             font.drawShadow(matrixStack, new BlocklingsTranslationTextComponent("tab.tasks"), contentLeft + 8, contentTop + 5, 0xffffff);
         }
-
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
     /**

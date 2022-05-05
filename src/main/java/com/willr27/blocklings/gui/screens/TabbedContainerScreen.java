@@ -212,6 +212,7 @@ public abstract class TabbedContainerScreen<T extends Container> extends Contain
         contentRight = contentLeft + TabbedControl.CONTENT_WIDTH;
         contentBottom = contentTop + TabbedControl.CONTENT_HEIGHT;
 
+        removeChild(tabbedControl);
         tabbedControl = new TabbedControl(this, blockling, left, top);
 
         Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
@@ -263,7 +264,12 @@ public abstract class TabbedContainerScreen<T extends Container> extends Contain
     @Override
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
+        matrixStack.pushPose();
+        matrixStack.translate(0.0, 0.0, -100.0);
+
         super.render(matrixStack, mouseX, mouseY, partialTicks);
+
+        matrixStack.popPose();
 
         if (getPressedControl() != null)
         {
@@ -431,6 +437,12 @@ public abstract class TabbedContainerScreen<T extends Container> extends Contain
     public int getHeight()
     {
         return height;
+    }
+
+    @Override
+    public float getScale()
+    {
+        return 1.0f;
     }
 
     @Override

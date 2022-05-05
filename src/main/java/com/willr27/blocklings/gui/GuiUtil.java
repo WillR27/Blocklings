@@ -34,6 +34,22 @@ import java.util.stream.Collectors;
 @OnlyIn(Dist.CLIENT)
 public class GuiUtil
 {
+    /**
+     * @return the mouse x position on the window.
+     */
+    public static int getMouseX()
+    {
+        return (int) Minecraft.getInstance().mouseHandler.xpos();
+    }
+
+    /**
+     * @return the mouse y position on the window.
+     */
+    public static int getMouseY()
+    {
+        return (int) Minecraft.getInstance().mouseHandler.ypos();
+    }
+
     public static void bindTexture(ResourceLocation texture)
     {
         Minecraft.getInstance().getTextureManager().bind(texture);
@@ -154,7 +170,8 @@ public class GuiUtil
         RenderSystem.popMatrix();
     }
 
-    public static void renderEntityOnScreen(int posX, int posY, int scale, float mouseX, float mouseY, LivingEntity entity) {
+    public static void renderEntityOnScreen(MatrixStack matrixStack, int posX, int posY, int scale, float mouseX, float mouseY, LivingEntity entity)
+    {
         String name = entity.getCustomName() != null ? entity.getCustomName().getString() : null;
         entity.setCustomName(null);
         float f = (float)Math.atan((double)(mouseX / 40.0F));
@@ -162,14 +179,13 @@ public class GuiUtil
         RenderSystem.pushMatrix();
         RenderSystem.translatef((float)posX, (float)posY, 1050.0F);
         RenderSystem.scalef(1.0F, 1.0F, -1.0F);
-        MatrixStack matrixstack = new MatrixStack();
-        matrixstack.translate(0.0D, 0.0D, 1000.0D);
+        matrixStack.translate(0.0D, 0.0D, 1000.0D);
         float scale2 = 1.0f / Math.max(entity.getBbWidth(), entity.getBbHeight());
-        matrixstack.scale((scale * scale2), (scale * scale2), (scale * scale2));
+        matrixStack.scale((scale * scale2), (scale * scale2), (scale * scale2));
         Quaternion quaternion = Vector3f.ZP.rotationDegrees(180.0F);
         Quaternion quaternion1 = Vector3f.XP.rotationDegrees(f1 * 20.0F);
         quaternion.mul(quaternion1);
-        matrixstack.mulPose(quaternion);
+        matrixStack.mulPose(quaternion);
         float f2 = entity.yBodyRot;
         float f3 = entity.yRot;
         float f4 = entity.xRot;
@@ -186,7 +202,7 @@ public class GuiUtil
         entityrenderermanager.setRenderShadow(false);
         IRenderTypeBuffer.Impl irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
         RenderSystem.runAsFancy(() -> {
-            entityrenderermanager.render(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, matrixstack, irendertypebuffer$impl, 15728880);
+            entityrenderermanager.render(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, matrixStack, irendertypebuffer$impl, 15728880);
         });
         irendertypebuffer$impl.endBatch();
         entityrenderermanager.setRenderShadow(true);
@@ -341,15 +357,17 @@ public class GuiUtil
         scissor(x, y, width, height, false);
     }
 
+    public static boolean useGuiScaleForScissor = true;
+
     public static void scissor(int x, int y, int width, int height, boolean useMaxBounds)
     {
         MainWindow window = Minecraft.getInstance().getWindow();
-        int scale = (int) window.getGuiScale();
+        float scale = useGuiScaleForScissor ? (int) window.getGuiScale() : 1.0f;
 
-        int scissorX = x * scale;
-        int scissorY = window.getHeight() - ((y + height) * scale);
-        int scissorWidth = width * scale;
-        int scissorHeight = height * scale;
+        int scissorX = (int) (x * scale);
+        int scissorY = (int) (window.getHeight() - ((y + height) * scale));
+        int scissorWidth = (int) (width * scale);
+        int scissorHeight = (int) (height * scale);
 
         if (useMaxBounds)
         {

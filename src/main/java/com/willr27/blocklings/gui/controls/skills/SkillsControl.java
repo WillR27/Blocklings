@@ -1,13 +1,11 @@
 package com.willr27.blocklings.gui.controls.skills;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
-import com.willr27.blocklings.gui.IControl;
 import com.willr27.blocklings.gui.screens.SkillsScreen;
 import com.willr27.blocklings.skill.Skill;
 import com.willr27.blocklings.skill.SkillGroup;
@@ -16,10 +14,8 @@ import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -143,11 +139,6 @@ public class SkillsControl extends Control
     private boolean dragging;
 
     /**
-     * The current scale to display the skills at.
-     */
-    public float scale = 1.0f;
-
-    /**
      * The list of controls representing each skill.
      */
     @Nonnull
@@ -213,10 +204,10 @@ public class SkillsControl extends Control
 
         setX(-parent.getScreenX() - 10);
         setY(-parent.getScreenY() - 10);
-        resize(screen.width + 20, screen.height + 20, scale);
+        resize(screen.width + 20, screen.height + 20);
 
-        moveOffsetX = (int) (((width - SKILL_SIZE) / 2) / scale);
-        moveOffsetY = (int) (((height - SKILL_SIZE) / 2) / scale);
+        moveOffsetX = (int) (((width - SKILL_SIZE) / 2) );
+        moveOffsetY = (int) (((height - SKILL_SIZE) / 2));
 
         if (skillsScreen.borderControl != null)
         {
@@ -234,10 +225,10 @@ public class SkillsControl extends Control
 
         setX(minimisedX);
         setY(minimisedY);
-        resize(minimisedWidth, minimisedHeight, scale);
+        resize(minimisedWidth, minimisedHeight);
 
-        moveOffsetX = (int) (((width - SKILL_SIZE) / 2) / scale);
-        moveOffsetY = (int) (((height - SKILL_SIZE) / 2) / scale);
+        moveOffsetX = (int) (((width - SKILL_SIZE) / 2));
+        moveOffsetY = (int) (((height - SKILL_SIZE) / 2));
 
         if (skillsScreen.borderControl != null)
         {
@@ -250,15 +241,13 @@ public class SkillsControl extends Control
      *
      * @param width the new width.
      * @param height the new height.
-     * @param scale the new scale.
      */
-    private void resize(int width, int height, float scale)
+    private void resize(int width, int height)
     {
         this.width = width;
         this.height = height;
-        this.scale = scale;
 
-        int tileSize = (int) (TILE_SIZE * scale);
+        int tileSize = (int) (TILE_SIZE);
 
         this.tilesX = width / tileSize;
         this.tilesY = height / tileSize;
@@ -268,7 +257,7 @@ public class SkillsControl extends Control
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         matrixStack.pushPose();
-        matrixStack.scale(scale, scale, 1.0f);
+//        matrixStack.scale(scale, scale, 1.0f);
 
         updatePan(mouseX, mouseY);
 
@@ -301,8 +290,8 @@ public class SkillsControl extends Control
             {
                 dragging = true;
 
-                totalDragX += (mouseX - prevMouseX) / scale;
-                totalDragY += (mouseY - prevMouseY) / scale;
+                totalDragX += (mouseX - prevMouseX);
+                totalDragY += (mouseY - prevMouseY);
 
                 if (Math.abs(totalDragX) >= 1.0f)
                 {
@@ -332,8 +321,8 @@ public class SkillsControl extends Control
         {
             for (int j = -1; j < tilesY + 1; j++)
             {
-                int x = (int) (getScreenX() / scale) + ((TILE_SIZE + (moveOffsetX % TILE_SIZE)) % TILE_SIZE) + i * TILE_SIZE;
-                int y = (int) (getScreenY() / scale) + ((TILE_SIZE + (moveOffsetY % TILE_SIZE)) % TILE_SIZE) + j * TILE_SIZE;
+                int x = (int) (getScreenX()) + ((TILE_SIZE + (moveOffsetX % TILE_SIZE)) % TILE_SIZE) + i * TILE_SIZE;
+                int y = (int) (getScreenY()) + ((TILE_SIZE + (moveOffsetY % TILE_SIZE)) % TILE_SIZE) + j * TILE_SIZE;
 
                 int i1 = i - (int)Math.floor((moveOffsetX / (double) TILE_SIZE)) + backgroundOffsetX;
                 int j1 = j - (int)Math.floor((moveOffsetY / (double) TILE_SIZE)) + backgroundOffsetY;
@@ -342,10 +331,10 @@ public class SkillsControl extends Control
                 int tileTextureX = (rand % TILE_SIZE) * TILE_SIZE;
                 int tileTextureY = (rand / TILE_SIZE) * TILE_SIZE;
 
-                GuiUtil.addScissorBounds(getScreenX(), getScreenY(), width, height);
+                GuiUtil.addScissorBounds(getScreenX(), getScreenY(), getScreenWidth(), getScreenHeight());
                 GuiUtil.enableStackedScissor();
                 blit(matrixStack, x, y, tileTextureX, tileTextureY, TILE_SIZE, TILE_SIZE);
-                GuiUtil.removeScissorBounds(getScreenX(), getScreenY(), width, height);
+                GuiUtil.removeScissorBounds(getScreenX(), getScreenY(), getScreenWidth(), getScreenHeight());
             }
         }
     }
@@ -361,8 +350,8 @@ public class SkillsControl extends Control
     {
         GuiUtil.bindTexture(GuiTextures.SKILLS_WIDGETS);
 
-        int x = (int) (getScreenX() / scale) + moveOffsetX;
-        int y = (int) (getScreenY() / scale) + moveOffsetY;
+        int x = (int) (getScreenX()) + moveOffsetX;
+        int y = (int) (getScreenY()) + moveOffsetY;
 
         // Update the skill control positions
         for (SkillControl skillControl : skillControls)
@@ -417,54 +406,54 @@ public class SkillsControl extends Control
         int localMouseX = toLocalX(e.mouseX);
         int localMouseY = toLocalY(e.mouseY);
 
-        int midMoveX = (int) (moveOffsetX + (SKILL_SIZE / 2 * scale));
-        int midMoveY = (int) (moveOffsetY + (SKILL_SIZE / 2 * scale));
+        int midMoveX = (int) (moveOffsetX + (SKILL_SIZE / 2 * getScale()));
+        int midMoveY = (int) (moveOffsetY + (SKILL_SIZE / 2 * getScale()));
 
-        int mouseMoveX = (int) ((int) (moveOffsetX + (localMouseX * scale)) - ((width - SKILL_SIZE) / 2) * scale);
-        int mouseMoveY = (int) ((int) (moveOffsetY + (localMouseY * scale)) - ((height - SKILL_SIZE) / 2) * scale);
+        int mouseMoveX = (int) ((int) (moveOffsetX + (localMouseX * getScale())) - ((width - SKILL_SIZE) / 2) * getScale());
+        int mouseMoveY = (int) ((int) (moveOffsetY + (localMouseY * getScale())) - ((height - SKILL_SIZE) / 2) * getScale());
 
         // I have literally no idea why this works, but it does (although with some precision issues)
-        int difMoveX1 = (int) ((mouseMoveX - midMoveX) / scale);
-        int difMoveY1 = (int) ((mouseMoveY - midMoveY) / scale);
-        int difMoveX2 = (int) ((mouseMoveX - midMoveX) / scale / scale);
-        int difMoveY2 = (int) ((mouseMoveY - midMoveY) / scale / scale);
+        int difMoveX1 = (int) ((mouseMoveX - midMoveX) / getScale());
+        int difMoveY1 = (int) ((mouseMoveY - midMoveY) / getScale());
+        int difMoveX2 = (int) ((mouseMoveX - midMoveX) / getScale() / getScale());
+        int difMoveY2 = (int) ((mouseMoveY - midMoveY) / getScale() / getScale());
 
         // Zoom in
         if (e.scroll > 0)
         {
-            scale *= 2.0f;
+            setScale(getScale() * 2.0f);
 
-            if (scale > 2.0f)
+            if (getScale() > 2.0f)
             {
-                scale = 2.0f;
+                setScale(2.0f);
             }
             else
             {
-                moveOffsetX -= (width / 2) / scale;
-                moveOffsetY -= (height / 2) / scale;
-                moveOffsetX -= difMoveX1 / scale;
-                moveOffsetY -= difMoveY1 / scale;
+                moveOffsetX -= (width / 2) / getScale();
+                moveOffsetY -= (height / 2) / getScale();
+                moveOffsetX -= difMoveX1 / getScale();
+                moveOffsetY -= difMoveY1 / getScale();
             }
         }
         // Zoom out
         else
         {
-            scale /= 2.0f;
+            setScale(getScale() * 0.25f);
 
-            if (scale < 0.25f)
+            if (getScale() < 0.25f)
             {
-                scale = 0.25f;
+                setScale(0.25f);
             }
             else
             {
-                moveOffsetX += (width / 4) / scale;
-                moveOffsetY += (height / 4) / scale;
+                moveOffsetX += (width / 4) / getScale();
+                moveOffsetY += (height / 4) / getScale();
                 moveOffsetX += difMoveX2;
                 moveOffsetY += difMoveY2;
             }
         }
 
-        resize(width, height, scale);
+        resize(width, height);
 
         e.setIsHandled(true);
     }

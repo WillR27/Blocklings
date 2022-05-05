@@ -71,9 +71,9 @@ public class SkillControl extends Control
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         matrixStack.pushPose();
-        matrixStack.scale(skillsControl.scale, skillsControl.scale, 1.0f);
+//        matrixStack.scale(skillsControl.scale, skillsControl.scale, 1.0f);
 
-        if (!skillsControl.skillBuyConfirmationControl.isVisible() && skillsControl.isMouseOver(mouseX, mouseY) && isMouseOver(mouseX, mouseY, skillsControl.scale))
+        if (!skillsControl.skillBuyConfirmationControl.isVisible() && skillsControl.isMouseOver(mouseX, mouseY) && isMouseOver(mouseX, mouseY))
         {
             GuiUtil.disableScissor();
 
@@ -125,12 +125,12 @@ public class SkillControl extends Control
 
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
 
-        if (isMouseOver(mouseX, mouseY, skillsControl.scale))
+        if (isMouseOver(mouseX, mouseY))
         {
-            matrixStack.popPose();
-
             GuiUtil.enableStackedScissor();
         }
+
+        matrixStack.popPose();
     }
 
     /**
@@ -321,10 +321,10 @@ public class SkillControl extends Control
     {
         Vec2i[] path = new Vec2i[3];
 
-        int x1 = screenX + width / 2;
-        int y1 = screenY + height / 2;
-        int x2 = ability.screenX + ability.width / 2;
-        int y2 = ability.screenY + ability.height / 2;
+        int x1 = screenX + getScreenWidth() / 2;
+        int y1 = screenY + getScreenHeight() / 2;
+        int x2 = ability.screenX + ability.getScreenWidth() / 2;
+        int y2 = ability.screenY + ability.getScreenHeight() / 2;
 
         if (connectionType == ConnectionType.SINGLE_LONGEST_FIRST || connectionType == ConnectionType.SINGLE_SHORTEST_FIRST)
         {
@@ -386,7 +386,7 @@ public class SkillControl extends Control
     @Override
     public void globalMouseReleased(@Nonnull MouseButtonEvent e)
     {
-        if (!skillsControl.isMouseOver(e.mouseX, e.mouseY) || !isMouseOver(e.mouseX, e.mouseY, skillsControl.scale))
+        if (!skillsControl.isMouseOver(e.mouseX, e.mouseY) || !isMouseOver(e.mouseX, e.mouseY))
         {
             isSelected = false;
         }

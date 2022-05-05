@@ -1,5 +1,6 @@
 package com.willr27.blocklings.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -12,6 +13,20 @@ import javax.annotation.Nullable;
 @OnlyIn(Dist.CLIENT)
 public interface IScreen
 {
+    /**
+     * Used to render any screen-specific elements.
+     * This is required to have scaling be correctly applied.
+     *
+     * @param matrixStack the current matrix stack.
+     * @param mouseX the x position of the mouse.
+     * @param mouseY the y position of the mouse.
+     * @param partialTicks the partial ticks.
+     */
+    default void renderScreen(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    {
+
+    }
+
     /**
      * @return whether the key is currently held.
      */

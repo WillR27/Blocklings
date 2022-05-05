@@ -3,13 +3,10 @@ package com.willr27.blocklings.gui.screens;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.gui.Control;
-import com.willr27.blocklings.gui.GuiUtil;
-import com.willr27.blocklings.gui.IControl;
-import com.willr27.blocklings.gui.IScreen;
+import com.willr27.blocklings.gui.*;
 import com.willr27.blocklings.gui.controls.TabbedControl;
+import com.willr27.blocklings.gui.controls.TexturedControl;
 import com.willr27.blocklings.util.event.EventHandler;
-import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,7 +24,7 @@ import java.util.Map;
  * A screen that includes the blockling gui tabs.
  */
 @OnlyIn(Dist.CLIENT)
-public class TabbedScreen extends Screen implements IControl, IScreen
+public class TestScreen extends Screen implements IControl, IScreen
 {
     /**
      * The blockling.
@@ -55,41 +52,6 @@ public class TabbedScreen extends Screen implements IControl, IScreen
      * The y position in the center of the screen.
      */
     protected int centerY;
-
-    /**
-     * The x position at the left of the gui's tabs.
-     */
-    protected int left;
-
-    /**
-     * The y position at the top of the gui.
-     */
-    protected int top;
-
-    /**
-     * The x position at the left of the gui excluding the tabs.
-     */
-    protected int contentLeft;
-
-    /**
-     * The y position at the top of the gui excluding.
-     */
-    protected int contentTop;
-
-    /**
-     * The x position at the right of the gui excluding the tabs.
-     */
-    protected int contentRight;
-
-    /**
-     * The y position at the bottom of the gui excluding.
-     */
-    protected int contentBottom;
-
-    /**
-     * The control used to the draw and handle the tabs.
-     */
-    public TabbedControl tabbedControl;
 
     /**
      * The list of child controls.
@@ -196,7 +158,7 @@ public class TabbedScreen extends Screen implements IControl, IScreen
     /**
      * @param blockling the blockling.
      */
-    public TabbedScreen(@Nonnull BlocklingEntity blockling)
+    public TestScreen(@Nonnull BlocklingEntity blockling)
     {
         super(new StringTextComponent(""));
         this.blockling = blockling;
@@ -214,7 +176,7 @@ public class TabbedScreen extends Screen implements IControl, IScreen
     {
         super.init();
 
-        scale = (float) Minecraft.getInstance().getWindow().getGuiScale();
+        this.scale = (float) Minecraft.getInstance().getWindow().getGuiScale();
 
         children.clear();
 
@@ -224,16 +186,47 @@ public class TabbedScreen extends Screen implements IControl, IScreen
         centerX = width / 2;
         centerY = height / 2 + TabbedControl.OFFSET_Y;
 
-        left = centerX - TabbedControl.GUI_WIDTH / 2;
-        top = centerY - TabbedControl.GUI_HEIGHT / 2;
+        TexturedControl texturedControl = new TexturedControl(this, 0, 0, GuiTextures.FLAT_BAR)
+        {
+            @Override
+            public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+            {
+                super.render(matrixStack, mouseX, mouseY, partialTicks);
+            }
 
-        contentLeft = centerX - TabbedControl.CONTENT_WIDTH / 2;
-        contentTop = top;
-        contentRight = contentLeft + TabbedControl.CONTENT_WIDTH;
-        contentBottom = contentTop + TabbedControl.CONTENT_HEIGHT;
+            @Override
+            public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+            {
+                setX(2);
+                setY(2);
+                setScale(2.0f);
+                screen.renderTooltip(matrixStack, new StringTextComponent("FLAT"), mouseX, mouseY);
+            }
+        };
 
-        removeChild(tabbedControl);
-        tabbedControl = new TabbedControl(this, blockling, left, top);
+        TexturedControl texturedControl2 = new TexturedControl(texturedControl, 0, 0, GuiTextures.DROPDOWN_UP_ARROW)
+        {
+            @Override
+            public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+            {
+                setX(3);
+                setY(-1);
+                setScale(2.0f);
+                screen.renderTooltip(matrixStack, new StringTextComponent("ARROW"), mouseX, mouseY);
+            }
+        };
+
+        TexturedControl texturedControl3 = new TexturedControl(texturedControl, 0, 0, GuiTextures.DROPDOWN_DOWN_ARROW)
+        {
+            @Override
+            public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+            {
+                setX(20);
+                setY(-1);
+                setScale(2.0f);
+                screen.renderTooltip(matrixStack, new StringTextComponent("ARROW"), mouseX, mouseY);
+            }
+        };
 
         Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
     }
@@ -297,6 +290,13 @@ public class TabbedScreen extends Screen implements IControl, IScreen
         matrixStack.popPose();
 
         GuiUtil.useGuiScaleForScissor = true;
+    }
+
+    @Override
+    public void renderScreen(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    {
+        GuiUtil.bindTexture(GuiTextures.STATS);
+        blit(matrixStack, 0, 0, 0, 0, TabbedControl.CONTENT_WIDTH, TabbedControl.CONTENT_HEIGHT);
     }
 
     @Override
@@ -409,6 +409,15 @@ public class TabbedScreen extends Screen implements IControl, IScreen
         }
 
         return super.charTyped(character, keyCode);
+    }
+
+    @Override
+    public void globalKeyPressed(@Nonnull KeyEvent e)
+    {
+        if (GuiUtil.isCloseInventoryKey(e.keyCode))
+        {
+            onClose();
+        }
     }
 
     @Override

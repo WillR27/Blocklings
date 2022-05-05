@@ -64,7 +64,6 @@ public class LevelControl extends Control
 
         renderTexture(matrixStack, getTexture(level));
         renderTexture(matrixStack, width - getTexture(level + 1).width, 0, getTexture(level + 1));
-        xpBar.render(matrixStack, mouseX, mouseY, 0);
     }
 
     @Override

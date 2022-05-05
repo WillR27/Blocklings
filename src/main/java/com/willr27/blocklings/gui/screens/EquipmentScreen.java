@@ -38,7 +38,7 @@ public class EquipmentScreen extends TabbedContainerScreen<EquipmentContainer>
         GuiUtil.bindTexture(GuiTextures.EQUIPMENT);
         blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedControl.CONTENT_WIDTH, TabbedControl.CONTENT_HEIGHT);
 
-        GuiUtil.renderEntityOnScreen(centerX - 58, centerY - 38, 20, centerX - 58 - mouseX, centerY - 38 - mouseY, blockling);
+        GuiUtil.renderEntityOnScreen(matrixStack, centerX - 58, centerY - 38, 20, centerX - 58 - mouseX, centerY - 38 - mouseY, blockling);
 
         super.renderBg(matrixStack, partialTicks, mouseX, mouseY);
     }

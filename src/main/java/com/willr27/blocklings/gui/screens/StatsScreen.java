@@ -242,29 +242,31 @@ public class StatsScreen extends TabbedScreen
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void renderScreen(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
+        mouseX /= getEffectiveScale();
+        mouseY /= getEffectiveScale();
+
         GuiUtil.bindTexture(GuiTextures.STATS);
         blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedControl.CONTENT_WIDTH, TabbedControl.CONTENT_HEIGHT);
 
-        GuiUtil.renderEntityOnScreen(centerX, centerY + 10, 35, centerX - mouseX, centerY - mouseY, blockling);
-
+        RenderSystem.enableDepthTest();
         nameField.render(matrixStack, mouseX, mouseY, partialTicks);
         RenderSystem.enableDepthTest();
 
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
+        GuiUtil.renderEntityOnScreen(matrixStack, centerX, centerY + 10, 35, centerX - mouseX, centerY - mouseY, blockling);
     }
 
     @Override
     public void globalMouseClicked(@Nonnull MouseButtonEvent e)
     {
-        nameField.mouseClicked(e.mouseX, e.mouseY, e.button);
+        nameField.mouseClicked(e.mouseX / getEffectiveScale(), e.mouseY / getEffectiveScale(), e.button);
     }
 
     @Override
     public void globalMouseReleased(@Nonnull MouseButtonEvent e)
     {
-        nameField.mouseReleased(e.mouseX, e.mouseY, e.button);
+        nameField.mouseReleased(e.mouseX / getEffectiveScale(), e.mouseY / getEffectiveScale(), e.button);
     }
 
     @Override

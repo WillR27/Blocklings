@@ -118,6 +118,11 @@ public class Control extends AbstractGui implements IControl
     public int height;
 
     /**
+     * The control's scale.
+     */
+    private float scale;
+
+    /**
      * The padding of the control.
      */
     private final Map<Side, Integer> padding = new HashMap<>(4);
@@ -218,6 +223,7 @@ public class Control extends AbstractGui implements IControl
         this.font = Minecraft.getInstance().font;
         this.width = width;
         this.height = height;
+        this.scale = 1.0f;
 
         padding.put(Side.LEFT, 0);
         padding.put(Side.TOP, 0);
@@ -656,10 +662,10 @@ public class Control extends AbstractGui implements IControl
 
         if (parent != null)
         {
-            parentOffset = parent.getScreenX() - parent.getScrollX() + parent.getPadding(Side.LEFT);
+            parentOffset = (int) (parent.getScreenX() - (parent.getScrollX() - parent.getPadding(Side.LEFT)) * parent.getEffectiveScale());
         }
 
-        screenX = parentOffset + getMargin(Side.LEFT) + x;
+        screenX = parentOffset + (int) ((getMargin(Side.LEFT) + x) * getEffectiveScale());
 
         getChildren().forEach(Control::recalcScreenX);
     }
@@ -679,10 +685,10 @@ public class Control extends AbstractGui implements IControl
 
         if (parent != null)
         {
-            parentOffset = parent.getScreenY() - parent.getScrollY() + parent.getPadding(Side.TOP);
+            parentOffset = (int) (parent.getScreenY() - (parent.getScrollY() - parent.getPadding(Side.LEFT)) * parent.getEffectiveScale());
         }
 
-        screenY = parentOffset + getMargin(Side.TOP) + y;
+        screenY = parentOffset + (int) ((getMargin(Side.LEFT) + y) * getEffectiveScale());
 
         getChildren().forEach(Control::recalcScreenY);
     }
@@ -691,6 +697,14 @@ public class Control extends AbstractGui implements IControl
     public int getScreenY()
     {
         return screenY;
+    }
+
+    /**
+     * @return the width of the control, including margins.
+     */
+    public int getEffectiveWidth()
+    {
+        return width + getMargin(Side.LEFT) + getMargin(Side.RIGHT);
     }
 
     @Override
@@ -708,11 +722,11 @@ public class Control extends AbstractGui implements IControl
     }
 
     /**
-     * Sets the height of the control.
+     * @return the height of the control, including margins.
      */
-    public void setHeight(int height)
+    public int getEffectiveHeight()
     {
-        this.height = height;
+        return height + getMargin(Side.TOP) + getMargin(Side.BOTTOM);
     }
 
     @Override
@@ -722,19 +736,26 @@ public class Control extends AbstractGui implements IControl
     }
 
     /**
-     * @return the width of the control, including margins.
+     * Sets the height of the control.
      */
-    public int getEffectiveWidth()
+    public void setHeight(int height)
     {
-        return width + getMargin(Side.LEFT) + getMargin(Side.RIGHT);
+        this.height = height;
     }
 
-    /**
-     * @return the height of the control, including margins.
-     */
-    public int getEffectiveHeight()
+    @Override
+    public float getScale()
     {
-        return height + getMargin(Side.TOP) + getMargin(Side.BOTTOM);
+        return scale;
+    }
+
+    @Override
+    public void setScale(float scale)
+    {
+        this.scale = scale;
+
+        recalcScreenX();
+        recalcScreenY();
     }
 
     @Override

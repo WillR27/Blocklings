@@ -115,11 +115,11 @@ public class EntryControl extends Control
 
             if (entity instanceof BlocklingEntity)
             {
-                GuiUtil.renderEntityOnScreen(screenX + width / 2, screenY + width / 2 + 11, 20, 25, -10, whitelist.blockling);
+                GuiUtil.renderEntityOnScreen(matrixStack, screenX + width / 2, screenY + width / 2 + 11, 20, 25, -10, whitelist.blockling);
             }
             else
             {
-                GuiUtil.renderEntityOnScreen(screenX + width / 2, screenY + width / 2 + 11, 20, 25, -10, entity);
+                GuiUtil.renderEntityOnScreen(matrixStack, screenX + width / 2, screenY + width / 2 + 11, 20, 25, -10, entity);
             }
         }
 

@@ -5,13 +5,16 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.gui.controls.common.ScrollbarControl;
 import com.willr27.blocklings.util.event.Event;
 import com.willr27.blocklings.util.event.EventHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * Represents some kind of control (including the screen itself).
@@ -149,7 +152,15 @@ public interface IControl
                     matrixStack.translate(0.0f, 0.0f, 10.0f);
                 }
 
+                // Scale the control, but also make sure to cancel out the translation caused by the scaling.
+                matrixStack.scale(getEffectiveScale(), getEffectiveScale(), 1.0f);
+                matrixStack.translate((getScreenX() / getEffectiveScale()) - getScreenX(), (getScreenY() / getEffectiveScale()) - getScreenY(), 0.0f);
+
                 render(matrixStack, mouseX, mouseY, partialTicks);
+
+                // Revert the previous transformations.
+                matrixStack.translate(getScreenX() - (getScreenX() / getEffectiveScale()), getScreenY() - (getScreenY() / getEffectiveScale()), 0.0f);
+                matrixStack.scale(1.0f / getEffectiveScale(), 1.0f / getEffectiveScale(), 1.0f);
             }
         }
 
@@ -475,7 +486,7 @@ public interface IControl
      */
     default void enableScissor()
     {
-        GuiUtil.addScissorBounds(getScreenX(), getScreenY(), getWidth(), getHeight());
+        GuiUtil.addScissorBounds(getScreenX(), getScreenY(), getScreenWidth(), getScreenHeight());
         GuiUtil.enableStackedScissor();
     }
 
@@ -484,7 +495,7 @@ public interface IControl
      */
     default void disableScissor()
     {
-        GuiUtil.removeScissorBounds(getScreenX(), getScreenY(), getWidth(), getHeight());
+        GuiUtil.removeScissorBounds(getScreenX(), getScreenY(), getScreenWidth(), getScreenHeight());
         GuiUtil.disableScissor();
     }
 
@@ -495,7 +506,7 @@ public interface IControl
      */
     default boolean isMouseOver(int mouseX, int mouseY)
     {
-        return GuiUtil.isMouseOver(mouseX, mouseY, getScreenX(), getScreenY(), getWidth(), getHeight());
+        return GuiUtil.isMouseOver(mouseX, mouseY, getScreenX(), getScreenY(), getScreenWidth(), getScreenHeight());
     }
 
     /**
@@ -676,9 +687,49 @@ public interface IControl
     int getWidth();
 
     /**
+     * @return the width of the control on the screen.
+     */
+    default int getScreenWidth()
+    {
+        return (int) (getEffectiveScale() * getWidth());
+    }
+
+    /**
      * @return the height of the control.
      */
     int getHeight();
+
+    /**
+     * @return the height of the control on the screen.
+     */
+    default int getScreenHeight()
+    {
+        return (int) (getEffectiveScale() * getHeight());
+    }
+
+    /**
+     * @return the cumulative scale of the control including all parent's scales.
+     */
+    default float getEffectiveScale()
+    {
+        return getScale() * (getParent() != null ? getParent().getEffectiveScale() : 1.0f);
+    }
+
+    /**
+     * @return the control's scale.
+     */
+    default float getScale()
+    {
+        return 1.0f;
+    }
+
+    /**
+     * Sets the control's scale.
+     */
+    default void setScale(float scale)
+    {
+
+    }
 
     /**
      * @return the padding for the given side.
