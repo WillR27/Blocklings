@@ -86,7 +86,6 @@ public abstract class BlocklingMessage<T extends BlocklingMessage<T>> implements
      * Decodes the message.
      *
      * @param buf the buffer to decode from.
-     * @return the instance of this message.
      */
     public void decode(@Nonnull PacketBuffer buf)
     {

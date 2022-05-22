@@ -3,6 +3,8 @@ package com.willr27.blocklings.goal.goals;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.task.BlocklingTasks;
+import com.willr27.blocklings.task.config.RangeProperty;
+import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.pathfinding.PathNavigator;
 import net.minecraft.pathfinding.PathNodeType;
@@ -24,12 +26,14 @@ public class BlocklingFollowGoal extends BlocklingGoal
     /**
      * The distance to stop following at.
      */
-    private final float stopDistance = 2.0f;
+    @Nonnull
+    private final RangeProperty stopDistance;
 
     /**
      * The distance to start following at.
      */
-    private final float startDistance = 4.0f;
+    @Nonnull
+    private final RangeProperty startDistance;
 
     /**
      * The navigator used for pathing.
@@ -52,13 +56,21 @@ public class BlocklingFollowGoal extends BlocklingGoal
      */
     private float oldWaterCost;
 
-    public BlocklingFollowGoal(UUID id, BlocklingEntity blockling, BlocklingTasks goals)
+    /**
+     * @param id the id associated with the goal's task.
+     * @param blockling the blockling.
+     * @param tasks the blockling tasks.
+     */
+    public BlocklingFollowGoal(@Nonnull UUID id, @Nonnull BlocklingEntity blockling, @Nonnull BlocklingTasks tasks)
     {
-        super(id, blockling, goals);
+        super(id, blockling, tasks);
 
         this.navigation = blockling.getNavigation();
 
         setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+
+        properties.add(startDistance = new RangeProperty(this, new BlocklingsTranslationTextComponent("task.property.follow_start_range"), 1, 20, 4));
+        properties.add(stopDistance = new RangeProperty(this, new BlocklingsTranslationTextComponent("task.property.follow_stop_range"), 1, 20, 2));
     }
 
     @Override
@@ -79,7 +91,7 @@ public class BlocklingFollowGoal extends BlocklingGoal
         {
             return false;
         }
-        else if (blockling.distanceToSqr(owner) < (double) (startDistance * startDistance))
+        else if (blockling.distanceToSqr(owner) < (double) (startDistance.value * startDistance.value))
         {
             return false;
         }
@@ -105,7 +117,7 @@ public class BlocklingFollowGoal extends BlocklingGoal
         }
         else
         {
-            return !(blockling.distanceToSqr(owner) <= (double) (stopDistance * stopDistance));
+            return !(blockling.distanceToSqr(owner) <= (double) (stopDistance.value * stopDistance.value));
         }
     }
 

@@ -9,6 +9,8 @@ import com.willr27.blocklings.attribute.attributes.numbers.ModifiableFloatAttrib
 import com.willr27.blocklings.attribute.attributes.numbers.ModifiableIntAttribute;
 import com.willr27.blocklings.gui.BlocklingGuiHandler;
 import com.willr27.blocklings.network.messages.*;
+import com.willr27.blocklings.task.config.Property;
+import com.willr27.blocklings.task.config.RangeProperty;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -70,8 +72,9 @@ public class NetworkHandler
         registerMessage(TaskPriorityMessage.class);
         registerMessage(TaskRemoveMessage.class);
         registerMessage(TaskCustomNameMessage.class);
-        registerMessage(TaskTypeMessage.class);
+        registerMessage(RangeProperty.TaskRangePropertyMessage.class);
         registerMessage(TaskSwapPriorityMessage.class);
+        registerMessage(TaskTypeMessage.class);
         registerMessage(TaskTypeIsUnlockedMessage.class);
         registerMessage(WhitelistAllMessage.class);
         registerMessage(WhitelistIsUnlockedMessage.class);

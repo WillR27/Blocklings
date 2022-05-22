@@ -787,6 +787,14 @@ public interface IControl
     }
 
     /**
+     * Sets all the margins on the control.
+     */
+    default void setMargins(int left, int top, int right, int bottom)
+    {
+
+    }
+
+    /**
      * @return whether the control is visible.
      */
     default boolean isVisible()

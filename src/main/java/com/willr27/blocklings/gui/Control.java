@@ -814,9 +814,7 @@ public class Control extends AbstractGui implements IControl
         }
     }
 
-    /**
-     * Sets all the margins on the control.
-     */
+    @Override
     public void setMargins(int left, int top, int right, int bottom)
     {
         margins.put(Side.LEFT, left);

@@ -7,9 +7,11 @@ import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.IControl;
 import com.willr27.blocklings.gui.screens.TasksScreen;
 import net.minecraft.util.text.StringTextComponent;
+import org.jline.utils.Log;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A control used to display and edit a range.
@@ -60,9 +62,10 @@ public class RangeControl extends Control
      * @param parent the parent control.
      * @param min the minimum value.
      * @param max the maximum value.
+     * @param startingValue the starting value.
      * @param textFieldWidth the width of the text field.
      */
-    public RangeControl(@Nonnull IControl parent, int min, int max, int textFieldWidth)
+    public RangeControl(@Nonnull IControl parent, int min, int max, int startingValue, int textFieldWidth)
     {
         super(parent, 0, 0, parent.getWidth() - parent.getPadding(Side.LEFT) - parent.getPadding(Side.RIGHT), 20);
         this.min = min;
@@ -98,7 +101,7 @@ public class RangeControl extends Control
         valueTextFieldControl.setVisible(true);
         valueTextFieldControl.setTextColor(16777215);
 
-        setValue(min);
+        setValue(startingValue);
     }
 
     @Override
@@ -206,6 +209,14 @@ public class RangeControl extends Control
     }
 
     /**
+     * @return the value from the given percentage.
+     */
+    private int calcValueFromPercentage(float percentage)
+    {
+        return Math.round((percentage * (max - min)) + min);
+    }
+
+    /**
      * @return the current value of the range.
      */
     public int getValue()
@@ -240,7 +251,7 @@ public class RangeControl extends Control
      */
     public void setPercentage(float percentage)
     {
-        setValue(Math.round((percentage * (max - min)) + min));
+        setValue(calcValueFromPercentage(percentage));
     }
 
     /**
@@ -267,7 +278,12 @@ public class RangeControl extends Control
         {
             if (isDragging())
             {
-                rangeControl.setPercentage(rangeControl.calcPercentageFromMouse(mouseX));
+                int value = rangeControl.calcValueFromPercentage(rangeControl.calcPercentageFromMouse(mouseX));
+
+                if (value != rangeControl.value)
+                {
+                    rangeControl.setValue(value);
+                }
             }
         }
 

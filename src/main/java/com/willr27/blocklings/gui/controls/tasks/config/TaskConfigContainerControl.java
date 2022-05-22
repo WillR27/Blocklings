@@ -14,6 +14,7 @@ import com.willr27.blocklings.gui.controls.tasks.config.configs.TaskTypeConfigCo
 import com.willr27.blocklings.gui.controls.tasks.config.configs.WhitelistConfigControl;
 import com.willr27.blocklings.gui.screens.TasksScreen;
 import com.willr27.blocklings.task.Task;
+import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -116,7 +117,7 @@ public class TaskConfigContainerControl extends Control
 
         removeChild(tabControl);
         tabControl = new TabControl(this,9, 33, 140);
-        tabControl.add("Type", () -> { removeChild(currentConfigGui); currentConfigGui = new TaskMiscConfigControl(this, task, 9, 46, 140, 112, contentScrollbarControl); currentConfigGui.setZIndex(2); });
+        tabControl.add(new BlocklingsTranslationTextComponent("task.ui.tab.misc").getString(), () -> { removeChild(currentConfigGui); currentConfigGui = new TaskMiscConfigControl(this, task, 9, 46, 140, 112, contentScrollbarControl); currentConfigGui.setZIndex(2); });
 
         if (task.isConfigured() && !task.getGoal().whitelists.isEmpty())
         {

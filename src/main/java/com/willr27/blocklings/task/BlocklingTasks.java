@@ -8,6 +8,7 @@ import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.network.messages.TaskCreateMessage;
 import com.willr27.blocklings.network.messages.TaskRemoveMessage;
 import com.willr27.blocklings.network.messages.TaskTypeIsUnlockedMessage;
+import com.willr27.blocklings.task.config.Property;
 import com.willr27.blocklings.util.PacketBufferUtils;
 import com.willr27.blocklings.util.event.Event;
 import com.willr27.blocklings.util.event.EventHandler;
@@ -17,6 +18,7 @@ import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.ai.goal.PrioritizedGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
@@ -163,7 +165,15 @@ public class BlocklingTasks
                     whitelist.writeToNBT(whitelistsTag);
                 }
 
+                ListNBT propertiesTag = new ListNBT();
+
+                for (Property property : task.getGoal().properties)
+                {
+                    property.writeToNBT(propertiesTag);
+                }
+
                 taskTag.put("whitelists", whitelistsTag);
+                taskTag.put("properties", propertiesTag);
                 taskTag.putInt("state", task.getGoal().getState().ordinal());
             }
 
@@ -213,6 +223,18 @@ public class BlocklingTasks
                     whitelist.readFromNBT(whitelistsTag);
                 }
 
+                ListNBT propertiesTag = (ListNBT) taskTag.get("properties");
+
+                if (propertiesTag != null)
+                {
+                    int i = 0;
+                    for (Property property : task.getGoal().properties)
+                    {
+                        property.readFromNBT(propertiesTag.getCompound(i));
+                        i++;
+                    }
+                }
+
                 task.getGoal().setState(BlocklingGoal.State.values()[taskTag.getInt("state")], false);
             }
         }
@@ -244,6 +266,11 @@ public class BlocklingTasks
                     whitelist.encode(buf);
                 }
 
+                for (Property property : task.getGoal().properties)
+                {
+                    property.encode(buf);
+                }
+
                 buf.writeEnum(task.getGoal().getState());
             }
         }
@@ -273,6 +300,11 @@ public class BlocklingTasks
                 for (GoalWhitelist whitelist : task.getGoal().whitelists)
                 {
                     whitelist.decode(buf);
+                }
+
+                for (Property property : task.getGoal().properties)
+                {
+                    property.decode(buf);
                 }
 
                 task.getGoal().setState(buf.readEnum(BlocklingGoal.State.class), false);

@@ -4,6 +4,8 @@ import com.willr27.blocklings.block.BlockUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.network.messages.GoalStateMessage;
 import com.willr27.blocklings.task.BlocklingTasks;
+import com.willr27.blocklings.task.Task;
+import com.willr27.blocklings.task.config.Property;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.util.math.BlockPos;
@@ -45,6 +47,12 @@ public abstract class BlocklingGoal extends Goal
      */
     @Nonnull
     public final List<GoalWhitelist> whitelists = new ArrayList<>();
+
+    /**
+     * The list of properties configurable by the user.
+     */
+    @Nonnull
+    public final List<Property> properties = new ArrayList<>();
 
     /**
      * The current state of the goal.
@@ -146,6 +154,15 @@ public abstract class BlocklingGoal extends Goal
     public boolean isInRange(@Nonnull BlockPos blockPos, float rangeSq)
     {
         return BlockUtil.distanceSq(blockling.blockPosition(), blockPos) <= rangeSq;
+    }
+
+    /**
+     * @return the associated task.
+     */
+    @Nonnull
+    public Task getTask()
+    {
+        return tasks.getTask(id);
     }
 
     /**

@@ -1,6 +1,8 @@
 package com.willr27.blocklings.gui.controls.tasks.config.configs;
 
+import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.gui.GuiUtil;
+import com.willr27.blocklings.gui.IControl;
 import com.willr27.blocklings.gui.controls.common.LabelControl;
 import com.willr27.blocklings.gui.controls.common.RangeControl;
 import com.willr27.blocklings.gui.controls.common.ScrollbarControl;
@@ -11,6 +13,8 @@ import com.willr27.blocklings.gui.controls.tasks.config.TaskConfigContainerContr
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.task.TaskType;
+import com.willr27.blocklings.task.config.Property;
+import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -67,7 +71,7 @@ public class TaskMiscConfigControl extends ConfigControl
         stackPanel.setPadding(4, 9, 4, 4);
         stackPanel.setScrollbarY(contentScrollbarControl);
 
-        LabelControl taskTypeLabelControl = new LabelControl(stackPanel, width - stackPanel.getPadding(Side.LEFT) - stackPanel.getPadding(Side.RIGHT), "Task Type");
+        LabelControl taskTypeLabelControl = new LabelControl(stackPanel, width - stackPanel.getPadding(Side.LEFT) - stackPanel.getPadding(Side.RIGHT), new BlocklingsTranslationTextComponent("task.ui.task_type").getString());
         taskTypeLabelControl.setMargins(0, 0, 0, 3);
 
         taskTypeDropdownControl = new DropdownControl(stackPanel, 0, 0, width - 8);
@@ -88,7 +92,16 @@ public class TaskMiscConfigControl extends ConfigControl
                     }
                 });
 
-        RangeControl rangeControl = new RangeControl(stackPanel, 1, 10, 20);
+        if (task.isConfigured())
+        {
+            BlocklingGoal goal = task.getGoal();
+
+            for (Property property : goal.properties)
+            {
+                new LabelControl(stackPanel, width - stackPanel.getPadding(Side.LEFT) - stackPanel.getPadding(Side.RIGHT), property.name.getString()).setMargins(0, 10, 0, 3);
+                property.createControl(stackPanel).setMargins(0, 0, 0, 0);
+            }
+        }
     }
 
     /**
