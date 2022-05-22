@@ -255,7 +255,7 @@ public class DropdownControl extends Control
 
             if (item != null)
             {
-                renderShadowedText(matrixStack, GuiUtil.trimWithEllipses(font, item.toString(), width - 23 - textOffset), 5 + textOffset, 6, false, 0xffffffff);
+                renderText(matrixStack, GuiUtil.trimWithEllipses(font, item.toString(), width - 23 - textOffset), 5 + textOffset, 6, false, 0xffffffff);
             }
         }
 

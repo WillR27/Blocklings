@@ -93,6 +93,34 @@ public interface IControl
     }
 
     /**
+     * Calls all tick methods each tick.
+     * This is useful for things like ticking the cursor in a text field.
+     */
+    default void tickAll()
+    {
+        if (!isVisible())
+        {
+            return;
+        }
+
+        if (getParent() != null)
+        {
+            tick();
+        }
+
+        getChildrenCopy().forEach(IControl::tickAll);
+    }
+
+    /**
+     * Called each tick.
+     * This is useful for things like ticking the cursor in a text field.
+     */
+    default void tick()
+    {
+
+    }
+
+    /**
      * Calls all preRender methods before any render methods are called each frame.
      * This is useful for things like updating the position of the control.
      *
@@ -147,11 +175,6 @@ public interface IControl
 
             if (isVisible())
             {
-                if (isDragging())
-                {
-                    matrixStack.translate(0.0f, 0.0f, 10.0f);
-                }
-
                 // Scale the control, but also make sure to cancel out the translation caused by the scaling.
                 matrixStack.scale(getEffectiveScale(), getEffectiveScale(), 1.0f);
                 matrixStack.translate((getScreenX() / getEffectiveScale()) - getScreenX(), (getScreenY() / getEffectiveScale()) - getScreenY(), 0.0f);
@@ -207,9 +230,9 @@ public interface IControl
      */
     default void forwardGlobalMouseClicked(@Nonnull MouseButtonEvent e)
     {
-        globalMouseClicked(e);
-
         getReverseChildrenCopy().forEach(control -> control.forwardGlobalMouseClicked(e));
+
+        globalMouseClicked(e);
     }
 
     /**
@@ -266,9 +289,9 @@ public interface IControl
      */
     default void forwardGlobalMouseReleased(@Nonnull MouseButtonEvent e)
     {
-        globalMouseReleased(e);
-
         getReverseChildrenCopy().forEach(control -> control.forwardGlobalMouseReleased(e));
+
+        globalMouseReleased(e);
     }
 
     /**
@@ -327,9 +350,9 @@ public interface IControl
      */
     default void forwardGlobalMouseScrolled(@Nonnull MouseScrollEvent e)
     {
-        globalMouseScrolled(e);
-
         getReverseChildrenCopy().forEach(control -> control.forwardGlobalMouseScrolled(e));
+
+        globalMouseScrolled(e);
     }
 
 
@@ -382,9 +405,9 @@ public interface IControl
      */
     default void forwardGlobalKeyPressed(@Nonnull KeyEvent e)
     {
-        globalKeyPressed(e);
-
         getReverseChildrenCopy().forEach(control -> control.forwardGlobalKeyPressed(e));
+
+        globalKeyPressed(e);
     }
 
     /**
@@ -408,9 +431,9 @@ public interface IControl
      */
     default void forwardGlobalKeyReleased(@Nonnull KeyEvent e)
     {
-        globalKeyReleased(e);
-
         getReverseChildrenCopy().forEach(control -> control.forwardGlobalKeyReleased(e));
+
+        globalKeyReleased(e);
     }
 
     /**
@@ -434,9 +457,9 @@ public interface IControl
      */
     default void forwardGlobalKeyHeld(@Nonnull KeyEvent e)
     {
-        globalKeyHeld(e);
-
         getReverseChildrenCopy().forEach(control -> control.forwardGlobalKeyHeld(e));
+
+        globalKeyHeld(e);
     }
 
     /**
@@ -460,9 +483,9 @@ public interface IControl
      */
     default void forwardGlobalCharTyped(@Nonnull CharEvent e)
     {
-        globalCharTyped(e);
-
         getReverseChildrenCopy().forEach(control -> control.forwardGlobalCharTyped(e));
+
+        globalCharTyped(e);
     }
 
     /**

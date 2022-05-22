@@ -36,7 +36,7 @@ public class TasksScreen extends TabbedScreen
     /**
      * The panel containing the task controls.
      */
-    private StackPanel tasksPanel;
+    public StackPanel tasksPanel;
 
     /**
      * The scrollbar used to scroll the list of tasks.
@@ -55,6 +55,13 @@ public class TasksScreen extends TabbedScreen
     protected void init()
     {
         super.init();
+
+        boolean isVisible = true;
+
+        if (tasksPanel != null)
+        {
+            isVisible = tasksPanel.isVisible();
+        }
 
         removeChild(tasksPanel);
         tasksPanel = new StackPanel(this, contentLeft + 9, contentTop + 17, 140, 141)
@@ -128,6 +135,7 @@ public class TasksScreen extends TabbedScreen
                 closestTaskControl.task.setPriority(taskControl.task.getPriority());
             }
         });
+        tasksPanel.setIsVisible(isVisible);
 
         for (int i = 0; i < blockling.getTasks().getPrioritisedTasks().size(); i++)
         {
@@ -151,10 +159,7 @@ public class TasksScreen extends TabbedScreen
     @Override
     public void tick()
     {
-        if (taskConfigControl != null)
-        {
-            taskConfigControl.nameTextFieldControl.tick();
-        }
+        super.tick();
     }
 
     @Override
@@ -163,7 +168,7 @@ public class TasksScreen extends TabbedScreen
         GuiUtil.bindTexture(GuiTextures.TASKS);
         blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedControl.CONTENT_WIDTH, TabbedControl.CONTENT_HEIGHT);
 
-        if (taskConfigControl == null)
+        if (taskConfigControl == null || !taskConfigControl.isVisible())
         {
             font.drawShadow(matrixStack, new BlocklingsTranslationTextComponent("tab.tasks"), contentLeft + 8, contentTop + 5, 0xffffff);
         }
@@ -182,6 +187,8 @@ public class TasksScreen extends TabbedScreen
         }
 
         taskConfigControl = new TaskConfigContainerControl(this, task, contentLeft, contentTop);
+
+        tasksPanel.setIsVisible(false);
     }
 
     @Override
@@ -192,6 +199,17 @@ public class TasksScreen extends TabbedScreen
             onClose();
 
             e.setIsHandled(true);
+        }
+    }
+
+    @Override
+    public void setIsVisible(boolean isVisible)
+    {
+        super.setIsVisible(isVisible);
+
+        if (isVisible)
+        {
+            tasksPanel.setIsVisible(true);
         }
     }
 

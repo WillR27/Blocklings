@@ -11,6 +11,7 @@ import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.controls.TexturedControl;
 import com.willr27.blocklings.skill.Skill;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;
 
 import javax.annotation.Nonnull;
@@ -65,7 +66,7 @@ public class SkillControl extends Control
         super(skillsControl, skill.info.gui.x, skill.info.gui.y, skill.info.gui.iconTexture.width, skill.info.gui.iconTexture.height);
         this.skillsControl = skillsControl;
         this.skill = skill;
-    }
+   }
 
     @Override
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
@@ -77,9 +78,15 @@ public class SkillControl extends Control
         {
             GuiUtil.disableScissor();
 
+            matrixStack.translate(getScreenX() - (getScreenX() / getEffectiveScale()), getScreenY() - (getScreenY() / getEffectiveScale()), 0.0f);
+            matrixStack.scale(1.0f / getEffectiveScale(), 1.0f / getEffectiveScale(), 1.0f);
+
             matrixStack.translate(0.0, 0.0, 10.0);
 
             renderHover(matrixStack);
+
+            matrixStack.scale(getEffectiveScale(), getEffectiveScale(), 1.0f);
+            matrixStack.translate((getScreenX() / getEffectiveScale()) - getScreenX(), (getScreenY() / getEffectiveScale()) - getScreenY(), 0.0f);
         }
 
         Skill.State state = skill.getState();
@@ -139,8 +146,7 @@ public class SkillControl extends Control
      * @param matrixStack the matrix stack.
      */
     public void renderHover(@Nonnull MatrixStack matrixStack)
-    {
-        Skill.State state = skill.getState();
+    {Skill.State state = skill.getState();
         String name = skill.info.general.name.getString();
         int maxWidth = font.width(name) + skill.info.gui.iconTexture.width + PADDING - 1;
         List<String> description = GuiUtil.splitText(font, skill.info.general.desc.getString(), Math.max(maxWidth, 130));
@@ -201,29 +207,57 @@ public class SkillControl extends Control
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
 
         TexturedControl texturedControl = new TexturedControl(this, startX, descY - DESCRIPTION_START_OFFSET_Y, new GuiTexture(GuiTextures.SKILLS, 0, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH, maxWidth, DESCRIPTION_START_OFFSET_Y));
+        matrixStack.scale(texturedControl.getEffectiveScale(), texturedControl.getEffectiveScale(), 1.0f);
+        matrixStack.translate((texturedControl.getScreenX() / texturedControl.getEffectiveScale()) - texturedControl.getScreenX(), (texturedControl.getScreenY() / texturedControl.getEffectiveScale()) - texturedControl.getScreenY(), 0.0f);
         texturedControl.render(matrixStack, 0, 0, 0);
+        matrixStack.translate(texturedControl.getScreenX() - (texturedControl.getScreenX() / texturedControl.getEffectiveScale()), texturedControl.getScreenY() - (texturedControl.getScreenY() / texturedControl.getEffectiveScale()), 0.0f);
+        matrixStack.scale(1.0f / texturedControl.getEffectiveScale(), 1.0f / texturedControl.getEffectiveScale(), 1.0f);
         removeChild(texturedControl);
         texturedControl = new TexturedControl(this, endX, descY - DESCRIPTION_START_OFFSET_Y, new GuiTexture(GuiTextures.SKILLS, HOVER_BOX_WIDTH - OUTER_WIDTH, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH, OUTER_WIDTH, DESCRIPTION_START_OFFSET_Y));
+        matrixStack.scale(texturedControl.getEffectiveScale(), texturedControl.getEffectiveScale(), 1.0f);
+        matrixStack.translate((texturedControl.getScreenX() / texturedControl.getEffectiveScale()) - texturedControl.getScreenX(), (texturedControl.getScreenY() / texturedControl.getEffectiveScale()) - texturedControl.getScreenY(), 0.0f);
         texturedControl.render(matrixStack, 0, 0, 0);
+        matrixStack.translate(texturedControl.getScreenX() - (texturedControl.getScreenX() / texturedControl.getEffectiveScale()), texturedControl.getScreenY() - (texturedControl.getScreenY() / texturedControl.getEffectiveScale()), 0.0f);
+        matrixStack.scale(1.0f / texturedControl.getEffectiveScale(), 1.0f / texturedControl.getEffectiveScale(), 1.0f);
         removeChild(texturedControl);
         int gap = 10;
         int i = 0;
         for (String str : description)
         {
             TexturedControl lineControl = new TexturedControl(this, startX, descY + i * gap, new GuiTexture(GuiTextures.SKILLS, 0, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH, maxWidth, gap));
+            matrixStack.scale(lineControl.getEffectiveScale(), lineControl.getEffectiveScale(), 1.0f);
+            matrixStack.translate((lineControl.getScreenX() / lineControl.getEffectiveScale()) - lineControl.getScreenX(), (lineControl.getScreenY() / lineControl.getEffectiveScale()) - lineControl.getScreenY(), 0.0f);
             lineControl.render(matrixStack, 0, 0, 0);
+            matrixStack.translate(lineControl.getScreenX() - (lineControl.getScreenX() / lineControl.getEffectiveScale()), lineControl.getScreenY() - (lineControl.getScreenY() / lineControl.getEffectiveScale()), 0.0f);
+            matrixStack.scale(1.0f / lineControl.getEffectiveScale(), 1.0f / lineControl.getEffectiveScale(), 1.0f);
             texturedControl = new TexturedControl(this, endX, descY + i * gap, new GuiTexture(GuiTextures.SKILLS, HOVER_BOX_WIDTH - OUTER_WIDTH, DESCRIPTION_TEXTURE_Y + OUTER_WIDTH, OUTER_WIDTH, gap));
+            matrixStack.scale(texturedControl.getEffectiveScale(), texturedControl.getEffectiveScale(), 1.0f);
+            matrixStack.translate((texturedControl.getScreenX() / texturedControl.getEffectiveScale()) - texturedControl.getScreenX(), (texturedControl.getScreenY() / texturedControl.getEffectiveScale()) - texturedControl.getScreenY(), 0.0f);
             texturedControl.render(matrixStack, 0, 0, 0);
+            matrixStack.translate(texturedControl.getScreenX() - (texturedControl.getScreenX() / texturedControl.getEffectiveScale()), texturedControl.getScreenY() - (texturedControl.getScreenY() / texturedControl.getEffectiveScale()), 0.0f);
+            matrixStack.scale(1.0f / texturedControl.getEffectiveScale(), 1.0f / texturedControl.getEffectiveScale(), 1.0f);
             removeChild(texturedControl);
+            matrixStack.scale(lineControl.getEffectiveScale(), lineControl.getEffectiveScale(), 1.0f);
+            matrixStack.translate((lineControl.getScreenX() / lineControl.getEffectiveScale()) - lineControl.getScreenX(), (lineControl.getScreenY() / lineControl.getEffectiveScale()) - lineControl.getScreenY(), 0.0f);
             lineControl.renderShadowedText(matrixStack, str, PADDING, 0, false, 0xffffffff);
+            matrixStack.translate(lineControl.getScreenX() - (lineControl.getScreenX() / lineControl.getEffectiveScale()), lineControl.getScreenY() - (lineControl.getScreenY() / lineControl.getEffectiveScale()), 0.0f);
+            matrixStack.scale(1.0f / lineControl.getEffectiveScale(), 1.0f / lineControl.getEffectiveScale(), 1.0f);
             removeChild(lineControl);
             i++;
         }
         texturedControl = new TexturedControl(this, startX, descY + i * gap - 1, new GuiTexture(GuiTextures.SKILLS, 0, DESCRIPTION_TEXTURE_Y + (HOVER_BOX_HEIGHT - OUTER_WIDTH - 1), maxWidth, OUTER_WIDTH + 1));
+        matrixStack.scale(texturedControl.getEffectiveScale(), texturedControl.getEffectiveScale(), 1.0f);
+        matrixStack.translate((texturedControl.getScreenX() / texturedControl.getEffectiveScale()) - texturedControl.getScreenX(), (texturedControl.getScreenY() / texturedControl.getEffectiveScale()) - texturedControl.getScreenY(), 0.0f);
         texturedControl.render(matrixStack, 0, 0, 0);
+        matrixStack.translate(texturedControl.getScreenX() - (texturedControl.getScreenX() / texturedControl.getEffectiveScale()), texturedControl.getScreenY() - (texturedControl.getScreenY() / texturedControl.getEffectiveScale()), 0.0f);
+        matrixStack.scale(1.0f / texturedControl.getEffectiveScale(), 1.0f / texturedControl.getEffectiveScale(), 1.0f);
         removeChild(texturedControl);
         texturedControl = new TexturedControl(this, endX, descY + i * gap - 1, new GuiTexture(GuiTextures.SKILLS, HOVER_BOX_WIDTH - OUTER_WIDTH, DESCRIPTION_TEXTURE_Y + (HOVER_BOX_HEIGHT - OUTER_WIDTH - 1), OUTER_WIDTH, OUTER_WIDTH + 1));
+        matrixStack.scale(texturedControl.getEffectiveScale(), texturedControl.getEffectiveScale(), 1.0f);
+        matrixStack.translate((texturedControl.getScreenX() / texturedControl.getEffectiveScale()) - texturedControl.getScreenX(), (texturedControl.getScreenY() / texturedControl.getEffectiveScale()) - texturedControl.getScreenY(), 0.0f);
         texturedControl.render(matrixStack, 0, 0, 0);
+        matrixStack.translate(texturedControl.getScreenX() - (texturedControl.getScreenX() / texturedControl.getEffectiveScale()), texturedControl.getScreenY() - (texturedControl.getScreenY() / texturedControl.getEffectiveScale()), 0.0f);
+        matrixStack.scale(1.0f / texturedControl.getEffectiveScale(), 1.0f / texturedControl.getEffectiveScale(), 1.0f);
         removeChild(texturedControl);
 
         TexturedControl nameControl = new TexturedControl(this, startX, nameY, new GuiTexture(GuiTextures.SKILLS, 0, NAME_TEXTURE_Y, maxWidth, HOVER_BOX_HEIGHT));
@@ -231,10 +265,19 @@ public class SkillControl extends Control
 
         if (state == Skill.State.LOCKED) RenderSystem.color3f(0.5f, 0.5f, 0.5f);
         else RenderSystem.color3f(skill.info.gui.colour.getRed() / 255f, skill.info.gui.colour.getGreen() / 255f, skill.info.gui.colour.getBlue() / 255f);
+        matrixStack.scale(nameControl.getEffectiveScale(), nameControl.getEffectiveScale(), 1.0f);
+        matrixStack.translate((nameControl.getScreenX() / nameControl.getEffectiveScale()) - nameControl.getScreenX(), (nameControl.getScreenY() / nameControl.getEffectiveScale()) - nameControl.getScreenY(), 0.0f);
         nameControl.render(matrixStack, 0, 0, 0);
-        nameControlEnd.render(matrixStack, 0, 0, 0);
         nameControl.renderShadowedText(matrixStack, name, skill.info.gui.iconTexture.width, 6, false, 0xffffffff);
+        matrixStack.translate(nameControl.getScreenX() - (nameControl.getScreenX() / nameControl.getEffectiveScale()), nameControl.getScreenY() - (nameControl.getScreenY() / nameControl.getEffectiveScale()), 0.0f);
+        matrixStack.scale(1.0f / nameControl.getEffectiveScale(), 1.0f / nameControl.getEffectiveScale(), 1.0f);
 
+        matrixStack.scale(nameControlEnd.getEffectiveScale(), nameControlEnd.getEffectiveScale(), 1.0f);
+        matrixStack.translate((nameControlEnd.getScreenX() / nameControlEnd.getEffectiveScale()) - nameControlEnd.getScreenX(), (nameControlEnd.getScreenY() / nameControlEnd.getEffectiveScale()) - nameControlEnd.getScreenY(), 0.0f);
+        nameControlEnd.render(matrixStack, 0, 0, 0);
+        matrixStack.translate(nameControlEnd.getScreenX() - (nameControlEnd.getScreenX() / nameControlEnd.getEffectiveScale()), nameControlEnd.getScreenY() - (nameControlEnd.getScreenY() / nameControlEnd.getEffectiveScale()), 0.0f);
+        matrixStack.scale(1.0f / nameControlEnd.getEffectiveScale(), 1.0f / nameControlEnd.getEffectiveScale(), 1.0f);
+        
         removeChild(nameControl);
         removeChild(nameControlEnd);
     }
@@ -267,6 +310,8 @@ public class SkillControl extends Control
 
     private void renderPath(@Nonnull MatrixStack matrixStack, @Nonnull Vec2i[] path, int width, int colour)
     {
+        width *= getEffectiveScale();
+
         for (int i = 0; i < path.length - 1; i++)
         {
             int x1 = path[i].x;
@@ -311,7 +356,11 @@ public class SkillControl extends Control
 
             if (x1 != x2 && y1 != y2)
             {
-                fill(matrixStack, x1, y1, x2, y2, colour);
+                // Hack to ignore gui scale.
+                float guiScale = (float) Minecraft.getInstance().getWindow().getGuiScale();
+                MatrixStack matrixStack1 = new MatrixStack();
+                matrixStack1.scale(1.0f / guiScale, 1.0f / guiScale, 1);
+                fill(matrixStack1, x1, y1, x2, y2, colour);
             }
         }
     }

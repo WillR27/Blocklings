@@ -69,7 +69,7 @@ public class EntryControl extends Control
     {
         RenderSystem.enableDepthTest();
 
-        GuiUtil.addScissorBounds(screenX, screenY, width, height);
+        GuiUtil.addScissorBounds(screenX, screenY, getScreenWidth(), getScreenHeight());
         GuiUtil.enableStackedScissor();
 
         if (entry.getValue())
@@ -92,7 +92,7 @@ public class EntryControl extends Control
             RenderSystem.color3f(0.5f, 0.5f, 0.5f);
         }
 
-        GuiUtil.addScissorBounds(screenX + 2, screenY + 2, width - 4, height - 4);
+        GuiUtil.addScissorBounds((int) (screenX + 2 * getEffectiveScale()), (int) (screenY + 2 * getEffectiveScale()), (int) (getScreenWidth() - 4 * getEffectiveScale()), (int) (getScreenHeight() - 4 * getEffectiveScale()));
         GuiUtil.enableStackedScissor();
 
         if (whitelist.type == Whitelist.Type.BLOCK)
@@ -100,14 +100,14 @@ public class EntryControl extends Control
             Block block = Registry.BLOCK.get(entry.getKey());
             ItemStack stack = new ItemStack(block);
 
-            GuiUtil.renderItemStack(matrixStack, stack, screenX, screenY, 10);
+            GuiUtil.renderItemStack(matrixStack, stack, (int) (screenX / getEffectiveScale()), (int) (screenY / getEffectiveScale()), 10);
         }
         else if (whitelist.type == Whitelist.Type.ITEM)
         {
             Item item = Registry.ITEM.get(entry.getKey());
             ItemStack stack = new ItemStack(item);
 
-            GuiUtil.renderItemStack(matrixStack, stack, screenX, screenY, 10);
+            GuiUtil.renderItemStack(matrixStack, stack, (int) (screenX / getEffectiveScale()), (int) (screenY / getEffectiveScale()), 10);
         }
         else if (whitelist.type == Whitelist.Type.ENTITY)
         {
@@ -123,8 +123,8 @@ public class EntryControl extends Control
             }
         }
 
-        GuiUtil.removeScissorBounds(screenX + 2, screenY + 2, width - 4, height - 4);
-        GuiUtil.removeScissorBounds(screenX, screenY, width, height);
+        GuiUtil.removeScissorBounds((int) (screenX + 2 * getEffectiveScale()), (int) (screenY + 2 * getEffectiveScale()), (int) (getScreenWidth() - 4 * getEffectiveScale()), (int) (getScreenHeight() - 4 * getEffectiveScale()));
+        GuiUtil.removeScissorBounds(screenX, screenY, getScreenWidth(), getScreenHeight());
     }
 
     @Override

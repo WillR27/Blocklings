@@ -162,7 +162,7 @@ public class StatsScreen extends TabbedScreen
         removeChild(farmingLevelControl);
         farmingLevelControl = new LevelControl(this, BlocklingAttributes.Level.FARMING, blockling, + combatLevelControl.getX(), woodcuttingLevelControl.getY() + LEVEL_XP_GAP);
 
-        nameField = new TextFieldControl(font, contentLeft + 11, contentTop + 11, 154, 14, new StringTextComponent(""))
+        nameField = new TextFieldControl(font, contentLeft + 14, contentTop + 14, 160, 20, new StringTextComponent(""))
         {
             @Override
             public void setFocus(boolean focus)
@@ -184,6 +184,7 @@ public class StatsScreen extends TabbedScreen
                 super.setFocus(focus);
             }
         };
+        nameField.setBordered(false);
         nameField.setMaxLength(25);
         nameField.setVisible(true);
         nameField.setTextColor(16777215);
@@ -239,6 +240,8 @@ public class StatsScreen extends TabbedScreen
     public void tick()
     {
         nameField.tick();
+
+        super.tick();
     }
 
     @Override

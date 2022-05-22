@@ -6,6 +6,7 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
+import com.willr27.blocklings.gui.IControl;
 import com.willr27.blocklings.gui.screens.SkillsScreen;
 import com.willr27.blocklings.skill.Skill;
 import com.willr27.blocklings.skill.SkillGroup;
@@ -14,6 +15,7 @@ import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -151,7 +153,7 @@ public class SkillsControl extends Control
     public BuySkillConfirmationControl skillBuyConfirmationControl;
 
     /**
-     * @param skillsScreen the skillsScreen control.
+     * @param parent the parent control.
      * @param blockling the blockling.
      * @param group the skill group to display.
      * @param minimisedX the x position when minimised.
@@ -159,10 +161,10 @@ public class SkillsControl extends Control
      * @param minimisedWidth the width when minimised.
      * @param minimisedHeight the height when minimised.
      */
-    public SkillsControl(@Nonnull SkillsScreen skillsScreen, @Nonnull BlocklingEntity blockling, @Nonnull SkillGroup group, int minimisedX, int minimisedY, int minimisedWidth, int minimisedHeight)
+    public SkillsControl(@Nonnull IControl parent, @Nonnull BlocklingEntity blockling, @Nonnull SkillGroup group, int minimisedX, int minimisedY, int minimisedWidth, int minimisedHeight)
     {
-        super(skillsScreen, minimisedX, minimisedY, minimisedWidth, minimisedHeight);
-        this.skillsScreen = skillsScreen;
+        super(parent, minimisedX, minimisedY, minimisedWidth, minimisedHeight);
+        this.skillsScreen = (SkillsScreen) getScreen();
         this.group = group;
         this.minimisedX = minimisedX;
         this.minimisedY = minimisedY;
@@ -179,7 +181,9 @@ public class SkillsControl extends Control
             skillControls.add(new SkillControl(this, skill));
         }
 
-        skillBuyConfirmationControl = new BuySkillConfirmationControl(this, skillControls.get(0), GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("skill.buy_confirmation", "").getString(), width < 200 ? width - 10 : width - 50), width, height, width, height);
+        skillsScreen.skillsContainer.removeChild(skillsScreen.skillBuyConfirmationControl);
+        skillsScreen.skillBuyConfirmationControl = new BuySkillConfirmationControl(skillsScreen.skillsContainer, skillControls.get(0), GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("skill.buy_confirmation", "").getString(), width < 200 ? width - 10 : width - 50), width, height, width, height);
+        skillBuyConfirmationControl = skillsScreen.skillBuyConfirmationControl;
         skillBuyConfirmationControl.setIsVisible(false);
 
         for (SkillControl skillControl : skillControls)
@@ -202,16 +206,25 @@ public class SkillsControl extends Control
         SkillsScreen skillsScreen = (SkillsScreen) getScreen();
         skillsScreen.tabbedControl.setIsVisible(false);
 
-        setX(-parent.getScreenX() - 10);
-        setY(-parent.getScreenY() - 10);
-        resize(screen.width + 20, screen.height + 20);
+        skillsScreen.skillsContainer.setX(-10);
+        skillsScreen.skillsContainer.setY(-10);
+        setX(0);
+        setY(0);
+        skillsScreen.skillsContainer.setWidth((int) ((screen.width + 20)));
+        skillsScreen.skillsContainer.setHeight((int) ((screen.height + 20)));
+        resize((int) ((screen.width + 20) / getScale()), (int) ((screen.height + 20) / getScale()));
 
-        moveOffsetX = (int) (((width - SKILL_SIZE) / 2) );
+        moveOffsetX = (int) (((width - SKILL_SIZE) / 2));
         moveOffsetY = (int) (((height - SKILL_SIZE) / 2));
 
         if (skillsScreen.borderControl != null)
         {
             skillsScreen.borderControl.setIsVisible(false);
+        }
+
+        if (skillsScreen.tabbedControl != null)
+        {
+            skillsScreen.tabbedControl.setIsVisible(false);
         }
     }
 
@@ -223,9 +236,14 @@ public class SkillsControl extends Control
         SkillsScreen skillsScreen = (SkillsScreen) getScreen();
         skillsScreen.tabbedControl.setIsVisible(true);
 
+        skillsScreen.skillsContainer.setX(skillsScreen.contentLeft + 9);
+        skillsScreen.skillsContainer.setY(skillsScreen.contentTop + 19);
         setX(minimisedX);
         setY(minimisedY);
-        resize(minimisedWidth, minimisedHeight);
+
+        skillsScreen.skillsContainer.setWidth(158);
+        skillsScreen.skillsContainer.setHeight(138);
+        resize((int) (minimisedWidth / getScale()), (int) (minimisedHeight / getScale()));
 
         moveOffsetX = (int) (((width - SKILL_SIZE) / 2));
         moveOffsetY = (int) (((height - SKILL_SIZE) / 2));
@@ -233,6 +251,11 @@ public class SkillsControl extends Control
         if (skillsScreen.borderControl != null)
         {
             skillsScreen.borderControl.setIsVisible(true);
+        }
+
+        if (skillsScreen.tabbedControl != null)
+        {
+            skillsScreen.tabbedControl.setIsVisible(true);
         }
     }
 
@@ -244,8 +267,8 @@ public class SkillsControl extends Control
      */
     private void resize(int width, int height)
     {
-        this.width = width;
-        this.height = height;
+        setWidth(width);
+        setHeight(height);
 
         int tileSize = (int) (TILE_SIZE);
 
@@ -259,15 +282,15 @@ public class SkillsControl extends Control
         matrixStack.pushPose();
 //        matrixStack.scale(scale, scale, 1.0f);
 
-        updatePan(mouseX, mouseY);
+        updatePan((int) (mouseX / getEffectiveScale()), (int) (mouseY / getEffectiveScale()));
 
         renderBackground(matrixStack);
         renderSkills(matrixStack, mouseX, mouseY);
 
         matrixStack.popPose();
 
-        prevMouseX = mouseX;
-        prevMouseY = mouseY;
+        prevMouseX = (int) (mouseX / getEffectiveScale());
+        prevMouseY = (int) (mouseY / getEffectiveScale());
     }
 
     /**
@@ -356,8 +379,8 @@ public class SkillsControl extends Control
         // Update the skill control positions
         for (SkillControl skillControl : skillControls)
         {
-            skillControl.screenX = (skillControl.getX() + x);
-            skillControl.screenY = (skillControl.getY() + y);
+            skillControl.setX(skillControl.skill.info.gui.x + moveOffsetX);
+            skillControl.setY(skillControl.skill.info.gui.y + moveOffsetY);
         }
 
         for (SkillControl skillControl : skillControls)
@@ -376,8 +399,8 @@ public class SkillsControl extends Control
     @Override
     public void controlMouseClicked(@Nonnull MouseButtonEvent e)
     {
-        dragStartX = e.mouseX;
-        dragStartY = e.mouseY;
+        dragStartX = (int) (e.mouseX / getEffectiveScale());
+        dragStartY = (int) (e.mouseY / getEffectiveScale());
         mouseDown = true;
     }
 
@@ -397,59 +420,50 @@ public class SkillsControl extends Control
     {
         removeChild(skillBuyConfirmationControl);
         String name = TextFormatting.LIGHT_PURPLE + skillControl.skill.info.general.name.getString() + TextFormatting.WHITE;
-        skillBuyConfirmationControl = new BuySkillConfirmationControl(this, skillControl, GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("skill.buy_confirmation", name).getString(), width < 200 ? width - 10 : width - 50), width, height, width, height);
+        skillsScreen.skillsContainer.removeChild(skillsScreen.skillBuyConfirmationControl);
+        skillsScreen.skillBuyConfirmationControl = new BuySkillConfirmationControl(skillsScreen.skillsContainer, skillControl, GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("skill.buy_confirmation", name).getString(), skillsScreen.skillsContainer.width < 200 ? skillsScreen.skillsContainer.width - 10 : skillsScreen.skillsContainer.width - 50), skillsScreen.skillsContainer.width, skillsScreen.skillsContainer.height, skillsScreen.skillsContainer.width, skillsScreen.skillsContainer.height);
+        skillBuyConfirmationControl = skillsScreen.skillBuyConfirmationControl;
+        skillBuyConfirmationControl.setIsFocused(true);
     }
 
     @Override
     public void controlMouseScrolled(@Nonnull MouseScrollEvent e)
     {
-        int localMouseX = toLocalX(e.mouseX);
-        int localMouseY = toLocalY(e.mouseY);
-
-        int midMoveX = (int) (moveOffsetX + (SKILL_SIZE / 2 * getScale()));
-        int midMoveY = (int) (moveOffsetY + (SKILL_SIZE / 2 * getScale()));
-
-        int mouseMoveX = (int) ((int) (moveOffsetX + (localMouseX * getScale())) - ((width - SKILL_SIZE) / 2) * getScale());
-        int mouseMoveY = (int) ((int) (moveOffsetY + (localMouseY * getScale())) - ((height - SKILL_SIZE) / 2) * getScale());
-
-        // I have literally no idea why this works, but it does (although with some precision issues)
-        int difMoveX1 = (int) ((mouseMoveX - midMoveX) / getScale());
-        int difMoveY1 = (int) ((mouseMoveY - midMoveY) / getScale());
-        int difMoveX2 = (int) ((mouseMoveX - midMoveX) / getScale() / getScale());
-        int difMoveY2 = (int) ((mouseMoveY - midMoveY) / getScale() / getScale());
+        int localMouseX = (int) (toLocalX(e.mouseX) / getEffectiveScale());
+        int localMouseY = (int) (toLocalY(e.mouseY) / getEffectiveScale());
 
         // Zoom in
         if (e.scroll > 0)
         {
-            setScale(getScale() * 2.0f);
+            float newScale = getScale() * 2.0f;
+            newScale = Math.min(newScale, 2.0f);
 
-            if (getScale() > 2.0f)
+            if (newScale != getScale())
             {
-                setScale(2.0f);
-            }
-            else
-            {
-                moveOffsetX -= (width / 2) / getScale();
-                moveOffsetY -= (height / 2) / getScale();
-                moveOffsetX -= difMoveX1 / getScale();
-                moveOffsetY -= difMoveY1 / getScale();
+                moveOffsetX -= localMouseX / 2.0f;
+                moveOffsetY -= localMouseY / 2.0f;
+
+                setScale(newScale);
+
+                width /= 2.0f;
+                height /= 2.0f;
             }
         }
         // Zoom out
         else
         {
-            setScale(getScale() * 0.25f);
+            float newScale = getScale() * 0.5f;
+            newScale = Math.max(newScale, 0.25f);
 
-            if (getScale() < 0.25f)
+            if (newScale != getScale())
             {
-                setScale(0.25f);
-            }
-            else
-            {
-                moveOffsetX += (width / 4) / getScale();
-                moveOffsetY += (height / 4) / getScale();
-                moveOffsetX += difMoveX2;
-                moveOffsetY += difMoveY2;
+                moveOffsetX += localMouseX;
+                moveOffsetY += localMouseY;
+
+                setScale(newScale);
+
+                width *= 2.0f;
+                height *= 2.0f;
             }
         }
 

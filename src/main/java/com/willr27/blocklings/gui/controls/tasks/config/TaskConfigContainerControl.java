@@ -12,6 +12,7 @@ import com.willr27.blocklings.gui.controls.TabbedControl;
 import com.willr27.blocklings.gui.controls.tasks.config.configs.TaskMiscConfigControl;
 import com.willr27.blocklings.gui.controls.tasks.config.configs.TaskTypeConfigControl;
 import com.willr27.blocklings.gui.controls.tasks.config.configs.WhitelistConfigControl;
+import com.willr27.blocklings.gui.screens.TasksScreen;
 import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import net.minecraft.util.text.StringTextComponent;
@@ -76,7 +77,9 @@ public class TaskConfigContainerControl extends Control
 
         contentScrollbarControl = new ScrollbarControl(this, 155, 33, 12, 125);
 
-        nameTextFieldControl = new TextFieldControl(font, screenX + 11, screenY + 11, 154, 14, new StringTextComponent(""))
+        IControl screen = (IControl) getScreen();
+        float scale = screen.getScale();
+        nameTextFieldControl = new TextFieldControl(font, (int) ((screenX / scale) + 8), (int) ((screenY / scale) + 8), 160, 20, new StringTextComponent(""))
         {
             private String startingString = "";
 
@@ -113,7 +116,7 @@ public class TaskConfigContainerControl extends Control
 
         removeChild(tabControl);
         tabControl = new TabControl(this,9, 33, 140);
-        tabControl.add("Type", () -> { removeChild(currentConfigGui); currentConfigGui = new TaskMiscConfigControl(this, task, 9, 46, 140, 112, contentScrollbarControl); });
+        tabControl.add("Type", () -> { removeChild(currentConfigGui); currentConfigGui = new TaskMiscConfigControl(this, task, 9, 46, 140, 112, contentScrollbarControl); currentConfigGui.setZIndex(2); });
 
         if (task.isConfigured() && !task.getGoal().whitelists.isEmpty())
         {
@@ -121,20 +124,19 @@ public class TaskConfigContainerControl extends Control
             {
                 if (whitelist.isUnlocked())
                 {
-                    tabControl.add(whitelist.name.getString(), () -> { removeChild(currentConfigGui); currentConfigGui = new WhitelistConfigControl(this, whitelist, 9, 49, 140, 109, contentScrollbarControl); });
+                    tabControl.add(whitelist.name.getString(), () -> { removeChild(currentConfigGui); currentConfigGui = new WhitelistConfigControl(this, whitelist, 9, 46, 140, 112, contentScrollbarControl); currentConfigGui.setZIndex(2); });
                 }
             }
         }
     }
 
-    /**
-     * Renders the control.
-     *
-     * @param matrixStack the matrix stack.
-     * @param mouseX the mouse x position.
-     * @param mouseY the mouse y position.
-     * @param partialTicks the partial ticks.
-     */
+    @Override
+    public void tick()
+    {
+        nameTextFieldControl.tick();
+    }
+
+    @Override
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         GuiUtil.bindTexture(GuiTextures.TASK_CONFIGURE);
@@ -145,27 +147,20 @@ public class TaskConfigContainerControl extends Control
             nameTextFieldControl.setValue(task.getCustomName());
         }
 
-        nameTextFieldControl.render(matrixStack, mouseX, mouseY, partialTicks);
+        nameTextFieldControl.render(new MatrixStack(), mouseX, mouseY, partialTicks);
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
     }
 
     @Override
-    public void controlMouseClicked(@Nonnull MouseButtonEvent e)
+    public void globalMouseClicked(@Nonnull MouseButtonEvent e)
     {
-        nameTextFieldControl.mouseClicked(e.mouseX, e.mouseY, e.button);
-
-        e.setIsHandled(true);
+        nameTextFieldControl.mouseClicked(e.mouseX / getEffectiveScale(), e.mouseY / getEffectiveScale(), e.button);
     }
 
     @Override
-    public void controlMouseReleased(@Nonnull MouseButtonEvent e)
+    public void globalMouseReleased(@Nonnull MouseButtonEvent e)
     {
-        if (nameTextFieldControl.isFocused())
-        {
-            nameTextFieldControl.mouseReleased(e.mouseX, e.mouseY, e.button);
-        }
-
-        e.setIsHandled(true);
+        nameTextFieldControl.mouseReleased(e.mouseX / getEffectiveScale(), e.mouseY / getEffectiveScale(), e.button);
     }
 
     @Override
@@ -175,11 +170,19 @@ public class TaskConfigContainerControl extends Control
     }
 
     @Override
-    public void controlKeyPressed(@Nonnull KeyEvent e)
+    public void globalKeyPressed(@Nonnull KeyEvent e)
     {
+        if (e.isHandled())
+        {
+            return;
+        }
+
         if (!nameTextFieldControl.isFocused() && GuiUtil.isCloseInventoryKey(e.keyCode))
         {
             setIsVisible(false);
+
+            TasksScreen tasksScreen = (TasksScreen) screen;
+            tasksScreen.setIsVisible(true);
 
             e.setIsHandled(true);
         }

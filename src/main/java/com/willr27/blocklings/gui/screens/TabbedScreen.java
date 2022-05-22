@@ -16,6 +16,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -69,12 +70,12 @@ public class TabbedScreen extends Screen implements IControl, IScreen
     /**
      * The x position at the left of the gui excluding the tabs.
      */
-    protected int contentLeft;
+    public int contentLeft;
 
     /**
      * The y position at the top of the gui excluding.
      */
-    protected int contentTop;
+    public int contentTop;
 
     /**
      * The x position at the right of the gui excluding the tabs.
@@ -242,6 +243,12 @@ public class TabbedScreen extends Screen implements IControl, IScreen
     public void onClose()
     {
         super.onClose();
+    }
+
+    @Override
+    public void tick()
+    {
+        tickAll();
     }
 
     @Override

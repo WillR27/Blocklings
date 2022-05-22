@@ -1,5 +1,6 @@
 package com.willr27.blocklings.gui.controls.common.panel;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.IControl;
@@ -64,7 +65,7 @@ public class StackPanel extends Control
                 if (draggedControl != null && getItems().contains(draggedControl))
                 {
                     int minY = Math.max(getItems().get(0).getScreenY(), getScreenY());
-                    int maxY = Math.min(getItems().get(getItems().size() - 1).getScreenY(), getScreenY() + getEffectiveHeight());
+                    int maxY = (int) Math.min(getItems().get(getItems().size() - 1).getScreenY(), getScreenY() + getEffectiveHeight() * getEffectiveScale());
 
                     int draggedY = Math.min(maxY, Math.max(minY, mouseY - draggedControl.getEffectiveHeight() / 2));
 
@@ -96,7 +97,7 @@ public class StackPanel extends Control
                         setScrollY((int) (getScrollY() + 12 * partialTicks));
                     }
 
-                    draggedControl.setY(toLocalY(draggedY) + getScrollY() - draggedControl.getMargin(Side.TOP));
+                    draggedControl.setY((int) (toLocalY(draggedY) / draggedControl.getEffectiveScale() + getScrollY() - draggedControl.getMargin(Side.TOP)));
 
                     int oldIndex = getItems().indexOf(draggedControl);
                     int newIndex = getItems().indexOf(closestControl);
@@ -135,6 +136,12 @@ public class StackPanel extends Control
                 scrollbarControlY.setIsDisabled(true);
             }
         }
+    }
+
+    @Override
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    {
+//        fill(matrixStack, getScreenX(), getScreenY(), getScreenX() + getEffectiveWidth(), getScreenY() + getEffectiveHeight(), 0xFF000000);
     }
 
     @Override

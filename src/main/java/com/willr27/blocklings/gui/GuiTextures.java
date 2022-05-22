@@ -37,4 +37,10 @@ public class GuiTextures
 
     public static final GuiTexture DROPDOWN_DOWN_ARROW = new GuiTexture(GuiTextures.COMMON_WIDGETS, 24, 0, 11, 7);
     public static final GuiTexture DROPDOWN_UP_ARROW = new GuiTexture(GuiTextures.COMMON_WIDGETS, 35, 0, 11, 7);
+
+    public static final GuiTexture SLIDER_BAR = new GuiTexture(GuiTextures.COMMON_WIDGETS, 0, 88, 256, 4);
+    public static final GuiTexture SLIDER_BAR_END = new GuiTexture(GuiTextures.COMMON_WIDGETS, 255, 88, 1, 4);
+
+    public static final GuiTexture SLIDER_GRABBER_RAISED = new GuiTexture(GuiTextures.COMMON_WIDGETS, 46, 0, 12, 12);
+    public static final GuiTexture SLIDER_GRABBER_PRESSED = new GuiTexture(GuiTextures.COMMON_WIDGETS, 58, 0, 12, 12);
 }

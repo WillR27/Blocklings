@@ -75,8 +75,8 @@ public class BuySkillConfirmationControl extends Control
         int yesX = width / 2 - 30 - buttonWidth / 2;
         int noX = width / 2 + 30 - buttonWidth / 2;
         int buttonY = height / 2 + 10;
-        yesButton = new Button(yesX + screenX, buttonY + screenY, buttonWidth, buttonHeight, new StringTextComponent("Yes"), press -> { setIsVisible(true); this.skillControl.skill.tryBuy(); });
-        noButton = new Button(noX + screenX, buttonY + screenY, buttonWidth, buttonHeight, new StringTextComponent("No"), press -> { setIsVisible(false); });
+        yesButton = new Button(yesX + getX(), buttonY + getY(), buttonWidth, buttonHeight, new StringTextComponent("Yes"), press -> { setIsVisible(true); this.skillControl.skill.tryBuy(); });
+        noButton = new Button(noX + getY(), buttonY + getY(), buttonWidth, buttonHeight, new StringTextComponent("No"), press -> { setIsVisible(false); });
     }
 
     @Override
@@ -87,12 +87,15 @@ public class BuySkillConfirmationControl extends Control
         int i = 0;
         for (String str : message)
         {
-            drawCenteredString(matrixStack, font, str, screenX + width / 2, screenY + height / 2 + i * 11 - (message.size() * 11) - 5, 0xffffff);
+            drawCenteredString(matrixStack, font, str, (int) (getScreenX() + width / 2), (int) (getScreenY() + height / 2 + i * 11 - (message.size() * 11) - 5), 0xffffff);
             i++;
         }
 
-        yesButton.render(matrixStack, mouseX, mouseY, 0);
-        noButton.render(matrixStack, mouseX, mouseY, 0);
+        matrixStack.translate(getScreenX() - (getScreenX() / getEffectiveScale()), getScreenY() - (getScreenY() / getEffectiveScale()), 0.0f);
+        matrixStack.translate(parent.getScreenX() / parent.getEffectiveScale(), parent.getScreenY() / parent.getEffectiveScale(), 0.0);
+        yesButton.render(matrixStack, (int) (toLocalX(mouseX) / getEffectiveScale()), (int) (toLocalY(mouseY) / getEffectiveScale()), 0);
+        noButton.render(matrixStack, (int) (toLocalX(mouseX) / getEffectiveScale()), (int) (toLocalY(mouseY) / getEffectiveScale()), 0);
+        matrixStack.translate((getScreenX() / getEffectiveScale()) - getScreenX(), (getScreenY() / getEffectiveScale()) - getScreenY(), 0.0f);
     }
 
     @Override
@@ -111,17 +114,17 @@ public class BuySkillConfirmationControl extends Control
     @Override
     public void controlMouseReleased(@Nonnull MouseButtonEvent e)
     {
-        if (yesButton.isMouseOver(e.mouseX, e.mouseY))
+        if (yesButton.isMouseOver((int) (toLocalX(e.mouseX) / getEffectiveScale()), (int) (toLocalY(e.mouseY) / getEffectiveScale())))
         {
-            yesButton.mouseReleased(e.mouseX, e.mouseY, e.button);
+            yesButton.mouseReleased((int) (toLocalX(e.mouseX) / getEffectiveScale()), (int) (toLocalY(e.mouseY) / getEffectiveScale()), e.button);
             yesButton.onPress();
 
             setIsVisible(false);
             remove();
         }
-        else if (noButton.isMouseOver(e.mouseX, e.mouseY))
+        else if (noButton.isMouseOver((int) (toLocalX(e.mouseX) / getEffectiveScale()), (int) (toLocalY(e.mouseY) / getEffectiveScale())))
         {
-            noButton.mouseReleased(e.mouseX, e.mouseY, e.button);
+            noButton.mouseReleased((int) (toLocalX(e.mouseX) / getEffectiveScale()), (int) (toLocalY(e.mouseY) / getEffectiveScale()), e.button);
             noButton.onPress();
 
             skillControl.isSelected = false;

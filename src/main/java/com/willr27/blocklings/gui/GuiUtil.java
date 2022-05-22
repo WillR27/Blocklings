@@ -179,6 +179,7 @@ public class GuiUtil
         RenderSystem.pushMatrix();
         RenderSystem.translatef((float)posX, (float)posY, 1050.0F);
         RenderSystem.scalef(1.0F, 1.0F, -1.0F);
+        matrixStack.pushPose();
         matrixStack.translate(0.0D, 0.0D, 1000.0D);
         float scale2 = 1.0f / Math.max(entity.getBbWidth(), entity.getBbHeight());
         matrixStack.scale((scale * scale2), (scale * scale2), (scale * scale2));
@@ -212,6 +213,7 @@ public class GuiUtil
         entity.yHeadRotO = f5;
         entity.yHeadRot = f6;
         RenderSystem.popMatrix();
+        matrixStack.popPose();
         entity.setCustomName(new StringTextComponent(name));
     }
 

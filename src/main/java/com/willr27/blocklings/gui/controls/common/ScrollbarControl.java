@@ -155,7 +155,7 @@ public class ScrollbarControl extends Control
      */
     private int calcOffsetFromMouseY(int mouseY)
     {
-        return calcOffsetFromLocalMouseY(toLocalY(mouseY) - GRABBER_TEXTURE.height / 2);
+        return calcOffsetFromLocalMouseY((int) (toLocalY(mouseY) / getEffectiveScale() - GRABBER_TEXTURE.height / 2));
     }
 
     /**

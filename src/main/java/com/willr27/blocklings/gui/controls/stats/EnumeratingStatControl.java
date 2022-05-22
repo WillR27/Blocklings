@@ -240,11 +240,11 @@ public class EnumeratingStatControl extends Control
     {
         if (shouldRightAlignText)
         {
-            return GuiUtil.isMouseOver(mouseX, mouseY, screenX - (font.width(valueSuppliers.get(currentEnumeration).get()) + TEXT_OFFSET_X + 3), screenY, width + font.width(valueSuppliers.get(currentEnumeration).get()) + TEXT_OFFSET_X + 3, height);
+            return GuiUtil.isMouseOver(mouseX, mouseY, screenX - (font.width(valueSuppliers.get(currentEnumeration).get()) + TEXT_OFFSET_X + 3), screenY, getScreenWidth() + font.width(valueSuppliers.get(currentEnumeration).get()) + TEXT_OFFSET_X + 3, getScreenHeight());
         }
         else
         {
-            return GuiUtil.isMouseOver(mouseX, mouseY, screenX, screenY, width + font.width(valueSuppliers.get(currentEnumeration).get()) + TEXT_OFFSET_X + 3, height);
+            return GuiUtil.isMouseOver(mouseX, mouseY, screenX, screenY, getScreenWidth() + font.width(valueSuppliers.get(currentEnumeration).get()) + TEXT_OFFSET_X + 3, getScreenHeight());
         }
     }
 

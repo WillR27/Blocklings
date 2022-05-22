@@ -51,11 +51,13 @@ public class WhitelistConfigControl extends ConfigControl
     {
         super(parent, x, y, width, height);
         this.contentScrollbarControl = contentScrollbarControl;
+        contentScrollbarControl.setScrollY(0);
 
         int i = 0;
         for (Map.Entry<ResourceLocation, Boolean> entry : whitelist.entrySet())
         {
-            entryControls.add(new EntryControl(this, whitelist, entry, ENTRY_GAP + (i % 4) * (EntryControl.ENTRY_SELECTED.width + ENTRY_GAP), ENTRY_GAP + (i / 4) * (EntryControl.ENTRY_SELECTED.height + ENTRY_GAP)));
+            entryControls.add(new EntryControl(this, whitelist, entry, ENTRY_GAP + (i % 4) * (EntryControl.ENTRY_SELECTED.width + ENTRY_GAP), 3 + ENTRY_GAP + (i / 4) * (EntryControl.ENTRY_SELECTED.height + ENTRY_GAP)));
+            contentScrollbarControl.setMaxScrollY(3 + ENTRY_GAP + (i / 4) * (EntryControl.ENTRY_SELECTED.height + ENTRY_GAP) + EntryControl.ENTRY_UNSELECTED.height + ENTRY_GAP - height);
             i++;
         }
     }
@@ -74,13 +76,13 @@ public class WhitelistConfigControl extends ConfigControl
         {
             EntryControl entryControl = entryControls.get(i);
             entryControl.setX(ENTRY_GAP + ((i % 4) * (EntryControl.ENTRY_UNSELECTED.width + ENTRY_GAP)));
-            entryControl.setY(ENTRY_GAP + ((i / 4) * (EntryControl.ENTRY_UNSELECTED.height + ENTRY_GAP)));
+            entryControl.setY(3 + ENTRY_GAP + ((i / 4) * (EntryControl.ENTRY_UNSELECTED.height + ENTRY_GAP)));
         }
 
         if (entryControls.size() >= 2)
         {
-            int taskControlsHeight = entryControls.get(entryControls.size() - 1).screenY + entryControls.get(entryControls.size() - 1).height - entryControls.get(0).screenY + ENTRY_GAP * 2;
-            int taskControlsHeightDif = taskControlsHeight - height;
+            int taskControlsHeight = entryControls.get(entryControls.size() - 1).getY() + entryControls.get(entryControls.size() - 1).getHeight() - entryControls.get(0).getY() + ENTRY_GAP * 2 + 3;
+            int taskControlsHeightDif = taskControlsHeight - getHeight();
 
             if (taskControlsHeightDif > 0)
             {
@@ -89,7 +91,7 @@ public class WhitelistConfigControl extends ConfigControl
                 for (int i = 0; i < entryControls.size(); i++)
                 {
                     EntryControl entryControl = entryControls.get(i);
-                    entryControl.setY(ENTRY_GAP + ((i / 4) * (EntryControl.ENTRY_UNSELECTED.height + ENTRY_GAP)) - (int) (taskControlsHeightDif * contentScrollbarControl.percentageScrolled()));
+                    entryControl.setY(3 + ENTRY_GAP + ((i / 4) * (EntryControl.ENTRY_UNSELECTED.height + ENTRY_GAP)) - (int) (taskControlsHeightDif * contentScrollbarControl.percentageScrolled()));
                 }
             }
         }

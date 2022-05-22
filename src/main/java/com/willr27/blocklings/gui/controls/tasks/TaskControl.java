@@ -109,6 +109,15 @@ public class TaskControl extends Control
     }
 
     @Override
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    {
+        if (isDragging())
+        {
+            matrixStack.translate(0.0, 0.0, 10.0);
+        }
+    }
+
+    @Override
     public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
         if (!isAddControl)

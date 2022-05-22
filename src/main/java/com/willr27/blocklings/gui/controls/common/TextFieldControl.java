@@ -367,10 +367,17 @@ public class TextFieldControl extends Widget implements IRenderable, IGuiEventLi
 
     public void renderButton(MatrixStack p_230431_1_, int p_230431_2_, int p_230431_3_, float p_230431_4_) {
         if (this.isVisible()) {
-            if (this.isBordered()) {
-                int i = this.isFocused() ? -1 : -6250336;
+//            if (this.isBordered()) {
+//                int i = this.isFocused() ? -1 : -6250336;
 //                fill(p_230431_1_, this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, i);
 //                fill(p_230431_1_, this.x, this.y, this.x + this.width, this.y + this.height, -16777216);
+//            }
+
+            if (this.isBordered()) {
+                int i = this.isFocused() ? 0xff515151 : 0xff373737;
+                i = 0xff373737;
+                fill(p_230431_1_, this.x, this.y, this.x + this.width, this.y + this.height, i);
+                fill(p_230431_1_, this.x + 1, this.y + 1, this.x + this.width - 1, this.y + this.height - 1, 0xff191919);
             }
 
             int i2 = this.isEditable ? this.textColor : this.textColorUneditable;
@@ -409,11 +416,13 @@ public class TextFieldControl extends Widget implements IRenderable, IGuiEventLi
             }
 
             if (flag1) {
-                if (flag2) {
+                // Hack to prevent the _ at the end of the text from being rendered beyond the border.
+                // Not sure why it does that here but not in vanilla text fields.
+//                if (flag2) {
                     AbstractGui.fill(p_230431_1_, k1, i1 - 1, k1 + 1, i1 + 1 + 9, -3092272);
-                } else {
-                    this.font.drawShadow(p_230431_1_, "_", (float)k1, (float)i1, i2);
-                }
+//                } else {
+//                    this.font.drawShadow(p_230431_1_, "_", (float)k1, (float)i1, i2);
+//                }
             }
 
             if (k != j) {

@@ -262,6 +262,12 @@ public abstract class TabbedContainerScreen<T extends Container> extends Contain
     }
 
     @Override
+    public void tick()
+    {
+        tickAll();
+    }
+
+    @Override
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         matrixStack.pushPose();

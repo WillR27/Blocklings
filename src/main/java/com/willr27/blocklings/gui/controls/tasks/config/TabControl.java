@@ -93,7 +93,7 @@ public class TabControl extends Control
     @Override
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
-        RenderSystem.enableDepthTest();
+        RenderSystem.disableDepthTest();
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
 
         if (tabs.isEmpty())
@@ -126,7 +126,6 @@ public class TabControl extends Control
 
             String name = GuiUtil.trimWithEllipses(font, tab.name, tab.width - 10);
             font.draw(matrixStack, name, tab.x + tab.width / 2 - font.width(name) / 2 + 1, screenY + 2, 0x666666);
-            RenderSystem.enableDepthTest();
         }
 
         Tab tab = tabs.get(selectedTabIndex);
@@ -145,7 +144,7 @@ public class TabControl extends Control
     @Override
     public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
-        Tab hoveredTab = getHoveredTab(mouseX, mouseY);
+        Tab hoveredTab = getHoveredTab((int) (mouseX * getEffectiveScale()), (int) (mouseY * getEffectiveScale()));
 
         if (hoveredTab != null)
         {
@@ -176,7 +175,7 @@ public class TabControl extends Control
     @Nullable
     private Tab getHoveredTab(int mouseX, int mouseY)
     {
-        return tabs.stream().filter(tab -> GuiUtil.isMouseOver(mouseX, mouseY, tab.x, screenY, tab.width, UNSELECTED_HEIGHT)).findFirst().orElse(null);
+        return tabs.stream().filter(tab -> GuiUtil.isMouseOver(mouseX, mouseY, (int) ((tab.x - screenX + 2) * getEffectiveScale()) + screenX - 2, screenY, (int) (tab.width * getEffectiveScale()), (int) (UNSELECTED_HEIGHT * getEffectiveScale()))).findFirst().orElse(null);
     }
 
     /**

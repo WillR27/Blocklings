@@ -7,9 +7,11 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.*;
 import com.willr27.blocklings.gui.controls.TabbedControl;
 import com.willr27.blocklings.gui.controls.TexturedControl;
+import com.willr27.blocklings.gui.controls.skills.BuySkillConfirmationControl;
 import com.willr27.blocklings.gui.controls.skills.SkillsControl;
 import com.willr27.blocklings.skill.SkillGroup;
 import com.willr27.blocklings.skill.info.SkillGroupInfo;
+import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -21,6 +23,11 @@ import javax.annotation.Nonnull;
 @OnlyIn(Dist.CLIENT)
 public class SkillsScreen extends TabbedScreen
 {
+    /**
+     * The control containing the skills control, to ensure it doesn't move when scaling.
+     */
+    public Control skillsContainer;
+
     /**
      * The gui displayed inside the window area that handles the skill tree rendering and interaction.
      */
@@ -43,6 +50,12 @@ public class SkillsScreen extends TabbedScreen
     private final SkillGroup group;
 
     /**
+     * The gui used to confirm buying a skill.
+     */
+    @Nonnull
+    public BuySkillConfirmationControl skillBuyConfirmationControl;
+
+    /**
      * @param blockling the blockling.
      * @param group the skill group to display.
      */
@@ -55,18 +68,35 @@ public class SkillsScreen extends TabbedScreen
     @Override
     protected void init()
     {
+        boolean isVisible = true;
+
+        if (tabbedControl != null)
+        {
+            isVisible = tabbedControl.isVisible();
+        }
+
         super.init();
 
+        tabbedControl.setIsVisible(isVisible);
+
+        removeChild(skillsContainer);
+        skillsContainer = new Control(this, contentLeft + 9, contentTop + 19, 158, 138);
+
         removeChild(skillsControl);
-        skillsControl = new SkillsControl(this, blockling, group, contentLeft + 9, contentTop + 19, 158, 138);
+        skillsControl = new SkillsControl(skillsContainer, blockling, group, 0, 0, 158, 138);
+        skillsControl.setIsFocused(true);
+
+        boolean isMaximised = false;
 
         if (maximiseControl != null && maximiseControl.isMaximised)
         {
+            isMaximised = true;
+
             skillsControl.maximise();
         }
 
         removeChild(maximiseControl);
-        maximiseControl = new MaximiseControl(this, contentLeft + 151, contentTop + 141)
+        maximiseControl = new MaximiseControl(skillsContainer, 142, 122)
         {
             @Override
             public void controlMouseReleased(@Nonnull MouseButtonEvent e)
@@ -81,6 +111,12 @@ public class SkillsScreen extends TabbedScreen
                 e.setIsHandled(true);
             }
         };
+        maximiseControl.isMaximised = isMaximised;
+
+        if (borderControl != null)
+        {
+            isVisible = borderControl.isVisible();
+        }
 
         removeChild(borderControl);
         borderControl = new TexturedControl(this, contentLeft, contentTop, new GuiTexture(GuiTextures.SKILLS, 0, 0, TabbedControl.CONTENT_WIDTH, TabbedControl.CONTENT_HEIGHT))
@@ -96,6 +132,7 @@ public class SkillsScreen extends TabbedScreen
             }
         };
         borderControl.setIsInteractive(false);
+        borderControl.setIsVisible(isVisible);
     }
 
     @Override
@@ -113,7 +150,7 @@ public class SkillsScreen extends TabbedScreen
     @Override
     public void globalKeyPressed(@Nonnull KeyEvent e)
     {
-        if (GuiUtil.isCloseInventoryKey(e.keyCode))
+        if (!skillBuyConfirmationControl.isVisible() && GuiUtil.isCloseInventoryKey(e.keyCode))
         {
             if (maximiseControl.isMaximised)
             {

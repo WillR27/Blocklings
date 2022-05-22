@@ -2,6 +2,7 @@ package com.willr27.blocklings.gui.controls.tasks.config.configs;
 
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.controls.common.LabelControl;
+import com.willr27.blocklings.gui.controls.common.RangeControl;
 import com.willr27.blocklings.gui.controls.common.ScrollbarControl;
 import com.willr27.blocklings.gui.controls.common.DropdownControl;
 import com.willr27.blocklings.gui.controls.common.panel.StackPanel;
@@ -63,11 +64,11 @@ public class TaskMiscConfigControl extends ConfigControl
         List<TaskType> unlockedTaskTypes = BlocklingTasks.TASK_TYPES.stream().filter(taskType -> task.blockling.getTasks().isUnlocked(taskType)).collect(Collectors.toList());
 
         StackPanel stackPanel = new StackPanel(this, 0, 0, width, height);
-        stackPanel.setPadding(4, 8, 4, 4);
+        stackPanel.setPadding(4, 9, 4, 4);
         stackPanel.setScrollbarY(contentScrollbarControl);
 
         LabelControl taskTypeLabelControl = new LabelControl(stackPanel, width - stackPanel.getPadding(Side.LEFT) - stackPanel.getPadding(Side.RIGHT), "Task Type");
-        taskTypeLabelControl.setMargins(0, 1, 0, 3);
+        taskTypeLabelControl.setMargins(0, 0, 0, 3);
 
         taskTypeDropdownControl = new DropdownControl(stackPanel, 0, 0, width - 8);
         taskTypeDropdownControl.setMargins(0, 0, 0, 0);
@@ -87,10 +88,7 @@ public class TaskMiscConfigControl extends ConfigControl
                     }
                 });
 
-//        for (int i = 0; i < unlockedTaskTypes.size(); i++)
-//        {
-//            taskTypeControls.add(new TaskTypeControl(this, task, unlockedTaskTypes.get(i), TASK_TYPE_GAP + ((i % 3) * (TaskTypeControl.WIDTH + TASK_TYPE_GAP)), TASK_TYPE_GAP + ((i / 3) * (TaskTypeControl.HEIGHT + TASK_TYPE_GAP))));
-//        }
+        RangeControl rangeControl = new RangeControl(stackPanel, 1, 10, 20);
     }
 
     /**
@@ -106,36 +104,4 @@ public class TaskMiscConfigControl extends ConfigControl
 
         return tooltip;
     }
-
-//    /**
-//     * Updates the task type positions based on the scrollbar.
-//     */
-//    private void updateTaskTypePositions()
-//    {
-//        contentScrollbarControl.isDisabled = true;
-//
-//        for (int i = 0; i < taskTypeControls.size(); i++)
-//        {
-//            TaskTypeControl taskTypeControl = taskTypeControls.get(i);
-//            taskTypeControl.setX(TASK_TYPE_GAP + ((i % 3) * (TaskTypeControl.WIDTH + TASK_TYPE_GAP)));
-//            taskTypeControl.setY(TASK_TYPE_GAP + ((i / 3) * (TaskTypeControl.HEIGHT + TASK_TYPE_GAP)));
-//        }
-//
-//        if (taskTypeControls.size() >= 2)
-//        {
-//            int taskControlsHeight = taskTypeControls.get(taskTypeControls.size() - 1).screenY + taskTypeControls.get(taskTypeControls.size() - 1).height - taskTypeControls.get(0).screenY + TASK_TYPE_GAP * 2;
-//            int taskControlsHeightDif = taskControlsHeight - height;
-//
-//            if (taskControlsHeightDif > 0)
-//            {
-//                contentScrollbarControl.isDisabled = false;
-//
-//                for (int i = 0; i < taskTypeControls.size(); i++)
-//                {
-//                    TaskTypeControl taskTypeControl = taskTypeControls.get(i);
-//                    taskTypeControl.setY(TASK_TYPE_GAP + ((i / 3) * (TaskTypeControl.HEIGHT + TASK_TYPE_GAP)) - (int) (taskControlsHeightDif * contentScrollbarControl.percentageScrolled()));
-//                }
-//            }
-//        }
-//    }
 }

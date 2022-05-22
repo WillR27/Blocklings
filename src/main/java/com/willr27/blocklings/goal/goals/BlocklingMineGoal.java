@@ -1,5 +1,6 @@
 package com.willr27.blocklings.goal.goals;
 
+import com.mojang.datafixers.util.Pair;
 import com.willr27.blocklings.block.BlockUtil;
 import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
@@ -11,7 +12,6 @@ import com.willr27.blocklings.skill.skills.MiningSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
-import javafx.util.Pair;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
@@ -214,7 +214,7 @@ public class BlocklingMineGoal extends BlocklingGatherGoal
                 return false;
             }
 
-            setPathTargetPos(pathToVein.getKey(), pathToVein.getValue());
+            setPathTargetPos(pathToVein.getFirst(), pathToVein.getSecond());
         }
 
         setTarget((BlockPos) veinBlockPositions.toArray()[veinBlockPositions.size() - 1]);
@@ -430,7 +430,7 @@ public class BlocklingMineGoal extends BlocklingGatherGoal
 
             if (result != null)
             {
-                setPathTargetPos(result.getKey(), result.getValue());
+                setPathTargetPos(result.getFirst(), result.getSecond());
             }
             else
             {

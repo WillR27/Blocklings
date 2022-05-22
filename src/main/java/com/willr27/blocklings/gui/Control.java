@@ -221,8 +221,6 @@ public class Control extends AbstractGui implements IControl
     {
         this.screen = Objects.requireNonNull(Minecraft.getInstance().screen);
         this.font = Minecraft.getInstance().font;
-        this.width = width;
-        this.height = height;
         this.scale = 1.0f;
 
         padding.put(Side.LEFT, 0);
@@ -239,6 +237,8 @@ public class Control extends AbstractGui implements IControl
 
         setX(x);
         setY(y);
+        setWidth(width);
+        setHeight(height);
 
         setupEventHandlers();
     }
@@ -356,7 +356,7 @@ public class Control extends AbstractGui implements IControl
 //        }
 //
 //        font.draw(matrixStack, shadowText, screenX + bonusX + 1, screenY + dy + 1, 0x222222);
-        font.draw(matrixStack, text, screenX + bonusX, screenY + dy, colour);
+        font.drawShadow(matrixStack, text, screenX + bonusX, screenY + dy, colour);
         RenderSystem.enableDepthTest(); // Apparently depth test gets turned off so turn it back on
     }
 
@@ -685,10 +685,10 @@ public class Control extends AbstractGui implements IControl
 
         if (parent != null)
         {
-            parentOffset = (int) (parent.getScreenY() - (parent.getScrollY() - parent.getPadding(Side.LEFT)) * parent.getEffectiveScale());
+            parentOffset = (int) (parent.getScreenY() - (parent.getScrollY() - parent.getPadding(Side.TOP)) * parent.getEffectiveScale());
         }
 
-        screenY = parentOffset + (int) ((getMargin(Side.LEFT) + y) * getEffectiveScale());
+        screenY = parentOffset + (int) ((getMargin(Side.TOP) + y) * getEffectiveScale());
 
         getChildren().forEach(Control::recalcScreenY);
     }

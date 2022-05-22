@@ -15,6 +15,11 @@ import javax.annotation.Nonnull;
 public class LabelControl extends Control
 {
     /**
+     * The max height of text.
+     */
+    private static final int HEIGHT = 9;
+
+    /**
      * The text to display.
      */
     @Nonnull
@@ -27,10 +32,8 @@ public class LabelControl extends Control
      */
     public LabelControl(@Nonnull IControl parent, int width, @Nonnull String text)
     {
-        super(parent, 0, 0, width, 9);
+        super(parent, 0, 0, width, HEIGHT);
         this.text = text;
-
-        setPadding(0, 1, 0, 1);
     }
 
     @Override
@@ -69,7 +72,7 @@ public class LabelControl extends Control
      */
     private void recalcHeight()
     {
-        height = height + getPadding(Side.TOP)  + getPadding(Side.BOTTOM);
+        height = HEIGHT + getPadding(Side.TOP)  + getPadding(Side.BOTTOM);
     }
 
     /**
