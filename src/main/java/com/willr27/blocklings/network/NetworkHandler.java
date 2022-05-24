@@ -54,6 +54,12 @@ public class NetworkHandler
     public static void init()
     {
         registerMessage(Attribute.IsEnabledMessage.class);
+        registerMessage(EnumAttribute.Message.class);
+        registerMessage(FloatAttribute.ValueMessage.class);
+        registerMessage(ModifiableFloatAttribute.BaseValueMessage.class);
+        registerMessage(IntAttribute.ValueMessage.class);
+        registerMessage(ModifiableIntAttribute.BaseValueMessage.class);
+
         registerMessage(BlocklingAttackTargetMessage.class);
         registerMessage(BlocklingGuiHandler.OpenMessage.class);
         registerMessage(BlocklingNameMessage.class);
@@ -61,21 +67,18 @@ public class NetworkHandler
         registerMessage(BlocklingTypeMessage.class);
         registerMessage(EquipmentInventoryMessage.class);
         registerMessage(GoalStateMessage.class);
-        registerMessage(EnumAttribute.Message.class);
-        registerMessage(FloatAttribute.ValueMessage.class);
-        registerMessage(ModifiableFloatAttribute.BaseValueMessage.class);
-        registerMessage(IntAttribute.ValueMessage.class);
-        registerMessage(ModifiableIntAttribute.BaseValueMessage.class);
         registerMessage(SkillStateMessage.class);
         registerMessage(SkillTryBuyMessage.class);
+
         registerMessage(TaskCreateMessage.class);
         registerMessage(TaskPriorityMessage.class);
         registerMessage(TaskRemoveMessage.class);
         registerMessage(TaskCustomNameMessage.class);
-        registerMessage(RangeProperty.TaskRangePropertyMessage.class);
+        registerMessage(Property.TaskPropertyMessage.class);
         registerMessage(TaskSwapPriorityMessage.class);
         registerMessage(TaskTypeMessage.class);
         registerMessage(TaskTypeIsUnlockedMessage.class);
+
         registerMessage(WhitelistAllMessage.class);
         registerMessage(WhitelistIsUnlockedMessage.class);
         registerMessage(WhitelistSingleMessage.class);

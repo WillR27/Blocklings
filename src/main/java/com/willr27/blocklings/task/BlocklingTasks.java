@@ -18,6 +18,7 @@ import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.ai.goal.PrioritizedGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
@@ -169,7 +170,11 @@ public class BlocklingTasks
 
                 for (Property property : task.getGoal().properties)
                 {
-                    property.writeToNBT(propertiesTag);
+                    CompoundNBT propertyTag = new CompoundNBT();
+
+                    property.writeToNBT(propertyTag);
+
+                    propertiesTag.add(propertyTag);
                 }
 
                 taskTag.put("whitelists", whitelistsTag);
@@ -227,11 +232,14 @@ public class BlocklingTasks
 
                 if (propertiesTag != null)
                 {
-                    int i = 0;
-                    for (Property property : task.getGoal().properties)
+                    for (INBT tag : propertiesTag)
                     {
-                        property.readFromNBT(propertiesTag.getCompound(i));
-                        i++;
+                        CompoundNBT propertyTag = (CompoundNBT) tag;
+
+                        task.getGoal().properties.stream()
+                                .filter(property -> property.id.equals(propertyTag.getUUID("id")))
+                                .findFirst()
+                                .ifPresent(property -> property.readFromNBT(propertyTag));
                     }
                 }
 

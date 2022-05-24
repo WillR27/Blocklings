@@ -4,7 +4,6 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.gui.IControl;
 import com.willr27.blocklings.gui.controls.common.RangeControl;
-import com.willr27.blocklings.task.Task;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -12,6 +11,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nonnull;
+import java.util.UUID;
 
 /**
  * Used to configure a range property.
@@ -34,38 +34,37 @@ public class RangeProperty extends Property
     public int value;
 
     /**
+     * @param id the id of the property (used for serialising\deserialising).
      * @param goal the associated task's goal.
      * @param name the name of the property.
      * @param min the minimum value of the range.
      * @param max the maximum value of the range.
      * @param startingValue the range starting value.
      */
-    public RangeProperty(@Nonnull BlocklingGoal goal, @Nonnull ITextComponent name, int min, int max, int startingValue)
+    public RangeProperty(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull ITextComponent name, int min, int max, int startingValue)
     {
-        super(goal, name);
+        super(id, goal, name);
         this.min = min;
         this.max = max;
         this.value = startingValue;
     }
 
     @Override
-    public void writeToNBT(@Nonnull ListNBT list)
+    public void writeToNBT(@Nonnull CompoundNBT propertyTag)
     {
-        CompoundNBT propertyTag = new CompoundNBT();
+        super.writeToNBT(propertyTag);
 
         propertyTag.putInt("min", min);
         propertyTag.putInt("max", max);
         propertyTag.putInt("value", value);
-
-        list.add(propertyTag);
     }
 
     @Override
-    public void readFromNBT(@Nonnull CompoundNBT tag)
+    public void readFromNBT(@Nonnull CompoundNBT propertyTag)
     {
-        min = tag.getInt("min");
-        max = tag.getInt("max");
-        value = tag.getInt("value");
+        min = propertyTag.getInt("min");
+        max = propertyTag.getInt("max");
+        value = propertyTag.getInt("value");
     }
 
     @Override
@@ -118,61 +117,7 @@ public class RangeProperty extends Property
 
         if (sync)
         {
-            new TaskRangePropertyMessage(this).sync();
-        }
-    }
-
-    /**
-     * Used to sync properties between the client and server.
-     */
-    public static class TaskRangePropertyMessage extends TaskPropertyMessage<RangeProperty, TaskRangePropertyMessage>
-    {
-        /**
-         * The current value of the range.
-         */
-        private int value;
-
-        /**
-         * Empty constructor used ONLY for decoding.
-         */
-        public TaskRangePropertyMessage()
-        {
-            super();
-        }
-
-        /**
-         * @param property the property.
-         */
-        public TaskRangePropertyMessage(@Nonnull RangeProperty property)
-        {
-            super(property);
-        }
-
-        @Override
-        public void encode(@Nonnull PacketBuffer buf)
-        {
-            super.encode(buf);
-
-            buf.writeInt(property.value);
-        }
-
-        @Override
-        public void decode(@Nonnull PacketBuffer buf)
-        {
-            super.decode(buf);
-
-            value = buf.readInt();
-        }
-
-        @Override
-        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
-        {
-            super.handle(player, blockling);
-
-            if (property != null)
-            {
-                property.value = value;
-            }
+            new TaskPropertyMessage(this).sync();
         }
     }
 }

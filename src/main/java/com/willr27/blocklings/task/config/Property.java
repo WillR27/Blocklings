@@ -13,6 +13,7 @@ import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -20,6 +21,12 @@ import java.util.UUID;
  */
 public abstract class Property
 {
+    /**
+     * The id of the property (used for syncing between serialising\deserialising).
+     */
+    @Nonnull
+    public final UUID id;
+
     /**
      * The associated task's goal.
      */
@@ -33,27 +40,29 @@ public abstract class Property
     public final ITextComponent name;
 
     /**
+     * @param id the id of the property (used for syncing between serialising\deserialising).
      * @param goal the associated task's goal.
      * @param name the name of the property.
      */
-    public Property(@Nonnull BlocklingGoal goal, @Nonnull ITextComponent name)
+    public Property(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull ITextComponent name)
     {
+        this.id = UUID.fromString(id);
         this.goal = goal;
         this.name = name;
     }
 
     /**
-     * Writes the property to the given list.
+     * Writes the property directly to the given tag.
      */
-    public void writeToNBT(@Nonnull ListNBT list)
+    public void writeToNBT(@Nonnull CompoundNBT propertyTag)
     {
-
+        propertyTag.putUUID("id", id);
     }
 
     /**
-     * Reads the property from the given tag.
+     * Reads the property directly from the given tag.
      */
-    public void readFromNBT(@Nonnull CompoundNBT tag)
+    public void readFromNBT(@Nonnull CompoundNBT propertyTag)
     {
 
     }
@@ -87,13 +96,19 @@ public abstract class Property
     /**
      * Used to sync properties between the client and server.
      */
-    public static abstract class TaskPropertyMessage<T extends Property, M extends BlocklingMessage<M>> extends BlocklingMessage<M>
+    public static class TaskPropertyMessage extends BlocklingMessage<TaskPropertyMessage>
     {
+        /**
+         * The remaining buffer used to pass to the property to decode.
+         */
+        @Nullable
+        private PacketBuffer buf;
+
         /**
          * The property (could be null on the receiving end if the client and server are no synced).
          */
         @Nullable
-        protected T property;
+        protected Property property;
 
         /**
          * The associated task id.
@@ -117,7 +132,7 @@ public abstract class Property
         /**
          * @param property the property.
          */
-        public TaskPropertyMessage(@Nonnull T property)
+        public TaskPropertyMessage(@Nonnull Property property)
         {
             super(property.goal.blockling);
             this.property = property;
@@ -130,6 +145,8 @@ public abstract class Property
 
             buf.writeUUID(property.goal.getTask().id);
             buf.writeInt(property.goal.getTask().getGoal().properties.indexOf(property));
+
+            property.encode(buf);
         }
 
         @Override
@@ -139,6 +156,8 @@ public abstract class Property
 
             taskId = buf.readUUID();
             propertyIndex = buf.readInt();
+
+            this.buf = buf;
         }
 
         @Override
@@ -148,7 +167,8 @@ public abstract class Property
 
             if (task != null && task.isConfigured())
             {
-                property = (T) task.getGoal().properties.get(propertyIndex);
+                property = task.getGoal().properties.get(propertyIndex);
+                property.decode(Objects.requireNonNull(buf));
             }
         }
     }
