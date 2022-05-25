@@ -347,8 +347,8 @@ public abstract class TabbedContainerScreen<T extends Container> extends Contain
     {
         MouseScrollEvent e = new MouseScrollEvent((int) mouseX, (int) mouseY, scroll);
 
-        forwardGlobalMouseScrolled(e);
         forwardControlMouseScrolled(e);
+        forwardGlobalMouseScrolled(e);
 
         return super.mouseScrolled(mouseX, mouseY, scroll);
     }
@@ -360,23 +360,15 @@ public abstract class TabbedContainerScreen<T extends Container> extends Contain
         {
             KeyEvent e = new KeyEvent(keyCode, scanCode, mods);
 
+            getFocusedControl().controlKeyHeld(e);
             forwardGlobalKeyHeld(e);
-
-            if (getFocusedControl().isVisible() && getFocusedControl().isInteractive())
-            {
-                getFocusedControl().controlKeyHeld(e);
-            }
         }
         else
         {
             KeyEvent e = new KeyEvent(keyCode, scanCode, mods);
 
+            getFocusedControl().controlKeyPressed(e);
             forwardGlobalKeyPressed(e);
-
-            if (getFocusedControl().isVisible() && getFocusedControl().isInteractive())
-            {
-                getFocusedControl().controlKeyPressed(e);
-            }
         }
 
         Integer oldCount = heldKeys.put(keyCode, 0);
@@ -394,11 +386,7 @@ public abstract class TabbedContainerScreen<T extends Container> extends Contain
     {
         KeyEvent e = new KeyEvent(keyCode, scanCode, mods);
 
-        if (getFocusedControl().isVisible() && getFocusedControl().isInteractive())
-        {
-            getFocusedControl().controlKeyReleased(e);
-        }
-
+        getFocusedControl().controlKeyReleased(e);
         forwardGlobalKeyReleased(e);
 
         heldKeys.remove(keyCode);
@@ -411,12 +399,8 @@ public abstract class TabbedContainerScreen<T extends Container> extends Contain
     {
         CharEvent e = new CharEvent(character, keyCode);
 
+        getFocusedControl().controlCharTyped(e);
         forwardGlobalCharTyped(e);
-
-        if (getFocusedControl().isVisible() && getFocusedControl().isInteractive())
-        {
-            getFocusedControl().controlCharTyped(e);
-        }
 
         return super.charTyped(character, keyCode);
     }

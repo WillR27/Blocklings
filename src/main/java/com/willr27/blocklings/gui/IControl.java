@@ -346,25 +346,6 @@ public interface IControl
     }
 
     /**
-     * Forwards a mouse scrolled event.
-     */
-    default void forwardGlobalMouseScrolled(@Nonnull MouseScrollEvent e)
-    {
-        getReverseChildrenCopy().forEach(control -> control.forwardGlobalMouseScrolled(e));
-
-        globalMouseScrolled(e);
-    }
-
-
-    /**
-     * Called when the mouse is scrolled anywhere on the screen.
-     */
-    default void globalMouseScrolled(@Nonnull MouseScrollEvent e)
-    {
-
-    }
-
-    /**
      * Tries to forward a mouse scrolled event to the control.
      */
     default void forwardControlMouseScrolled(@Nonnull MouseScrollEvent e)
@@ -401,6 +382,54 @@ public interface IControl
     }
 
     /**
+     * Forwards a mouse scrolled event.
+     */
+    default void forwardGlobalMouseScrolled(@Nonnull MouseScrollEvent e)
+    {
+        getReverseChildrenCopy().forEach(control -> control.forwardGlobalMouseScrolled(e));
+
+        globalMouseScrolled(e);
+    }
+
+
+    /**
+     * Called when the mouse is scrolled anywhere on the screen.
+     */
+    default void globalMouseScrolled(@Nonnull MouseScrollEvent e)
+    {
+
+    }
+
+    /**
+     * Tries to forward a key pressed event to the control.
+     */
+    default void forwardControlKeyPressed(@Nonnull KeyEvent e)
+    {
+        if (isVisible() && isInteractive())
+        {
+            controlKeyPressed(e);
+        }
+
+        if (e.isHandled())
+        {
+            return;
+        }
+
+        if (hasParent())
+        {
+            getParent().forwardControlKeyPressed(e);
+        }
+    }
+
+    /**
+     * Called when a key is pressed and the control is focused.
+     */
+    default void controlKeyPressed(@Nonnull KeyEvent e)
+    {
+
+    }
+
+    /**
      * Forwards a key pressed event.
      */
     default void forwardGlobalKeyPressed(@Nonnull KeyEvent e)
@@ -419,11 +448,32 @@ public interface IControl
     }
 
     /**
-     * Called when a key is pressed and the control is focused.
+     * Tries to forward a key released event to the control.
      */
-    default void controlKeyPressed(@Nonnull KeyEvent e)
+    default void forwardControlKeyReleased(@Nonnull KeyEvent e)
     {
-        e.setIsHandled(true);
+        if (isVisible() && isInteractive())
+        {
+            controlKeyReleased(e);
+        }
+
+        if (e.isHandled())
+        {
+            return;
+        }
+
+        if (hasParent())
+        {
+            getParent().forwardControlKeyReleased(e);
+        }
+    }
+
+    /**
+     * Called when a key is released and the control is focused.
+     */
+    default void controlKeyReleased(@Nonnull KeyEvent e)
+    {
+
     }
 
     /**
@@ -445,11 +495,32 @@ public interface IControl
     }
 
     /**
-     * Called when a key is released and the control is focused.
+     * Tries to forward a key held event to the control.
      */
-    default void controlKeyReleased(@Nonnull KeyEvent e)
+    default void forwardControlKeyHeld(@Nonnull KeyEvent e)
     {
-        e.setIsHandled(true);
+        if (isVisible() && isInteractive())
+        {
+            controlKeyHeld(e);
+        }
+
+        if (e.isHandled())
+        {
+            return;
+        }
+
+        if (hasParent())
+        {
+            getParent().forwardControlKeyHeld(e);
+        }
+    }
+
+    /**
+     * Called when a key is held and the control is focused.
+     */
+    default void controlKeyHeld(@Nonnull KeyEvent e)
+    {
+
     }
 
     /**
@@ -471,11 +542,32 @@ public interface IControl
     }
 
     /**
-     * Called when a key is held and the control is focused.
+     * Tries to forward a char typed event to the control.
      */
-    default void controlKeyHeld(@Nonnull KeyEvent e)
+    default void forwardControlCharTyped(@Nonnull CharEvent e)
     {
-        e.setIsHandled(true);
+        if (isVisible() && isInteractive())
+        {
+            controlCharTyped(e);
+        }
+
+        if (e.isHandled())
+        {
+            return;
+        }
+
+        if (hasParent())
+        {
+            getParent().forwardControlCharTyped(e);
+        }
+    }
+
+    /**
+     * Called when a char is typed and the control is focused.
+     */
+    default void controlCharTyped(@Nonnull CharEvent e)
+    {
+
     }
 
     /**
@@ -494,14 +586,6 @@ public interface IControl
     default void globalCharTyped(@Nonnull CharEvent e)
     {
 
-    }
-
-    /**
-     * Called when a char is typed and the control is focused.
-     */
-    default void controlCharTyped(@Nonnull CharEvent e)
-    {
-        e.setIsHandled(true);
     }
 
     /**

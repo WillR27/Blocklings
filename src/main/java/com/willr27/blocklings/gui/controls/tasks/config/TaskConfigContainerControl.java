@@ -114,10 +114,11 @@ public class TaskConfigContainerControl extends Control
     {
         removeChild(currentConfigGui);
         currentConfigGui = new TaskMiscConfigControl(this, task, 9, 46, 140, 112, contentScrollbarControl);
+        currentConfigGui.setIsFocused(true);
 
         removeChild(tabControl);
         tabControl = new TabControl(this,9, 33, 140);
-        tabControl.add(new BlocklingsTranslationTextComponent("task.ui.tab.misc").getString(), () -> { removeChild(currentConfigGui); currentConfigGui = new TaskMiscConfigControl(this, task, 9, 46, 140, 112, contentScrollbarControl); currentConfigGui.setZIndex(2); });
+        tabControl.add(new BlocklingsTranslationTextComponent("task.ui.tab.misc").getString(), () -> { removeChild(currentConfigGui); currentConfigGui = new TaskMiscConfigControl(this, task, 9, 46, 140, 112, contentScrollbarControl); currentConfigGui.setZIndex(2); currentConfigGui.setIsFocused(true); });
 
         if (task.isConfigured() && !task.getGoal().whitelists.isEmpty())
         {
@@ -125,7 +126,7 @@ public class TaskConfigContainerControl extends Control
             {
                 if (whitelist.isUnlocked())
                 {
-                    tabControl.add(whitelist.name.getString(), () -> { removeChild(currentConfigGui); currentConfigGui = new WhitelistConfigControl(this, whitelist, 9, 46, 140, 112, contentScrollbarControl); currentConfigGui.setZIndex(2); });
+                    tabControl.add(whitelist.name.getString(), () -> { removeChild(currentConfigGui); currentConfigGui = new WhitelistConfigControl(this, whitelist, 9, 46, 140, 112, contentScrollbarControl); currentConfigGui.setZIndex(2); currentConfigGui.setIsFocused(true); });
                 }
             }
         }
@@ -171,7 +172,7 @@ public class TaskConfigContainerControl extends Control
     }
 
     @Override
-    public void globalKeyPressed(@Nonnull KeyEvent e)
+    public void controlKeyPressed(@Nonnull KeyEvent e)
     {
         if (e.isHandled())
         {

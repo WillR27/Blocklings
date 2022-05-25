@@ -346,8 +346,8 @@ public class TabbedScreen extends Screen implements IControl, IScreen
 
         MouseScrollEvent e = new MouseScrollEvent((int) mouseX, (int) mouseY, scroll);
 
-        forwardGlobalMouseScrolled(e);
         forwardControlMouseScrolled(e);
+        forwardGlobalMouseScrolled(e);
 
         return e.isHandled() || super.mouseScrolled(mouseX, mouseY, scroll);
     }
@@ -359,21 +359,13 @@ public class TabbedScreen extends Screen implements IControl, IScreen
 
         if (isKeyHeld(keyCode) && heldKeys.get(keyCode) > 10)
         {
+            getFocusedControl().forwardControlKeyHeld(e);
             forwardGlobalKeyHeld(e);
-
-            if (getFocusedControl().isVisible() && getFocusedControl().isInteractive())
-            {
-                getFocusedControl().controlKeyHeld(e);
-            }
         }
         else
         {
+            getFocusedControl().forwardControlKeyPressed(e);
             forwardGlobalKeyPressed(e);
-
-            if (getFocusedControl().isVisible() && getFocusedControl().isInteractive())
-            {
-                getFocusedControl().controlKeyPressed(e);
-            }
         }
 
         Integer oldCount = heldKeys.put(keyCode, 0);
@@ -391,11 +383,7 @@ public class TabbedScreen extends Screen implements IControl, IScreen
     {
         KeyEvent e = new KeyEvent(keyCode, scanCode, mods);
 
-        if (getFocusedControl().isVisible() && getFocusedControl().isInteractive())
-        {
-            getFocusedControl().controlKeyReleased(e);
-        }
-
+        getFocusedControl().controlKeyReleased(e);
         forwardGlobalKeyReleased(e);
 
         heldKeys.remove(keyCode);
@@ -408,12 +396,8 @@ public class TabbedScreen extends Screen implements IControl, IScreen
     {
         CharEvent e = new CharEvent(character, keyCode);
 
+        getFocusedControl().controlCharTyped(e);
         forwardGlobalCharTyped(e);
-
-        if (getFocusedControl().isVisible() && getFocusedControl().isInteractive())
-        {
-            getFocusedControl().controlCharTyped(e);
-        }
 
         return super.charTyped(character, keyCode);
     }

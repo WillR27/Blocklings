@@ -137,6 +137,9 @@ public class RangeControl extends Control
         if (new Control(null, getScreenX(), (int) (getScreenY() + 4 * getEffectiveScale()), (int) (sliderWidth * getEffectiveScale()), (int) (GuiTextures.SLIDER_GRABBER_RAISED.height * getEffectiveScale())).isMouseOver(e.mouseX, e.mouseY))
         {
             setPercentage(calcPercentageFromMouse(e.mouseX));
+
+            grabberControl.setIsPressed(true, e.mouseX, e.mouseY);
+            grabberControl.setIsDragging(true);
         }
 
         e.setIsHandled(true);
@@ -166,7 +169,7 @@ public class RangeControl extends Control
     }
 
     @Override
-    public void globalKeyPressed(@Nonnull KeyEvent e)
+    public void controlKeyPressed(@Nonnull KeyEvent e)
     {
         if (e.keyCode == GLFW.GLFW_KEY_ENTER || e.keyCode == GLFW.GLFW_KEY_ESCAPE)
         {
