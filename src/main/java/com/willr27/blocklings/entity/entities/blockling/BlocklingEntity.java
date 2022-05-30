@@ -485,6 +485,11 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     {
         boolean hurt = super.hurt(damageSource, damage);
 
+        if (isDeadOrDying())
+        {
+            BlocklingWhistleItem.onBlocklingDestroyed(this);
+        }
+
         if (!level.isClientSide)
         {
             if (skills.getSkill(GeneralSkills.ARMADILLO).isBought())
@@ -576,6 +581,8 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                                 {
                                     dropItemStack(blocklingStack);
                                 }
+
+                                BlocklingWhistleItem.onBlocklingDestroyed(this);
 
                                 remove();
 

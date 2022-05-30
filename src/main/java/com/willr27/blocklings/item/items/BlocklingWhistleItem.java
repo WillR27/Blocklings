@@ -26,8 +26,7 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * An item used to return a blockling back to the owner.
@@ -45,6 +44,12 @@ public class BlocklingWhistleItem extends Item
      */
     @Nonnull
     public static final String BLOCKLING_NAME_KEY = "blockling_name";
+
+    /**
+     * Maps the instances of blocklings to their respective blockling whistles.
+     */
+    @Nonnull
+    public static final Map<BlocklingEntity, Set<ItemStack>> BLOCKLINGS_TO_WHISTLES = new HashMap<>();
 
     /**
      * Default constructor.
@@ -68,6 +73,47 @@ public class BlocklingWhistleItem extends Item
     {
         CompoundNBT tag = stack.getOrCreateTag();
         tag.putUUID(BLOCKLING_UUID_KEY, blockling.getUUID());
+
+        addStackToMap(blockling, stack);
+    }
+
+    /**
+     * Adds the given whistle to the set of blockling whistles associated with the given blockling.
+     *
+     * @param blockling the blockling to associate the whistle with.
+     * @param stack the stack to be associated with the given blockling.
+     */
+    public static void addStackToMap(@Nonnull BlocklingEntity blockling, @Nonnull ItemStack stack)
+    {
+        Set<ItemStack> stacks = BLOCKLINGS_TO_WHISTLES.getOrDefault(blockling, new HashSet<>());
+        stacks.add(stack);
+        BLOCKLINGS_TO_WHISTLES.put(blockling, stacks);
+    }
+
+    /**
+     * Called when the blockling is destroyed from the world.
+     * This should not be called every time the blockling is removed.
+     * Only when the blockling is permanently removed from the world (e.g. death, packling).
+     */
+    public static void onBlocklingDestroyed(@Nonnull BlocklingEntity blockling)
+    {
+        Set<ItemStack> stacks = BLOCKLINGS_TO_WHISTLES.get(blockling);
+
+        if (stacks != null)
+        {
+            for (ItemStack stack : stacks)
+            {
+                CompoundNBT stackTag = stack.getTag();
+
+                if (stackTag != null)
+                {
+                    stackTag.remove(BLOCKLING_UUID_KEY);
+                    stackTag.remove(BLOCKLING_NAME_KEY);
+                }
+            }
+        }
+
+        BLOCKLINGS_TO_WHISTLES.remove(blockling);
     }
 
     @Nonnull
@@ -118,6 +164,13 @@ public class BlocklingWhistleItem extends Item
         {
             if (world.isClientSide)
             {
+                BlocklingEntity blockling = findBlockling(stack, (ClientWorld) world);
+
+                if (blockling != null)
+                {
+                    addStackToMap(blockling, stack);
+                }
+
                 String name = findBlocklingName(stack, (ClientWorld) world);
 
                 if (name != null)
@@ -127,10 +180,12 @@ public class BlocklingWhistleItem extends Item
             }
             else
             {
-                Entity blockling = ((ServerWorld) world).getEntity(stack.getTag().getUUID(BLOCKLING_UUID_KEY));
+                BlocklingEntity blockling = (BlocklingEntity) ((ServerWorld) world).getEntity(stack.getTag().getUUID(BLOCKLING_UUID_KEY));
 
                 if (blockling != null)
                 {
+                    addStackToMap(blockling, stack);
+
                     stack.getTag().putString(BLOCKLING_NAME_KEY, blockling.getCustomName().getString());
                 }
             }
