@@ -129,6 +129,7 @@ public abstract class AbstractInventory implements IInventory
         ItemStack copy = stack.copy();
         stack.shrink(count);
         setItem(index, stack);
+        copy.setCount(count);
         return copy;
     }
 
