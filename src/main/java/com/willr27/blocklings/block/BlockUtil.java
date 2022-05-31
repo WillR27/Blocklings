@@ -28,26 +28,52 @@ public class BlockUtil
      */
     public static void init()
     {
-        ORES.clear();
+        initBlocks(ORES, BlocklingsConfig.COMMON.additionalOres.get(), BlocklingsConfig.COMMON.excludedOres.get(), "forge:ores");
+        initBlocks(LOGS, BlocklingsConfig.COMMON.additionalLogs.get(), BlocklingsConfig.COMMON.excludedLogs.get(), "minecraft:logs");
+        initBlocks(LEAVES, BlocklingsConfig.COMMON.additionalLeaves.get(), BlocklingsConfig.COMMON.excludedLeaves.get(), "minecraft:leaves", "minecraft:wart_blocks");
+    }
+
+    /**
+     * Initialises the given set using the given config lists and tags.
+     *
+     * @param blocksToAddTo the set to add blocks to.
+     * @param additionalBlocks the list of additional blocks to add.
+     * @param excludedBlocks the list of blocks to ensure are excluded.
+     * @param tags the tags to use to find blocks to add to the set.
+     */
+    public static void initBlocks(@Nonnull Set<Block> blocksToAddTo, @Nonnull List<? extends String> additionalBlocks, @Nonnull List<? extends String> excludedBlocks, @Nonnull String... tags)
+    {
+        blocksToAddTo.clear();
 
         for (ResourceLocation entry : Registry.BLOCK.keySet())
         {
             Block block = Registry.BLOCK.get(entry);
 
-            if (!block.getTags().contains(Tags.Blocks.ORES) && !block.getTags().stream().anyMatch(r -> r.getPath().equals("ores")))
+            if (!block.getTags().stream().anyMatch(r ->
+            {
+                for (String tag : tags)
+                {
+                    if (r.toString().equals(tag))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }))
             {
                 continue;
             }
 
-            if (BlocklingsConfig.COMMON.excludedOres.get().contains(entry.toString()))
+            if (excludedBlocks.contains(entry.toString()))
             {
                 continue;
             }
 
-            ORES.add(block);
+            blocksToAddTo.add(block);
         }
 
-        for (String entry : BlocklingsConfig.COMMON.additionalOres.get())
+        for (String entry : additionalBlocks)
         {
             Block block = Registry.BLOCK.get(new ResourceLocation(entry));
 
@@ -56,12 +82,12 @@ public class BlockUtil
                 continue;
             }
 
-            if (BlocklingsConfig.COMMON.excludedOres.get().contains(entry))
+            if (excludedBlocks.contains(entry))
             {
                 continue;
             }
 
-            ORES.add(block);
+            blocksToAddTo.add(block);
         }
     }
 
@@ -113,15 +139,7 @@ public class BlockUtil
      * The list of blocks that are considered logs.
      */
     @Nonnull
-    public static List<Block> LOGS = new ArrayList<Block>()
-    {{
-        add(Blocks.OAK_LOG);
-        add(Blocks.BIRCH_LOG);
-        add(Blocks.SPRUCE_LOG);
-        add(Blocks.JUNGLE_LOG);
-        add(Blocks.ACACIA_LOG);
-        add(Blocks.DARK_OAK_LOG);
-    }};
+    public static Set<Block> LOGS = new HashSet<>();
 
     /**
      * @param block the block to check.
@@ -165,15 +183,7 @@ public class BlockUtil
      * The list of blocks that are considered leaves.
      */
     @Nonnull
-    public static List<Block> LEAVES = new ArrayList<Block>()
-    {{
-        add(Blocks.OAK_LEAVES);
-        add(Blocks.BIRCH_LEAVES);
-        add(Blocks.SPRUCE_LEAVES);
-        add(Blocks.JUNGLE_LEAVES);
-        add(Blocks.ACACIA_LEAVES);
-        add(Blocks.DARK_OAK_LEAVES);
-    }};
+    public static Set<Block> LEAVES = new HashSet<>();
 
     /**
      * @param block the block to check.
