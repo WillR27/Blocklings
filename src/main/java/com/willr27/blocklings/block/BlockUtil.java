@@ -1,34 +1,75 @@
 package com.willr27.blocklings.block;
 
+import com.willr27.blocklings.BlocklingsConfig;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.data.ForgeBlockTagsProvider;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
+/**
+ * A class containing utility functions for blocks.
+ */
 public class BlockUtil
 {
+    /**
+     * Initialises any fields used by the class.
+     * E.g. the list of ores based on the user's config and the ores tag.
+     */
+    public static void init()
+    {
+        ORES.clear();
+
+        for (ResourceLocation entry : Registry.BLOCK.keySet())
+        {
+            Block block = Registry.BLOCK.get(entry);
+
+            if (!block.getTags().contains(Tags.Blocks.ORES) && !block.getTags().stream().anyMatch(r -> r.getPath().equals("ores")))
+            {
+                continue;
+            }
+
+            if (BlocklingsConfig.COMMON.excludedOres.get().contains(entry.toString()))
+            {
+                continue;
+            }
+
+            ORES.add(block);
+        }
+
+        for (String entry : BlocklingsConfig.COMMON.additionalOres.get())
+        {
+            Block block = Registry.BLOCK.get(new ResourceLocation(entry));
+
+            if (block.is(Blocks.AIR))
+            {
+                continue;
+            }
+
+            if (BlocklingsConfig.COMMON.excludedOres.get().contains(entry))
+            {
+                continue;
+            }
+
+            ORES.add(block);
+        }
+    }
+
     /**
      * The list of blocks that are considered ores.
      */
     @Nonnull
-    public static List<Block> ORES = new ArrayList<Block>()
-    {{
-        add(Blocks.COAL_ORE);
-        add(Blocks.IRON_ORE);
-        add(Blocks.GOLD_ORE);
-        add(Blocks.LAPIS_ORE);
-        add(Blocks.REDSTONE_ORE);
-        add(Blocks.EMERALD_ORE);
-        add(Blocks.DIAMOND_ORE);
-        add(Blocks.NETHER_QUARTZ_ORE);
-        add(Blocks.ANCIENT_DEBRIS);
-    }};
+    public static Set<Block> ORES = new HashSet<>();
 
     /**
      * @param block the block to check.

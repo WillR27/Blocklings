@@ -1,6 +1,7 @@
 package com.willr27.blocklings.events;
 
 import com.willr27.blocklings.Blocklings;
+import com.willr27.blocklings.block.BlockUtil;
 import com.willr27.blocklings.entity.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingType;
@@ -38,6 +39,7 @@ public class ForgeEventBusEvents
     public static void onWorldLoad(@Nonnull WorldEvent.Load event)
     {
         BlocklingType.init();
+        BlockUtil.init();
         ToolUtil.init();
         EntityUtil.init((World) event.getWorld());
 

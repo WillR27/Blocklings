@@ -40,6 +40,8 @@ public class EntityUtil
      */
     public static void init(@Nonnull World world)
     {
+        // TODO: https://forums.minecraftforge.net/topic/105550-1165-forge-config/
+
         for (ResourceLocation entry : Registry.ENTITY_TYPE.keySet())
         {
             Entity entity = Registry.ENTITY_TYPE.get(entry).create(world);
