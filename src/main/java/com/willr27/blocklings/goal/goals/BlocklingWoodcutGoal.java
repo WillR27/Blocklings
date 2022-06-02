@@ -14,7 +14,7 @@ import com.willr27.blocklings.whitelist.Whitelist;
 import javafx.util.Pair;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.SaplingBlock;
+import net.minecraft.block.LeavesBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.math.BlockPos;
@@ -157,7 +157,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
                     {
                         for (BlockPos surroundingPos : BlockUtil.getSurroundingBlockPositions(targetPos))
                         {
-                            if (BlockUtil.isLeaves(world.getBlockState(surroundingPos).getBlock()))
+                            if (isValidLeavesPos(surroundingPos))
                             {
                                 if (blockling.getSkills().getSkill(WoodcuttingSkills.TREE_SURGEON).isBought())
                                 {
@@ -453,7 +453,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
                         logBlockPositionsToTest.add(surroundingPos);
                     }
                 }
-                else if (isValidLeafPos(surroundingPos))
+                else if (isValidLeavesPos(surroundingPos))
                 {
                     if (!tree.leaves.contains(surroundingPos))
                     {
@@ -518,22 +518,30 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
 
     /**
      * @param blockPos the pos to check.
-     * @return true if the block at the pos is a leaf.
+     * @return true if the block at the pos is leaves and has a persistent property set to false.
      */
-    private boolean isValidLeafPos(BlockPos blockPos)
+    private boolean isValidLeavesPos(@Nonnull BlockPos blockPos)
     {
-        return isValidLeaf(world.getBlockState(blockPos).getBlock());
+        return isValidLeaves(world.getBlockState(blockPos));
+    }
+
+    /**
+     * @param blockState the blockState to check.
+     * @return true if the block is a leaves block and has a persistent property set to false.
+     */
+    private boolean isValidLeaves(@Nonnull BlockState blockState)
+    {
+        return isValidLeaves(blockState.getBlock()) && (!(blockState.getBlock() instanceof LeavesBlock) || !blockState.getValue(LeavesBlock.PERSISTENT));
     }
 
     /**
      * @param block the block to check.
-     * @return true if the block is a leaf.
+     * @return true if the block is leaves.
      */
-    private boolean isValidLeaf(Block block)
+    private boolean isValidLeaves(@Nonnull Block block)
     {
         return BlockUtil.isLeaves(block);
     }
-
 
     @Override
     protected boolean recalcPath(boolean force)
