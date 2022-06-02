@@ -27,74 +27,17 @@ public class BlocklingsConfig
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> additionalOres;
 
         /**
-         * The default list of additional ores.
-         */
-        @Nonnull
-        public final List<String> defaultAdditionalOres = new ArrayList<>();
-
-        /**
          * The blocks to ensure are excluded from the list of blocks that are regarded as ores.
          */
         @Nonnull
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> excludedOres;
 
         /**
-         * The default list of excluded ores.
+         * The list of tuples of blocks that the user wants to add as trees.
+         * Format: ["[x:y; a:b; j:k]", "[x:y; a:b; j:k]"] (log, leaf, sapling).
          */
         @Nonnull
-        public final List<String> defaultExcludedOres = new ArrayList<>();
-
-        /**
-         * The blocks to ensure are added to the list of blocks that are regarded as logs.
-         * This should only include blocks that are not tagged as logs.
-         * The final list will also include any block with the logs tag (disjoint with the excluded logs).
-         */
-        @Nonnull
-        public final ForgeConfigSpec.ConfigValue<List<? extends String>> additionalLogs;
-
-        /**
-         * The default list of additional logs.
-         */
-        @Nonnull
-        public final List<String> defaultAdditionalLogs = new ArrayList<>();
-
-        /**
-         * The blocks to ensure are excluded from the list of blocks that are regarded as logs.
-         */
-        @Nonnull
-        public final ForgeConfigSpec.ConfigValue<List<? extends String>> excludedLogs;
-
-        /**
-         * The default list of excluded logs.
-         */
-        @Nonnull
-        public final List<String> defaultExcludedLogs = new ArrayList<>();
-
-        /**
-         * The blocks to ensure are added to the list of blocks that are regarded as leaves.
-         * This should only include blocks that are not tagged as leaves.
-         * The final list will also include any block with the leaves tag (disjoint with the excluded leaves).
-         */
-        @Nonnull
-        public final ForgeConfigSpec.ConfigValue<List<? extends String>> additionalLeaves;
-
-        /**
-         * The default list of additional leaves.
-         */
-        @Nonnull
-        public final List<String> defaultAdditionalLeaves = new ArrayList<>();
-
-        /**
-         * The blocks to ensure are excluded from the list of blocks that are regarded as leaves.
-         */
-        @Nonnull
-        public final ForgeConfigSpec.ConfigValue<List<? extends String>> excludedLeaves;
-
-        /**
-         * The default list of excluded leaves.
-         */
-        @Nonnull
-        public final List<String> defaultExcludedLeaves = new ArrayList<>();
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> customTrees;
 
         /**
          * @param builder the builder used to create the config.
@@ -111,48 +54,27 @@ public class BlocklingsConfig
                             "NOT ALL BLOCKS ARE GUARANTEED TO WORK.",
                             "Example: [\"minecraft:stone\", \"minecraft:obsidian\"]")
                     .worldRestart()
-                    .defineList("additionalOres", () -> defaultAdditionalOres, s -> true);
+                    .defineList("additionalOres", () -> new ArrayList<>(), s -> true);
 
             excludedOres = builder
                     .comment("The list of ores (as registry names) to ensure are excluded from the list of blocks that regarded as ores.",
                             "Any block with the ores tag will automatically be added unless specified here.",
                             "Example: [\"minecraft:coal_ore\", \"minecraft:diamond_ore\"]")
                     .worldRestart()
-                    .defineList("excludedOres", () -> defaultExcludedOres, s -> true);
+                    .defineList("excludedOres", () -> new ArrayList<>(), s -> true);
 
             builder.pop();
 
             builder.push("Woodcutting");
 
-            additionalLogs = builder
-                    .comment("The list of logs (as registry names) to ensure are included in the list of blocks that are regarded as logs.",
-                            "Any block with the logs tag will automatically be added, so only include logs without that tag here.",
+            customTrees = builder
+                    .comment("The list of tuples of blocks that you want to additionally add as trees",
+                            "This is useful for modded trees that don't already have support.",
                             "NOT ALL BLOCKS ARE GUARANTEED TO WORK.",
-                            "Example: [\"minecraft:oak_planks\", \"minecraft:spruce_planks\"]")
+                            "Example: [\"[minecraft:oak_log; minecraft:oak_leaves; minecraft:oak_sapling]\", \"[...]\"]",
+                            "This would add oak trees as a custom tree (but they already have support so you don't need to add them here).")
                     .worldRestart()
-                    .defineList("additionalLogs", () -> defaultAdditionalLogs, s -> true);
-
-            excludedLogs = builder
-                    .comment("The list of logs (as registry names) to ensure are excluded from the list of blocks that regarded as logs.",
-                            "Any block with the logs tag will automatically be added unless specified here.",
-                            "Example: [\"minecraft:oak_logs\", \"minecraft:spruce_logs\"]")
-                    .worldRestart()
-                    .defineList("excludedLogs", () -> defaultExcludedLogs, s -> true);
-
-            additionalLeaves = builder
-                    .comment("The list of leaves (as registry names) to ensure are included in the list of blocks that are regarded as leaves.",
-                            "Any block with the leaves tag will automatically be added, so only include leaves without that tag here.",
-                            "NOT ALL BLOCKS ARE GUARANTEED TO WORK.",
-                            "Example: [\"minecraft:grass\", \"minecraft:stone\"]")
-                    .worldRestart()
-                    .defineList("additionalLeaves", () -> defaultAdditionalLeaves, s -> true);
-
-            excludedLeaves = builder
-                    .comment("The list of leaves (as registry names) to ensure are excluded from the list of blocks that regarded as leaves.",
-                            "Any block with the leaves tag will automatically be added unless specified here.",
-                            "Example: [\"minecraft:oak_leaves\", \"minecraft:spruce_leaves\"]")
-                    .worldRestart()
-                    .defineList("excludedLeaves", () -> defaultExcludedLeaves, s -> true);
+                    .defineList("customTrees", () -> new ArrayList<>(), s -> true);
 
             builder.pop();
         }

@@ -66,7 +66,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
 
         logWhitelist = new GoalWhitelist("fbfbfd44-c1b0-4420-824a-270b34c866f7", "logs", Whitelist.Type.BLOCK, this);
         logWhitelist.setIsUnlocked(blockling.getSkills().getSkill(WoodcuttingSkills.WHITELIST).isBought(), false);
-        BlockUtil.LOGS.forEach(log -> logWhitelist.put(log.getRegistryName(), true));
+        BlockUtil.TREES.forEach(tree -> logWhitelist.put(tree.log.getRegistryName(), true));
         whitelists.add(logWhitelist);
 
         setFlags(EnumSet.of(Flag.JUMP, Flag.MOVE));
@@ -156,7 +156,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
                     {
                         for (BlockPos surroundingPos : BlockUtil.getSurroundingBlockPositions(targetPos))
                         {
-                            if (BlockUtil.isLeaf(world.getBlockState(surroundingPos).getBlock()))
+                            if (BlockUtil.isLeaves(world.getBlockState(surroundingPos).getBlock()))
                             {
                                 if (blockling.getSkills().getSkill(WoodcuttingSkills.TREE_SURGEON).isBought())
                                 {
@@ -530,7 +530,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
      */
     private boolean isValidLeaf(Block block)
     {
-        return BlockUtil.isLeaf(block);
+        return BlockUtil.isLeaves(block);
     }
 
 

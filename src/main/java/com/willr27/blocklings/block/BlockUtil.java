@@ -1,17 +1,15 @@
 package com.willr27.blocklings.block;
 
+import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.BlocklingsConfig;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.data.ForgeBlockTagsProvider;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,22 +26,26 @@ public class BlockUtil
      */
     public static void init()
     {
-        initBlocks(ORES, BlocklingsConfig.COMMON.additionalOres.get(), BlocklingsConfig.COMMON.excludedOres.get(), "forge:ores");
-        initBlocks(LOGS, BlocklingsConfig.COMMON.additionalLogs.get(), BlocklingsConfig.COMMON.excludedLogs.get(), "minecraft:logs");
-        initBlocks(LEAVES, BlocklingsConfig.COMMON.additionalLeaves.get(), BlocklingsConfig.COMMON.excludedLeaves.get(), "minecraft:leaves", "minecraft:wart_blocks");
+        initOres(BlocklingsConfig.COMMON.additionalOres.get(), BlocklingsConfig.COMMON.excludedOres.get(), "forge:ores");
+        initTrees(BlocklingsConfig.COMMON.customTrees.get());
     }
+
+    /**
+     * The list of blocks that are considered ores.
+     */
+    @Nonnull
+    public static Set<Block> ORES = new HashSet<>();
 
     /**
      * Initialises the given set using the given config lists and tags.
      *
-     * @param blocksToAddTo the set to add blocks to.
      * @param additionalBlocks the list of additional blocks to add.
      * @param excludedBlocks the list of blocks to ensure are excluded.
      * @param tags the tags to use to find blocks to add to the set.
      */
-    public static void initBlocks(@Nonnull Set<Block> blocksToAddTo, @Nonnull List<? extends String> additionalBlocks, @Nonnull List<? extends String> excludedBlocks, @Nonnull String... tags)
+    public static void initOres(@Nonnull List<? extends String> additionalBlocks, @Nonnull List<? extends String> excludedBlocks, @Nonnull String... tags)
     {
-        blocksToAddTo.clear();
+        ORES.clear();
 
         for (ResourceLocation entry : Registry.BLOCK.keySet())
         {
@@ -70,7 +72,7 @@ public class BlockUtil
                 continue;
             }
 
-            blocksToAddTo.add(block);
+            ORES.add(block);
         }
 
         for (String entry : additionalBlocks)
@@ -87,15 +89,9 @@ public class BlockUtil
                 continue;
             }
 
-            blocksToAddTo.add(block);
+            ORES.add(block);
         }
     }
-
-    /**
-     * The list of blocks that are considered ores.
-     */
-    @Nonnull
-    public static Set<Block> ORES = new HashSet<>();
 
     /**
      * @param block the block to check.
@@ -136,10 +132,115 @@ public class BlockUtil
     }
 
     /**
-     * The list of blocks that are considered logs.
+     * Represents the 3 blocks that make up a tree.
+     */
+    public static class Tree
+    {
+        /**
+         * The block that makes up the trunk of the tree.
+         */
+        @Nonnull
+        public final Block log;
+
+        /**
+         * The block that makes up the leaves of the tree.
+         */
+        @Nonnull
+        public final Block leaves;
+
+        /**
+         * The sapling block for the tree.
+         */
+        @Nonnull
+        public final Block sapling;
+
+        /**
+         * @param log the log block.
+         * @param leaves the leaves block.
+         * @param sapling the sapling block.
+         */
+        public Tree(@Nonnull Block log, @Nonnull Block leaves, @Nonnull Block sapling)
+        {
+            this.log = log;
+            this.leaves = leaves;
+            this.sapling = sapling;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (obj instanceof Tree)
+            {
+                Tree tree = (Tree) obj;
+
+                return tree.log == log && tree.leaves == leaves && tree.sapling == sapling;
+            }
+
+            return super.equals(obj);
+        }
+    }
+
+    /**
+     * The list of trees.
      */
     @Nonnull
-    public static Set<Block> LOGS = new HashSet<>();
+    public static List<Tree> TREES = new ArrayList<>();
+
+    /**
+     * Initialises the given set using the given config lists and tags.
+     *
+     * @param customTrees the custom trees to add.
+     */
+    public static void initTrees(@Nonnull List<? extends String> customTrees)
+    {
+        TREES.clear();
+
+        TREES.add(new Tree(Blocks.ACACIA_LOG, Blocks.ACACIA_LEAVES, Blocks.ACACIA_SAPLING));
+        TREES.add(new Tree(Blocks.BIRCH_LOG, Blocks.BIRCH_LEAVES, Blocks.BIRCH_SAPLING));
+        TREES.add(new Tree(Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_LEAVES, Blocks.DARK_OAK_SAPLING));
+        TREES.add(new Tree(Blocks.JUNGLE_LOG, Blocks.JUNGLE_LEAVES, Blocks.JUNGLE_SAPLING));
+        TREES.add(new Tree(Blocks.OAK_LOG, Blocks.OAK_LEAVES, Blocks.OAK_SAPLING));
+        TREES.add(new Tree(Blocks.SPRUCE_LOG, Blocks.SPRUCE_LEAVES, Blocks.SPRUCE_SAPLING));
+
+        for (String treeString : customTrees)
+        {
+            Runnable warn = () -> Blocklings.LOGGER.warn("The custom tree \"" + treeString + "\" is invalid and won't be added. Should look like \"[minecraft:oak_log; minecraft:oak_leaf; minecraft:oak_sapling]\".");
+
+            if (!treeString.startsWith("[") || !treeString.endsWith("]") || treeString.length() < 10)
+            {
+                warn.run();
+
+                continue;
+            }
+
+            String[] splitTreeString = treeString.substring(1, treeString.length() - 1).split("; ");
+
+            if (splitTreeString.length != 3)
+            {
+                warn.run();
+
+                continue;
+            }
+
+            Block log = Registry.BLOCK.get(new ResourceLocation(splitTreeString[0]));
+            Block leaves = Registry.BLOCK.get(new ResourceLocation(splitTreeString[1]));
+            Block sapling = Registry.BLOCK.get(new ResourceLocation(splitTreeString[2]));
+
+            if (log.is(Blocks.AIR) || leaves.is(Blocks.AIR) || sapling.is(Blocks.AIR))
+            {
+                warn.run();
+
+                continue;
+            }
+
+            Tree tree = new Tree(log, leaves, sapling);
+
+            if (!TREES.contains(tree))
+            {
+                TREES.add(tree);
+            }
+        }
+    }
 
     /**
      * @param block the block to check.
@@ -147,7 +248,7 @@ public class BlockUtil
      */
     public static boolean isLog(@Nonnull Block block)
     {
-        return LOGS.contains(block);
+        return TREES.stream().anyMatch(tree -> tree.log == block);
     }
 
     /**
@@ -168,11 +269,11 @@ public class BlockUtil
     @Nullable
     public static Block getLog(@Nonnull Item blockItem)
     {
-        for (Block log : LOGS)
+        for (Tree tree : TREES)
         {
-            if (new ItemStack(log).getItem() == blockItem)
+            if (new ItemStack(tree.log).getItem() == blockItem)
             {
-                return log;
+                return tree.log;
             }
         }
 
@@ -180,76 +281,42 @@ public class BlockUtil
     }
 
     /**
-     * The list of blocks that are considered leaves.
-     */
-    @Nonnull
-    public static Set<Block> LEAVES = new HashSet<>();
-
-    /**
      * @param block the block to check.
-     * @return true if the block is a leaf.
+     * @return true if the block is leaves.
      */
-    public static boolean isLeaf(@Nonnull Block block)
+    public static boolean isLeaves(@Nonnull Block block)
     {
-        return LEAVES.contains(block);
+        return TREES.stream().anyMatch(tree -> tree.leaves == block);
     }
 
     /**
      * @param blockItem a block in item form.
      * @return true if the block item is a leaf.
      */
-    public static boolean isLeaf(@Nonnull Item blockItem)
+    public static boolean isLeaves(@Nonnull Item blockItem)
     {
-        return getLeaf(blockItem) != null;
+        return getLeaves(blockItem) != null;
     }
 
     /**
      * Gets the block of the given block item.
      *
      * @param blockItem a block in item form.
-     * @return the block if it is a leaf else null.
+     * @return the block if it is leaves else null.
      */
     @Nullable
-    public static Block getLeaf(@Nonnull Item blockItem)
+    public static Block getLeaves(@Nonnull Item blockItem)
     {
-        for (Block leaf : LEAVES)
+        for (Tree tree : TREES)
         {
-            if (new ItemStack(leaf).getItem() == blockItem)
+            if (new ItemStack(tree.leaves).getItem() == blockItem)
             {
-                return leaf;
+                return tree.leaves;
             }
         }
 
         return null;
     }
-
-    /**
-     * The list of blocks that are considered saplings.
-     */
-    @Nonnull
-    public static List<Block> SAPLINGS = new ArrayList<Block>()
-    {{
-        add(Blocks.OAK_SAPLING);
-        add(Blocks.BIRCH_SAPLING);
-        add(Blocks.SPRUCE_SAPLING);
-        add(Blocks.JUNGLE_SAPLING);
-        add(Blocks.ACACIA_SAPLING);
-        add(Blocks.DARK_OAK_SAPLING);
-    }};
-
-    /**
-     * The map of logs to saplings.
-     */
-    @Nonnull
-    public static Map<Block, Block> LOGS_TO_SAPLINGS = new HashMap<Block, Block>()
-    {{
-        put(Blocks.OAK_LOG, Blocks.OAK_SAPLING);
-        put(Blocks.BIRCH_LOG, Blocks.BIRCH_SAPLING);
-        put(Blocks.SPRUCE_LOG, Blocks.SPRUCE_SAPLING);
-        put(Blocks.JUNGLE_LOG, Blocks.JUNGLE_SAPLING);
-        put(Blocks.ACACIA_LOG, Blocks.ACACIA_SAPLING);
-        put(Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_SAPLING);
-    }};
 
     /**
      * @param block the block to check.
@@ -257,7 +324,7 @@ public class BlockUtil
      */
     public static boolean isSapling(@Nonnull Block block)
     {
-        return SAPLINGS.contains(block);
+        return TREES.stream().anyMatch(tree -> tree.sapling == block);
     }
 
     /**
@@ -278,11 +345,11 @@ public class BlockUtil
     @Nullable
     public static Block getSapling(@Nonnull Item blockItem)
     {
-        for (Block sapling : SAPLINGS)
+        for (Tree tree : TREES)
         {
-            if (new ItemStack(sapling).getItem() == blockItem)
+            if (new ItemStack(tree.sapling).getItem() == blockItem)
             {
-                return sapling;
+                return tree.sapling;
             }
         }
 
@@ -298,7 +365,15 @@ public class BlockUtil
     @Nullable
     public static Block getSaplingFromLog(@Nonnull Block logBlock)
     {
-        return LOGS_TO_SAPLINGS.get(logBlock);
+        for (Tree tree : TREES)
+        {
+            if (tree.log == logBlock)
+            {
+                return tree.sapling;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -330,7 +405,7 @@ public class BlockUtil
      */
     public static boolean isCrop(@Nonnull Item blockItem)
     {
-        return getLeaf(blockItem) != null;
+        return getLeaves(blockItem) != null;
     }
 
     /**
