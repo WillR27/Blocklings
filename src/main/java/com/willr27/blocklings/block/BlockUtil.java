@@ -26,8 +26,9 @@ public class BlockUtil
      */
     public static void init()
     {
-        initOres(BlocklingsConfig.COMMON.additionalOres.get(), BlocklingsConfig.COMMON.excludedOres.get(), "forge:ores");
-        initTrees(BlocklingsConfig.COMMON.customTrees.get());
+        initOres();
+        initTrees();
+        initCrops();
     }
 
     /**
@@ -37,14 +38,14 @@ public class BlockUtil
     public static Set<Block> ORES = new HashSet<>();
 
     /**
-     * Initialises the given set using the given config lists and tags.
-     *
-     * @param additionalBlocks the list of additional blocks to add.
-     * @param excludedBlocks the list of blocks to ensure are excluded.
-     * @param tags the tags to use to find blocks to add to the set.
+     * Initialises list of ores.
      */
-    public static void initOres(@Nonnull List<? extends String> additionalBlocks, @Nonnull List<? extends String> excludedBlocks, @Nonnull String... tags)
+    public static void initOres()
     {
+        List<? extends String> additionalBlocks = BlocklingsConfig.COMMON.additionalOres.get();
+        List<? extends String> excludedBlocks = BlocklingsConfig.COMMON.excludedOres.get();
+        String[] tags = new String[] { "forge:ores" };
+
         ORES.clear();
 
         for (ResourceLocation entry : Registry.BLOCK.keySet())
@@ -77,15 +78,21 @@ public class BlockUtil
 
         for (String entry : additionalBlocks)
         {
+            Runnable warn = () -> Blocklings.LOGGER.warn("Skipping additional ore \"" + entry + "\".");
+
             Block block = Registry.BLOCK.get(new ResourceLocation(entry));
 
             if (block.is(Blocks.AIR))
             {
+                warn.run();
+
                 continue;
             }
 
             if (excludedBlocks.contains(entry))
             {
+                warn.run();
+
                 continue;
             }
 
@@ -187,12 +194,12 @@ public class BlockUtil
     public static List<Tree> TREES = new ArrayList<>();
 
     /**
-     * Initialises the given set using the given config lists and tags.
-     *
-     * @param customTrees the custom trees to add.
+     * Initialises the list of trees.
      */
-    public static void initTrees(@Nonnull List<? extends String> customTrees)
+    public static void initTrees()
     {
+        List<? extends String> customTrees = BlocklingsConfig.COMMON.customTrees.get();
+
         TREES.clear();
 
         TREES.add(new Tree(Blocks.ACACIA_LOG, Blocks.ACACIA_LEAVES, Blocks.ACACIA_SAPLING));
@@ -380,15 +387,43 @@ public class BlockUtil
      * The list of blocks that are considered crops.
      */
     @Nonnull
-    public static List<Block> CROPS = new ArrayList<Block>()
-    {{
-        add(Blocks.WHEAT);
-        add(Blocks.CARROTS);
-        add(Blocks.POTATOES);
-        add(Blocks.BEETROOTS);
-        add(Blocks.PUMPKIN);
-        add(Blocks.MELON);
-    }};
+    public static Set<Block> CROPS = new HashSet<>();
+
+    /**
+     * Initialises the list of crops.
+     */
+    public static void initCrops()
+    {
+        CROPS.clear();
+
+        CROPS.add(Blocks.WHEAT);
+        CROPS.add(Blocks.BEETROOTS);
+        CROPS.add(Blocks.CARROTS);
+        CROPS.add(Blocks.POTATOES);
+        CROPS.add(Blocks.PUMPKIN);
+        CROPS.add(Blocks.MELON);
+
+        for (String additionalString : BlocklingsConfig.COMMON.additionalCrops.get())
+        {
+            Runnable warn = () -> Blocklings.LOGGER.warn("Skipping additional crop \"" + additionalString + "\".");
+
+            Block block = Registry.BLOCK.get(new ResourceLocation(additionalString));
+
+            if (block.is(Blocks.AIR))
+            {
+                warn.run();
+
+                continue;
+            }
+
+            CROPS.add(block);
+        }
+
+        for (String excludedString : BlocklingsConfig.COMMON.excludedCrops.get())
+        {
+            CROPS.remove(Registry.BLOCK.get(new ResourceLocation(excludedString)));
+        }
+    }
 
     /**
      * @param block the block to check.

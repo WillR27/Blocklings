@@ -40,6 +40,19 @@ public class BlocklingsConfig
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> customTrees;
 
         /**
+         * The blocks to ensure are added to the list of blocks that are regarded as crops.
+         * This should only include blocks that are not added by default.
+         */
+        @Nonnull
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> additionalCrops;
+
+        /**
+         * The blocks to ensure are excluded from the list of blocks that are regarded as crops.
+         */
+        @Nonnull
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> excludedCrops;
+
+        /**
          * @param builder the builder used to create the config.
          */
         public Common(@Nonnull ForgeConfigSpec.Builder builder)
@@ -49,16 +62,17 @@ public class BlocklingsConfig
             builder.push("Mining");
 
             additionalOres = builder
-                    .comment("The list of ores (as registry names) to ensure are included in the list of blocks that are regarded as ores.",
-                            "Any block with the ores tag will automatically be added, so only include ores without that tag here.",
+                    .comment("The list of blocks (as registry names) to ensure are included in the list of blocks that are regarded as ores.",
+                            "Any block with an ores tag will automatically be added, so only include ores without that tag here.",
                             "NOT ALL BLOCKS ARE GUARANTEED TO WORK.",
                             "Example: [\"minecraft:stone\", \"minecraft:obsidian\"]")
                     .worldRestart()
                     .defineList("additionalOres", () -> new ArrayList<>(), s -> true);
 
             excludedOres = builder
-                    .comment("The list of ores (as registry names) to ensure are excluded from the list of blocks that regarded as ores.",
-                            "Any block with the ores tag will automatically be added unless specified here.",
+                    .comment("The list of blocks (as registry names) to ensure are excluded from the list of blocks that regarded as ores.",
+                            "Any block with an ores tag will automatically be added unless specified here.",
+                            "This is useful if you notice modded blocks that are tagged as ores that you don't want/think should be.",
                             "Example: [\"minecraft:coal_ore\", \"minecraft:diamond_ore\"]")
                     .worldRestart()
                     .defineList("excludedOres", () -> new ArrayList<>(), s -> true);
@@ -75,6 +89,24 @@ public class BlocklingsConfig
                             "This would add oak trees as a custom tree (but they already have support so you don't need to add them here).")
                     .worldRestart()
                     .defineList("customTrees", () -> new ArrayList<>(), s -> true);
+
+            builder.pop();
+
+            builder.push("Farming");
+
+            additionalCrops = builder
+                    .comment("The list of blocks (as registry names) to ensure are included in the list of blocks that are regarded as crops.",
+                            "NOT ALL BLOCKS ARE GUARANTEED TO WORK.",
+                            "Example: [\"minecraft:wheat\", \"minecraft:melon\"]")
+                    .worldRestart()
+                    .defineList("additionalCrops", () -> new ArrayList<>(), s -> true);
+
+            excludedCrops = builder
+                    .comment("The list of blocks (as registry names) to ensure are excluded from the list of blocks that regarded as crops.",
+                            "This is useful if you notice modded blocks that have been added as crops that you don't want/think should be.",
+                            "Example: [\"minecraft:wheat\", \"minecraft:melon\"]")
+                    .worldRestart()
+                    .defineList("excludedCrops", () -> new ArrayList<>(), s -> true);
 
             builder.pop();
         }
