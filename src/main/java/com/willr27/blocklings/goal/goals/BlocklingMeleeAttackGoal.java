@@ -199,6 +199,11 @@ public abstract class BlocklingMeleeAttackGoal extends BlocklingTargetGoal<Livin
             return false;
         }
 
+        if (entity == blockling.getOwner())
+        {
+            return false;
+        }
+
         if (entity.isDeadOrDying())
         {
             return false;
