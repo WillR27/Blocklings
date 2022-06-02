@@ -429,14 +429,15 @@ public class BlockUtil
     }
 
     /**
-     * The list of blocks that are considered dirt.
+     * @param world the world the block is being checked in.
+     * @param block the block to check.
+     * @param pos the position in the world at which to check.
+     * @return true if the block can be placed at the given location.
      */
-    @Nonnull
-    public static List<Block> DIRTS = new ArrayList<Block>()
-    {{
-        add(Blocks.DIRT);
-        add(Blocks.GRASS_BLOCK);
-    }};
+    public static boolean canPlaceAt(@Nonnull World world, @Nonnull Block block, @Nonnull BlockPos pos)
+    {
+        return block.canSurvive(block.defaultBlockState(), world, pos);
+    }
 
     /**
      * @param percentage the percentage to convert to block break progress.

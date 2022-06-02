@@ -14,6 +14,7 @@ import com.willr27.blocklings.whitelist.Whitelist;
 import javafx.util.Pair;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.SaplingBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.math.BlockPos;
@@ -190,11 +191,11 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
 
                                 if (blockling.getSkills().getSkill(WoodcuttingSkills.REPLANTER).isBought())
                                 {
-                                    if (BlockUtil.DIRTS.contains(world.getBlockState(surroundingPos.below()).getBlock()))
-                                    {
-                                        Block saplingBlock = BlockUtil.getSaplingFromLog(surroundingBlock);
+                                    Block saplingBlock = BlockUtil.getSaplingFromLog(surroundingBlock);
 
-                                        if (saplingBlock != null)
+                                    if (saplingBlock != null)
+                                    {
+                                        if (BlockUtil.canPlaceAt(world, saplingBlock, surroundingPos))
                                         {
                                             ItemStack itemStack = new ItemStack(saplingBlock);
 
@@ -213,11 +214,11 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
 
                     if (blockling.getSkills().getSkill(WoodcuttingSkills.REPLANTER).isBought())
                     {
-                        if (BlockUtil.DIRTS.contains(world.getBlockState(targetPos.below()).getBlock()))
-                        {
-                            Block saplingBlock = BlockUtil.getSaplingFromLog(targetBlock);
+                        Block saplingBlock = BlockUtil.getSaplingFromLog(targetBlock);
 
-                            if (saplingBlock != null)
+                        if (saplingBlock != null)
+                        {
+                            if (BlockUtil.canPlaceAt(world, saplingBlock, targetPos))
                             {
                                 ItemStack itemStack = new ItemStack(saplingBlock);
 
