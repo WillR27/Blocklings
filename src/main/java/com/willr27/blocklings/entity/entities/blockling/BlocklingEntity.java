@@ -5,7 +5,7 @@ import com.willr27.blocklings.action.BlocklingActions;
 import com.willr27.blocklings.attribute.BlocklingAttributes;
 import com.willr27.blocklings.gui.BlocklingGuiHandler;
 import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
-import com.willr27.blocklings.item.ToolUtil;
+import com.willr27.blocklings.util.ToolUtil;
 import com.willr27.blocklings.item.items.BlocklingItem;
 import com.willr27.blocklings.item.items.BlocklingWhistleItem;
 import com.willr27.blocklings.network.messages.BlocklingAttackTargetMessage;

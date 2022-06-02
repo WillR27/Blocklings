@@ -1,4 +1,4 @@
-package com.willr27.blocklings.item;
+package com.willr27.blocklings.util;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.skill.skills.MiningSkills;

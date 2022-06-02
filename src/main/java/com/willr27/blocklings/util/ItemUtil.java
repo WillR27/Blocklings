@@ -1,4 +1,4 @@
-package com.willr27.blocklings.item;
+package com.willr27.blocklings.util;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;

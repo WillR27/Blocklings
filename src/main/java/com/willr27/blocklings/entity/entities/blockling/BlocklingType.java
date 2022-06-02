@@ -1,6 +1,6 @@
 package com.willr27.blocklings.entity.entities.blockling;
 
-import com.willr27.blocklings.item.ItemUtil;
+import com.willr27.blocklings.util.ItemUtil;
 import com.willr27.blocklings.util.BlocklingsResourceLocation;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.block.Block;

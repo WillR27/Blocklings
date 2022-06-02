@@ -1,6 +1,6 @@
 package com.willr27.blocklings.goal;
 
-import com.willr27.blocklings.block.BlockUtil;
+import com.willr27.blocklings.util.BlockUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;

@@ -1,13 +1,13 @@
 package com.willr27.blocklings.goal.goals;
 
 import com.mojang.datafixers.util.Pair;
-import com.willr27.blocklings.block.BlockUtil;
-import com.willr27.blocklings.entity.EntityUtil;
+import com.willr27.blocklings.util.BlockUtil;
+import com.willr27.blocklings.util.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
-import com.willr27.blocklings.item.DropUtil;
-import com.willr27.blocklings.item.ToolType;
-import com.willr27.blocklings.item.ToolUtil;
+import com.willr27.blocklings.util.DropUtil;
+import com.willr27.blocklings.util.ToolType;
+import com.willr27.blocklings.util.ToolUtil;
 import com.willr27.blocklings.skill.skills.MiningSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.whitelist.GoalWhitelist;

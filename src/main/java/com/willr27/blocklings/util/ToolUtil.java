@@ -1,7 +1,6 @@
-package com.willr27.blocklings.item;
+package com.willr27.blocklings.util;
 
 import com.google.common.collect.Multimap;
-import com.willr27.blocklings.block.BlockUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
@@ -217,7 +216,7 @@ public class ToolUtil
     /**
      * @return the attack/mining/woodcutting/farming speed for the given tool and tool type.
      */
-    public static float getToolSpeed(ItemStack stack, com.willr27.blocklings.item.ToolType toolType)
+    public static float getToolSpeed(ItemStack stack, com.willr27.blocklings.util.ToolType toolType)
     {
         switch (toolType)
         {

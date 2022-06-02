@@ -3,7 +3,7 @@ package com.willr27.blocklings.entity.renderers.blockling;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.models.blockling.BlocklingModel;
-import com.willr27.blocklings.item.ToolUtil;
+import com.willr27.blocklings.util.ToolUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;

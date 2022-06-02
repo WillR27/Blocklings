@@ -1,6 +1,6 @@
 package com.willr27.blocklings.goal;
 
-import com.willr27.blocklings.block.BlockUtil;
+import com.willr27.blocklings.util.BlockUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.network.messages.GoalStateMessage;
 import com.willr27.blocklings.task.BlocklingTasks;

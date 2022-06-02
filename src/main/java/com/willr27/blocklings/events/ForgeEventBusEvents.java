@@ -1,24 +1,20 @@
 package com.willr27.blocklings.events;
 
 import com.willr27.blocklings.Blocklings;
-import com.willr27.blocklings.block.BlockUtil;
-import com.willr27.blocklings.entity.EntityUtil;
+import com.willr27.blocklings.util.BlockUtil;
+import com.willr27.blocklings.util.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingType;
-import com.willr27.blocklings.item.ToolUtil;
+import com.willr27.blocklings.util.ToolUtil;
 import com.willr27.blocklings.item.items.BlocklingWhistleItem;
 import com.willr27.blocklings.skill.skills.CombatSkills;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntitySize;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
