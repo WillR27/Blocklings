@@ -1,6 +1,8 @@
 package com.willr27.blocklings.inventory.inventories;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.util.IReadWriteNBT;
+import com.willr27.blocklings.util.Version;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
@@ -10,7 +12,9 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 
-public abstract class AbstractInventory implements IInventory
+import javax.annotation.Nonnull;
+
+public abstract class AbstractInventory implements IInventory, IReadWriteNBT
 {
     public final int invSize;
 
@@ -39,7 +43,8 @@ public abstract class AbstractInventory implements IInventory
         }
     }
 
-    public void writeToNBT(CompoundNBT c)
+    @Override
+    public CompoundNBT writeToNBT(@Nonnull CompoundNBT equipmentInvTag)
     {
         ListNBT list = new ListNBT();
 
@@ -60,21 +65,27 @@ public abstract class AbstractInventory implements IInventory
             list.add(stackTag);
         }
 
-        c.put("equipment_inv", list);
+        equipmentInvTag.put("slots", list);
+
+        return equipmentInvTag;
     }
 
-    public void readFromNBT(CompoundNBT c)
+    @Override
+    public void readFromNBT(@Nonnull CompoundNBT equipmentInvTag, @Nonnull Version tagVersion)
     {
-        ListNBT list = (ListNBT) c.get("equipment_inv");
+        ListNBT list = (ListNBT) equipmentInvTag.get("slots");
 
-        for (int i = 0; i < list.size(); i++)
+        if (list != null)
         {
-            CompoundNBT stackTag = list.getCompound(i);
+            for (int i = 0; i < list.size(); i++)
+            {
+                CompoundNBT stackTag = list.getCompound(i);
 
-            int slot = stackTag.getInt("slot");
-            ItemStack stack = ItemStack.of(stackTag);
+                int slot = stackTag.getInt("slot");
+                ItemStack stack = ItemStack.of(stackTag);
 
-            stacks[slot] = stack;
+                stacks[slot] = stack;
+            }
         }
     }
 

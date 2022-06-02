@@ -4,6 +4,7 @@ import com.willr27.blocklings.attribute.IModifier;
 import com.willr27.blocklings.attribute.ModifiableAttribute;
 import com.willr27.blocklings.attribute.Operation;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.util.Version;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 
@@ -32,17 +33,17 @@ public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
     }
 
     @Override
-    public void writeToNBT(@Nonnull CompoundNBT attributeTag)
+    public CompoundNBT writeToNBT(@Nonnull CompoundNBT attributeTag)
     {
-        super.writeToNBT(attributeTag);
-
         attributeTag.putFloat("base_value", baseValue);
+
+        return super.writeToNBT(attributeTag);
     }
 
     @Override
-    public void readFromNBT(@Nonnull CompoundNBT attributeTag)
+    public void readFromNBT(@Nonnull CompoundNBT attributeTag, @Nonnull Version tagVersion)
     {
-        super.readFromNBT(attributeTag);
+        super.readFromNBT(attributeTag, tagVersion);
 
         baseValue = attributeTag.getFloat("base_value");
     }

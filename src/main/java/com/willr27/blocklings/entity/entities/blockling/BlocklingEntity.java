@@ -1,10 +1,13 @@
 package com.willr27.blocklings.entity.entities.blockling;
 
 import com.google.common.collect.Iterables;
+import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.action.BlocklingActions;
 import com.willr27.blocklings.attribute.BlocklingAttributes;
 import com.willr27.blocklings.gui.BlocklingGuiHandler;
 import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
+import com.willr27.blocklings.util.IReadWriteNBT;
+import com.willr27.blocklings.util.ObjectUtil;
 import com.willr27.blocklings.util.ToolUtil;
 import com.willr27.blocklings.item.items.BlocklingItem;
 import com.willr27.blocklings.item.items.BlocklingWhistleItem;
@@ -16,6 +19,7 @@ import com.willr27.blocklings.skill.BlocklingSkills;
 import com.willr27.blocklings.skill.skills.*;
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.task.Task;
+import com.willr27.blocklings.util.Version;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -60,7 +64,7 @@ import static com.willr27.blocklings.item.items.BlocklingsItems.BLOCKLING_WHISTL
 /**
  * The blockling entity.
  */
-public class BlocklingEntity extends TameableEntity implements IEntityAdditionalSpawnData
+public class BlocklingEntity extends TameableEntity implements IEntityAdditionalSpawnData, IReadWriteNBT
 {
     /**
      * The blockling type the blockling spawned as.
@@ -203,7 +207,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
             if (blocklingTag != null)
             {
-                readBlocklingFromNBT(blocklingTag);
+                readFromNBT(blocklingTag, ObjectUtil.coalesce(new Version(blocklingTag.getString("blocklings_version")), Blocklings.VERSION));
             }
         }
 
@@ -211,34 +215,33 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     }
 
     @Override
-    public void addAdditionalSaveData(@Nonnull CompoundNBT c)
+    public void addAdditionalSaveData(@Nonnull CompoundNBT tag)
     {
-        super.addAdditionalSaveData(c);
+        super.addAdditionalSaveData(tag);
 
-        c.put("blockling", writeBlocklingToNBT());
+        CompoundNBT blocklingTag = new CompoundNBT();
+
+        blocklingTag.putString("blocklings_version", Blocklings.VERSION.toString());
+
+        writeToNBT(blocklingTag);
+
+        tag.put("blockling", blocklingTag);
     }
 
-    /**
-     * Writes all the blockling's data to a tag.
-     *
-     * @return the tag with all the blockling's data.
-     */
-    @Nonnull
-    public CompoundNBT writeBlocklingToNBT()
+    @Override
+    public CompoundNBT writeToNBT(@Nonnull CompoundNBT blocklingTag)
     {
-        CompoundNBT tag = new CompoundNBT();
+        blocklingTag.putInt("original_type", BlocklingType.TYPES.indexOf(originalBlocklingType));
+        blocklingTag.putInt("type", BlocklingType.TYPES.indexOf(blocklingType));
+        blocklingTag.putInt("variant", blocklingTypeVariant);
+        blocklingTag.putFloat("scale", scale);
 
-        tag.putInt("original_type", BlocklingType.TYPES.indexOf(originalBlocklingType));
-        tag.putInt("type", BlocklingType.TYPES.indexOf(blocklingType));
-        tag.putInt("variant", blocklingTypeVariant);
-        tag.putFloat("scale", scale);
+        blocklingTag.put("equipment_inv", equipmentInv.writeToNBT());
+        blocklingTag.put("attributes", stats.writeToNBT());
+        blocklingTag.put("tasks", tasks.writeToNBT());
+        blocklingTag.put("skills", skills.writeToNBT());
 
-        equipmentInv.writeToNBT(tag);
-        stats.writeToNBT(tag);
-        tasks.writeToNBT(tag);
-        skills.writeToNBT(tag);
-
-        return tag;
+        return blocklingTag;
     }
 
     @Override
@@ -246,38 +249,57 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     {
         super.readAdditionalSaveData(tag);
 
-        CompoundNBT blocklingTag = (CompoundNBT) tag.get("blockling");
+        CompoundNBT blocklingTag = tag.getCompound("blockling");
 
         if (blocklingTag != null)
         {
-            readBlocklingFromNBT(blocklingTag);
+            readFromNBT(blocklingTag, ObjectUtil.coalesce(new Version(blocklingTag.getString("blocklings_version")), Blocklings.VERSION));
         }
     }
 
-    /**
-     * Reads all the blockling's data from the given tag.
-     *
-     * @param tag the tag containing all the blockling's data.
-     */
-    public void readBlocklingFromNBT(@Nonnull CompoundNBT tag)
+    @Override
+    public void readFromNBT(@Nonnull CompoundNBT blocklingTag, @Nonnull Version tagVersion)
     {
-        blocklingTypeVariant = tag.getInt("variant");
-        originalBlocklingType = BlocklingType.TYPES.get(tag.getInt("original_type"));
-        blocklingType = BlocklingType.TYPES.get(tag.getInt("type"));
-        setScale(tag.getFloat("scale"), false);
+        blocklingTypeVariant = blocklingTag.getInt("variant");
+        originalBlocklingType = BlocklingType.TYPES.get(blocklingTag.getInt("original_type"));
+        blocklingType = BlocklingType.TYPES.get(blocklingTag.getInt("type"));
+        setScale(blocklingTag.getFloat("scale"), false);
 
-        // Health can be overwritten when loading max health modifiers
+        // Health can be overwritten when loading max health modifiers.
         float health = getHealth();
 
-        equipmentInv.readFromNBT(tag);
-        stats.readFromNBT(tag);
-        tasks.readFromNBT(tag);
-        skills.readFromNBT(tag);
+        CompoundNBT equipmentInvTag = blocklingTag.getCompound("equipment_inv");
+
+        if (equipmentInvTag != null)
+        {
+            equipmentInv.readFromNBT(equipmentInvTag, tagVersion);
+        }
+
+        CompoundNBT statsTag = blocklingTag.getCompound("attributes");
+
+        if (statsTag != null)
+        {
+            stats.readFromNBT(statsTag, tagVersion);
+        }
+
+        CompoundNBT tasksTag = blocklingTag.getCompound("tasks");
+
+        if (tasksTag != null)
+        {
+            tasks.readFromNBT(tasksTag, tagVersion);
+        }
+
+        CompoundNBT skillsTag = blocklingTag.getCompound("skills");
+
+        if (skillsTag != null)
+        {
+            skills.readFromNBT(skillsTag, tagVersion);
+        }
 
         equipmentInv.updateToolAttributes();
         stats.updateTypeBonuses(false);
 
-        // Set back to the saved health as this should be correct
+        // Set back to the saved health as this should be correct.
         setHealth(health);
     }
 

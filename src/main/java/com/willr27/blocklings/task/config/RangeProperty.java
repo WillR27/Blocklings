@@ -4,6 +4,7 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.gui.IControl;
 import com.willr27.blocklings.gui.controls.common.RangeControl;
+import com.willr27.blocklings.util.Version;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -50,17 +51,17 @@ public class RangeProperty extends Property
     }
 
     @Override
-    public void writeToNBT(@Nonnull CompoundNBT propertyTag)
+    public CompoundNBT writeToNBT(@Nonnull CompoundNBT propertyTag)
     {
-        super.writeToNBT(propertyTag);
-
         propertyTag.putInt("min", min);
         propertyTag.putInt("max", max);
         propertyTag.putInt("value", value);
+
+        return super.writeToNBT(propertyTag);
     }
 
     @Override
-    public void readFromNBT(@Nonnull CompoundNBT propertyTag)
+    public void readFromNBT(@Nonnull CompoundNBT propertyTag, @Nonnull Version tagVersion)
     {
         min = propertyTag.getInt("min");
         max = propertyTag.getInt("max");

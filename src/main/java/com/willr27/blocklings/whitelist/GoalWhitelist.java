@@ -6,7 +6,9 @@ import com.willr27.blocklings.network.messages.WhitelistAllMessage;
 import com.willr27.blocklings.network.messages.WhitelistIsUnlockedMessage;
 import com.willr27.blocklings.network.messages.WhitelistSingleMessage;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import com.willr27.blocklings.util.IReadWriteNBT;
 import com.willr27.blocklings.util.PacketBufferUtils;
+import com.willr27.blocklings.util.Version;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
@@ -15,10 +17,11 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TranslationTextComponent;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.UUID;
 
-public class GoalWhitelist extends Whitelist<ResourceLocation>
+public class GoalWhitelist extends Whitelist<ResourceLocation> implements IReadWriteNBT
 {
     public final UUID id;
     public final String key;
@@ -58,34 +61,29 @@ public class GoalWhitelist extends Whitelist<ResourceLocation>
         }
     }
 
-    public void writeToNBT(CompoundNBT c)
+    @Nonnull
+    public CompoundNBT writeToNBT(CompoundNBT whitelistTag)
     {
-        CompoundNBT tag = new CompoundNBT();
-
-        tag.putBoolean("is_unlocked", isUnlocked);
+        whitelistTag.putBoolean("is_unlocked", isUnlocked);
 
         for (Map.Entry<ResourceLocation, Boolean> entry : entrySet())
         {
-            tag.putBoolean(entry.getKey().toString(), entry.getValue());
+            whitelistTag.putBoolean(entry.getKey().toString(), entry.getValue());
         }
 
-        c.put(id.toString(), tag);
+        return whitelistTag;
     }
 
-    public void readFromNBT(CompoundNBT c)
+    @Nonnull
+    public void readFromNBT(@Nonnull CompoundNBT whitelistTag, @Nonnull Version tagVersion)
     {
-        CompoundNBT tag = (CompoundNBT) c.get(id.toString());
+        setIsUnlocked(whitelistTag.getBoolean("is_unlocked"), false);
 
-        setIsUnlocked(tag.getBoolean("is_unlocked"), false);
-
-        if (tag != null)
+        for (Map.Entry<ResourceLocation, Boolean> entry : entrySet())
         {
-            for (Map.Entry<ResourceLocation, Boolean> entry : entrySet())
+            if (whitelistTag.contains(entry.getKey().toString()))
             {
-                if (tag.contains(entry.getKey().toString()))
-                {
-                    put(entry.getKey(), tag.getBoolean(entry.getKey().toString()));
-                }
+                put(entry.getKey(), whitelistTag.getBoolean(entry.getKey().toString()));
             }
         }
     }

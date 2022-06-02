@@ -4,6 +4,8 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.skill.info.*;
 import com.willr27.blocklings.skill.skills.*;
+import com.willr27.blocklings.util.IReadWriteNBT;
+import com.willr27.blocklings.util.Version;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 
@@ -14,7 +16,7 @@ import java.util.stream.Collectors;
 /**
  * The blockling's skills.
  */
-public class BlocklingSkills
+public class BlocklingSkills implements IReadWriteNBT
 {
     public static class Groups
     {
@@ -98,15 +100,9 @@ public class BlocklingSkills
         skillGroups.add(farming);
     }
 
-    /**
-     * Writes the skills to the given tag.
-     *
-     * @param tag the tag to write to.
-     */
-    public void writeToNBT(@Nonnull CompoundNBT tag)
+    @Override
+    public CompoundNBT writeToNBT(@Nonnull CompoundNBT skillsTag)
     {
-        CompoundNBT skillsTag = new CompoundNBT();
-
         for (SkillGroup skillGroup : skillGroups)
         {
             CompoundNBT groupTag = new CompoundNBT();
@@ -123,18 +119,12 @@ public class BlocklingSkills
             skillsTag.put(skillGroup.info.id.toString(), groupTag);
         }
 
-        tag.put("skills", skillsTag);
+        return skillsTag;
     }
 
-    /**
-     * Reads the skills from the given tag.
-     *
-     * @param tag the tag to read from.
-     */
-    public void readFromNBT(@Nonnull CompoundNBT tag)
+    @Override
+    public void readFromNBT(@Nonnull CompoundNBT skillsTag, @Nonnull Version tagVersion)
     {
-        CompoundNBT skillsTag = (CompoundNBT) tag.get("skills");
-
         for (SkillGroup skillGroup : skillGroups)
         {
             CompoundNBT groupTag = (CompoundNBT) skillsTag.get(skillGroup.info.id.toString());

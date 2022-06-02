@@ -8,6 +8,8 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingType;
 import com.willr27.blocklings.skill.info.SkillInfo;
 import com.willr27.blocklings.skill.skills.*;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import com.willr27.blocklings.util.IReadWriteNBT;
+import com.willr27.blocklings.util.Version;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -21,7 +23,7 @@ import java.util.Objects;
 /**
  * Used to manage the attributes associated with a blockling.
  */
-public class BlocklingAttributes
+public class BlocklingAttributes implements IReadWriteNBT
 {
     /**
      * The list of attributes added via add attribute.
@@ -392,43 +394,31 @@ public class BlocklingAttributes
         moveSpeed.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.MOVEMENT_SPEED)).setBaseValue(f / 10.0f));
     }
 
-    /**
-     * Writes all the attributes' information to an attributes tag and adds it to the given tag.
-     *
-     * @param tag the tag to add the attributes tag to.
-     */
-    public void writeToNBT(@Nonnull CompoundNBT tag)
+    @Override
+    public CompoundNBT writeToNBT(@Nonnull CompoundNBT attributesTag)
     {
-        CompoundNBT attributesNBT = new CompoundNBT();
-
         for (Attribute<?> attribute : attributes)
         {
             CompoundNBT attributeTag = new CompoundNBT();
 
             attribute.writeToNBT(attributeTag);
 
-            attributesNBT.put(attribute.id.toString(), attributeTag);
+            attributesTag.put(attribute.id.toString(), attributeTag);
         }
 
-        tag.put("attributes", attributesNBT);
+        return attributesTag;
     }
 
-    /**
-     * Reads all the attributes' information from the given tag.
-     *
-     * @param tag the tag to read the attributes' information from.
-     */
-    public void readFromNBT(@Nonnull CompoundNBT tag)
+    @Override
+    public void readFromNBT(@Nonnull CompoundNBT attributesTag, @Nonnull Version tagVersion)
     {
-        CompoundNBT attributesNBT = (CompoundNBT) tag.get("attributes");
-
         for (Attribute<?> attribute : attributes)
         {
-            CompoundNBT attributeTag = (CompoundNBT) attributesNBT.get(attribute.id.toString());
+            CompoundNBT attributeTag = (CompoundNBT) attributesTag.get(attribute.id.toString());
 
             if (attributeTag != null)
             {
-                attribute.readFromNBT(attributeTag);
+                attribute.readFromNBT(attributeTag, tagVersion);
             }
         }
 

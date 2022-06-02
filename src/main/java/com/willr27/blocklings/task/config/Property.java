@@ -5,9 +5,10 @@ import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.gui.IControl;
 import com.willr27.blocklings.network.BlocklingMessage;
 import com.willr27.blocklings.task.Task;
+import com.willr27.blocklings.util.IReadWriteNBT;
+import com.willr27.blocklings.util.Version;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
 
@@ -19,7 +20,7 @@ import java.util.UUID;
 /**
  * Used to provide a UI control and handle configuring part of a task.
  */
-public abstract class Property
+public abstract class Property implements IReadWriteNBT
 {
     /**
      * The id of the property (used for syncing between serialising\deserialising).
@@ -51,18 +52,16 @@ public abstract class Property
         this.name = name;
     }
 
-    /**
-     * Writes the property directly to the given tag.
-     */
-    public void writeToNBT(@Nonnull CompoundNBT propertyTag)
+    @Override
+    public CompoundNBT writeToNBT(@Nonnull CompoundNBT propertyTag)
     {
         propertyTag.putUUID("id", id);
+
+        return propertyTag;
     }
 
-    /**
-     * Reads the property directly from the given tag.
-     */
-    public void readFromNBT(@Nonnull CompoundNBT propertyTag)
+    @Override
+    public void readFromNBT(@Nonnull CompoundNBT propertyTag, @Nonnull Version tagVersion)
     {
 
     }

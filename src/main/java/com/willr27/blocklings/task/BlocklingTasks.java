@@ -9,7 +9,9 @@ import com.willr27.blocklings.network.messages.TaskCreateMessage;
 import com.willr27.blocklings.network.messages.TaskRemoveMessage;
 import com.willr27.blocklings.network.messages.TaskTypeIsUnlockedMessage;
 import com.willr27.blocklings.task.config.Property;
+import com.willr27.blocklings.util.IReadWriteNBT;
 import com.willr27.blocklings.util.PacketBufferUtils;
+import com.willr27.blocklings.util.Version;
 import com.willr27.blocklings.util.event.Event;
 import com.willr27.blocklings.util.event.EventHandler;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
@@ -27,7 +29,7 @@ import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class BlocklingTasks
+public class BlocklingTasks implements IReadWriteNBT
 {
     public static final TaskType NULL = new TaskType("1c330075-19af-4c12-ac20-6de50e7b84a9", "null", false, false, new GuiTexture(GuiTextures.TASKS, 176, 166, 20, 20), ((i, b, t) -> null));
     public static final TaskType MELEE_ATTACK_HURT_BY = new TaskType("2888dde5-f6ee-439d-ab8d-ea9a91470c64", "hurt_by_melee", true, true, new GuiTexture.GoalGuiTexture(3, 0), BlocklingMeleeAttackHurtByGoal::new);
@@ -138,16 +140,17 @@ public class BlocklingTasks
 
     }
 
-    public void writeToNBT(CompoundNBT c)
+    @Override
+    public CompoundNBT writeToNBT(@Nonnull CompoundNBT tasksTag)
     {
-        CompoundNBT typesTag = new CompoundNBT();
+        CompoundNBT unlockedTypesTag = new CompoundNBT();
 
         for (TaskType type : taskTypeUnlockedMap.keySet())
         {
-            typesTag.putBoolean(type.id.toString(), taskTypeUnlockedMap.get(type));
+            unlockedTypesTag.putBoolean(type.id.toString(), taskTypeUnlockedMap.get(type));
         }
 
-        CompoundNBT tasksTag = new CompoundNBT();
+        CompoundNBT taskListTag = new CompoundNBT();
 
         for (Task task : prioritisedTasks)
         {
@@ -163,18 +166,14 @@ public class BlocklingTasks
 
                 for (GoalWhitelist whitelist : task.getGoal().whitelists)
                 {
-                    whitelist.writeToNBT(whitelistsTag);
+                    whitelistsTag.put(whitelist.id.toString(), whitelist.writeToNBT());
                 }
 
                 ListNBT propertiesTag = new ListNBT();
 
                 for (Property property : task.getGoal().properties)
                 {
-                    CompoundNBT propertyTag = new CompoundNBT();
-
-                    property.writeToNBT(propertyTag);
-
-                    propertiesTag.add(propertyTag);
+                    propertiesTag.add(property.writeToNBT());
                 }
 
                 taskTag.put("whitelists", whitelistsTag);
@@ -182,74 +181,88 @@ public class BlocklingTasks
                 taskTag.putInt("state", task.getGoal().getState().ordinal());
             }
 
-            tasksTag.put(task.id.toString(), taskTag);
+            taskListTag.put(task.id.toString(), taskTag);
         }
 
-        c.put("task_types", typesTag);
-        c.put("tasks", tasksTag);
+        tasksTag.put("unlocked_task_types", unlockedTypesTag);
+        tasksTag.put("tasks", taskListTag);
+
+        return tasksTag;
     }
 
-    public void readFromNBT(CompoundNBT c)
+    @Override
+    public void readFromNBT(@Nonnull CompoundNBT tasksTag, @Nonnull Version versionTag)
     {
-        CompoundNBT typesTag = (CompoundNBT) c.get("task_types");
+        CompoundNBT unlockedTypesTag = (CompoundNBT) tasksTag.get("unlocked_task_types");
 
-        for (String typeIdString : typesTag.getAllKeys())
+        if (unlockedTypesTag != null)
         {
-            taskTypeUnlockedMap.put(getTaskType(UUID.fromString(typeIdString)), typesTag.getBoolean(typeIdString));
-        }
-
-        CompoundNBT tasksTag = (CompoundNBT) c.get("tasks");
-
-        prioritisedTasks.clear();
-
-        List<UUID> taskIds = new ArrayList<>();
-        List<Integer> taskPriorities = new ArrayList<>();
-
-        for (String taskIdString : tasksTag.getAllKeys())
-        {
-            CompoundNBT taskTag = (CompoundNBT) tasksTag.get(taskIdString);
-
-            UUID taskId = UUID.fromString(taskIdString);
-            TaskType type = getTaskType(taskTag.getUUID("type_id"));
-            createTask(type, taskId, false);
-
-            taskIds.add(taskId);
-            taskPriorities.add(taskTag.getInt("priority"));
-
-            Task task = getTask(taskId);
-            task.setCustomName(taskTag.getString("custom_name"), false);
-
-            if (task.isConfigured())
+            for (String typeIdString : unlockedTypesTag.getAllKeys())
             {
-                CompoundNBT whitelistsTag = (CompoundNBT) taskTag.get("whitelists");
-
-                for (GoalWhitelist whitelist : task.getGoal().whitelists)
-                {
-                    whitelist.readFromNBT(whitelistsTag);
-                }
-
-                ListNBT propertiesTag = (ListNBT) taskTag.get("properties");
-
-                if (propertiesTag != null)
-                {
-                    for (INBT tag : propertiesTag)
-                    {
-                        CompoundNBT propertyTag = (CompoundNBT) tag;
-
-                        task.getGoal().properties.stream()
-                                .filter(property -> property.id.equals(propertyTag.getUUID("id")))
-                                .findFirst()
-                                .ifPresent(property -> property.readFromNBT(propertyTag));
-                    }
-                }
-
-                task.getGoal().setState(BlocklingGoal.State.values()[taskTag.getInt("state")], false);
+                taskTypeUnlockedMap.put(getTaskType(UUID.fromString(typeIdString)), unlockedTypesTag.getBoolean(typeIdString));
             }
         }
 
-        prioritisedTasks = new TaskList(prioritisedTasks.stream().sorted((o1, o2) -> taskPriorities.get(taskIds.indexOf(o1.id)) > taskPriorities.get(taskIds.indexOf(o2.id)) ? 1 : -1).collect(Collectors.toList()));
+        CompoundNBT taskListTag = (CompoundNBT) tasksTag.get("tasks");
 
-        reapplyGoals();
+        if (taskListTag != null)
+        {
+            prioritisedTasks.clear();
+
+            List<UUID> taskIds = new ArrayList<>();
+            List<Integer> taskPriorities = new ArrayList<>();
+
+            for (String taskIdString : taskListTag.getAllKeys())
+            {
+                CompoundNBT taskTag = (CompoundNBT) taskListTag.get(taskIdString);
+
+                UUID taskId = UUID.fromString(taskIdString);
+                TaskType type = getTaskType(taskTag.getUUID("type_id"));
+                createTask(type, taskId, false);
+
+                taskIds.add(taskId);
+                taskPriorities.add(taskTag.getInt("priority"));
+
+                Task task = getTask(taskId);
+                task.setCustomName(taskTag.getString("custom_name"), false);
+
+                if (task.isConfigured())
+                {
+                    CompoundNBT whitelistsTag = (CompoundNBT) taskTag.get("whitelists");
+
+                    for (GoalWhitelist whitelist : task.getGoal().whitelists)
+                    {
+                        CompoundNBT whitelistTag = (CompoundNBT) whitelistsTag.get(whitelist.id.toString());
+
+                        if (whitelistTag != null)
+                        {
+                            whitelist.readFromNBT(whitelistTag, versionTag);
+                        }
+                    }
+
+                    ListNBT propertiesTag = (ListNBT) taskTag.get("properties");
+
+                    if (propertiesTag != null)
+                    {
+                        for (INBT tag : propertiesTag)
+                        {
+                            CompoundNBT propertyTag = (CompoundNBT) tag;
+
+                            task.getGoal().properties.stream()
+                                    .filter(property -> property.id.equals(propertyTag.getUUID("id")))
+                                    .findFirst()
+                                    .ifPresent(property -> property.readFromNBT(propertyTag, versionTag));
+                        }
+                    }
+
+                    task.getGoal().setState(BlocklingGoal.State.values()[taskTag.getInt("state")], false);
+                }
+            }
+
+            prioritisedTasks = new TaskList(prioritisedTasks.stream().sorted((o1, o2) -> taskPriorities.get(taskIds.indexOf(o1.id)) > taskPriorities.get(taskIds.indexOf(o2.id)) ? 1 : -1).collect(Collectors.toList()));
+
+            reapplyGoals();
+        }
     }
 
     public void encode(PacketBuffer buf)

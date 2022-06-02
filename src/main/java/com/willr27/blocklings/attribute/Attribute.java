@@ -4,6 +4,8 @@ import com.mojang.datafixers.types.Func;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.network.BlocklingMessage;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import com.willr27.blocklings.util.IReadWriteNBT;
+import com.willr27.blocklings.util.Version;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -25,7 +27,7 @@ import java.util.function.Supplier;
  *
  * @param <T> the type of the value of the attribute.
  */
-public abstract class Attribute<T>
+public abstract class Attribute<T> implements IReadWriteNBT
 {
     /**
      * The id of the attribute.
@@ -109,22 +111,16 @@ public abstract class Attribute<T>
         this.isEnabled = isEnabled;
     }
 
-    /**
-     * Writes the attribute data to the given tag.
-     *
-     * @param attributeTag the tag to write to.
-     */
-    public void writeToNBT(@Nonnull CompoundNBT attributeTag)
+    @Override
+    public CompoundNBT writeToNBT(@Nonnull CompoundNBT attributeTag)
     {
         attributeTag.putBoolean("is_enabled", isEnabled);
+
+        return attributeTag;
     }
 
-    /**
-     * Reads the attribute data from the given tag.
-     *
-     * @param attributeTag the tag to read from.
-     */
-    public void readFromNBT(@Nonnull CompoundNBT attributeTag)
+    @Override
+    public void readFromNBT(@Nonnull CompoundNBT attributeTag, @Nonnull Version tagVersion)
     {
         isEnabled = attributeTag.getBoolean("is_enabled");
     }
