@@ -19,13 +19,13 @@ modId="blocklings" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
 # ${file.jarVersion} will substitute the value of the Implementation-Version as read from the mod's JAR file metadata
 # see the associated build.gradle script for how to populate this completely automatically during a build
-version="${file.jarVersion}" #mandatory
+version="7.0.0" #mandatory
  # A display name for the mod
 displayName="Blocklings" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification https://mcforge.readthedocs.io/en/latest/gettingstarted/autoupdate/
 #updateJSONURL="https://change.me.example.invalid/updates.json" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
-#displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
+displayURL="https://www.curseforge.com/minecraft/mc-mods/blocklings" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="blocklings.png" #optional
 # A text field displayed in the mod UI
@@ -36,23 +36,3 @@ authors="WillR27" #optional
 description='''
 This mod adds small, block-like creatures into your world. They can then be tamed and are able to perform different tasks for you in the world, as well as gain experience and level up. For example, your blockling will be able to guard you from evil creatures at night, go mining with you deep underground, chop away at trees as well as plant and harvest crops.
 '''
-# A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.examplemod]] #optional
-    # the modid of the dependency
-    modId="forge" #mandatory
-    # Does this dependency have to exist - if not, ordering below must be specified
-    mandatory=true #mandatory
-    # The version range of the dependency
-    versionRange="[36,)" #mandatory
-    # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
-    ordering="NONE"
-    # Side this dependency is applied on - BOTH, CLIENT or SERVER
-    side="BOTH"
-# Here's another dependency
-[[dependencies.examplemod]]
-    modId="minecraft"
-    mandatory=true
-# This version range declares a minimum of the current minecraft version up to but not including the next major version
-    versionRange="[1.16.5,1.17)"
-    ordering="NONE"
-    side="BOTH"
