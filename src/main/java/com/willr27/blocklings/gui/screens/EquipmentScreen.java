@@ -6,9 +6,7 @@ import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.containers.EquipmentContainer;
 import com.willr27.blocklings.gui.controls.TabbedControl;
-import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 

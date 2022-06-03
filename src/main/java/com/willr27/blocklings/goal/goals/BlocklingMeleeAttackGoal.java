@@ -1,15 +1,15 @@
 package com.willr27.blocklings.goal.goals;
 
-import com.willr27.blocklings.util.BlockUtil;
 import com.willr27.blocklings.entity.BlocklingsEntityTypes;
-import com.willr27.blocklings.util.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.goal.BlocklingTargetGoal;
-import com.willr27.blocklings.util.ToolType;
 import com.willr27.blocklings.skill.skills.CombatSkills;
 import com.willr27.blocklings.skill.skills.GeneralSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
+import com.willr27.blocklings.util.BlockUtil;
+import com.willr27.blocklings.util.EntityUtil;
+import com.willr27.blocklings.util.ToolType;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
 import net.minecraft.entity.LivingEntity;

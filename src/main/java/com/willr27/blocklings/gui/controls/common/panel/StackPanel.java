@@ -7,6 +7,8 @@ import com.willr27.blocklings.gui.IControl;
 import com.willr27.blocklings.gui.controls.common.ScrollbarControl;
 import com.willr27.blocklings.util.event.CancelableEvent;
 import com.willr27.blocklings.util.event.EventHandler;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
@@ -16,6 +18,7 @@ import java.util.List;
 /**
  * A class that represents a panel with stacked children.
  */
+@OnlyIn(Dist.CLIENT)
 public class StackPanel extends Control
 {
     /**

@@ -1,6 +1,5 @@
 package com.willr27.blocklings.util;
 
-import com.willr27.blocklings.util.BlockUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FlyingEntity;
 import net.minecraft.entity.LivingEntity;

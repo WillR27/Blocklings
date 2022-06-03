@@ -1,9 +1,9 @@
 package com.willr27.blocklings.goal;
 
-import com.willr27.blocklings.util.BlockUtil;
-import com.willr27.blocklings.util.EntityUtil;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.task.BlocklingTasks;
+import com.willr27.blocklings.util.BlockUtil;
+import com.willr27.blocklings.util.EntityUtil;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.math.BlockPos;
 

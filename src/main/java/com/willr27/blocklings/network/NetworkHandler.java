@@ -10,7 +10,6 @@ import com.willr27.blocklings.attribute.attributes.numbers.ModifiableIntAttribut
 import com.willr27.blocklings.gui.BlocklingGuiHandler;
 import com.willr27.blocklings.network.messages.*;
 import com.willr27.blocklings.task.config.Property;
-import com.willr27.blocklings.task.config.RangeProperty;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -19,7 +18,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
-import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;

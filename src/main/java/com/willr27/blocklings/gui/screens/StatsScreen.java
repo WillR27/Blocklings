@@ -11,11 +11,11 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
+import com.willr27.blocklings.gui.controls.TabbedControl;
 import com.willr27.blocklings.gui.controls.common.TextFieldControl;
 import com.willr27.blocklings.gui.controls.stats.EnumeratingStatControl;
 import com.willr27.blocklings.gui.controls.stats.HealthBarControl;
 import com.willr27.blocklings.gui.controls.stats.LevelControl;
-import com.willr27.blocklings.gui.controls.TabbedControl;
 import com.willr27.blocklings.item.items.BlocklingsItems;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.client.Minecraft;
@@ -23,14 +23,12 @@ import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static java.util.stream.Collectors.joining;

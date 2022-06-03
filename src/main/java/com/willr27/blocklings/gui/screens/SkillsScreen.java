@@ -11,7 +11,6 @@ import com.willr27.blocklings.gui.controls.skills.BuySkillConfirmationControl;
 import com.willr27.blocklings.gui.controls.skills.SkillsControl;
 import com.willr27.blocklings.skill.SkillGroup;
 import com.willr27.blocklings.skill.info.SkillGroupInfo;
-import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

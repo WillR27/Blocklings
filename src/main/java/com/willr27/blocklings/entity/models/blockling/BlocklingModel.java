@@ -14,7 +14,6 @@ import net.minecraft.util.HandSide;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 

@@ -3,19 +3,11 @@ package com.willr27.blocklings.task;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.gui.GuiTexture;
-import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import com.willr27.blocklings.util.TriFunction;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class TaskType
 {

@@ -13,6 +13,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -23,6 +25,7 @@ import java.util.Map;
 /**
  * A container screen that includes the blockling gui tabs.
  */
+@OnlyIn(Dist.CLIENT)
 public abstract class TabbedContainerScreen<T extends Container> extends ContainerScreen<T> implements IControl, com.willr27.blocklings.gui.IScreen
 {
     /**

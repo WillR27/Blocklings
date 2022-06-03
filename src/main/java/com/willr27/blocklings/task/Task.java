@@ -2,10 +2,10 @@ package com.willr27.blocklings.task;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.goal.BlocklingGoal;
-import com.willr27.blocklings.network.messages.TaskPriorityMessage;
 import com.willr27.blocklings.network.messages.TaskCustomNameMessage;
-import com.willr27.blocklings.network.messages.TaskTypeMessage;
+import com.willr27.blocklings.network.messages.TaskPriorityMessage;
 import com.willr27.blocklings.network.messages.TaskSwapPriorityMessage;
+import com.willr27.blocklings.network.messages.TaskTypeMessage;
 
 import java.util.UUID;
 

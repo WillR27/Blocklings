@@ -1,17 +1,19 @@
 package com.willr27.blocklings.gui.controls.common;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.IControl;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 
 /**
  * A simple control used to display text.
  */
+@OnlyIn(Dist.CLIENT)
 public class LabelControl extends Control
 {
     /**

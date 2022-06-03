@@ -2,7 +2,8 @@ package com.willr27.blocklings.skill;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.GuiTextures;
-import com.willr27.blocklings.skill.info.*;
+import com.willr27.blocklings.skill.info.SkillGroupInfo;
+import com.willr27.blocklings.skill.info.SkillInfo;
 import com.willr27.blocklings.skill.skills.*;
 import com.willr27.blocklings.util.IReadWriteNBT;
 import com.willr27.blocklings.util.Version;
@@ -10,7 +11,9 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**

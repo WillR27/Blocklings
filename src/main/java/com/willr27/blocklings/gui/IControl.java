@@ -5,16 +5,13 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.gui.controls.common.ScrollbarControl;
 import com.willr27.blocklings.util.event.Event;
 import com.willr27.blocklings.util.event.EventHandler;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * Represents some kind of control (including the screen itself).

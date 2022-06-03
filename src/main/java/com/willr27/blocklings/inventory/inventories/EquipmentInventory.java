@@ -1,11 +1,11 @@
 package com.willr27.blocklings.inventory.inventories;
 
+import com.willr27.blocklings.attribute.BlocklingAttributes;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
-import com.willr27.blocklings.attribute.BlocklingAttributes;
+import com.willr27.blocklings.network.messages.EquipmentInventoryMessage;
 import com.willr27.blocklings.util.ToolType;
 import com.willr27.blocklings.util.ToolUtil;
-import com.willr27.blocklings.network.messages.EquipmentInventoryMessage;
 import javafx.util.Pair;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;

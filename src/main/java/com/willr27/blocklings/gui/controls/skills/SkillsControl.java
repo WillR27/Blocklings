@@ -15,7 +15,6 @@ import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;

@@ -1,6 +1,5 @@
 package com.willr27.blocklings.attribute;
 
-import com.mojang.datafixers.types.Func;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.network.BlocklingMessage;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;

@@ -5,9 +5,15 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.gui.*;
 import com.willr27.blocklings.util.event.Event;
 import com.willr27.blocklings.util.event.EventHandler;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 
+/**
+ * A control used to perform scrolling.
+ */
+@OnlyIn(Dist.CLIENT)
 public class ScrollbarControl extends Control
 {
     /**

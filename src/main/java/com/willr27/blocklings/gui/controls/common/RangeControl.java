@@ -3,19 +3,18 @@ package com.willr27.blocklings.gui.controls.common;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTextures;
-import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.IControl;
-import com.willr27.blocklings.gui.screens.TasksScreen;
 import net.minecraft.util.text.StringTextComponent;
-import org.jline.utils.Log;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * A control used to display and edit a range.
  */
+@OnlyIn(Dist.CLIENT)
 public class RangeControl extends Control
 {
     /**

@@ -2,14 +2,14 @@ package com.willr27.blocklings.gui.controls.tasks.config.configs;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.willr27.blocklings.gui.controls.tasks.config.ConfigControl;
-import com.willr27.blocklings.gui.controls.tasks.config.TaskConfigContainerControl;
-import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.controls.TexturedControl;
 import com.willr27.blocklings.gui.controls.common.ScrollbarControl;
+import com.willr27.blocklings.gui.controls.tasks.config.ConfigControl;
+import com.willr27.blocklings.gui.controls.tasks.config.TaskConfigContainerControl;
+import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.task.TaskType;
 import net.minecraft.util.IReorderingProcessor;

@@ -2,11 +2,9 @@ package com.willr27.blocklings.gui.controls.tasks.config.configs;
 
 import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.gui.GuiUtil;
-import com.willr27.blocklings.gui.IControl;
-import com.willr27.blocklings.gui.controls.common.LabelControl;
-import com.willr27.blocklings.gui.controls.common.RangeControl;
-import com.willr27.blocklings.gui.controls.common.ScrollbarControl;
 import com.willr27.blocklings.gui.controls.common.DropdownControl;
+import com.willr27.blocklings.gui.controls.common.LabelControl;
+import com.willr27.blocklings.gui.controls.common.ScrollbarControl;
 import com.willr27.blocklings.gui.controls.common.panel.StackPanel;
 import com.willr27.blocklings.gui.controls.tasks.config.ConfigControl;
 import com.willr27.blocklings.gui.controls.tasks.config.TaskConfigContainerControl;

@@ -1,18 +1,14 @@
 package com.willr27.blocklings.task.config;
 
-import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.goal.BlocklingGoal;
 import com.willr27.blocklings.gui.IControl;
 import com.willr27.blocklings.gui.controls.common.RangeControl;
 import com.willr27.blocklings.util.Version;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nonnull;
-import java.util.UUID;
 
 /**
  * Used to configure a range property.

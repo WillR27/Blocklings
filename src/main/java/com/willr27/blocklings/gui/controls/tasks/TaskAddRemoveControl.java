@@ -1,10 +1,10 @@
 package com.willr27.blocklings.gui.controls.tasks;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiTextures;
+import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

@@ -6,7 +6,6 @@ import com.willr27.blocklings.gui.controls.skills.SkillControl;
 import com.willr27.blocklings.skill.Skill;
 import com.willr27.blocklings.skill.SkillGroup;
 import com.willr27.blocklings.skill.info.*;
-import org.lwjgl.system.CallbackI;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
