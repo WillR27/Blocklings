@@ -3,6 +3,7 @@ package com.willr27.blocklings.entity.entities.blockling;
 import com.willr27.blocklings.util.ItemUtil;
 import com.willr27.blocklings.util.BlocklingsResourceLocation;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import com.willr27.blocklings.util.Version;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
@@ -11,11 +12,13 @@ import net.minecraft.item.Items;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -224,6 +227,27 @@ public class BlocklingType
         BlocklingType type = new BlocklingType(key, spawnRateReduction);
         TYPES.add(type);
         return type;
+    }
+
+    /**
+     * @param key the key used to identify the blockling type.
+     * @return the blockling type with the given key, or grass if it does not exist.
+     */
+    @Nonnull
+    public static BlocklingType find(@Nonnull String key)
+    {
+        return TYPES.stream().filter(type -> type.key.equals(key)).findFirst().orElse(BlocklingType.GRASS);
+    }
+
+    /**
+     * @param key the key used to identify the blockling type.
+     * @param version the version of the mod to use the key for.
+     * @return the blockling type with the given key, or grass if it does not exist.
+     */
+    @Nonnull
+    public static BlocklingType find(@Nonnull String key, @Nonnull Version version)
+    {
+        return find(key);
     }
 
     /**

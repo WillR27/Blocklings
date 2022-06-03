@@ -231,8 +231,8 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     @Override
     public CompoundNBT writeToNBT(@Nonnull CompoundNBT blocklingTag)
     {
-        blocklingTag.putInt("original_type", BlocklingType.TYPES.indexOf(originalBlocklingType));
-        blocklingTag.putInt("type", BlocklingType.TYPES.indexOf(blocklingType));
+        blocklingTag.putString("original_type", originalBlocklingType.key);
+        blocklingTag.putString("type", blocklingType.key);
         blocklingTag.putInt("variant", blocklingTypeVariant);
         blocklingTag.putFloat("scale", scale);
 
@@ -261,8 +261,8 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     public void readFromNBT(@Nonnull CompoundNBT blocklingTag, @Nonnull Version tagVersion)
     {
         blocklingTypeVariant = blocklingTag.getInt("variant");
-        originalBlocklingType = BlocklingType.TYPES.get(blocklingTag.getInt("original_type"));
-        blocklingType = BlocklingType.TYPES.get(blocklingTag.getInt("type"));
+        originalBlocklingType = BlocklingType.find(blocklingTag.getString("original_type"), tagVersion);
+        blocklingType = BlocklingType.find(blocklingTag.getString("type"), tagVersion);
         setScale(blocklingTag.getFloat("scale"), false);
 
         // Health can be overwritten when loading max health modifiers.
