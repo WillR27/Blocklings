@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.*;
+import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -230,6 +231,11 @@ public class EnumeratingStatControl extends Control
             {
                 tooltip.add(subTooltip.get(0));
             }
+        }
+
+        if (!GuiUtil.isKeyDown(Minecraft.getInstance().options.keyShift.getKey().getValue()))
+        {
+            tooltip.add(new StringTextComponent(TextFormatting.DARK_GRAY + "" + TextFormatting.ITALIC + new BlocklingsTranslationTextComponent("gui.more_info", Minecraft.getInstance().options.keyShift.getTranslatedKeyMessage().getString()).getString()));
         }
 
         return tooltip;

@@ -6,6 +6,8 @@
   "item.blocklings.blockling_whistle": "Blockling Whistle",
   "item.blocklings.blockling_whistle.location": "Location: ",
 
+  "blocklings.gui.more_info": "Hold %s for more info",
+
   "blocklings.type.name": "Type: ",
   "blocklings.type.desc": "This is the current type of your blockling which can be changed by feeding them certain items.",
   "blocklings.type.natural.name": "Natural Type: ",

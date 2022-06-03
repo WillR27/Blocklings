@@ -137,6 +137,11 @@ public class StatsScreen extends TabbedScreen
                     splitText.stream().map(s -> new StringTextComponent(TextFormatting.DARK_GRAY + s).getVisualOrderText()).forEach(tooltip::add);
                 }
 
+                if (!GuiUtil.isKeyDown(Minecraft.getInstance().options.keyShift.getKey().getValue()))
+                {
+                    tooltip.add(new StringTextComponent(TextFormatting.DARK_GRAY + "" + TextFormatting.ITALIC + new BlocklingsTranslationTextComponent("gui.more_info", Minecraft.getInstance().options.keyShift.getTranslatedKeyMessage().getString()).getString()).getVisualOrderText());
+                }
+
                 screen.renderTooltip(matrixStack, tooltip, mouseX, mouseY);
             }
         };
