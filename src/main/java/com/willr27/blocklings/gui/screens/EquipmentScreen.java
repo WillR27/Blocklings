@@ -6,6 +6,8 @@ import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.containers.EquipmentContainer;
 import com.willr27.blocklings.gui.controls.TabbedControl;
+import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import net.minecraft.util.Hand;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -38,7 +40,20 @@ public class EquipmentScreen extends TabbedContainerScreen<EquipmentContainer>
         GuiUtil.bindTexture(GuiTextures.EQUIPMENT);
         blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedControl.CONTENT_WIDTH, TabbedControl.CONTENT_HEIGHT);
 
-        GuiUtil.renderEntityOnScreen(matrixStack, centerX - 58, centerY - 38, 20, centerX - 58 - mouseX, centerY - 38 - mouseY, blockling);
+        if (blockling.getEquipment().hasToolEquipped(Hand.MAIN_HAND))
+        {
+            fill(matrixStack, contentLeft + 12, contentTop + 62, contentLeft + 12 + 16, contentTop + 62 + 16, 0xff8b8b8b);
+        }
+
+        if (blockling.getEquipment().hasToolEquipped(Hand.OFF_HAND))
+        {
+            fill(matrixStack, contentLeft + 36, contentTop + 62, contentLeft + 36 + 16, contentTop + 62 + 16, 0xff8b8b8b);
+        }
+
+        GuiUtil.renderEntityOnScreen(matrixStack, centerX - 56, centerY - 38, 27, centerX - 56 - mouseX, centerY - 38 - mouseY, blockling);
+
+        String title = new BlocklingsTranslationTextComponent("tab.equipment").getString();
+        drawCenteredString(matrixStack, font, title, contentLeft + TabbedControl.CONTENT_WIDTH / 2, contentTop - 12, 0xffffff);
 
         super.renderBg(matrixStack, partialTicks, mouseX, mouseY);
     }

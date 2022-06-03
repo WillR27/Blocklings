@@ -71,9 +71,9 @@ public abstract class AbstractInventory implements IInventory, IReadWriteNBT
     }
 
     @Override
-    public void readFromNBT(@Nonnull CompoundNBT equipmentInvTag, @Nonnull Version tagVersion)
+    public void readFromNBT(@Nonnull CompoundNBT invTag, @Nonnull Version tagVersion)
     {
-        ListNBT list = (ListNBT) equipmentInvTag.get("slots");
+        ListNBT list = (ListNBT) invTag.get("slots");
 
         if (list != null)
         {
@@ -84,7 +84,10 @@ public abstract class AbstractInventory implements IInventory, IReadWriteNBT
                 int slot = stackTag.getInt("slot");
                 ItemStack stack = ItemStack.of(stackTag);
 
-                stacks[slot] = stack;
+                if (slot < stacks.length)
+                {
+                    stacks[slot] = stack;
+                }
             }
         }
     }

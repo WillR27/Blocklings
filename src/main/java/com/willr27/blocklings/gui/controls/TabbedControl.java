@@ -19,7 +19,7 @@ public class TabbedControl extends Control
     /**
      * The offset for the entire gui.
      */
-    public static final int OFFSET_Y = -10;
+    public static final int OFFSET_Y = -5;
 
     /**
      * The width of the gui from the edge of a selected left-hand tab to the edge of a selected right-hand tab.

@@ -433,8 +433,19 @@ public class SkillControl extends Control
     }
 
     @Override
+    public void controlMouseReleased(@Nonnull MouseButtonEvent e)
+    {
+
+    }
+
+    @Override
     public void globalMouseReleased(@Nonnull MouseButtonEvent e)
     {
+        if (e.isHandled())
+        {
+            return;
+        }
+
         if (!skillsControl.isMouseOver(e.mouseX, e.mouseY) || !isMouseOver(e.mouseX, e.mouseY))
         {
             isSelected = false;

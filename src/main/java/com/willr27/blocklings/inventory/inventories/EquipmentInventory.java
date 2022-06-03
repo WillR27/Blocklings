@@ -21,7 +21,7 @@ public class EquipmentInventory extends AbstractInventory
 
     public EquipmentInventory(BlocklingEntity blockling)
     {
-        super(blockling, 20);
+        super(blockling, 26);
     }
 
     public BlocklingHand findHandToolEquipped(ToolType toolType)

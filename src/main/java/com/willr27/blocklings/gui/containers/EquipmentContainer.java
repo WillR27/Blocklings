@@ -2,6 +2,7 @@ package com.willr27.blocklings.gui.containers;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.containers.slots.ToolSlot;
+import com.willr27.blocklings.gui.controls.TabbedControl;
 import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;
@@ -24,7 +25,7 @@ public class EquipmentContainer extends Container
     /**
      * The starting y location of the player's slots.
      */
-    private static final int PLAYER_INV_Y = 74;
+    private static final int PLAYER_INV_Y = 84 + TabbedControl.OFFSET_Y;
 
     /**
      * @param windowId the window id.
@@ -42,14 +43,14 @@ public class EquipmentContainer extends Container
 
         EquipmentInventory blocklingInv = blockling.getEquipment();
 
-        addSlot(new ToolSlot(blocklingInv, EquipmentInventory.TOOL_MAIN_HAND, 12, 44));
-        addSlot(new ToolSlot(blocklingInv, EquipmentInventory.TOOL_OFF_HAND, 32, 44));
+        addSlot(new ToolSlot(blocklingInv, EquipmentInventory.TOOL_MAIN_HAND, 12, PLAYER_INV_Y - 22));
+        addSlot(new ToolSlot(blocklingInv, EquipmentInventory.TOOL_OFF_HAND, 36, PLAYER_INV_Y - 22));
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 4; i++)
         {
             for (int j = 0; j < 6; j++)
             {
-                addSlot(new Slot(blocklingInv, j + i * 6 + 2, PLAYER_INV_X + (j * 18) + 50, PLAYER_INV_Y + (i * 18) - 66));
+                addSlot(new Slot(blocklingInv, j + i * 6 + 2, PLAYER_INV_X + (j * 18) + 54, PLAYER_INV_Y + (i * 18) - 76));
             }
         }
 
@@ -85,16 +86,16 @@ public class EquipmentContainer extends Container
 
         ItemStack clickedSlotStack = clickedSlot.getItem();
 
-        if (clickedSlotIndex >= 20 && clickedSlotIndex <= 56)
+        if (clickedSlotIndex >= 26 && clickedSlotIndex <= 62)
         {
-            if (!this.moveItemStackTo(clickedSlotStack, 0, 20, false))
+            if (!this.moveItemStackTo(clickedSlotStack, 0, 26, false))
             {
                 return ItemStack.EMPTY;
             }
         }
         else
         {
-            if (!this.moveItemStackTo(clickedSlotStack, 20, 56, true))
+            if (!this.moveItemStackTo(clickedSlotStack, 26, 62, true))
             {
                 return ItemStack.EMPTY;
             }
