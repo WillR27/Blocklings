@@ -2,6 +2,9 @@ package com.willr27.blocklings;
 
 import com.electronwill.nightconfig.core.Config;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.config.ModConfig;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -13,6 +16,55 @@ import java.util.List;
  */
 public class BlocklingsConfig
 {
+    /**
+     * The instance of the common config to access values from.
+     */
+    @Nonnull
+    public static final Common COMMON;
+
+    /**
+     * The common config spec.
+     */
+    @Nonnull
+    public static final ForgeConfigSpec COMMON_SPEC;
+
+    /**
+     * The instance of the common config to access values from.
+     */
+    @Nonnull
+    public static final Client CLIENT;
+
+    /**
+     * The common config spec.
+     */
+    @Nonnull
+    public static final ForgeConfigSpec CLIENT_SPEC;
+
+    /**
+     * Static constructor to initialize the config.
+     */
+    static
+    {
+        Pair<Common, ForgeConfigSpec> commonSpecPair = new ForgeConfigSpec.Builder().configure(Common::new);
+        COMMON = commonSpecPair.getLeft();
+        COMMON_SPEC = commonSpecPair.getRight();
+
+        Pair<Client, ForgeConfigSpec> clientSpecPair = new ForgeConfigSpec.Builder().configure(Client::new);
+        CLIENT = clientSpecPair.getLeft();
+        CLIENT_SPEC = clientSpecPair.getRight();
+    }
+
+    /**
+     * Initialises the configs.
+     */
+    public static void init()
+    {
+        ModContainer activeContainer = ModLoadingContext.get().getActiveContainer();
+
+        activeContainer.addConfig(new ModConfig(ModConfig.Type.COMMON, BlocklingsConfig.COMMON_SPEC, activeContainer));
+        activeContainer.addConfig(new ModConfig(ModConfig.Type.CLIENT, BlocklingsConfig.CLIENT_SPEC, activeContainer));
+    }
+
     /**
      * Config options shared by both the client and server.
      */
@@ -113,24 +165,29 @@ public class BlocklingsConfig
     }
 
     /**
-     * The instance of the common config to access values from.
+     * Config options only available to each client.
      */
-    @Nonnull
-    public static final Common COMMON;
-
-    /**
-     * The common config spec.
-     */
-    @Nonnull
-    public static final ForgeConfigSpec COMMON_SPEC;
-
-    /**
-     * Static constructor to initialize the config.
-     */
-    static
+    public static class Client
     {
-        Pair<Common, ForgeConfigSpec> commonSpecPair = new ForgeConfigSpec.Builder().configure(Common::new);
-        COMMON = commonSpecPair.getLeft();
-        COMMON_SPEC = commonSpecPair.getRight();
+        /**
+         * Whether the mixed blockling type textures are disabled.
+         */
+        public final ForgeConfigSpec.ConfigValue<Boolean> disableDirtyBlocklings;
+
+        /**
+         * @param builder the builder used to create the config.
+         */
+        public Client(@Nonnull ForgeConfigSpec.Builder builder)
+        {
+            Config.setInsertionOrderPreserved(true);
+
+            builder.push("Misc");
+
+            disableDirtyBlocklings = builder
+                    .comment("Set this to true to disable the mixed blockling type textures.")
+                    .define("disableDirtyBlocklings", false);
+
+            builder.pop();
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.willr27.blocklings.events;
 
 import com.willr27.blocklings.Blocklings;
+import com.willr27.blocklings.BlocklingsConfig;
 import com.willr27.blocklings.entity.BlocklingsEntityTypes;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingType;
@@ -36,12 +37,31 @@ public class ModEventBusEvents
     }
 
     /**
+     * Used to prevent the merged blockling textures being created multiple times.
+     */
+    private static boolean blocklingTextureStitched = false;
+
+    /**
      * Creates merged blockling type textures for each blockling type and each variant.
      */
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void onTextureStitch(@Nonnull TextureStitchEvent.Post event)
     {
+        if (blocklingTextureStitched)
+        {
+            return;
+        }
+
+        blocklingTextureStitched = true;
+
+        if (BlocklingsConfig.CLIENT.disableDirtyBlocklings.get())
+        {
+            Blocklings.LOGGER.info("Skipping texture creation for merged blockling textures.");
+
+            return;
+        }
+
         ResourceLocation texture = null;
 
         for (int mask = 0; mask < 3; mask++)

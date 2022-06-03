@@ -698,6 +698,17 @@ public interface IControl
     void removeChild(@Nullable Control control);
 
     /**
+     * Removes all children from this control.
+     */
+    default void removeChildren()
+    {
+        for (Control control : getChildrenCopy())
+        {
+            removeChild(control);
+        }
+    }
+
+    /**
      * @return the current y-axis scrollbar control.
      */
     @Nullable

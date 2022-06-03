@@ -201,6 +201,8 @@ public abstract class TabbedContainerScreen<T extends Container> extends Contain
     @Override
     protected void init()
     {
+        removeChildren();
+
         centerX = width / 2;
         centerY = height / 2 + TabbedControl.OFFSET_Y;
 

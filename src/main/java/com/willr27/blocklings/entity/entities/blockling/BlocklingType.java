@@ -1,5 +1,6 @@
 package com.willr27.blocklings.entity.entities.blockling;
 
+import com.willr27.blocklings.BlocklingsConfig;
 import com.willr27.blocklings.util.ItemUtil;
 import com.willr27.blocklings.util.BlocklingsResourceLocation;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
@@ -18,6 +19,8 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
@@ -295,11 +298,17 @@ public class BlocklingType
     /**
      * @param blocklingType the blockling type.
      * @param variant the variant.
-     * @return the resource location for the combined texture.
+     * @return the resource location for the combined texture (returns the regular type texture if the option is disabled in the config).
      */
+    @OnlyIn(Dist.CLIENT)
     @Nonnull
     public ResourceLocation getCombinedTexture(@Nonnull BlocklingType blocklingType, int variant)
     {
+        if (BlocklingsConfig.CLIENT.disableDirtyBlocklings.get())
+        {
+            return blocklingType.entityTexture;
+        }
+
         return new BlocklingsResourceLocation("textures/entity/blockling/blockling_" + key + "_merged_with_" + blocklingType.key + "_" + variant);
     }
 

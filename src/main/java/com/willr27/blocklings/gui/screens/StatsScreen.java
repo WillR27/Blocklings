@@ -8,6 +8,7 @@ import com.willr27.blocklings.attribute.IModifier;
 import com.willr27.blocklings.attribute.Operation;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
+import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.controls.common.TextFieldControl;
@@ -17,15 +18,19 @@ import com.willr27.blocklings.gui.controls.stats.LevelControl;
 import com.willr27.blocklings.gui.controls.TabbedControl;
 import com.willr27.blocklings.item.items.BlocklingsItems;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.util.stream.Collectors.joining;
@@ -64,51 +69,6 @@ public class StatsScreen extends TabbedScreen
     private final BlocklingAttributes stats;
 
     /**
-     * The control to display the blockling's health.
-     */
-    private HealthBarControl healthBar;
-
-    /**
-     * The control to display the attack stats.
-     */
-    private EnumeratingStatControl attackControl;
-
-    /**
-     * The control to display the defence stats.
-     */
-    private EnumeratingStatControl defenceControl;
-
-    /**
-     * The control to display the gathering stats.
-     */
-    private EnumeratingStatControl gatheringControl;
-
-    /**
-     * The control to display the combat stats.
-     */
-    private EnumeratingStatControl movementControl;
-
-    /**
-     * The control to display the combat level info.
-     */
-    private LevelControl combatLevelControl;
-
-    /**
-     * The control to display the mining level info.
-     */
-    private LevelControl miningLevelControl;
-
-    /**
-     * The control to display the woodcutting level info.
-     */
-    private LevelControl woodcuttingLevelControl;
-
-    /**
-     * The control to display the farming level info.
-     */
-    private LevelControl farmingLevelControl;
-
-    /**
      * The text field control used to change the blockling's name.
      */
     private TextFieldControl nameField;
@@ -128,39 +88,58 @@ public class StatsScreen extends TabbedScreen
     {
         super.init();
 
-        removeChild(healthBar);
-        healthBar = new HealthBarControl(this, blockling, contentLeft + 20, contentTop + 36);
+        new HealthBarControl(this, blockling, contentLeft + 20, contentTop + 36);
 
-        removeChild(attackControl);
-        attackControl = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.attack.name"), contentLeft + ICON_X_OFFSET, contentTop + TOP_ICON_Y, false, 60, true, blockling);
+        EnumeratingStatControl attackControl = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.attack.name"), contentLeft + ICON_X_OFFSET, contentTop + TOP_ICON_Y, false, 60, true, blockling);
         attackControl.addStat(() -> blockling.getEquipment().isAttackingWith(BlocklingHand.MAIN), () -> stats.mainHandAttackDamage.displayStringValueFunction.apply(stats.mainHandAttackDamage.getValue()), () -> createModifiableFloatAttributeTooltip(stats.mainHandAttackDamage, TextFormatting.DARK_RED), 12);
         attackControl.addStat(() -> blockling.getEquipment().isAttackingWith(BlocklingHand.OFF), () -> stats.offHandAttackDamage.displayStringValueFunction.apply(stats.offHandAttackDamage.getValue()), () -> createModifiableFloatAttributeTooltip(stats.offHandAttackDamage, TextFormatting.DARK_RED), 10);
         attackControl.addStat(() -> true, () -> stats.attackSpeed.displayStringValueFunction.apply(stats.attackSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.attackSpeed, TextFormatting.DARK_PURPLE),11);
 
-        removeChild(defenceControl);
-        defenceControl = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.defence.name"), contentLeft + ICON_X_OFFSET, contentTop + BOTTOM_ICON_Y, false, 60, true, blockling);
+        EnumeratingStatControl defenceControl = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.defence.name"), contentLeft + ICON_X_OFFSET, contentTop + BOTTOM_ICON_Y, false, 60, true, blockling);
         defenceControl.addStat(() -> true, () -> stats.armour.displayStringValueFunction.apply(stats.armour.getValue()), () -> createModifiableFloatAttributeTooltip(stats.armour, TextFormatting.DARK_AQUA), 5);
         defenceControl.addStat(() -> true, () -> stats.armourToughness.displayStringValueFunction.apply(stats.armourToughness.getValue()), () -> createModifiableFloatAttributeTooltip(stats.armourToughness, TextFormatting.AQUA), 6);
         defenceControl.addStat(() -> true, () -> stats.knockbackResistance.displayStringValueFunction.apply(stats.knockbackResistance.getValue()), () -> createModifiableFloatAttributeTooltip(stats.knockbackResistance, TextFormatting.YELLOW), 7);
 
-        removeChild(gatheringControl);
-        gatheringControl = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.gathering.name"), contentLeft + TabbedControl.CONTENT_WIDTH - ICON_X_OFFSET - EnumeratingStatControl.ICON_SIZE, contentTop + TOP_ICON_Y, true, 60, true, blockling);
+        EnumeratingStatControl gatheringControl = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.gathering.name"), contentLeft + TabbedControl.CONTENT_WIDTH - ICON_X_OFFSET - EnumeratingStatControl.ICON_SIZE, contentTop + TOP_ICON_Y, true, 60, true, blockling);
         gatheringControl.addStat(() -> true, () -> stats.miningSpeed.displayStringValueFunction.apply(stats.miningSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.miningSpeed, TextFormatting.BLUE), 1);
         gatheringControl.addStat(() -> true, () -> stats.woodcuttingSpeed.displayStringValueFunction.apply(stats.woodcuttingSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.woodcuttingSpeed, TextFormatting.DARK_GREEN), 2);
         gatheringControl.addStat(() -> true, () -> stats.farmingSpeed.displayStringValueFunction.apply(stats.farmingSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.farmingSpeed, TextFormatting.YELLOW), 3);
 
-        removeChild(movementControl);
-        movementControl = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.movement.name"), contentLeft + TabbedControl.CONTENT_WIDTH - ICON_X_OFFSET - EnumeratingStatControl.ICON_SIZE, contentTop + BOTTOM_ICON_Y, true, 60, true, blockling);
+        EnumeratingStatControl movementControl = new EnumeratingStatControl(this, new BlocklingsTranslationTextComponent("stats.movement.name"), contentLeft + TabbedControl.CONTENT_WIDTH - ICON_X_OFFSET - EnumeratingStatControl.ICON_SIZE, contentTop + BOTTOM_ICON_Y, true, 60, true, blockling);
         movementControl.addStat(() -> true, () -> stats.moveSpeed.displayStringValueFunction.apply(stats.moveSpeed.getValue()), () -> createModifiableFloatAttributeTooltip(stats.moveSpeed, TextFormatting.BLUE), 8);
 
-        removeChild(combatLevelControl);
-        combatLevelControl = new LevelControl(this, BlocklingAttributes.Level.COMBAT, blockling, contentLeft + 15, contentTop + 102);
-        removeChild(miningLevelControl);
-        miningLevelControl = new LevelControl(this, BlocklingAttributes.Level.MINING, blockling, + combatLevelControl.getX(), combatLevelControl.getY() + LEVEL_XP_GAP);
-        removeChild(woodcuttingLevelControl);
-        woodcuttingLevelControl = new LevelControl(this, BlocklingAttributes.Level.WOODCUTTING, blockling, + combatLevelControl.getX(), miningLevelControl.getY() + LEVEL_XP_GAP);
-        removeChild(farmingLevelControl);
-        farmingLevelControl = new LevelControl(this, BlocklingAttributes.Level.FARMING, blockling, + combatLevelControl.getX(), woodcuttingLevelControl.getY() + LEVEL_XP_GAP);
+        LevelControl combatLevelControl = new LevelControl(this, BlocklingAttributes.Level.COMBAT, blockling, contentLeft + 15, contentTop + 102);
+        LevelControl miningLevelControl = new LevelControl(this, BlocklingAttributes.Level.MINING, blockling, + combatLevelControl.getX(), combatLevelControl.getY() + LEVEL_XP_GAP);
+        LevelControl woodcuttingLevelControl = new LevelControl(this, BlocklingAttributes.Level.WOODCUTTING, blockling, + combatLevelControl.getX(), miningLevelControl.getY() + LEVEL_XP_GAP);
+        new LevelControl(this, BlocklingAttributes.Level.FARMING, blockling, + combatLevelControl.getX(), woodcuttingLevelControl.getY() + LEVEL_XP_GAP);
+
+        new Control(this, contentLeft + TabbedControl.CONTENT_WIDTH / 2 - 50 / 2, contentTop + TabbedControl.CONTENT_HEIGHT / 2 - 50 / 2 - 10, 50, 50)
+        {
+            @Override
+            public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+            {
+                List<IReorderingProcessor> tooltip = new ArrayList<>();
+
+                tooltip.add(new StringTextComponent(TextFormatting.GOLD + blockling.getCustomName().getString()).getVisualOrderText());
+                tooltip.add(new StringTextComponent(TextFormatting.GRAY + new BlocklingsTranslationTextComponent("type.name").getString() + TextFormatting.WHITE + blockling.getBlocklingType().name.getString()).getVisualOrderText());
+
+                if (GuiUtil.isKeyDown(Minecraft.getInstance().options.keyShift.getKey().getValue()))
+                {
+                    List<String> splitText = GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("type.desc").getString(), 150);
+                    splitText.stream().map(s -> new StringTextComponent(TextFormatting.DARK_GRAY + s).getVisualOrderText()).forEach(tooltip::add);
+                }
+
+                tooltip.add(new StringTextComponent(TextFormatting.GRAY + new BlocklingsTranslationTextComponent("type.natural.name").getString() + TextFormatting.WHITE + blockling.getOriginalBlocklingType().name.getString()).getVisualOrderText());
+
+                if (GuiUtil.isKeyDown(Minecraft.getInstance().options.keyShift.getKey().getValue()))
+                {
+                    List<String> splitText = GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("type.natural.desc").getString(), 150);
+                    splitText.stream().map(s -> new StringTextComponent(TextFormatting.DARK_GRAY + s).getVisualOrderText()).forEach(tooltip::add);
+                }
+
+                screen.renderTooltip(matrixStack, tooltip, mouseX, mouseY);
+            }
+        };
 
         nameField = new TextFieldControl(font, contentLeft + 14, contentTop + 14, 160, 20, new StringTextComponent(""))
         {

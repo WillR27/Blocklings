@@ -1,12 +1,16 @@
 package com.willr27.blocklings.item.items;
 
+import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.attribute.BlocklingAttributes;
 import com.willr27.blocklings.entity.BlocklingsEntityTypes;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingType;
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.util.BlocklingsResourceLocation;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import com.willr27.blocklings.util.ObjectUtil;
+import com.willr27.blocklings.util.Version;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.*;
@@ -153,14 +157,24 @@ public class BlocklingItem extends Item
         {
             ItemModelsProperties.register(BlocklingsItems.BLOCKLING.get(), new BlocklingsResourceLocation("type"), (stack, world, entity) ->
             {
-                CompoundNBT c = stack.getTag();
+                CompoundNBT stackTag = stack.getTag();
 
-                if (c == null)
+                if (stackTag != null)
                 {
-                    return 0;
+                    CompoundNBT entityTag = stackTag.getCompound("entity");
+
+                    if (entityTag != null)
+                    {
+                        CompoundNBT blocklingTag = entityTag.getCompound("blockling");
+
+                        if (blocklingTag != null)
+                        {
+                            return BlocklingType.TYPES.indexOf(BlocklingType.find(blocklingTag.getString("type"), ObjectUtil.coalesce(new Version(blocklingTag.getString("blocklings_version")), Blocklings.VERSION)));
+                        }
+                    }
                 }
 
-                return ((CompoundNBT) ((CompoundNBT) c.get("entity")).get("blockling")).getInt("type");
+                return 0;
             });
         });
     }

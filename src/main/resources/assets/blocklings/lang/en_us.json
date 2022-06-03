@@ -6,6 +6,10 @@
   "item.blocklings.blockling_whistle": "Blockling Whistle",
   "item.blocklings.blockling_whistle.location": "Location: ",
 
+  "blocklings.type.name": "Type: ",
+  "blocklings.type.desc": "This is the current type of your blockling which can be changed by feeding them certain items.",
+  "blocklings.type.natural.name": "Natural Type: ",
+  "blocklings.type.natural.desc": "This is natural type of your blockling that they initially spawned as.",
   "blocklings.type.grass": "Grass",
   "blocklings.type.oak_log": "Oak Log",
   "blocklings.type.stone": "Stone",

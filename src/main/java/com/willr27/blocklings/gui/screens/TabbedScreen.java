@@ -215,6 +215,8 @@ public class TabbedScreen extends Screen implements IControl, IScreen
     {
         super.init();
 
+        removeChildren();
+
         scale = (float) Minecraft.getInstance().getWindow().getGuiScale();
 
         children.clear();
