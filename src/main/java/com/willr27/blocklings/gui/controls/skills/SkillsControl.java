@@ -237,12 +237,12 @@ public class SkillsControl extends Control
         skillsScreen.tabbedControl.setIsVisible(true);
 
         skillsScreen.skillsContainer.setX(skillsScreen.contentLeft + 9);
-        skillsScreen.skillsContainer.setY(skillsScreen.contentTop + 19);
+        skillsScreen.skillsContainer.setY(skillsScreen.contentTop + 9);
         setX(minimisedX);
         setY(minimisedY);
 
-        skillsScreen.skillsContainer.setWidth(158);
-        skillsScreen.skillsContainer.setHeight(138);
+        skillsScreen.skillsContainer.setWidth(minimisedWidth);
+        skillsScreen.skillsContainer.setHeight(minimisedHeight);
         resize((int) (minimisedWidth / getScale()), (int) (minimisedHeight / getScale()));
 
         moveOffsetX = (int) (((width - SKILL_SIZE) / 2));

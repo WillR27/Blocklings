@@ -63,8 +63,7 @@ public class TasksScreen extends TabbedScreen
             isVisible = tasksPanel.isVisible();
         }
 
-        removeChild(tasksPanel);
-        tasksPanel = new StackPanel(this, contentLeft + 9, contentTop + 17, 140, 141)
+        tasksPanel = new StackPanel(this, contentLeft + 9, contentTop + 9, 140, 148)
         {
             @Override
             public void setupEventHandlers()
@@ -144,14 +143,12 @@ public class TasksScreen extends TabbedScreen
 
         new TaskControl(tasksPanel, new Task(UUID.randomUUID(), BlocklingTasks.NULL, blockling, blockling.getTasks()), true, this::onConfigure);
 
-        removeChild(tasksScrollbarControl);
-        tasksScrollbarControl = new ScrollbarControl(this, contentLeft + 155, contentTop + 17, 12, 141);
+        tasksScrollbarControl = new ScrollbarControl(this, contentLeft + 155, contentTop + 9, 12, 148);
 
         tasksPanel.setScrollbarY(tasksScrollbarControl);
 
         if (taskConfigControl != null)
         {
-            removeChild(taskConfigControl);
             taskConfigControl = new TaskConfigContainerControl(this, taskConfigControl.task, contentLeft, contentTop);
         }
     }
@@ -170,7 +167,8 @@ public class TasksScreen extends TabbedScreen
 
         if (taskConfigControl == null || !taskConfigControl.isVisible())
         {
-            font.drawShadow(matrixStack, new BlocklingsTranslationTextComponent("tab.tasks"), contentLeft + 8, contentTop + 5, 0xffffff);
+            String title = new BlocklingsTranslationTextComponent("tab.tasks").getString();
+            drawCenteredString(matrixStack, font, title, contentLeft + TabbedControl.CONTENT_WIDTH / 2, contentTop - 12, 0xffffff);
         }
     }
 

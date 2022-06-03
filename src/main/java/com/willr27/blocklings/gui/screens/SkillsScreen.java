@@ -79,11 +79,9 @@ public class SkillsScreen extends TabbedScreen
 
         tabbedControl.setIsVisible(isVisible);
 
-        removeChild(skillsContainer);
-        skillsContainer = new Control(this, contentLeft + 9, contentTop + 19, 158, 138);
+        skillsContainer = new Control(this, contentLeft + 9, contentTop + 9, 158, 148);
 
-        removeChild(skillsControl);
-        skillsControl = new SkillsControl(skillsContainer, blockling, group, 0, 0, 158, 138);
+        skillsControl = new SkillsControl(skillsContainer, blockling, group, 0, 0, 158, 148);
         skillsControl.setIsFocused(true);
 
         boolean isMaximised = false;
@@ -95,8 +93,7 @@ public class SkillsScreen extends TabbedScreen
             skillsControl.maximise();
         }
 
-        removeChild(maximiseControl);
-        maximiseControl = new MaximiseControl(skillsContainer, 142, 122)
+        maximiseControl = new MaximiseControl(skillsContainer, 142, 132)
         {
             @Override
             public void controlMouseReleased(@Nonnull MouseButtonEvent e)
@@ -118,7 +115,6 @@ public class SkillsScreen extends TabbedScreen
             isVisible = borderControl.isVisible();
         }
 
-        removeChild(borderControl);
         borderControl = new TexturedControl(this, contentLeft, contentTop, new GuiTexture(GuiTextures.SKILLS, 0, 0, TabbedControl.CONTENT_WIDTH, TabbedControl.CONTENT_HEIGHT))
         {
             @Override
@@ -142,15 +138,15 @@ public class SkillsScreen extends TabbedScreen
 
         if (!maximiseControl.isMaximised)
         {
-            font.drawShadow(matrixStack, group.info.guiTitle.getString(), left + 36, top + 7, 0xffffff);
-            RenderSystem.enableDepthTest();
+            String title = group.info.guiTitle.getString();
+            drawCenteredString(matrixStack, font, title, contentLeft + TabbedControl.CONTENT_WIDTH / 2, contentTop - 12, 0xffffff);
         }
     }
 
     @Override
     public void globalKeyPressed(@Nonnull KeyEvent e)
     {
-        if (!skillBuyConfirmationControl.isVisible() && GuiUtil.isCloseInventoryKey(e.keyCode))
+        if (!e.isHandled() && !skillBuyConfirmationControl.isVisible() && GuiUtil.isCloseInventoryKey(e.keyCode))
         {
             if (maximiseControl.isMaximised)
             {
@@ -161,6 +157,8 @@ public class SkillsScreen extends TabbedScreen
             {
                 onClose();
             }
+
+            e.setIsHandled(true);
         }
     }
 
