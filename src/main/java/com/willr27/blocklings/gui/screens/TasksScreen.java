@@ -13,6 +13,7 @@ import com.willr27.blocklings.gui.controls.tasks.config.TaskConfigContainerContr
 import com.willr27.blocklings.gui.controls.tasks.TaskControl;
 import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -165,14 +166,7 @@ public class TasksScreen extends TabbedScreen
         GuiUtil.bindTexture(GuiTextures.TASKS);
         blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedControl.CONTENT_WIDTH, TabbedControl.CONTENT_HEIGHT);
 
-        String title = new BlocklingsTranslationTextComponent("tab.tasks").getString();
-
-        if (taskConfigControl != null && taskConfigControl.isVisible())
-        {
-            title = new BlocklingsTranslationTextComponent("gui.configure_task").getString();
-        }
-
-        drawCenteredString(matrixStack, font, title, contentLeft + TabbedControl.CONTENT_WIDTH / 2, contentTop - 12, 0xffffff);
+        super.renderScreen(matrixStack, mouseX, mouseY, partialTicks);
     }
 
     /**
@@ -212,6 +206,17 @@ public class TasksScreen extends TabbedScreen
         {
             tasksPanel.setIsVisible(true);
         }
+    }
+
+    @Override
+    public ITextComponent getTitle()
+    {
+        if (taskConfigControl != null && taskConfigControl.isVisible())
+        {
+            return new BlocklingsTranslationTextComponent("gui.configure_task");
+        }
+
+        return super.getTitle();
     }
 
     @Override

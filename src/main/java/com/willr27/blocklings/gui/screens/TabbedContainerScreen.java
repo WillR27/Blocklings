@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 import javax.annotation.Nonnull;
@@ -222,6 +223,77 @@ public abstract class TabbedContainerScreen<T extends Container> extends Contain
         super.init();
     }
 
+    @Override
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    {
+        matrixStack.pushPose();
+        matrixStack.translate(0.0, 0.0, -100.0);
+
+        renderScreen(matrixStack, mouseX, mouseY, partialTicks);
+
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
+
+        matrixStack.popPose();
+
+        if (getPressedControl() != null)
+        {
+            int difX = Math.abs(mouseX - getPressedMouseX());
+            int difY = Math.abs(mouseY - getPressedMouseY());
+
+            if (difX >= 4 || difY >= 4)
+            {
+                setDraggedControl(getPressedControl());
+            }
+        }
+
+        forwardControlHover(new MouseEvent(mouseX, mouseY));
+        preRenderAll(mouseX, mouseY, partialTicks);
+        renderAll(matrixStack, mouseX, mouseY, partialTicks);
+
+        RenderSystem.enableDepthTest();
+        getHoveredControl().renderTooltip(matrixStack, mouseX, mouseY);
+        RenderSystem.enableDepthTest();
+        renderTooltip(matrixStack, mouseX, mouseY);
+    }
+
+    @Override
+    protected void renderLabels(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+    {
+        // Leave empty to stop container labels being rendered
+    }
+
+    @Override
+    protected void renderBg(@Nonnull MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY)
+    {
+
+    }
+
+    @Override
+    public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+    {
+        super.renderTooltip(matrixStack, mouseX, mouseY);
+    }
+
+    @Override
+    public void renderScreen(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    {
+        renderTitle(matrixStack, mouseX, mouseY, partialTicks);
+    }
+
+    /**
+     * Renders the screen's title.
+     */
+    protected void renderTitle(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    {
+        drawCenteredString(matrixStack, font, getTitle(), contentLeft + TabbedControl.CONTENT_WIDTH / 2, contentTop - 15, 0xffffff);
+    }
+
+    @Override
+    public ITextComponent getTitle()
+    {
+        return tabbedControl.getChildren().stream().map(control -> ((TabbedControl.TabControl) control)).filter(tabControl -> tabControl.isSelected()).findFirst().get().tab.name;
+    }
+
     @Nonnull
     @Override
     public com.willr27.blocklings.gui.IScreen getScreen()
@@ -267,55 +339,6 @@ public abstract class TabbedContainerScreen<T extends Container> extends Contain
     public void tick()
     {
         tickAll();
-    }
-
-    @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
-    {
-        matrixStack.pushPose();
-        matrixStack.translate(0.0, 0.0, -100.0);
-
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
-
-        matrixStack.popPose();
-
-        if (getPressedControl() != null)
-        {
-            int difX = Math.abs(mouseX - getPressedMouseX());
-            int difY = Math.abs(mouseY - getPressedMouseY());
-
-            if (difX >= 4 || difY >= 4)
-            {
-                setDraggedControl(getPressedControl());
-            }
-        }
-
-        forwardControlHover(new MouseEvent(mouseX, mouseY));
-        preRenderAll(mouseX, mouseY, partialTicks);
-        renderAll(matrixStack, mouseX, mouseY, partialTicks);
-
-        RenderSystem.enableDepthTest();
-        getHoveredControl().renderTooltip(matrixStack, mouseX, mouseY);
-        RenderSystem.enableDepthTest();
-        renderTooltip(matrixStack, mouseX, mouseY);
-    }
-
-    @Override
-    protected void renderLabels(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
-    {
-        // Leave empty to stop container labels being rendered
-    }
-
-    @Override
-    protected void renderBg(@Nonnull MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY)
-    {
-
-    }
-
-    @Override
-    public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
-    {
-        super.renderTooltip(matrixStack, mouseX, mouseY);
     }
 
     @Override

@@ -60,7 +60,7 @@ public class TabbedControl extends Control
     /**
      * The control for the tabs along the edge of the gui.
      */
-    private static class TabControl extends Control
+    public static class TabControl extends Control
     {
         /**
          * The width/height of a tab icon.
@@ -95,7 +95,7 @@ public class TabbedControl extends Control
          * The associated tab.
          */
         @Nonnull
-        private final Tab tab;
+        public final Tab tab;
 
         /**
          * The blockling.
@@ -175,7 +175,7 @@ public class TabbedControl extends Control
         /**
          * @return true if the current tab is selected.
          */
-        private boolean isSelected()
+        public boolean isSelected()
         {
             return tab.guiId == blockling.guiHandler.getRecentGuiId();
         }

@@ -9,14 +9,13 @@ import com.willr27.blocklings.gui.IControl;
 import com.willr27.blocklings.gui.IScreen;
 import com.willr27.blocklings.gui.controls.TabbedControl;
 import com.willr27.blocklings.util.event.EventHandler;
-import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -306,6 +305,26 @@ public class TabbedScreen extends Screen implements IControl, IScreen
         matrixStack.popPose();
 
         GuiUtil.useGuiScaleForScissor = true;
+    }
+
+    @Override
+    public void renderScreen(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    {
+        renderTitle(matrixStack, mouseX, mouseY, partialTicks);
+    }
+
+    /**
+     * Renders the screen's title.
+     */
+    protected void renderTitle(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    {
+        drawCenteredString(matrixStack, font, getTitle(), contentLeft + TabbedControl.CONTENT_WIDTH / 2, contentTop - 15, 0xffffff);
+    }
+
+    @Override
+    public ITextComponent getTitle()
+    {
+        return tabbedControl.getChildren().stream().map(control -> ((TabbedControl.TabControl) control)).filter(tabControl -> tabControl.isSelected()).findFirst().get().tab.name;
     }
 
     @Override

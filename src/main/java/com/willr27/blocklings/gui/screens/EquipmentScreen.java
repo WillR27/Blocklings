@@ -8,6 +8,7 @@ import com.willr27.blocklings.gui.containers.EquipmentContainer;
 import com.willr27.blocklings.gui.controls.TabbedControl;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.Hand;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -29,12 +30,6 @@ public class EquipmentScreen extends TabbedContainerScreen<EquipmentContainer>
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
-    {
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
-    }
-
-    @Override
     protected void renderBg(@Nonnull MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY)
     {
         GuiUtil.bindTexture(GuiTextures.EQUIPMENT);
@@ -51,9 +46,6 @@ public class EquipmentScreen extends TabbedContainerScreen<EquipmentContainer>
         }
 
         GuiUtil.renderEntityOnScreen(matrixStack, centerX - 56, centerY - 38, 27, centerX - 56 - mouseX, centerY - 38 - mouseY, blockling);
-
-        String title = new BlocklingsTranslationTextComponent("tab.equipment").getString();
-        drawCenteredString(matrixStack, font, title, contentLeft + TabbedControl.CONTENT_WIDTH / 2, contentTop - 12, 0xffffff);
 
         super.renderBg(matrixStack, partialTicks, mouseX, mouseY);
     }

@@ -12,6 +12,7 @@ import com.willr27.blocklings.gui.controls.skills.SkillsControl;
 import com.willr27.blocklings.skill.SkillGroup;
 import com.willr27.blocklings.skill.info.SkillGroupInfo;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -132,14 +133,11 @@ public class SkillsScreen extends TabbedScreen
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    protected void renderTitle(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
-
         if (!maximiseControl.isMaximised)
         {
-            String title = group.info.guiTitle.getString();
-            drawCenteredString(matrixStack, font, title, contentLeft + TabbedControl.CONTENT_WIDTH / 2, contentTop - 12, 0xffffff);
+            super.renderTitle(matrixStack, mouseX, mouseY, partialTicks);
         }
     }
 
@@ -160,6 +158,12 @@ public class SkillsScreen extends TabbedScreen
 
             e.setIsHandled(true);
         }
+    }
+
+    @Override
+    public ITextComponent getTitle()
+    {
+        return group.info.guiTitle;
     }
 
     @Override

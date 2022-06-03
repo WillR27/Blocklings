@@ -243,8 +243,7 @@ public class StatsScreen extends TabbedScreen
 
         GuiUtil.renderEntityOnScreen(matrixStack, centerX, centerY + 10, 35, centerX - mouseX, centerY - mouseY, blockling);
 
-        String title = new BlocklingsTranslationTextComponent("tab.stats").getString();
-        drawCenteredString(matrixStack, font, title, contentLeft + TabbedControl.CONTENT_WIDTH / 2, contentTop - 12, 0xffffff);
+        super.renderScreen(matrixStack, mouseX, mouseY, partialTicks);
     }
 
     @Override
