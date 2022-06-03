@@ -1,17 +1,23 @@
 package com.willr27.blocklings.gui.controls.stats;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.willr27.blocklings.attribute.Attribute;
 import com.willr27.blocklings.attribute.BlocklingAttributes;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.Control;
 import com.willr27.blocklings.gui.GuiTexture;
 import com.willr27.blocklings.gui.GuiTextures;
 import com.willr27.blocklings.gui.IControl;
+import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A control to display a level.
@@ -69,9 +75,14 @@ public class LevelControl extends Control
     @Override
     public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
     {
-        int level = blockling.getStats().getLevelAttribute(this.level).getValue();
+        Attribute<Integer> level = blockling.getStats().getLevelAttribute(this.level);
 
-        screen.renderTooltip(matrixStack, new StringTextComponent(blockling.getStats().getLevelXpAttribute(this.level).getValue() + "/" + BlocklingAttributes.getXpForLevel(level)), mouseX, mouseY);
+        List<IReorderingProcessor> tooltip = new ArrayList<>();
+        tooltip.add(new StringTextComponent(TextFormatting.GOLD + blockling.getStats().getLevelAttribute(this.level).displayStringNameSupplier.get()).getVisualOrderText());
+        tooltip.add(new StringTextComponent(TextFormatting.GRAY + new BlocklingsTranslationTextComponent("gui.current_level", TextFormatting.WHITE, level.getValue()).getString()).getVisualOrderText());
+        tooltip.add(new StringTextComponent(TextFormatting.GRAY + new BlocklingsTranslationTextComponent("gui.xp_required", TextFormatting.WHITE, blockling.getStats().getLevelXpAttribute(this.level).getValue(), BlocklingAttributes.getXpForLevel(level.getValue())).getString()).getVisualOrderText());
+
+        screen.renderTooltip(matrixStack, tooltip, mouseX, mouseY);
     }
 
     /**
