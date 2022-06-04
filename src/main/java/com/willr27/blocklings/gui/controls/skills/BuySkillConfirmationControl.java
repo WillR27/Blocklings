@@ -74,7 +74,7 @@ public class BuySkillConfirmationControl extends Control
         int yesX = width / 2 - 30 - buttonWidth / 2;
         int noX = width / 2 + 30 - buttonWidth / 2;
         int buttonY = height / 2 + 10;
-        yesButton = new Button(yesX + getX(), buttonY + getY(), buttonWidth, buttonHeight, new StringTextComponent("Yes"), press -> { setIsVisible(true); this.skillControl.skill.tryBuy(); });
+        yesButton = new Button(yesX + getX(), buttonY + getY(), buttonWidth, buttonHeight, new StringTextComponent("Yes"), press -> { setIsVisible(true); this.skillControl.skill.tryBuy(); skillControl.isSelected = false; });
         noButton = new Button(noX + getY(), buttonY + getY(), buttonWidth, buttonHeight, new StringTextComponent("No"), press -> { setIsVisible(false); skillControl.isSelected = false; });
     }
 
