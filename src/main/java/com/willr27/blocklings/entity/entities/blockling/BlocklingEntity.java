@@ -523,7 +523,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
                     setHealth(0.0f);
 
-                    remove(); // Remove now to avoid a regular death from occuring.
+                    remove(); // Remove now to avoid a regular death from occurring.
                 }
             }
         }
