@@ -6,9 +6,11 @@ import com.willr27.blocklings.item.items.BlocklingItem;
 import com.willr27.blocklings.item.items.BlocklingsItems;
 import com.willr27.blocklings.network.NetworkHandler;
 import com.willr27.blocklings.sound.BlocklingsSounds;
+import com.willr27.blocklings.util.ObjectUtil;
 import com.willr27.blocklings.util.Version;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -33,7 +35,7 @@ public class Blocklings
      * The mod's version.
      */
     @Nonnull
-    public static final Version VERSION = new Version("7.0.0.3");
+    public static final Version VERSION = new Version(ObjectUtil.coalesce(Blocklings.class.getPackage().getSpecificationVersion(), "99999.0.0.0"));
 
     /**
      * The mod's logger.

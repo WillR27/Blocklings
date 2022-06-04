@@ -4,3 +4,9 @@
 !/*.txt
 !*/
 !**/src/main/**
+!gradlew
+!gradlew.bat
+!build.gradle
+!gradle.properties
+!fields.csv
+!methods.csv
