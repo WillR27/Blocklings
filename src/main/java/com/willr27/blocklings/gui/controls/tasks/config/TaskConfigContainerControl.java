@@ -79,7 +79,7 @@ public class TaskConfigContainerControl extends Control
 
         IControl screen = (IControl) getScreen();
         float scale = screen.getScale();
-        nameTextFieldControl = new TextFieldControl(font, (int) ((screenX / scale) + 8), (int) ((screenY / scale) + 8), 160, 20, new StringTextComponent(""))
+        nameTextFieldControl = new TextFieldControl(font, (int) ((screenX / scale) + 15), (int) ((screenY / scale) + 14), 158, 13, new StringTextComponent(""))
         {
             private String startingString = "";
 
@@ -98,6 +98,7 @@ public class TaskConfigContainerControl extends Control
                 super.setFocus(focus);
             }
         };
+        nameTextFieldControl.setBordered(false);
         nameTextFieldControl.setMaxLength(25);
         nameTextFieldControl.setVisible(true);
         nameTextFieldControl.setTextColor(16777215);

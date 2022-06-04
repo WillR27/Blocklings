@@ -144,7 +144,7 @@ public class StatsScreen extends TabbedScreen
             }
         };
 
-        nameField = new TextFieldControl(font, contentLeft + 14, contentTop + 14, 160, 20, new StringTextComponent(""))
+        nameField = new TextFieldControl(font, contentLeft + 15, contentTop + 15, 158, 13, new StringTextComponent(""))
         {
             @Override
             public void setFocus(boolean focus)
