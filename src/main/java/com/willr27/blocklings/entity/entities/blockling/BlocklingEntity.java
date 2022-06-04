@@ -199,19 +199,16 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
     @Override
     @Nullable
-    public ILivingEntityData finalizeSpawn(@Nonnull IServerWorld world, @Nonnull DifficultyInstance difficultyInstance, @Nonnull SpawnReason spawnReason, @Nullable ILivingEntityData entityData, @Nullable CompoundNBT tag)
+    public ILivingEntityData finalizeSpawn(@Nonnull IServerWorld world, @Nonnull DifficultyInstance difficultyInstance, @Nonnull SpawnReason spawnReason, @Nullable ILivingEntityData entityData, @Nullable CompoundNBT entityTag)
     {
-        if (spawnReason == SpawnReason.SPAWN_EGG && tag != null)
-        {
-            CompoundNBT blocklingTag = (CompoundNBT) tag.get("blockling");
+        tasks.initDefaultTasks();
 
-            if (blocklingTag != null)
-            {
-                readFromNBT(blocklingTag, ObjectUtil.coalesce(new Version(blocklingTag.getString("blocklings_version")), Blocklings.VERSION));
-            }
+        if (spawnReason == SpawnReason.SPAWN_EGG && entityTag != null)
+        {
+            readAdditionalSaveData(entityTag);
         }
 
-        return super.finalizeSpawn(world, difficultyInstance, spawnReason, entityData, tag);
+        return super.finalizeSpawn(world, difficultyInstance, spawnReason, entityData, entityTag);
     }
 
     @Override
@@ -524,7 +521,9 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
                     dropItemStack(BlocklingItem.create(this));
 
-                    remove();
+                    setHealth(0.0f);
+
+                    remove(); // Remove now to avoid a regular death from occuring.
                 }
             }
         }

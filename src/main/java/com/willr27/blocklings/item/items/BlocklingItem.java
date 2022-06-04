@@ -13,6 +13,7 @@ import com.willr27.blocklings.util.ObjectUtil;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResultType;
@@ -21,6 +22,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.DeferredWorkQueue;
 
@@ -91,15 +93,19 @@ public class BlocklingItem extends Item
                 blockpos = blockpos.relative(direction);
             }
 
-//            BlocklingEntity blockling = (BlocklingEntity) EntityTypes.BLOCKLING_ENTITY.get().spawn((ServerWorld) world, stack, context.getPlayer(), blockpos, SpawnReason.SPAWN_EGG, true, true);
-
             BlocklingEntity blockling = new BlocklingEntity(BlocklingsEntityTypes.BLOCKLING_ENTITY.get(), world);
 
-            if (stack.getTag() != null)
+            CompoundNBT stackTag = stack.getTag();
+            CompoundNBT entityTag = null;
+
+            if (stackTag != null && stackTag.contains("entity"))
             {
-                blockling.readAdditionalSaveData((CompoundNBT) stack.getTag().get("entity"));
+                entityTag = stackTag.getCompound("entity");
             }
-            else
+
+            blockling.finalizeSpawn((IServerWorld) world, world.getCurrentDifficultyAt(blockpos), SpawnReason.SPAWN_EGG, null, entityTag);
+
+            if (entityTag == null || !entityTag.contains("blockling"))
             {
                 for (Task task : blockling.getTasks().getPrioritisedTasks())
                 {

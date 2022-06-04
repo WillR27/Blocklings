@@ -93,8 +93,14 @@ public class BlocklingTasks implements IReadWriteNBT
         this.targetSelector = blockling.targetSelector;
 
         TASK_TYPES.forEach(type -> taskTypeUnlockedMap.put(type, type.isUnlockedByDefault));
+    }
 
-        if (!blockling.level.isClientSide) // Only do this server side, and let it sync to clients
+    /**
+     * Set up the default tasks.
+     */
+    public void initDefaultTasks()
+    {
+        if (!blockling.level.isClientSide) // Only do this server side, and let it sync to clients.
         {
             prioritisedTasks = new TaskList(TASK_TYPES.stream().filter(type -> type.isActiveByDefault && taskTypeUnlockedMap.get(type)).map(type -> new Task(UUID.randomUUID(), type, blockling, this)).collect(Collectors.toList()));
 

@@ -113,14 +113,7 @@ public class EntryControl extends Control
         {
             LivingEntity entity = (LivingEntity) EntityUtil.VALID_ATTACK_TARGETS.get().get(entry.getKey());
 
-            if (entity instanceof BlocklingEntity)
-            {
-                GuiUtil.renderEntityOnScreen(matrixStack, screenX + width / 2, screenY + width / 2 + 11, 20, 25, -10, whitelist.blockling);
-            }
-            else
-            {
-                GuiUtil.renderEntityOnScreen(matrixStack, screenX + width / 2, screenY + width / 2 + 11, 20, 25, -10, entity);
-            }
+            GuiUtil.renderEntityOnScreen(matrixStack, screenX + width / 2, screenY + width / 2 + 11, 20, 25, -10, entity);
         }
 
         GuiUtil.removeScissorBounds((int) (screenX + 2 * getEffectiveScale()), (int) (screenY + 2 * getEffectiveScale()), (int) (getScreenWidth() - 4 * getEffectiveScale()), (int) (getScreenHeight() - 4 * getEffectiveScale()));
