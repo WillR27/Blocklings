@@ -63,7 +63,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
 
         logWhitelist = new GoalWhitelist("fbfbfd44-c1b0-4420-824a-270b34c866f7", "logs", Whitelist.Type.BLOCK, this);
         logWhitelist.setIsUnlocked(blockling.getSkills().getSkill(WoodcuttingSkills.WHITELIST).isBought(), false);
-        BlockUtil.TREES.forEach(tree -> logWhitelist.put(tree.log.getRegistryName(), true));
+        BlockUtil.TREES.get().forEach(tree -> logWhitelist.put(tree.log.getRegistryName(), true));
         whitelists.add(logWhitelist);
 
         setFlags(EnumSet.of(Flag.JUMP, Flag.MOVE));

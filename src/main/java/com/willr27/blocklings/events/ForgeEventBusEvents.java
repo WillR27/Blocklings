@@ -5,7 +5,6 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingType;
 import com.willr27.blocklings.item.items.BlocklingWhistleItem;
 import com.willr27.blocklings.skill.skills.CombatSkills;
-import com.willr27.blocklings.util.BlockUtil;
 import com.willr27.blocklings.util.EntityUtil;
 import com.willr27.blocklings.util.ToolUtil;
 import net.minecraft.entity.EntitySize;
@@ -35,7 +34,6 @@ public class ForgeEventBusEvents
     public static void onWorldLoad(@Nonnull WorldEvent.Load event)
     {
         BlocklingType.init();
-        BlockUtil.init();
         ToolUtil.init();
         EntityUtil.init((World) event.getWorld());
 

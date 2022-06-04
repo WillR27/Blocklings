@@ -56,12 +56,12 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal
 
         cropWhitelist = new GoalWhitelist("25140edf-f60e-459e-b1f0-9ff82108ec0b", "crops", Whitelist.Type.BLOCK, this);
         cropWhitelist.setIsUnlocked(blockling.getSkills().getSkill(FarmingSkills.CROP_WHITELIST).isBought(), false);
-        BlockUtil.CROPS.forEach(crop -> cropWhitelist.put(crop.getRegistryName(), true));
+        BlockUtil.CROPS.get().forEach(crop -> cropWhitelist.put(crop.getRegistryName(), true));
         whitelists.add(cropWhitelist);
 
         seedWhitelist = new GoalWhitelist("d77bf1c1-7718-4733-b763-298b03340eea", "seeds", Whitelist.Type.ITEM, this);
         seedWhitelist.setIsUnlocked(blockling.getSkills().getSkill(FarmingSkills.SEED_WHITELIST).isBought(), false);
-        BlockUtil.CROPS.forEach(crop ->
+        BlockUtil.CROPS.get().forEach(crop ->
         {
             if (crop instanceof CropsBlock)
             {

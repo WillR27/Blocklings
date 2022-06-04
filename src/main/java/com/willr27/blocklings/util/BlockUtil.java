@@ -10,6 +10,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.util.Lazy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,59 +23,34 @@ import java.util.*;
 public class BlockUtil
 {
     /**
-     * Initialises any fields used by the class.
-     * E.g. the list of ores based on the user's config and the ores tag.
-     */
-    public static void init()
-    {
-        initOres();
-        initTrees();
-        initCrops();
-    }
-
-    /**
      * The list of blocks that are considered ores.
      */
     @Nonnull
-    public static Set<Block> ORES = new HashSet<>();
+    public static Lazy<Set<Block>> ORES = Lazy.of(BlockUtil::createOresList);
 
     /**
-     * Initialises list of ores.
+     * @return the list of blocks that are regarded as ores.
      */
-    public static void initOres()
+    @Nonnull
+    public static Set<Block> createOresList()
     {
+        Blocklings.LOGGER.info("Creating ores list.");
+
+        Set<Block> ores = new HashSet<>();
+
         List<? extends String> additionalBlocks = BlocklingsConfig.COMMON.additionalOres.get();
         List<? extends String> excludedBlocks = BlocklingsConfig.COMMON.excludedOres.get();
-        String[] tags = new String[] { "forge:ores" };
 
-        ORES.clear();
+        ores.clear();
 
-        for (ResourceLocation entry : Registry.BLOCK.keySet())
+        for (Block block : Tags.Blocks.ORES.getValues())
         {
-            Block block = Registry.BLOCK.get(entry);
-
-            if (!block.getTags().stream().anyMatch(r ->
-            {
-                for (String tag : tags)
-                {
-                    if (r.toString().equals(tag))
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }))
+            if (excludedBlocks.contains(block.getRegistryName().toString()))
             {
                 continue;
             }
 
-            if (excludedBlocks.contains(entry.toString()))
-            {
-                continue;
-            }
-
-            ORES.add(block);
+            ores.add(block);
         }
 
         for (String entry : additionalBlocks)
@@ -96,8 +73,10 @@ public class BlockUtil
                 continue;
             }
 
-            ORES.add(block);
+            ores.add(block);
         }
+
+        return ores;
     }
 
     /**
@@ -106,7 +85,7 @@ public class BlockUtil
      */
     public static boolean isOre(@Nonnull Block block)
     {
-        return ORES.contains(block);
+        return ORES.get().contains(block);
     }
 
     /**
@@ -127,7 +106,7 @@ public class BlockUtil
     @Nullable
     public static Block getOre(@Nonnull Item blockItem)
     {
-        for (Block ore : ORES)
+        for (Block ore : ORES.get())
         {
             if (new ItemStack(ore).getItem() == blockItem)
             {
@@ -191,23 +170,28 @@ public class BlockUtil
      * The list of trees.
      */
     @Nonnull
-    public static List<Tree> TREES = new ArrayList<>();
+    public static Lazy<List<Tree>> TREES = Lazy.of(BlockUtil::createTreesList);
 
     /**
-     * Initialises the list of trees.
+     * @return the list of trees.
      */
-    public static void initTrees()
+    @Nonnull
+    public static List<Tree> createTreesList()
     {
+        Blocklings.LOGGER.info("Creating trees list.");
+
+        List<Tree> trees = new ArrayList<>();
+
         List<? extends String> customTrees = BlocklingsConfig.COMMON.customTrees.get();
 
-        TREES.clear();
+        trees.clear();
 
-        TREES.add(new Tree(Blocks.ACACIA_LOG, Blocks.ACACIA_LEAVES, Blocks.ACACIA_SAPLING));
-        TREES.add(new Tree(Blocks.BIRCH_LOG, Blocks.BIRCH_LEAVES, Blocks.BIRCH_SAPLING));
-        TREES.add(new Tree(Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_LEAVES, Blocks.DARK_OAK_SAPLING));
-        TREES.add(new Tree(Blocks.JUNGLE_LOG, Blocks.JUNGLE_LEAVES, Blocks.JUNGLE_SAPLING));
-        TREES.add(new Tree(Blocks.OAK_LOG, Blocks.OAK_LEAVES, Blocks.OAK_SAPLING));
-        TREES.add(new Tree(Blocks.SPRUCE_LOG, Blocks.SPRUCE_LEAVES, Blocks.SPRUCE_SAPLING));
+        trees.add(new Tree(Blocks.ACACIA_LOG, Blocks.ACACIA_LEAVES, Blocks.ACACIA_SAPLING));
+        trees.add(new Tree(Blocks.BIRCH_LOG, Blocks.BIRCH_LEAVES, Blocks.BIRCH_SAPLING));
+        trees.add(new Tree(Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_LEAVES, Blocks.DARK_OAK_SAPLING));
+        trees.add(new Tree(Blocks.JUNGLE_LOG, Blocks.JUNGLE_LEAVES, Blocks.JUNGLE_SAPLING));
+        trees.add(new Tree(Blocks.OAK_LOG, Blocks.OAK_LEAVES, Blocks.OAK_SAPLING));
+        trees.add(new Tree(Blocks.SPRUCE_LOG, Blocks.SPRUCE_LEAVES, Blocks.SPRUCE_SAPLING));
 
         for (String treeString : customTrees)
         {
@@ -242,11 +226,13 @@ public class BlockUtil
 
             Tree tree = new Tree(log, leaves, sapling);
 
-            if (!TREES.contains(tree))
+            if (!trees.contains(tree))
             {
-                TREES.add(tree);
+                trees.add(tree);
             }
         }
+
+        return trees;
     }
 
     /**
@@ -255,7 +241,7 @@ public class BlockUtil
      */
     public static boolean isLog(@Nonnull Block block)
     {
-        return TREES.stream().anyMatch(tree -> tree.log == block);
+        return TREES.get().stream().anyMatch(tree -> tree.log == block);
     }
 
     /**
@@ -276,7 +262,7 @@ public class BlockUtil
     @Nullable
     public static Block getLog(@Nonnull Item blockItem)
     {
-        for (Tree tree : TREES)
+        for (Tree tree : TREES.get())
         {
             if (new ItemStack(tree.log).getItem() == blockItem)
             {
@@ -293,7 +279,7 @@ public class BlockUtil
      */
     public static boolean isLeaves(@Nonnull Block block)
     {
-        return TREES.stream().anyMatch(tree -> tree.leaves == block);
+        return TREES.get().stream().anyMatch(tree -> tree.leaves == block);
     }
 
     /**
@@ -314,7 +300,7 @@ public class BlockUtil
     @Nullable
     public static Block getLeaves(@Nonnull Item blockItem)
     {
-        for (Tree tree : TREES)
+        for (Tree tree : TREES.get())
         {
             if (new ItemStack(tree.leaves).getItem() == blockItem)
             {
@@ -331,7 +317,7 @@ public class BlockUtil
      */
     public static boolean isSapling(@Nonnull Block block)
     {
-        return TREES.stream().anyMatch(tree -> tree.sapling == block);
+        return TREES.get().stream().anyMatch(tree -> tree.sapling == block);
     }
 
     /**
@@ -352,7 +338,7 @@ public class BlockUtil
     @Nullable
     public static Block getSapling(@Nonnull Item blockItem)
     {
-        for (Tree tree : TREES)
+        for (Tree tree : TREES.get())
         {
             if (new ItemStack(tree.sapling).getItem() == blockItem)
             {
@@ -372,7 +358,7 @@ public class BlockUtil
     @Nullable
     public static Block getSaplingFromLog(@Nonnull Block logBlock)
     {
-        for (Tree tree : TREES)
+        for (Tree tree : TREES.get())
         {
             if (tree.log == logBlock)
             {
@@ -387,21 +373,26 @@ public class BlockUtil
      * The list of blocks that are considered crops.
      */
     @Nonnull
-    public static Set<Block> CROPS = new HashSet<>();
+    public static Lazy<Set<Block>> CROPS = Lazy.of(BlockUtil::createCropsList);
 
     /**
-     * Initialises the list of crops.
+     * @return the list of blocks that are regarded as crops.
      */
-    public static void initCrops()
+    @Nonnull
+    public static Set<Block> createCropsList()
     {
-        CROPS.clear();
+        Blocklings.LOGGER.info("Creating crops list.");
 
-        CROPS.add(Blocks.WHEAT);
-        CROPS.add(Blocks.BEETROOTS);
-        CROPS.add(Blocks.CARROTS);
-        CROPS.add(Blocks.POTATOES);
-        CROPS.add(Blocks.PUMPKIN);
-        CROPS.add(Blocks.MELON);
+        Set<Block> crops = new HashSet<>();
+
+        crops.clear();
+
+        crops.add(Blocks.WHEAT);
+        crops.add(Blocks.BEETROOTS);
+        crops.add(Blocks.CARROTS);
+        crops.add(Blocks.POTATOES);
+        crops.add(Blocks.PUMPKIN);
+        crops.add(Blocks.MELON);
 
         for (String additionalString : BlocklingsConfig.COMMON.additionalCrops.get())
         {
@@ -416,13 +407,15 @@ public class BlockUtil
                 continue;
             }
 
-            CROPS.add(block);
+            crops.add(block);
         }
 
         for (String excludedString : BlocklingsConfig.COMMON.excludedCrops.get())
         {
-            CROPS.remove(Registry.BLOCK.get(new ResourceLocation(excludedString)));
+            crops.remove(Registry.BLOCK.get(new ResourceLocation(excludedString)));
         }
+
+        return crops;
     }
 
     /**
@@ -431,7 +424,7 @@ public class BlockUtil
      */
     public static boolean isCrop(@Nonnull Block block)
     {
-        return CROPS.contains(block);
+        return CROPS.get().contains(block);
     }
 
     /**
@@ -440,7 +433,7 @@ public class BlockUtil
      */
     public static boolean isCrop(@Nonnull Item blockItem)
     {
-        return getLeaves(blockItem) != null;
+        return getCrop(blockItem) != null;
     }
 
     /**
@@ -452,7 +445,7 @@ public class BlockUtil
     @Nullable
     public static Block getCrop(@Nonnull Item blockItem)
     {
-        for (Block crop : CROPS)
+        for (Block crop : CROPS.get())
         {
             if (new ItemStack(crop).getItem() == blockItem)
             {

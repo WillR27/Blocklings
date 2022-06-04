@@ -7,6 +7,8 @@ import com.willr27.blocklings.util.Version;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 
@@ -80,6 +82,7 @@ public class RangeProperty extends Property
         value = buf.readInt();
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     @Nonnull
     public IControl createControl(@Nonnull IControl parent)

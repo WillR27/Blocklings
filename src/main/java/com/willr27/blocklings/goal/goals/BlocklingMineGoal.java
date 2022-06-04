@@ -62,7 +62,7 @@ public class BlocklingMineGoal extends BlocklingGatherGoal
 
         oreWhitelist = new GoalWhitelist("24d7135e-607b-413b-a2a7-00d19119b9de", "ores", Whitelist.Type.BLOCK, this);
         oreWhitelist.setIsUnlocked(blockling.getSkills().getSkill(MiningSkills.WHITELIST).isBought(), false);
-        BlockUtil.ORES.forEach(ore -> oreWhitelist.put(ore.getRegistryName(), true));
+        BlockUtil.ORES.get().forEach(ore -> oreWhitelist.put(ore.getRegistryName(), true));
         whitelists.add(oreWhitelist);
 
         setFlags(EnumSet.of(Flag.JUMP, Flag.MOVE));

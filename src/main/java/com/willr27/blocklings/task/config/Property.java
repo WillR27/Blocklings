@@ -11,6 +11,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -89,6 +91,7 @@ public abstract class Property implements IReadWriteNBT
     /**
      * @return a new instance of the control used to configure the property.
      */
+    @OnlyIn(Dist.CLIENT)
     @Nonnull
     public abstract IControl createControl(@Nonnull IControl parent);
 
