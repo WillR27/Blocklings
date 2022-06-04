@@ -37,7 +37,7 @@ public abstract class BlocklingMeleeAttackGoal extends BlocklingTargetGoal<Livin
 
         GoalWhitelist whitelist = new GoalWhitelist("540241cd-085a-4c1f-9e90-8aea973568a8", "targets", Whitelist.Type.ENTITY, this);
         whitelist.setIsUnlocked(blockling.getSkills().getSkill(CombatSkills.WHITELIST).isBought(), false);
-        EntityUtil.VALID_ATTACK_TARGETS.keySet().forEach(type -> whitelist.put(type, true));
+        EntityUtil.VALID_ATTACK_TARGETS.get().keySet().forEach(type -> whitelist.put(type, true));
         whitelist.put(BlocklingsEntityTypes.BLOCKLING_ENTITY.getId(), false);
         whitelists.add(whitelist);
     }

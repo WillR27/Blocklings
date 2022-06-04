@@ -1,5 +1,6 @@
 package com.willr27.blocklings.util;
 
+import com.willr27.blocklings.Blocklings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FlyingEntity;
 import net.minecraft.entity.LivingEntity;
@@ -14,6 +15,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Lazy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,29 +29,43 @@ import java.util.TreeMap;
 public class EntityUtil
 {
     /**
+     * The most recent world to load (used to then lazy load the list of valid attack targets).
+     */
+    @Nullable
+    public static World latestWorld;
+
+    /**
      * A map of entities that should be deemed attackable by a blockling in game.
      */
     @Nonnull
-    public static final Map<ResourceLocation, Entity> VALID_ATTACK_TARGETS = new TreeMap<>();
+    public static final Lazy<Map<ResourceLocation, Entity>> VALID_ATTACK_TARGETS = Lazy.of(EntityUtil::createValidAttackTargetsMap);
 
     /**
-     * Initialises the valid attack targets when the world loads.
-     *
-     * @param world the loading world.
+     * @return the map of valid attack targets.
      */
-    public static void init(@Nonnull World world)
+    @Nonnull
+    public static Map<ResourceLocation, Entity> createValidAttackTargetsMap()
     {
-        // TODO: https://forums.minecraftforge.net/topic/105550-1165-forge-config/
+        if (latestWorld == null)
+        {
+            Blocklings.LOGGER.error("Tried to initialise valid attack targets list before a world was loaded!");
+
+            return new TreeMap<>();
+        }
+
+        Map<ResourceLocation, Entity> validAttackTargets = new TreeMap<>();
 
         for (ResourceLocation entry : Registry.ENTITY_TYPE.keySet())
         {
-            Entity entity = Registry.ENTITY_TYPE.get(entry).create(world);
+            Entity entity = Registry.ENTITY_TYPE.get(entry).create(latestWorld);
 
             if (isValidAttackTarget(entity))
             {
-                VALID_ATTACK_TARGETS.put(entry, entity);
+                validAttackTargets.put(entry, entity);
             }
         }
+
+        return validAttackTargets;
     }
 
     /**

@@ -111,7 +111,7 @@ public class EntryControl extends Control
         }
         else if (whitelist.type == Whitelist.Type.ENTITY)
         {
-            LivingEntity entity = (LivingEntity) EntityUtil.VALID_ATTACK_TARGETS.get(entry.getKey());
+            LivingEntity entity = (LivingEntity) EntityUtil.VALID_ATTACK_TARGETS.get().get(entry.getKey());
 
             if (entity instanceof BlocklingEntity)
             {
