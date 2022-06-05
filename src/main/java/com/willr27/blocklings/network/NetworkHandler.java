@@ -51,6 +51,8 @@ public class NetworkHandler
      */
     public static void init()
     {
+        HANDLER.registerMessage(id++, SetTypeCommandMessage.class, SetTypeCommandMessage::encode, SetTypeCommandMessage::decode, SetTypeCommandMessage::handle);
+
         registerMessage(Attribute.IsEnabledMessage.class);
         registerMessage(EnumAttribute.Message.class);
         registerMessage(FloatAttribute.ValueMessage.class);
