@@ -1,16 +1,21 @@
 package com.willr27.blocklings.task.config;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.goal.BlocklingGoal;
+import com.willr27.blocklings.gui.GuiUtil;
 import com.willr27.blocklings.gui.IControl;
 import com.willr27.blocklings.gui.controls.common.RangeControl;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
  * Used to configure a range property.
@@ -36,13 +41,14 @@ public class RangeProperty extends Property
      * @param id the id of the property (used for serialising\deserialising).
      * @param goal the associated task's goal.
      * @param name the name of the property.
+     * @param desc the description of the property.
      * @param min the minimum value of the range.
      * @param max the maximum value of the range.
      * @param startingValue the range starting value.
      */
-    public RangeProperty(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull ITextComponent name, int min, int max, int startingValue)
+    public RangeProperty(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull ITextComponent name, @Nonnull ITextComponent desc, int min, int max, int startingValue)
     {
-        super(id, goal, name);
+        super(id, goal, name, desc);
         this.min = min;
         this.max = max;
         this.value = startingValue;
@@ -89,6 +95,19 @@ public class RangeProperty extends Property
     {
         return new RangeControl(parent, min, max, value, 20)
         {
+            @Override
+            public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+            {
+                if (!grabberControl.isPressed())
+                {
+                    List<StringTextComponent> tooltip = GuiUtil.splitText(font, desc, 200);
+                    tooltip.add(0, new StringTextComponent(""));
+                    tooltip.add(0, new StringTextComponent(TextFormatting.GOLD + name.getString()));
+
+                    screen.renderTooltip(matrixStack, GuiUtil.toReorderingProcessorList(tooltip), mouseX, mouseY);
+                }
+            }
+
             @Override
             public void setValue(int value)
             {

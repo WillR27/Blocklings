@@ -69,8 +69,8 @@ public class BlocklingFollowGoal extends BlocklingGoal
 
         setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
 
-        properties.add(startDistance = new RangeProperty("590fb919-6ac7-4af7-98ec-6e01919782c1", this, new BlocklingsTranslationTextComponent("task.property.follow_start_range"), 1, 20, 4));
-        properties.add(stopDistance = new RangeProperty("99d39a22-3abe-4109-b493-dcb922f0c08a", this, new BlocklingsTranslationTextComponent("task.property.follow_stop_range"), 1, 20, 2));
+        properties.add(startDistance = new RangeProperty("590fb919-6ac7-4af7-98ec-6e01919782c1", this, new BlocklingsTranslationTextComponent("task.property.follow_start_range.name"), new BlocklingsTranslationTextComponent("task.property.follow_start_range.desc"), 1, 20, 4));
+        properties.add(stopDistance = new RangeProperty("99d39a22-3abe-4109-b493-dcb922f0c08a", this, new BlocklingsTranslationTextComponent("task.property.follow_stop_range.name"), new BlocklingsTranslationTextComponent("task.property.follow_stop_range.desc"), 1, 20, 2));
     }
 
     @Override

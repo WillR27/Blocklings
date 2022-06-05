@@ -43,15 +43,23 @@ public abstract class Property implements IReadWriteNBT
     public final ITextComponent name;
 
     /**
+     * The description of the property.
+     */
+    @Nonnull
+    public final ITextComponent desc;
+
+    /**
      * @param id the id of the property (used for syncing between serialising\deserialising).
      * @param goal the associated task's goal.
      * @param name the name of the property.
+     * @param desc the description of the property.
      */
-    public Property(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull ITextComponent name)
+    public Property(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull ITextComponent name, @Nonnull ITextComponent desc)
     {
         this.id = UUID.fromString(id);
         this.goal = goal;
         this.name = name;
+        this.desc = desc;
     }
 
     @Override

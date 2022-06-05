@@ -16,9 +16,11 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -27,6 +29,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @OnlyIn(Dist.CLIENT)
 public class GuiUtil
@@ -76,6 +79,16 @@ public class GuiUtil
         outText.add(tempString);
 
         return outText;
+    }
+
+    public static List<StringTextComponent> splitText(FontRenderer font, ITextComponent text, int maxWidth)
+    {
+        return splitText(font, text.getString(), maxWidth).stream().map(s -> new StringTextComponent(s)).collect(Collectors.toList());
+    }
+
+    public static List<IReorderingProcessor> toReorderingProcessorList(List<? extends ITextComponent> list)
+    {
+        return list.stream().map(iTextComponent -> iTextComponent.getVisualOrderText()).collect(Collectors.toList());
     }
 
     public static String trimWithEllipses(FontRenderer font, String text, int maxWidth)

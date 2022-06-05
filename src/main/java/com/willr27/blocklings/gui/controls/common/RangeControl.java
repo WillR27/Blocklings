@@ -50,12 +50,12 @@ public class RangeControl extends Control
     /**
      * The grabber control used to change the value of the range.
      */
-    private final GrabberControl grabberControl;
+    protected final GrabberControl grabberControl;
 
     /**
      * The text field used to set the value of the range.
      */
-    private final TextFieldControl valueTextFieldControl;
+    protected final TextFieldControl valueTextFieldControl;
 
     /**
      * @param parent the parent control.
@@ -120,12 +120,6 @@ public class RangeControl extends Control
         valueTextFieldControl.x = ((int) ((getScreenX() / scale) + getWidth() - textFieldWidth));
         valueTextFieldControl.y = ((int) (getScreenY() / scale));
         valueTextFieldControl.render(new MatrixStack(), mouseX, mouseY, partialTicks);
-    }
-
-    @Override
-    public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
-    {
-//        screen.renderTooltip(matrixStack, new StringTextComponent(String.valueOf(value)), mouseX, mouseY);
     }
 
     @Override
@@ -259,7 +253,7 @@ public class RangeControl extends Control
     /**
      * A grabber used by range controls.
      */
-    private static class GrabberControl extends Control
+    protected static class GrabberControl extends Control
     {
         /**
          * The parent range control.
@@ -305,7 +299,7 @@ public class RangeControl extends Control
         @Override
         public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
         {
-            rangeControl.renderTooltip(matrixStack, mouseX, mouseY);
+            parent.renderTooltip(matrixStack, mouseX, mouseY);
         }
     }
 }
