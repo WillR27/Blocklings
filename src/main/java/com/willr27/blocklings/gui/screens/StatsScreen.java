@@ -276,6 +276,8 @@ public class StatsScreen extends TabbedScreen
         if (!nameField.isFocused() && GuiUtil.isCloseInventoryKey(e.keyCode))
         {
             onClose();
+
+            e.setIsHandled(true);
         }
     }
 
