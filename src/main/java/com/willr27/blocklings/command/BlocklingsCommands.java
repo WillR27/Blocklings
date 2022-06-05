@@ -39,15 +39,23 @@ public class BlocklingsCommands
 
         dispatcher.register(Commands.literal("setblocklingtype")
                                 .requires(commandSource -> commandSource.hasPermission(2))
-                                .then(Commands.argument("types", new BlocklingTypeArgument())
-                                .executes(context -> executeTypeCommand(context)))
+                                .then(Commands.argument("type", new BlocklingTypeArgument())
+                                .executes(context -> executeTypeCommand(context, false)))
+        );
+
+        dispatcher.register(Commands.literal("setnaturalblocklingtype")
+                .requires(commandSource -> commandSource.hasPermission(2))
+                .then(Commands.argument("type", new BlocklingTypeArgument())
+                        .executes(context -> executeTypeCommand(context, true)))
         );
     }
 
     /**
-     * Executes the setblocklingtype command.
+     * Executes the set blockling type commands.
+     *
+     * @param natural whether the type being set is the natural type or not.
      */
-    private static int executeTypeCommand(@Nonnull CommandContext<CommandSource> context)
+    private static int executeTypeCommand(@Nonnull CommandContext<CommandSource> context, boolean natural)
     {
         CommandSource source = context.getSource();
         PlayerEntity player = (PlayerEntity) source.getEntity();
@@ -57,7 +65,7 @@ public class BlocklingsCommands
             return 1;
         }
 
-        NetworkHandler.sendToClient(player, new SetTypeCommandMessage(context.getArgument("types", BlocklingType.class).key));
+        NetworkHandler.sendToClient(player, new SetTypeCommandMessage(context.getArgument("type", BlocklingType.class).key, natural));
 
         return 0;
     }

@@ -12,7 +12,6 @@ import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -21,15 +20,21 @@ public class SetTypeCommandMessage implements IMessage
     /**
      * The type key.
      */
-    @Nullable
     private String type;
 
     /**
-     * @param type the type key.
+     * Whether the type being set is the natural type or not.
      */
-    public SetTypeCommandMessage(@Nonnull String type)
+    private boolean natural;
+
+    /**
+     * @param type the type key.
+     * @param natural whether the type being set is the natural type or not.
+     */
+    public SetTypeCommandMessage(@Nonnull String type, boolean natural)
     {
         this.type = type;
+        this.natural = natural;
     }
 
     /**
@@ -40,6 +45,7 @@ public class SetTypeCommandMessage implements IMessage
     public void encode(@Nonnull PacketBuffer buf)
     {
         PacketBufferUtils.writeString(buf, type);
+        buf.writeBoolean(natural);
     }
 
     /**
@@ -50,7 +56,7 @@ public class SetTypeCommandMessage implements IMessage
     @Nonnull
     public static SetTypeCommandMessage decode(@Nonnull PacketBuffer buf)
     {
-        return new SetTypeCommandMessage(PacketBufferUtils.readString(buf));
+        return new SetTypeCommandMessage(PacketBufferUtils.readString(buf), buf.readBoolean());
     }
 
     @Override
@@ -71,7 +77,16 @@ public class SetTypeCommandMessage implements IMessage
 
                 if (entity instanceof BlocklingEntity)
                 {
-                    ((BlocklingEntity) entity).setBlocklingType(BlocklingType.find(type));
+                    BlocklingEntity blockling = (BlocklingEntity) entity;
+
+                    if (natural)
+                    {
+                        blockling.setNaturalBlocklingType(BlocklingType.find(type));
+                    }
+                    else
+                    {
+                        blockling.setBlocklingType(BlocklingType.find(type));
+                    }
                 }
             }
         });

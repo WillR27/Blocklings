@@ -70,7 +70,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
      * The blockling type the blockling spawned as.
      */
     @Nonnull
-    private BlocklingType originalBlocklingType = BlocklingType.GRASS;
+    private BlocklingType naturalBlocklingType = BlocklingType.GRASS;
 
     /**
      * The blockling type the blockling has been changed to.
@@ -177,8 +177,8 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         if (!level.isClientSide())
         {
             blocklingTypeVariant = getRandom().nextInt(3);
-            originalBlocklingType = BlocklingType.TYPES.get(getRandom().nextInt(BlocklingType.TYPES.size()));
-            setBlocklingType(originalBlocklingType, false);
+            setNaturalBlocklingType(BlocklingType.TYPES.get(getRandom().nextInt(BlocklingType.TYPES.size())), false);
+            setBlocklingType(naturalBlocklingType, false);
 
             setScale(getRandom().nextFloat() * 0.5f + 0.45f, false);
 
@@ -229,7 +229,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     @Override
     public CompoundNBT writeToNBT(@Nonnull CompoundNBT blocklingTag)
     {
-        blocklingTag.putString("original_type", originalBlocklingType.key);
+        blocklingTag.putString("original_type", naturalBlocklingType.key);
         blocklingTag.putString("type", blocklingType.key);
         blocklingTag.putInt("variant", blocklingTypeVariant);
         blocklingTag.putFloat("scale", scale);
@@ -259,7 +259,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     public void readFromNBT(@Nonnull CompoundNBT blocklingTag, @Nonnull Version tagVersion)
     {
         blocklingTypeVariant = blocklingTag.getInt("variant");
-        originalBlocklingType = BlocklingType.find(blocklingTag.getString("original_type"), tagVersion);
+        naturalBlocklingType = BlocklingType.find(blocklingTag.getString("original_type"), tagVersion);
         blocklingType = BlocklingType.find(blocklingTag.getString("type"), tagVersion);
         setScale(blocklingTag.getFloat("scale"), false);
 
@@ -304,7 +304,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     @Override
     public void writeSpawnData(@Nonnull PacketBuffer buf)
     {
-        buf.writeInt(BlocklingType.TYPES.indexOf(originalBlocklingType));
+        buf.writeInt(BlocklingType.TYPES.indexOf(naturalBlocklingType));
         buf.writeInt(BlocklingType.TYPES.indexOf(blocklingType));
         buf.writeInt(blocklingTypeVariant);
         buf.writeFloat(scale);
@@ -318,7 +318,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     @Override
     public void readSpawnData(@Nonnull PacketBuffer buf)
     {
-        originalBlocklingType = BlocklingType.TYPES.get(buf.readInt());
+        naturalBlocklingType = BlocklingType.TYPES.get(buf.readInt());
         blocklingType = BlocklingType.TYPES.get(buf.readInt());
         blocklingTypeVariant = buf.readInt();
         setScale(buf.readFloat(), false);
@@ -1022,9 +1022,39 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
      * @return the original blockling type.
      */
     @Nonnull
-    public BlocklingType getOriginalBlocklingType()
+    public BlocklingType getNaturalBlocklingType()
     {
-        return originalBlocklingType;
+        return naturalBlocklingType;
+    }
+
+    /**
+     * Sets the natural blockling type to the given blockling type.
+     * Syncs to the client/server.
+     *
+     * @param blocklingType the new blockling type.
+     */
+    public void setNaturalBlocklingType(@Nonnull BlocklingType blocklingType)
+    {
+        setNaturalBlocklingType(blocklingType, true);
+    }
+
+    /**
+     * Sets the natural blockling type to the given blockling type.
+     * Syncs to the client/server if sync is true.
+     *
+     * @param blocklingType the new blockling type.
+     * @param sync whether to sync to the client/server.
+     */
+    public void setNaturalBlocklingType(@Nonnull BlocklingType blocklingType, boolean sync)
+    {
+        this.naturalBlocklingType = blocklingType;
+
+        stats.updateTypeBonuses(sync);
+
+        if (sync)
+        {
+            new BlocklingTypeMessage(this, blocklingType, true).sync();
+        }
     }
 
     /**
@@ -1062,7 +1092,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         if (sync)
         {
-            new BlocklingTypeMessage(this, blocklingType).sync();
+            new BlocklingTypeMessage(this, blocklingType, false).sync();
         }
     }
 
