@@ -2,7 +2,7 @@ package com.willr27.blocklings.network.messages;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingType;
-import com.willr27.blocklings.network.IMessage;
+import com.willr27.blocklings.network.Message;
 import com.willr27.blocklings.util.PacketBufferUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class SetTypeCommandMessage implements IMessage
+public class SetTypeCommandMessage extends Message
 {
     /**
      * The type key.
@@ -68,7 +68,7 @@ public class SetTypeCommandMessage implements IMessage
         {
             boolean isClient = context.getDirection() == NetworkDirection.PLAY_TO_CLIENT;
 
-            PlayerEntity player = isClient ? Minecraft.getInstance().player : context.getSender();
+            PlayerEntity player = isClient ? getClientPlayer() : context.getSender();
             Objects.requireNonNull(player, "No player entity found when handling message.");
 
             if (isClient)

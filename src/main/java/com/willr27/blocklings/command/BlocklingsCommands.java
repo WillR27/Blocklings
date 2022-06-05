@@ -1,5 +1,6 @@
 package com.willr27.blocklings.command;
 
+import com.google.gson.JsonObject;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -11,15 +12,22 @@ import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingType;
 import com.willr27.blocklings.network.NetworkHandler;
 import com.willr27.blocklings.network.messages.SetTypeCommandMessage;
+import com.willr27.blocklings.util.PacketBufferUtils;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.ISuggestionProvider;
+import net.minecraft.command.arguments.ArgumentTypes;
+import net.minecraft.command.arguments.EntityArgument;
+import net.minecraft.command.arguments.IArgumentSerializer;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -30,6 +38,14 @@ import java.util.stream.Collectors;
 public class BlocklingsCommands
 {
     /**
+     * Registers argument types.
+     */
+    public static void init()
+    {
+        ArgumentTypes.register("blocklings:blockling_type", BlocklingTypeArgument.class, new BlocklingTypeArgument.Serialiser());
+    }
+
+    /**
      * Registers the custom blocklings commands.
      */
     @SubscribeEvent
@@ -38,15 +54,15 @@ public class BlocklingsCommands
         CommandDispatcher<CommandSource> dispatcher = event.getDispatcher();
 
         dispatcher.register(Commands.literal("setblocklingtype")
-                                .requires(commandSource -> commandSource.hasPermission(2))
-                                .then(Commands.argument("type", new BlocklingTypeArgument())
-                                .executes(context -> executeTypeCommand(context, false)))
+                  .requires(commandSource -> commandSource.hasPermission(2))
+                  .then(Commands.argument("type", new BlocklingTypeArgument())
+                  .executes(context -> executeTypeCommand(context, false)))
         );
 
         dispatcher.register(Commands.literal("setnaturalblocklingtype")
-                .requires(commandSource -> commandSource.hasPermission(2))
-                .then(Commands.argument("type", new BlocklingTypeArgument())
-                        .executes(context -> executeTypeCommand(context, true)))
+                  .requires(commandSource -> commandSource.hasPermission(2))
+                  .then(Commands.argument("type", new BlocklingTypeArgument())
+                  .executes(context -> executeTypeCommand(context, true)))
         );
     }
 
@@ -73,7 +89,7 @@ public class BlocklingsCommands
     /**
      * Represents a command argument of a blockling type.
      */
-    private static class BlocklingTypeArgument implements ArgumentType<BlocklingType>
+    public static class BlocklingTypeArgument implements ArgumentType<BlocklingType>
     {
         @Override
         public BlocklingType parse(StringReader reader) throws CommandSyntaxException
@@ -87,6 +103,30 @@ public class BlocklingsCommands
         public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder)
         {
             return ISuggestionProvider.suggest(BlocklingType.TYPES.stream().map(blocklingType -> blocklingType.key).collect(Collectors.toList()), builder);
+        }
+
+        /**
+         * Serialiser for the blockling type argument.
+         */
+        public static class Serialiser implements IArgumentSerializer<BlocklingTypeArgument>
+        {
+            @Override
+            public void serializeToNetwork(BlocklingTypeArgument argument, PacketBuffer buf)
+            {
+
+            }
+
+            @Override
+            public BlocklingTypeArgument deserializeFromNetwork(PacketBuffer buf)
+            {
+                return new BlocklingTypeArgument();
+            }
+
+            @Override
+            public void serializeToJson(BlocklingTypeArgument argument, JsonObject json)
+            {
+
+            }
         }
     }
 }

@@ -1,11 +1,8 @@
 package com.willr27.blocklings.network;
 
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -17,7 +14,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public abstract class BlocklingMessage<T extends BlocklingMessage<T>> implements IMessage
+public abstract class BlocklingMessage<T extends BlocklingMessage<T>> extends Message
 {
     /**
      * The blockling.
@@ -128,26 +125,6 @@ public abstract class BlocklingMessage<T extends BlocklingMessage<T>> implements
             ctx.get().setPacketHandled(true);
         });
         context.setPacketHandled(true);
-    }
-
-    /**
-     * @return the uuid of the client player.
-     */
-    @OnlyIn(Dist.CLIENT)
-    @Nonnull
-    private static UUID getClientPlayerId()
-    {
-        return Minecraft.getInstance().player.getUUID();
-    }
-
-    /**
-     * @return the client player.
-     */
-    @OnlyIn(Dist.CLIENT)
-    @Nonnull
-    private static PlayerEntity getClientPlayer()
-    {
-        return Minecraft.getInstance().player;
     }
 
     /**

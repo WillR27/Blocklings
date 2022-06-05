@@ -22,6 +22,7 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class NetworkHandler
@@ -51,7 +52,7 @@ public class NetworkHandler
      */
     public static void init()
     {
-        HANDLER.registerMessage(id++, SetTypeCommandMessage.class, SetTypeCommandMessage::encode, SetTypeCommandMessage::decode, SetTypeCommandMessage::handle);
+        HANDLER.registerMessage(id++, SetTypeCommandMessage.class, SetTypeCommandMessage::encode, SetTypeCommandMessage::decode, SetTypeCommandMessage::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 
         registerMessage(Attribute.IsEnabledMessage.class);
         registerMessage(EnumAttribute.Message.class);
@@ -116,7 +117,7 @@ public class NetworkHandler
      *
      * @param message the message to send.
      */
-    public static void sendToServer(IMessage message)
+    public static void sendToServer(Message message)
     {
 //        Log.info("Sending to server: " + message.getClass());
 
@@ -129,7 +130,7 @@ public class NetworkHandler
      * @param player the player to send the message to.
      * @param message the message to send.
      */
-    public static void sendToClient(PlayerEntity player, IMessage message)
+    public static void sendToClient(PlayerEntity player, Message message)
     {
 //        Log.info("Sending to client: " + message.getClass());
 
@@ -143,7 +144,7 @@ public class NetworkHandler
      * @param message the message to send.
      * @param playersToIgnore the players to not send the message to.
      */
-    public static void sendToAllClients(World world, IMessage message, List<PlayerEntity> playersToIgnore)
+    public static void sendToAllClients(World world, Message message, List<PlayerEntity> playersToIgnore)
     {
         for (PlayerEntity player : world.players())
         {
@@ -160,7 +161,7 @@ public class NetworkHandler
      * @param world the world.
      * @param message the message to send.
      */
-    public static void sync(World world, IMessage message)
+    public static void sync(World world, Message message)
     {
         if (world.isClientSide)
         {

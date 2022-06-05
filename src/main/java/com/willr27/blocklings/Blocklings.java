@@ -1,5 +1,6 @@
 package com.willr27.blocklings;
 
+import com.willr27.blocklings.command.BlocklingsCommands;
 import com.willr27.blocklings.entity.BlocklingsEntityTypes;
 import com.willr27.blocklings.entity.renderers.blockling.BlocklingRenderer;
 import com.willr27.blocklings.item.items.BlocklingItem;
@@ -67,6 +68,7 @@ public class Blocklings
     private void setupCommon(final FMLCommonSetupEvent event)
     {
         NetworkHandler.init();
+        BlocklingsCommands.init();
     }
 
     /**
