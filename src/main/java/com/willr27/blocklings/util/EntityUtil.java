@@ -46,6 +46,8 @@ public class EntityUtil
     @Nonnull
     public static Map<ResourceLocation, Entity> createValidAttackTargetsMap()
     {
+        Blocklings.LOGGER.info("Creating valid attack targets map.");
+
         if (latestWorld == null)
         {
             Blocklings.LOGGER.error("Tried to initialise valid attack targets list before a world was loaded!");

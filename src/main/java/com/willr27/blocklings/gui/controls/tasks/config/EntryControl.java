@@ -2,6 +2,7 @@ package com.willr27.blocklings.gui.controls.tasks.config;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.*;
 import com.willr27.blocklings.util.EntityUtil;
@@ -10,6 +11,7 @@ import com.willr27.blocklings.whitelist.Whitelist;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Pose;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;

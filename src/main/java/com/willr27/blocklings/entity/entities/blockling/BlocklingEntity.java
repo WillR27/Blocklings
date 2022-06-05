@@ -122,7 +122,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     /**
      * The blockling's scale (size).
      */
-    private float scale;
+    private float scale = 1.0f;
 
     /**
      * Tracks how many attacks have occurred within 100 ticks of each other.
@@ -168,6 +168,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     public BlocklingEntity(@Nonnull EntityType<? extends BlocklingEntity> type, @Nonnull World world)
     {
         super(type, world);
+        setScale(1.0f, false);
 
         stats.initUpdateCallbacks();
 
