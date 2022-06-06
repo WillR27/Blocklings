@@ -430,16 +430,16 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
             {
                 damage += stats.mainHandAttackDamage.getValue();
                 damage += ToolUtil.getToolEnchantmentDamage(mainStack, ((LivingEntity) target).getMobType());
-                knockback += ToolUtil.getToolKnockback(mainStack);
-                fireAspect += ToolUtil.getToolFireAspect(mainStack);
+                knockback += ToolUtil.getToolKnockbackLevel(mainStack);
+                fireAspect += ToolUtil.getToolFireAspectLevel(mainStack);
             }
 
             if (attackingHand == BlocklingHand.OFF || attackingHand == BlocklingHand.BOTH)
             {
                 damage += stats.offHandAttackDamage.getValue();
                 damage += ToolUtil.getToolEnchantmentDamage(offStack, ((LivingEntity) target).getMobType());
-                knockback += ToolUtil.getToolKnockback(offStack);
-                fireAspect += ToolUtil.getToolFireAspect(offStack);
+                knockback += ToolUtil.getToolKnockbackLevel(offStack);
+                fireAspect += ToolUtil.getToolFireAspectLevel(offStack);
             }
         }
 

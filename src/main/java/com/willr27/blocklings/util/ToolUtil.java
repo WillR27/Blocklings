@@ -21,8 +21,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import slimeknights.tconstruct.tools.item.broad.CleaverTool;
-import slimeknights.tconstruct.tools.item.small.DaggerTool;
 import slimeknights.tconstruct.tools.item.small.SwordTool;
 
 import javax.annotation.Nonnull;
@@ -99,57 +97,90 @@ public class ToolUtil
         return weapons;
     }
 
-    public static boolean isWeapon(ItemStack stack)
+    /**
+     * @return true if the given item is a weapon.
+     */
+    public static boolean isWeapon(@Nonnull ItemStack stack)
     {
         return isWeapon(stack.getItem());
     }
 
-    public static boolean isWeapon(Item item)
+    /**
+     * @return true if the given item is a weapon.
+     */
+    public static boolean isWeapon(@Nonnull Item item)
     {
         return WEAPONS.contains(item);
     }
 
-    public static boolean isPickaxe(ItemStack stack)
+    /**
+     * @return true if the given item is a pickaxe.
+     */
+    public static boolean isPickaxe(@Nonnull ItemStack stack)
     {
         return isPickaxe(stack.getItem());
     }
 
-    public static boolean isPickaxe(Item item)
+    /**
+     * @return true if the given item is a pickaxe.
+     */
+    public static boolean isPickaxe(@Nonnull Item item)
     {
         return PICKAXES.contains(item);
     }
 
-    public static boolean isAxe(ItemStack stack)
+    /**
+     * @return true if the given item is a axe.
+     */
+    public static boolean isAxe(@Nonnull ItemStack stack)
     {
         return isAxe(stack.getItem());
     }
 
-    public static boolean isAxe(Item item)
+    /**
+     * @return true if the given item is a axe.
+     */
+    public static boolean isAxe(@Nonnull Item item)
     {
         return AXES.contains(item);
     }
 
-    public static boolean isHoe(ItemStack stack)
+    /**
+     * @return true if the given item is a hoe.
+     */
+    public static boolean isHoe(@Nonnull ItemStack stack)
     {
         return isHoe(stack.getItem());
     }
 
-    public static boolean isHoe(Item item)
+    /**
+     * @return true if the given item is a hoe.
+     */
+    public static boolean isHoe(@Nonnull Item item)
     {
         return HOES.contains(item);
     }
 
-    public static boolean isTool(ItemStack stack)
+    /**
+     * @return true if the given item is a tool.
+     */
+    public static boolean isTool(@Nonnull ItemStack stack)
     {
         return isTool(stack.getItem());
     }
 
-    public static boolean isTool(Item item)
+    /**
+     * @return true if the given item is a tool.
+     */
+    public static boolean isTool(@Nonnull Item item)
     {
         return TOOLS.contains(item);
     }
 
-    public static float getToolAttackSpeed(ItemStack stack)
+    /**
+     * @return the attack speed of the given tool.
+     */
+    public static float getToolAttackSpeed(@Nonnull ItemStack stack)
     {
         if (isTool(stack))
         {
@@ -172,7 +203,10 @@ public class ToolUtil
         return 4.0f;
     }
 
-    public static float getToolBaseDamage(ItemStack stack)
+    /**
+     * @return the base damage of the given tool.
+     */
+    public static float getToolBaseDamage(@Nonnull ItemStack stack)
     {
         if (isTool(stack))
         {
@@ -186,7 +220,7 @@ public class ToolUtil
                 if (attributemodifier.getId() == baseAttackDamageAttributeId)
                 {
                     // Add on 1.0f as this seems to be the default value the player has
-                    // This is why the item tooltips say +8.0 instead of -7.0 for example
+                    // This is why the item tooltips say +8.0 instead of +7.0 for example
                     return (float) attributemodifier.getAmount() + 1.0f;
                 }
             }
@@ -195,66 +229,74 @@ public class ToolUtil
         return 0.0f;
     }
 
-    public static float getToolEnchantmentDamage(ItemStack stack, CreatureAttribute creatureAttribute)
+    /**
+     * @return the additional damage of the given tool from its enchantments on the given creature type.
+     */
+    public static float getToolEnchantmentDamage(@Nonnull ItemStack stack, @Nonnull CreatureAttribute creatureAttribute)
     {
         return EnchantmentHelper.getDamageBonus(stack, creatureAttribute);
     }
 
-    public static float getToolKnockback(ItemStack stack)
+    /**
+     * @return the knockback level of the given tool.
+     */
+    public static float getToolKnockbackLevel(@Nonnull ItemStack stack)
     {
         return EnchantmentHelper.getItemEnchantmentLevel(Enchantments.KNOCKBACK, stack);
     }
 
-    public static float getToolFireAspect(ItemStack stack)
+    /**
+     * @return the fire aspect level of the given tool.
+     */
+    public static float getToolFireAspectLevel(@Nonnull ItemStack stack)
     {
         return EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_ASPECT, stack);
     }
 
     /**
-     * Returns the mining speed for the given tool against stone, including enchantments.
+     * @return the mining speed for the given tool against stone, including enchantments.
      */
-    public static float getToolMiningSpeedWithEnchantments(ItemStack stack)
+    public static float getToolMiningSpeedWithEnchantments(@Nonnull ItemStack stack)
     {
         return getToolMiningSpeed(stack) + getToolEnchantmentMiningSpeed(stack);
     }
 
     /**
-     * Returns the mining speed for the given tool against wood, including enchantments.
+     * @return the mining speed for the given tool against wood, including enchantments.
      */
-    public static float getToolWoodcuttingSpeedWithEnchantments(ItemStack stack)
+    public static float getToolWoodcuttingSpeedWithEnchantments(@Nonnull ItemStack stack)
     {
         return getToolWoodcuttingSpeed(stack) + getToolEnchantmentMiningSpeed(stack);
     }
 
     /**
-     * Returns the mining speed for the given tool against crops, including enchantments.
+     * @return the mining speed for the given tool against crops, including enchantments.
      */
-    public static float getToolFarmingSpeedWithEnchantments(ItemStack stack)
+    public static float getToolFarmingSpeedWithEnchantments(@Nonnull ItemStack stack)
     {
         return getToolFarmingSpeed(stack) + getToolEnchantmentMiningSpeed(stack);
     }
 
     /**
-     * Returns the mining speed for the given tool against stone.
-     * For reference a wooden pickaxe is 2.0f and diamond pickaxe is 8.0f;
+     * @return the mining speed for the given tool against stone (for reference a wooden pickaxe is 2.0f and diamond pickaxe is 8.0f).
      */
-    public static float getToolMiningSpeed(ItemStack stack)
+    public static float getToolMiningSpeed(@Nonnull ItemStack stack)
     {
         return stack.getDestroySpeed(Blocks.STONE.defaultBlockState());
     }
 
     /**
-     * Returns the mining speed for the given tool against wood.
+     * @return the mining speed for the given tool against wood.
      */
-    public static float getToolWoodcuttingSpeed(ItemStack stack)
+    public static float getToolWoodcuttingSpeed(@Nonnull ItemStack stack)
     {
         return stack.getDestroySpeed(Blocks.OAK_LOG.defaultBlockState());
     }
 
     /**
-     * Returns the mining speed for the given tool against crops.
+     * @return the mining speed for the given tool against crops.
      */
-    public static float getToolFarmingSpeed(ItemStack stack)
+    public static float getToolFarmingSpeed(@Nonnull ItemStack stack)
     {
         return stack.getDestroySpeed(Blocks.HAY_BLOCK.defaultBlockState());
     }
@@ -262,7 +304,7 @@ public class ToolUtil
     /**
      * @return the attack/mining/woodcutting/farming speed for the given tool and tool type.
      */
-    public static float getToolSpeed(ItemStack stack, com.willr27.blocklings.util.ToolType toolType)
+    public static float getToolSpeed(@Nonnull ItemStack stack, @Nonnull com.willr27.blocklings.util.ToolType toolType)
     {
         switch (toolType)
         {
@@ -275,9 +317,9 @@ public class ToolUtil
     }
 
     /**
-     * Returns the mining speed for the given tool from only its enchantments.
+     * @return the mining speed for the given tool from only its enchantments.
      */
-    public static float getToolEnchantmentMiningSpeed(ItemStack stack)
+    public static float getToolEnchantmentMiningSpeed(@Nonnull ItemStack stack)
     {
         int level = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, stack);
 
@@ -290,9 +332,9 @@ public class ToolUtil
     }
 
     /**
-     * Returns true if the given tool can harvest the given block.
+     * @return true if the given tool can harvest the given block.
      */
-    public static boolean canToolHarvestBlock(ItemStack stack, BlockState blockState)
+    public static boolean canToolHarvestBlock(@Nonnull ItemStack stack, @Nonnull BlockState blockState)
     {
         if (BlockUtil.isCrop(blockState.getBlock()) && ToolUtil.isHoe(stack))
         {
@@ -325,9 +367,10 @@ public class ToolUtil
     }
 
     /**
-     * Returns a list of all the enchantments on the given item.
+     * @return a list of all the enchantments on the given item.
      */
-    public static List<Enchantment> findToolEnchantments(ItemStack stack)
+    @Nonnull
+    public static List<Enchantment> findToolEnchantments(@Nonnull ItemStack stack)
     {
         List<Enchantment> enchantments = new ArrayList<>();
         ListNBT listNBT = stack.getEnchantmentTags();
