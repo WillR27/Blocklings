@@ -19,22 +19,52 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraftforge.common.ToolType;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import slimeknights.tconstruct.tools.item.broad.CleaverTool;
+import slimeknights.tconstruct.tools.item.small.DaggerTool;
+import slimeknights.tconstruct.tools.item.small.SwordTool;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * A utility class for working with tools.
+ */
 public class ToolUtil
 {
+    /**
+     * The list of tools that are classed as weapons.
+     */
     private static final List<Item> WEAPONS = new ArrayList<>();
+
+    /**
+     * The list of tools that are classed as pickaxes.
+     */
     private static final List<Item> PICKAXES = new ArrayList<>();
+
+    /**
+     * The list of tools that are classed as axes.
+     */
     private static final List<Item> AXES = new ArrayList<>();
+
+    /**
+     * The list of tools that are classed as hoes.
+     */
     private static final List<Item> HOES = new ArrayList<>();
+
+    /**
+     * The list of all items that are classed as tools.
+     */
     private static final List<Item> TOOLS = new ArrayList<>();
 
+    /**
+     * Initialises the lists of tools.
+     */
     public static void init()
     {
         WEAPONS.clear();
@@ -42,7 +72,7 @@ public class ToolUtil
         AXES.clear();
         HOES.clear();
 
-        WEAPONS.addAll(Registry.ITEM.stream().filter(item -> item instanceof SwordItem).collect(Collectors.toList()));
+        WEAPONS.addAll(findAllWeapons());
         PICKAXES.addAll(Registry.ITEM.stream().filter(item -> item.getToolTypes(item.getDefaultInstance()).contains(ToolType.PICKAXE)).collect(Collectors.toList()));
         AXES.addAll(Registry.ITEM.stream().filter(item -> item.getToolTypes(item.getDefaultInstance()).contains(ToolType.AXE)).collect(Collectors.toList()));
         HOES.addAll(Registry.ITEM.stream().filter(item -> item.getToolTypes(item.getDefaultInstance()).contains(ToolType.HOE)).collect(Collectors.toList()));
@@ -51,6 +81,22 @@ public class ToolUtil
         TOOLS.addAll(PICKAXES);
         TOOLS.addAll(AXES);
         TOOLS.addAll(HOES);
+    }
+
+    /**
+     * @return a list of all the items that are classed as weapons.
+     */
+    @Nonnull
+    private static List<Item> findAllWeapons()
+    {
+        List<Item> weapons = Registry.ITEM.stream().filter(item -> item instanceof SwordItem).collect(Collectors.toList());
+
+        if (ModList.get().isLoaded("tconstruct"))
+        {
+            weapons.addAll(Registry.ITEM.stream().filter(item -> item instanceof SwordTool).collect(Collectors.toList()));
+        }
+
+        return weapons;
     }
 
     public static boolean isWeapon(ItemStack stack)
