@@ -58,23 +58,18 @@ public class BlocklingAttributes implements IReadWriteNBT
     @Nonnull public final FloatAttributeModifier maxHealthTypeModifier;
     @Nonnull public final FloatAttributeModifier maxHealthCombatLevelModifier;
 
+    @Nonnull public final ModifiableFloatAttributeModifier attackDamageBlocklingModifier;
+    @Nonnull public final FloatAttributeModifier attackDamageTypeModifier;
+    @Nonnull public final FloatAttributeModifier attackDamageCombatLevelModifier;
+    @Nonnull public final FloatAttributeModifier attackDamageSkillSharpnessModifier;
+    @Nonnull public final FloatAttributeModifier attackDamageSkillBerserkerModifier;
+    @Nonnull public final FloatAttributeModifier attackDamageSkillWrecklessModifier;
+
     @Nonnull public final ModifiableFloatAttribute mainHandAttackDamage;
-    @Nonnull public final ModifiableFloatAttributeModifier mainHandAttackDamageBlocklingModifier;
-    @Nonnull public final FloatAttributeModifier mainHandAttackDamageTypeModifier;
-    @Nonnull public final FloatAttributeModifier mainHandAttackDamageCombatLevelModifier;
     @Nonnull public final FloatAttributeModifier mainHandAttackDamageToolModifier;
-    @Nonnull public final FloatAttributeModifier mainHandAttackDamageSkillSharpnessModifier;
-    @Nonnull public final FloatAttributeModifier mainHandAttackDamageSkillBerserkerModifier;
-    @Nonnull public final FloatAttributeModifier mainHandAttackDamageSkillWrecklessModifier;
 
     @Nonnull public final ModifiableFloatAttribute offHandAttackDamage;
-    @Nonnull public final ModifiableFloatAttributeModifier offHandAttackDamageBlocklingModifier;
-    @Nonnull public final FloatAttributeModifier offHandAttackDamageTypeModifier;
-    @Nonnull public final FloatAttributeModifier offHandAttackDamageCombatLevelModifier;
     @Nonnull public final FloatAttributeModifier offHandAttackDamageToolModifier;
-    @Nonnull public final FloatAttributeModifier offHandAttackDamageSkillSharpnessModifier;
-    @Nonnull public final FloatAttributeModifier offHandAttackDamageSkillBerserkerModifier;
-    @Nonnull public final FloatAttributeModifier offHandAttackDamageSkillWrecklessModifier;
 
     @Nonnull public final AveragedAttribute attackSpeed;
     @Nonnull public final ModifiableFloatAttributeModifier attackSpeedBlocklingModifier;
@@ -200,23 +195,18 @@ public class BlocklingAttributes implements IReadWriteNBT
         addModifier(maxHealthBlocklingModifier = new ModifiableFloatAttributeModifier("42418962-175b-4c06-84a2-f770ebd00a88", "max_health_blockling", blockling, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString(), true, maxHealthTypeModifier, maxHealthCombatLevelModifier));
         addAttribute(maxHealth = new ModifiableFloatAttribute("9c6eb101-f025-4f8f-895b-10868b7d06b2", "max_health",blockling, 10.0f, null, null, true, maxHealthBlocklingModifier));
 
-        addModifier(mainHandAttackDamageSkillWrecklessModifier = new FloatAttributeModifier("39b9820d-1805-484e-8bf0-9de9e12a878c", "main_hand_attack_damage_skill_wreckless", blockling, 10.0f, Operation.ADD, null, () -> skillDisplayNameProvider(CombatSkills.WRECKLESS), false));
-        addModifier(mainHandAttackDamageSkillBerserkerModifier = new FloatAttributeModifier("2d1bc0b1-53cc-46e7-8a15-93c3bb538cdc", "main_hand_attack_damage_skill_berserker", blockling, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(CombatSkills.BERSERKER), false));
-        addModifier(mainHandAttackDamageSkillSharpnessModifier = new FloatAttributeModifier("b27747e9-7e73-416f-bb1f-8853b4132e90", "main_hand_attack_damage_skill_sharpness", blockling, 5.0f, Operation.ADD, null, () -> skillDisplayNameProvider(CombatSkills.SHARPNESS), false));
-        addModifier(mainHandAttackDamageToolModifier = new FloatAttributeModifier("2ae58b89-fed6-4b2f-90bc-e7dbc9d7b249", "main_hand_attack_damage_tool", blockling, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString(), true));
-        addModifier(mainHandAttackDamageCombatLevelModifier = new FloatAttributeModifier("406a98f7-df1f-4c7f-93e4-990d71c7747f", "main_hand_attack_damage_combat_level", blockling, 0.0f, Operation.ADD, null, combatLevel.displayStringNameSupplier, true));
-        addModifier(mainHandAttackDamageTypeModifier = new FloatAttributeModifier("ddb441fc-2d8c-4950-b0a9-b96b60680ac1", "main_hand_attack_damage_type", blockling, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString(), true));
-        addModifier(mainHandAttackDamageBlocklingModifier = new ModifiableFloatAttributeModifier("9bfdfe35-c6c4-4364-8535-7aa50927f484", "main_hand_attack_blockling", blockling, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString(), true, mainHandAttackDamageTypeModifier, mainHandAttackDamageCombatLevelModifier));
-        addAttribute(mainHandAttackDamage = new ModifiableFloatAttribute("e8549f17-e473-4849-8f48-ae624ee0c242", "main_hand_attack_damage", blockling, 0.0f, null, null, true, mainHandAttackDamageBlocklingModifier, mainHandAttackDamageToolModifier, mainHandAttackDamageSkillSharpnessModifier, mainHandAttackDamageSkillBerserkerModifier, mainHandAttackDamageSkillWrecklessModifier));
+        addModifier(attackDamageSkillWrecklessModifier = new FloatAttributeModifier("39b9820d-1805-484e-8bf0-9de9e12a878c", "attack_damage_skill_wreckless", blockling, 10.0f, Operation.ADD, null, () -> skillDisplayNameProvider(CombatSkills.WRECKLESS), false));
+        addModifier(attackDamageSkillBerserkerModifier = new FloatAttributeModifier("2d1bc0b1-53cc-46e7-8a15-93c3bb538cdc", "attack_damage_skill_berserker", blockling, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(CombatSkills.BERSERKER), false));
+        addModifier(attackDamageSkillSharpnessModifier = new FloatAttributeModifier("b27747e9-7e73-416f-bb1f-8853b4132e90", "attack_damage_skill_sharpness", blockling, 5.0f, Operation.ADD, null, () -> skillDisplayNameProvider(CombatSkills.SHARPNESS), false));
+        addModifier(attackDamageCombatLevelModifier = new FloatAttributeModifier("406a98f7-df1f-4c7f-93e4-990d71c7747f", "attack_damage_combat_level", blockling, 0.0f, Operation.ADD, null, combatLevel.displayStringNameSupplier, true));
+        addModifier(attackDamageTypeModifier = new FloatAttributeModifier("ddb441fc-2d8c-4950-b0a9-b96b60680ac1", "attack_damage_type", blockling, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString(), true));
+        addModifier(attackDamageBlocklingModifier = new ModifiableFloatAttributeModifier("9bfdfe35-c6c4-4364-8535-7aa50927f484", "attack_blockling", blockling, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString(), true, attackDamageTypeModifier, attackDamageCombatLevelModifier));
 
-        addModifier(offHandAttackDamageSkillWrecklessModifier = new FloatAttributeModifier("017c8124-108a-40f3-b801-bb7ea448fb9b", "off_hand_attack_damage_skill_wreckless", blockling, 10.0f, Operation.ADD, null, () -> skillDisplayNameProvider(CombatSkills.WRECKLESS), false));
-        addModifier(offHandAttackDamageSkillBerserkerModifier = new FloatAttributeModifier("ac55dffa-5403-4a9e-b475-80a07e4e393b", "off_hand_attack_damage_skill_berserker", blockling, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(CombatSkills.BERSERKER), false));
-        addModifier(offHandAttackDamageSkillSharpnessModifier = new FloatAttributeModifier("70dcb0be-badc-4e9b-9c64-c94f72ca0686", "off_hand_attack_damage_skill_sharpness", blockling, 5.0f, Operation.ADD, null, () -> skillDisplayNameProvider(CombatSkills.SHARPNESS), false));
+        addModifier(mainHandAttackDamageToolModifier = new FloatAttributeModifier("2ae58b89-fed6-4b2f-90bc-e7dbc9d7b249", "main_hand_attack_damage_tool", blockling, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString(), true));
+        addAttribute(mainHandAttackDamage = new ModifiableFloatAttribute("e8549f17-e473-4849-8f48-ae624ee0c242", "main_hand_attack_damage", blockling, 0.0f, null, null, true, attackDamageBlocklingModifier, mainHandAttackDamageToolModifier, attackDamageSkillSharpnessModifier, attackDamageSkillBerserkerModifier, attackDamageSkillWrecklessModifier));
+
         addModifier(offHandAttackDamageToolModifier = new FloatAttributeModifier("c1aa1629-fe40-47eb-8c5c-a02d0b82e636", "off_hand_attack_damage_tool", blockling, 0.0f, Operation.ADD, null, () -> blockling.getOffhandItem().getHoverName().getString(), true));
-        addModifier(offHandAttackDamageCombatLevelModifier = new FloatAttributeModifier("8d1c1da2-7a92-4142-8fde-306d21010a92", "off_hand_attack_damage_combat_level", blockling, 0.0f, Operation.ADD, null, combatLevel.displayStringNameSupplier, true));
-        addModifier(offHandAttackDamageTypeModifier = new FloatAttributeModifier("c4bc950e-65c4-49c5-94e1-08e809788104", "off_hand_attack_damage_type", blockling, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString(), true));
-        addModifier(offHandAttackDamageBlocklingModifier = new ModifiableFloatAttributeModifier("806bd9bf-86de-416c-9e11-7beb7f482f11", "off_hand_attack_blockling", blockling, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString(), true, offHandAttackDamageTypeModifier, offHandAttackDamageCombatLevelModifier));
-        addAttribute(offHandAttackDamage = new ModifiableFloatAttribute("519e98de-c213-4c1c-8a07-cd659bc9982c", "off_hand_attack_damage", blockling, 0.0f, null, null, true, offHandAttackDamageBlocklingModifier, offHandAttackDamageToolModifier, offHandAttackDamageSkillSharpnessModifier, offHandAttackDamageSkillBerserkerModifier, offHandAttackDamageSkillWrecklessModifier));
+        addAttribute(offHandAttackDamage = new ModifiableFloatAttribute("519e98de-c213-4c1c-8a07-cd659bc9982c", "off_hand_attack_damage", blockling, 0.0f, null, null, true, attackDamageBlocklingModifier, offHandAttackDamageToolModifier, attackDamageSkillSharpnessModifier, attackDamageSkillBerserkerModifier, attackDamageSkillWrecklessModifier));
 
         // Default set to 4.0f (seems to be the same for a player too)
         // A sword is 1.6f * 2.0f
@@ -550,8 +540,7 @@ public class BlocklingAttributes implements IReadWriteNBT
     public void updateCombatLevelBonuses(boolean sync)
     {
         maxHealthCombatLevelModifier.setValue(calcBonusHealthFromCombatLevel(), sync);
-        mainHandAttackDamageCombatLevelModifier.setValue(calcBonusDamageFromCombatLevel(), sync);
-        offHandAttackDamageCombatLevelModifier.setValue(calcBonusDamageFromCombatLevel(), sync);
+        attackDamageCombatLevelModifier.setValue(calcBonusDamageFromCombatLevel(), sync);
         attackSpeedLevelModifier.setValue(calcBlockBreakSpeedFromLevel(combatLevel.getValue()), sync);
         armourCombatLevelModifier.setValue(calcBonusArmourFromCombatLevel(), sync);
         armourToughnessCombatLevelModifier.setValue(calcBonusArmourToughnessFromCombatLevel(), sync);
@@ -567,8 +556,7 @@ public class BlocklingAttributes implements IReadWriteNBT
     {
         BlocklingType type = blockling.getBlocklingType();
         maxHealthTypeModifier.setValue(type.getMaxHealth(), sync);
-        mainHandAttackDamageTypeModifier.setValue(type.getAttackDamage(), sync);
-        offHandAttackDamageTypeModifier.setValue(type.getAttackDamage(), sync);
+        attackDamageTypeModifier.setValue(type.getAttackDamage(), sync);
         attackSpeedTypeModifier.setValue(type.getAttackSpeed(), sync);
         armourTypeModifier.setValue(type.getArmour(), sync);
         armourToughnessTypeModifier.setValue(type.getArmourToughness(), sync);

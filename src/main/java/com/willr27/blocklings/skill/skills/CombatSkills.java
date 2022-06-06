@@ -65,8 +65,7 @@ public class CombatSkills
         @Override
         public boolean onTryBuy(@Nonnull Skill skill)
         {
-            skill.blockling.getStats().mainHandAttackDamageSkillSharpnessModifier.setIsEnabled(true, false);
-            skill.blockling.getStats().offHandAttackDamageSkillSharpnessModifier.setIsEnabled(true, false);
+            skill.blockling.getStats().attackDamageSkillSharpnessModifier.setIsEnabled(true, false);
 
             return true;
         }
@@ -88,8 +87,7 @@ public class CombatSkills
         @Override
         public boolean onTryBuy(@Nonnull Skill skill)
         {
-            skill.blockling.getStats().mainHandAttackDamageSkillBerserkerModifier.setIsEnabled(true, false);
-            skill.blockling.getStats().offHandAttackDamageSkillBerserkerModifier.setIsEnabled(true, false);
+            skill.blockling.getStats().attackDamageSkillBerserkerModifier.setIsEnabled(true, false);
 
             return true;
         }
@@ -97,8 +95,7 @@ public class CombatSkills
         @Override
         public void tick(@Nonnull Skill skill)
         {
-            skill.blockling.getStats().mainHandAttackDamageSkillBerserkerModifier.setValue(10.0f * (1.0f - ((Math.max(skill.blockling.getHealth() - 1.0f, 0.0f)) / (skill.blockling.getMaxHealth() - 1.0f))), false);
-            skill.blockling.getStats().offHandAttackDamageSkillBerserkerModifier.setValue(10.0f * (1.0f - ((Math.max(skill.blockling.getHealth() - 1.0f, 0.0f)) / (skill.blockling.getMaxHealth() - 1.0f))), false);
+            skill.blockling.getStats().attackDamageSkillBerserkerModifier.setValue(10.0f * (1.0f - ((Math.max(skill.blockling.getHealth() - 1.0f, 0.0f)) / (skill.blockling.getMaxHealth() - 1.0f))), false);
         }
 
         @Override
@@ -154,8 +151,7 @@ public class CombatSkills
         @Override
         public boolean onTryBuy(@Nonnull Skill skill)
         {
-            skill.blockling.getStats().mainHandAttackDamageSkillWrecklessModifier.setIsEnabled(true, false);
-            skill.blockling.getStats().offHandAttackDamageSkillWrecklessModifier.setIsEnabled(true, false);
+            skill.blockling.getStats().attackDamageSkillWrecklessModifier.setIsEnabled(true, false);
 
             return true;
         }
