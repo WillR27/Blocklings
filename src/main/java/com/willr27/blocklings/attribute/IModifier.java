@@ -1,6 +1,7 @@
 package com.willr27.blocklings.attribute;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -17,10 +18,10 @@ public interface IModifier<T>
     T getValue();
 
     /**
-     * @return the attribute associated with the modifier.
+     * @return the attributes associated with the modifier.
      */
     @Nonnull
-    IModifiable<T> getAttribute();
+    List<IModifiable<T>> getAttributes();
 
     /**
      * @return the operation to perform on the attribute and modifier.

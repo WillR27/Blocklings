@@ -52,6 +52,10 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.NetworkHooks;
+import slimeknights.tconstruct.library.tools.helper.ToolAttackUtil;
+import slimeknights.tconstruct.library.tools.item.IModifiableWeapon;
+import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.tools.item.small.SwordTool;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -428,6 +432,11 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         {
             if (attackingHand == BlocklingHand.MAIN || attackingHand == BlocklingHand.BOTH)
             {
+                if (mainStack.getItem() instanceof SwordTool)
+                {
+                    ToolAttackUtil.attackEntity((IModifiableWeapon) mainStack.getItem(), ToolStack.from(mainStack), this, Hand.MAIN_HAND, target, () -> 1.0, false);
+                }
+
                 damage += stats.mainHandAttackDamage.getValue();
                 damage += ToolUtil.getToolEnchantmentDamage(mainStack, ((LivingEntity) target).getMobType());
                 knockback += ToolUtil.getToolKnockbackLevel(mainStack);

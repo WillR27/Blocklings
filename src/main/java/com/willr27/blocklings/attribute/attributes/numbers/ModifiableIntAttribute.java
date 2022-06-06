@@ -25,10 +25,11 @@ public class ModifiableIntAttribute extends ModifiableAttribute<Integer>
      * @param displayStringValueFunction the function used to provide the string representation of the value.
      * @param displayStringNameSupplier the supplier used to provide the string representation of display name.
      * @param isEnabled whether the attribute is currently enabled.
+     * @param modifiers the initial list of modifiers associated with the attribute.
      */
-    public ModifiableIntAttribute(String id, String key, BlocklingEntity blockling, int initialBaseValue, Function<Integer, String> displayStringValueFunction, Supplier<String> displayStringNameSupplier, boolean isEnabled)
+    public ModifiableIntAttribute(String id, String key, BlocklingEntity blockling, int initialBaseValue, Function<Integer, String> displayStringValueFunction, Supplier<String> displayStringNameSupplier, boolean isEnabled, @Nonnull IModifier<Integer>... modifiers)
     {
-        super(id, key, blockling, initialBaseValue, displayStringValueFunction, displayStringNameSupplier, isEnabled);
+        super(id, key, blockling, initialBaseValue, displayStringValueFunction, displayStringNameSupplier, isEnabled, modifiers);
     }
 
     @Override

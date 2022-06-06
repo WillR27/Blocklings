@@ -4,6 +4,7 @@ import com.willr27.blocklings.attribute.IModifier;
 import com.willr27.blocklings.attribute.Operation;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 
+import javax.annotation.Nonnull;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -20,10 +21,11 @@ public class AveragedAttribute extends ModifiableFloatAttribute
      * @param displayStringValueFunction the function used to provide the string representation of the value.
      * @param displayStringNameSupplier the supplier used to provide the string representation of display name.
      * @param isEnabled whether the attribute is currently enabled.
+     * @param modifiers the initial list of modifiers associated with the attribute.
      */
-    public AveragedAttribute(String id, String key, BlocklingEntity blockling, float initialBaseValue, Function<Float, String> displayStringValueFunction, Supplier<String> displayStringNameSupplier, boolean isEnabled)
+    public AveragedAttribute(String id, String key, BlocklingEntity blockling, float initialBaseValue, Function<Float, String> displayStringValueFunction, Supplier<String> displayStringNameSupplier, boolean isEnabled, @Nonnull IModifier<Float>... modifiers)
     {
-        super(id, key, blockling, initialBaseValue, displayStringValueFunction, displayStringNameSupplier, isEnabled);
+        super(id, key, blockling, initialBaseValue, displayStringValueFunction, displayStringNameSupplier, isEnabled, modifiers);
     }
 
     @Override

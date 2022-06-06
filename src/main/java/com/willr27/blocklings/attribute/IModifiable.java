@@ -119,6 +119,13 @@ public interface IModifiable<T>
     void addModifier(@Nonnull IModifier<T> modifier);
 
     /**
+     * Adds the given modifiers to the list of modifiers on the attribute.
+     *
+     * @param modifiers the modifiers to add.
+     */
+    void addModifiers(@Nonnull IModifier<T>... modifiers);
+
+    /**
      * Removes the given modifier from the list of modifiers on the attribute if it exists.
      *
      * @param modifier the modifier to remove.
