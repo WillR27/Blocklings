@@ -314,13 +314,13 @@ public class BlocklingAttributes implements IReadWriteNBT
     @Nonnull
     private String speedSkillDisplayNameProvider()
     {
-        if (blockling.getSkills().getSkill(GeneralSkills.SPEED_2).isBought())
-        {
-            return skillDisplayNameProvider(GeneralSkills.SPEED_2);
-        }
-        else if (blockling.getSkills().getSkill(GeneralSkills.SPEED_3).isBought())
+        if (blockling.getSkills().getSkill(GeneralSkills.SPEED_3).isBought())
         {
             return skillDisplayNameProvider(GeneralSkills.SPEED_3);
+        }
+        else if (blockling.getSkills().getSkill(GeneralSkills.SPEED_2).isBought())
+        {
+            return skillDisplayNameProvider(GeneralSkills.SPEED_2);
         }
 
         return skillDisplayNameProvider(GeneralSkills.SPEED_1);
