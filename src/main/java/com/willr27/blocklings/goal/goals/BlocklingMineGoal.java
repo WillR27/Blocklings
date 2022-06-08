@@ -97,7 +97,7 @@ public class BlocklingMineGoal extends BlocklingGatherGoal
         ItemStack offStack = blockling.getOffhandItem();
 
         BlockPos targetPos = getTarget();
-        BlockState targetBlockState = world.getBlockState(targetPos);
+        BlockState targetBlockState = getTargetBlockState();
 
         boolean mainCanHarvest = ToolUtil.canToolHarvestBlock(mainStack, targetBlockState);
         boolean offCanHarvest = ToolUtil.canToolHarvestBlock(offStack, targetBlockState);
@@ -109,8 +109,8 @@ public class BlocklingMineGoal extends BlocklingGatherGoal
             if (blockling.getActions().gather.isRunning())
             {
                 float blocklingDestroySpeed = blockling.getStats().miningSpeed.getValue();
-                float mainDestroySpeed = mainCanHarvest ? ToolUtil.getToolMiningSpeedWithEnchantments(mainStack) : 0.0f;
-                float offDestroySpeed = offCanHarvest ? ToolUtil.getToolMiningSpeedWithEnchantments(offStack) : 0.0f;
+                float mainDestroySpeed = mainCanHarvest ? ToolUtil.getToolHarvestSpeedWithEnchantments(mainStack, targetBlockState) : 0.0f;
+                float offDestroySpeed = offCanHarvest ? ToolUtil.getToolHarvestSpeedWithEnchantments(offStack, targetBlockState) : 0.0f;
 
                 float destroySpeed = blocklingDestroySpeed + mainDestroySpeed + offDestroySpeed;
                 float blockStrength = targetBlockState.getDestroySpeed(world, targetPos);

@@ -99,8 +99,8 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
         ItemStack offStack = blockling.getOffhandItem();
 
         BlockPos targetPos = getTarget();
-        BlockState targetBlockState = world.getBlockState(targetPos);
-        Block targetBlock = targetBlockState.getBlock();
+        BlockState targetBlockState = getTargetBlockState();
+        Block targetBlock = getTargetBlock();
 
         boolean mainCanHarvest = ToolUtil.canToolHarvestBlock(mainStack, targetBlockState);
         boolean offCanHarvest = ToolUtil.canToolHarvestBlock(offStack, targetBlockState);
@@ -112,8 +112,8 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
             if (blockling.getActions().gather.isRunning())
             {
                 float blocklingDestroySpeed = blockling.getStats().woodcuttingSpeed.getValue();
-                float mainDestroySpeed = mainCanHarvest ? ToolUtil.getToolWoodcuttingSpeedWithEnchantments(mainStack) : 0.0f;
-                float offDestroySpeed = offCanHarvest ? ToolUtil.getToolWoodcuttingSpeedWithEnchantments(offStack) : 0.0f;
+                float mainDestroySpeed = mainCanHarvest ? ToolUtil.getToolHarvestSpeedWithEnchantments(mainStack, targetBlockState) : 0.0f;
+                float offDestroySpeed = offCanHarvest ? ToolUtil.getToolHarvestSpeedWithEnchantments(offStack, targetBlockState) : 0.0f;
 
                 float destroySpeed = blocklingDestroySpeed + mainDestroySpeed + offDestroySpeed;
                 float blockStrength = targetBlockState.getDestroySpeed(world, targetPos) + 1.5f;

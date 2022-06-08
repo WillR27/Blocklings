@@ -4,14 +4,13 @@ import com.willr27.blocklings.attribute.BlocklingAttributes;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.network.messages.EquipmentInventoryMessage;
+import com.willr27.blocklings.util.ToolContext;
 import com.willr27.blocklings.util.ToolType;
 import com.willr27.blocklings.util.ToolUtil;
 import javafx.util.Pair;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
@@ -206,9 +205,9 @@ public class EquipmentInventory extends AbstractInventory
     /**
      * @return true if any slots were switched.
      */
-    public boolean trySwitchToBestTool(@Nonnull BlocklingHand hand, @Nonnull ToolType toolType)
+    public boolean trySwitchToBestTool(@Nonnull BlocklingHand hand, @Nonnull ToolContext context)
     {
-        Pair<SwitchedTools, SwitchedTools> bestToolSlots = findBestToolSlotsToSwitchTo(hand, toolType);
+        Pair<SwitchedTools, SwitchedTools> bestToolSlots = findBestToolSlotsToSwitchTo(hand, context);
 
         int mainHandSlot = bestToolSlots.getKey().originalSlot;
         int mainBestSlot = bestToolSlots.getKey().bestSlot;
@@ -238,9 +237,9 @@ public class EquipmentInventory extends AbstractInventory
      * @return the best tools for the given hand slots.
      */
     @Nonnull
-    public Pair<ItemStack, ItemStack> findBestToolsToSwitchTo(@Nonnull BlocklingHand hand, @Nonnull ToolType toolType)
+    public Pair<ItemStack, ItemStack> findBestToolsToSwitchTo(@Nonnull BlocklingHand hand, @Nonnull ToolContext context)
     {
-        Pair<SwitchedTools, SwitchedTools> bestTools = findBestToolSlotsToSwitchTo(hand, toolType);
+        Pair<SwitchedTools, SwitchedTools> bestTools = findBestToolSlotsToSwitchTo(hand, context);
 
         return new Pair<>(getItem(bestTools.getKey().bestSlot), getItem(bestTools.getValue().bestSlot));
     }
@@ -249,26 +248,26 @@ public class EquipmentInventory extends AbstractInventory
      * @return the current hand slots and the best hand slots to switch to.
      */
     @Nonnull
-    public Pair<SwitchedTools, SwitchedTools> findBestToolSlotsToSwitchTo(@Nonnull BlocklingHand hand, @Nonnull ToolType toolType)
+    public Pair<SwitchedTools, SwitchedTools> findBestToolSlotsToSwitchTo(@Nonnull BlocklingHand hand, @Nonnull ToolContext context)
     {
         if (hand == BlocklingHand.MAIN)
         {
-            return new Pair<>(findBestToolSlotToSwitchTo(BlocklingHand.MAIN, toolType), new SwitchedTools(TOOL_OFF_HAND, TOOL_OFF_HAND));
+            return new Pair<>(findBestToolSlotToSwitchTo(BlocklingHand.MAIN, context), new SwitchedTools(TOOL_OFF_HAND, TOOL_OFF_HAND));
         }
         else if (hand == BlocklingHand.OFF)
         {
-            return new Pair<>(new SwitchedTools(TOOL_MAIN_HAND, TOOL_MAIN_HAND), findBestToolSlotToSwitchTo(BlocklingHand.OFF, toolType));
+            return new Pair<>(new SwitchedTools(TOOL_MAIN_HAND, TOOL_MAIN_HAND), findBestToolSlotToSwitchTo(BlocklingHand.OFF, context));
         }
         else if (hand == BlocklingHand.BOTH)
         {
-            SwitchedTools toolSlotsMain = findBestToolSlotToSwitchTo(BlocklingHand.MAIN, toolType);
+            SwitchedTools toolSlotsMain = findBestToolSlotToSwitchTo(BlocklingHand.MAIN, context);
 
             if (toolSlotsMain.bestSlot != TOOL_MAIN_HAND)
             {
                 swapItems(toolSlotsMain.originalSlot, toolSlotsMain.bestSlot);
             }
 
-            SwitchedTools toolSlotsOff = findBestToolSlotToSwitchTo(BlocklingHand.OFF, toolType);
+            SwitchedTools toolSlotsOff = findBestToolSlotToSwitchTo(BlocklingHand.OFF, context);
 
             if (toolSlotsMain.bestSlot != TOOL_MAIN_HAND)
             {
@@ -283,11 +282,11 @@ public class EquipmentInventory extends AbstractInventory
 
     /**
      * @param hand the hand to find the tool for, should be either MAIN or OFF.
-     * @param toolType the tool type to find the tools for.
+     * @param context the context to use when finding the best tool.
      * @return a pair containing the slots to swap with the best items, hand slot first then the other slot to swap with.
      */
     @Nonnull
-    public SwitchedTools findBestToolSlotToSwitchTo(@Nonnull BlocklingHand hand, @Nonnull ToolType toolType)
+    public SwitchedTools findBestToolSlotToSwitchTo(@Nonnull BlocklingHand hand, @Nonnull ToolContext context)
     {
         if (!(hand == BlocklingHand.MAIN || hand == BlocklingHand.OFF))
         {
@@ -300,15 +299,15 @@ public class EquipmentInventory extends AbstractInventory
         int handSlot = bestSlot;
         ItemStack handStack = getItem(handSlot);
 
-        if (toolType == ToolType.WEAPON)
+        if (context.toolType == ToolType.WEAPON)
         {
-            float bestAttackPower = ToolUtil.getToolAttackSpeed(handStack) * ToolUtil.getToolBaseDamage(handStack);
+            float bestAttackPower = ToolUtil.getToolAttackSpeed(handStack, context.entity) * ToolUtil.getToolBaseDamage(handStack, context.entity);
 
             for (int i = TOOL_OFF_HAND + 1; i < getContainerSize(); i++)
             {
                 ItemStack stack = stacks[i];
 
-                float attackPower = ToolUtil.getToolAttackSpeed(stack) * ToolUtil.getToolBaseDamage(stack);
+                float attackPower = ToolUtil.getToolAttackSpeed(stack, context.entity) * ToolUtil.getToolBaseDamage(stack, context.entity);
 
                 if (attackPower > bestAttackPower)
                 {
@@ -319,15 +318,15 @@ public class EquipmentInventory extends AbstractInventory
         }
         else
         {
-            float bestSpeed = ToolUtil.getToolHarvestSpeed(handStack, toolType);
+            float bestSpeed = context.toolType.is(handStack) ? ToolUtil.getToolHarvestSpeedWithEnchantments(handStack, context.blockState) : 0.0f;
 
             for (int i = TOOL_OFF_HAND + 1; i < getContainerSize(); i++)
             {
                 ItemStack stack = stacks[i];
 
-                if (toolType.is(stack))
+                if (context.toolType.is(stack) && ToolUtil.canToolHarvestBlock(stack, context.blockState))
                 {
-                    float speed = ToolUtil.getToolHarvestSpeed(stack, toolType);
+                    float speed = ToolUtil.getToolHarvestSpeedWithEnchantments(stack, context.blockState);
 
                     if (speed > bestSpeed)
                     {
@@ -424,40 +423,40 @@ public class EquipmentInventory extends AbstractInventory
 
         if (isAttackingWith(BlocklingHand.MAIN) && hasToolEquipped(Hand.MAIN_HAND))
         {
-            stats.mainHandAttackDamageToolModifier.setValue(ToolUtil.getToolBaseDamage(blockling.getMainHandItem()), false);
-            stats.attackSpeedMainHandModifier.setValue(ToolUtil.getToolAttackSpeed(blockling.getMainHandItem()), false);
+            stats.mainHandAttackDamageToolModifier.setValue(ToolUtil.getDefaultToolBaseDamage(blockling.getMainHandItem()), false);
+            stats.attackSpeedMainHandModifier.setValue(ToolUtil.getDefaultToolAttackSpeed(blockling.getMainHandItem()), false);
         }
 
         if (isAttackingWith(BlocklingHand.OFF) && hasToolEquipped(Hand.OFF_HAND))
         {
-            stats.offHandAttackDamageToolModifier.setValue(ToolUtil.getToolBaseDamage(blockling.getOffhandItem()), false);
-            stats.attackSpeedOffHandModifier.setValue(ToolUtil.getToolAttackSpeed(blockling.getOffhandItem()), false);
+            stats.offHandAttackDamageToolModifier.setValue(ToolUtil.getDefaultToolBaseDamage(blockling.getOffhandItem()), false);
+            stats.attackSpeedOffHandModifier.setValue(ToolUtil.getDefaultToolAttackSpeed(blockling.getOffhandItem()), false);
         }
 
         if (hasToolEquipped(Hand.MAIN_HAND, ToolType.PICKAXE))
         {
-            stats.miningSpeedMainHandModifier.setValue(ToolUtil.getToolMiningSpeed(blockling.getMainHandItem()), false);
+            stats.miningSpeedMainHandModifier.setValue(ToolUtil.getDefaultToolMiningSpeed(blockling.getMainHandItem()), false);
         }
         else if (hasToolEquipped(Hand.MAIN_HAND, ToolType.AXE))
         {
-            stats.woodcuttingSpeedMainHandModifier.setValue(ToolUtil.getToolWoodcuttingSpeed(blockling.getMainHandItem()), false);
+            stats.woodcuttingSpeedMainHandModifier.setValue(ToolUtil.getDefaultToolWoodcuttingSpeed(blockling.getMainHandItem()), false);
         }
         else if (hasToolEquipped(Hand.MAIN_HAND, ToolType.HOE))
         {
-            stats.farmingSpeedMainHandModifier.setValue(ToolUtil.getToolFarmingSpeed(blockling.getMainHandItem()), false);
+            stats.farmingSpeedMainHandModifier.setValue(ToolUtil.getDefaultToolFarmingSpeed(blockling.getMainHandItem()), false);
         }
 
         if (hasToolEquipped(Hand.OFF_HAND, ToolType.PICKAXE))
         {
-            stats.miningSpeedOffHandModifier.setValue(ToolUtil.getToolMiningSpeed(blockling.getOffhandItem()), false);
+            stats.miningSpeedOffHandModifier.setValue(ToolUtil.getDefaultToolMiningSpeed(blockling.getOffhandItem()), false);
         }
         else if (hasToolEquipped(Hand.OFF_HAND, ToolType.AXE))
         {
-            stats.woodcuttingSpeedOffHandModifier.setValue(ToolUtil.getToolWoodcuttingSpeed(blockling.getOffhandItem()), false);
+            stats.woodcuttingSpeedOffHandModifier.setValue(ToolUtil.getDefaultToolWoodcuttingSpeed(blockling.getOffhandItem()), false);
         }
         else if (hasToolEquipped(Hand.OFF_HAND, ToolType.HOE))
         {
-            stats.farmingSpeedOffHandModifier.setValue(ToolUtil.getToolFarmingSpeed(blockling.getOffhandItem()), false);
+            stats.farmingSpeedOffHandModifier.setValue(ToolUtil.getDefaultToolFarmingSpeed(blockling.getOffhandItem()), false);
         }
     }
 

@@ -7,6 +7,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CreatureAttribute;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -22,6 +23,7 @@ import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.tools.item.small.SwordTool;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -210,9 +212,18 @@ public class ToolUtil
     }
 
     /**
+     * @return the default attack speed of the given tool.
+     */
+    public static float getDefaultToolAttackSpeed(@Nonnull ItemStack stack)
+    {
+        return getToolAttackSpeed(stack, null);
+    }
+
+    /**
+     * @param entity the target entity.
      * @return the attack speed of the given tool.
      */
-    public static float getToolAttackSpeed(@Nonnull ItemStack stack)
+    public static float getToolAttackSpeed(@Nonnull ItemStack stack, @Nullable LivingEntity entity)
     {
         if (isUseableTool(stack))
         {
@@ -236,9 +247,18 @@ public class ToolUtil
     }
 
     /**
+     * @return the default base damage of the given tool.
+     */
+    public static float getDefaultToolBaseDamage(@Nonnull ItemStack stack)
+    {
+        return getToolBaseDamage(stack, null);
+    }
+
+    /**
+     * @param entity the target entity.
      * @return the base damage of the given tool.
      */
-    public static float getToolBaseDamage(@Nonnull ItemStack stack)
+    public static float getToolBaseDamage(@Nonnull ItemStack stack, @Nonnull LivingEntity entity)
     {
         if (isUseableTool(stack))
         {
@@ -286,49 +306,57 @@ public class ToolUtil
     }
 
     /**
-     * @return the mining speed for the given tool against stone, including enchantments.
+     * @return the harvest speed for the given tool against stone, including enchantments.
      */
-    public static float getToolMiningSpeedWithEnchantments(@Nonnull ItemStack stack)
+    public static float getDefaultToolMiningSpeedWithEnchantments(@Nonnull ItemStack stack)
     {
-        return getToolMiningSpeed(stack) + getToolEnchantmentMiningSpeed(stack);
+        return getDefaultToolMiningSpeed(stack) + getToolEnchantmentHarvestSpeed(stack);
     }
 
     /**
-     * @return the mining speed for the given tool against wood, including enchantments.
+     * @return the harvest speed for the given tool against wood, including enchantments.
      */
-    public static float getToolWoodcuttingSpeedWithEnchantments(@Nonnull ItemStack stack)
+    public static float getDefaultToolWoodcuttingSpeedWithEnchantments(@Nonnull ItemStack stack)
     {
-        return getToolWoodcuttingSpeed(stack) + getToolEnchantmentMiningSpeed(stack);
+        return getDefaultToolWoodcuttingSpeed(stack) + getToolEnchantmentHarvestSpeed(stack);
     }
 
     /**
-     * @return the mining speed for the given tool against crops, including enchantments.
+     * @return the harvest speed for the given tool against crops, including enchantments.
      */
-    public static float getToolFarmingSpeedWithEnchantments(@Nonnull ItemStack stack)
+    public static float getDefaultToolFarmingSpeedWithEnchantments(@Nonnull ItemStack stack)
     {
-        return getToolFarmingSpeed(stack) + getToolEnchantmentMiningSpeed(stack);
+        return getDefaultToolFarmingSpeed(stack) + getToolEnchantmentHarvestSpeed(stack);
     }
 
     /**
-     * @return the mining speed for the given tool against stone (for reference a wooden pickaxe is 2.0f and diamond pickaxe is 8.0f).
+     * @return the harvest speed for the given tool against the given block state, including enchantments.
      */
-    public static float getToolMiningSpeed(@Nonnull ItemStack stack)
+    public static float getToolHarvestSpeedWithEnchantments(@Nonnull ItemStack stack, @Nonnull BlockState blockState)
+    {
+        return getToolHarvestSpeed(stack, blockState) + getToolEnchantmentHarvestSpeed(stack);
+    }
+
+    /**
+     * @return the harvest speed for the given tool against stone (for reference a wooden pickaxe is 2.0f and diamond pickaxe is 8.0f).
+     */
+    public static float getDefaultToolMiningSpeed(@Nonnull ItemStack stack)
     {
         return getToolHarvestSpeed(stack, Blocks.STONE.defaultBlockState());
     }
 
     /**
-     * @return the mining speed for the given tool against wood.
+     * @return the harvest speed for the given tool against wood.
      */
-    public static float getToolWoodcuttingSpeed(@Nonnull ItemStack stack)
+    public static float getDefaultToolWoodcuttingSpeed(@Nonnull ItemStack stack)
     {
         return getToolHarvestSpeed(stack, Blocks.OAK_LOG.defaultBlockState());
     }
 
     /**
-     * @return the mining speed for the given tool against crops.
+     * @return the harvest speed for the given tool against crops.
      */
-    public static float getToolFarmingSpeed(@Nonnull ItemStack stack)
+    public static float getDefaultToolFarmingSpeed(@Nonnull ItemStack stack)
     {
         return getToolHarvestSpeed(stack, Blocks.HAY_BLOCK.defaultBlockState());
     }
@@ -336,20 +364,20 @@ public class ToolUtil
     /**
      * @return the harvest speed of the given stack against the given block state.
      */
-    public static float getToolHarvestSpeed(@Nonnull ItemStack stack, @Nonnull BlockState blockStateToTestAgainst)
+    public static float getToolHarvestSpeed(@Nonnull ItemStack stack, @Nonnull BlockState blockState)
     {
         if (isUseableTool(stack))
         {
             if (ModUtil.isTinkersConstructLoaded() && isTinkersTool(stack))
             {
-                if (canToolHarvestBlock(stack, blockStateToTestAgainst))
+                if (canToolHarvestBlock(stack, blockState))
                 {
-                    return ToolHarvestLogic.DEFAULT.getDestroySpeed(stack, blockStateToTestAgainst);
+                    return ToolHarvestLogic.DEFAULT.getDestroySpeed(stack, blockState);
                 }
             }
             else
             {
-                return stack.getDestroySpeed(blockStateToTestAgainst);
+                return stack.getDestroySpeed(blockState);
             }
         }
 
@@ -357,24 +385,47 @@ public class ToolUtil
     }
 
     /**
-     * @return the attack/mining/woodcutting/farming speed for the given tool and tool type.
+     * @return the default attack/mining/woodcutting/farming speed for the given tool and tool type.
      */
-    public static float getToolHarvestSpeed(@Nonnull ItemStack stack, @Nonnull com.willr27.blocklings.util.ToolType toolType)
+    public static float getDefaultToolSpeed(@Nonnull ItemStack stack, @Nonnull com.willr27.blocklings.util.ToolType toolType)
     {
         switch (toolType)
         {
-            case WEAPON: return getToolAttackSpeed(stack);
-            case PICKAXE: return getToolMiningSpeed(stack);
-            case AXE: return getToolWoodcuttingSpeed(stack);
-            case HOE: return getToolFarmingSpeed(stack);
-            default: return 0.0f;
+            case WEAPON:
+                return getDefaultToolAttackSpeed(stack);
+            case PICKAXE:
+                return getDefaultToolMiningSpeed(stack);
+            case AXE:
+                return getDefaultToolWoodcuttingSpeed(stack);
+            case HOE:
+                return getDefaultToolFarmingSpeed(stack);
+            default:
+                return 0.0f;
         }
     }
 
     /**
-     * @return the mining speed for the given tool from only its enchantments.
+     * @return the attack/mining/woodcutting/farming speed for the given tool and tool type.
      */
-    public static float getToolEnchantmentMiningSpeed(@Nonnull ItemStack stack)
+    public static float getToolHarvestSpeed(@Nonnull ItemStack stack, @Nonnull ToolContext context)
+    {
+        switch (context.toolType)
+        {
+            case WEAPON:
+                return getToolAttackSpeed(stack, context.entity);
+            case PICKAXE:
+            case AXE:
+            case HOE:
+                return getToolHarvestSpeed(stack, context.blockState);
+            default:
+                return 0.0f;
+        }
+    }
+
+    /**
+     * @return the harvest speed for the given tool from only its enchantments.
+     */
+    public static float getToolEnchantmentHarvestSpeed(@Nonnull ItemStack stack)
     {
         int level = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, stack);
 

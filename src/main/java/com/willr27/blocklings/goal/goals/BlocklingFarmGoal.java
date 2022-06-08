@@ -107,8 +107,8 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal
             if (blockling.getActions().gather.isRunning())
             {
                 float blocklingDestroySpeed = blockling.getStats().farmingSpeed.getValue();
-                float mainDestroySpeed = mainCanHarvest ? ToolUtil.getToolFarmingSpeedWithEnchantments(mainStack) : 0.0f;
-                float offDestroySpeed = offCanHarvest ? ToolUtil.getToolFarmingSpeedWithEnchantments(offStack) : 0.0f;
+                float mainDestroySpeed = mainCanHarvest ? ToolUtil.getToolHarvestSpeedWithEnchantments(mainStack, targetBlockState) : 0.0f;
+                float offDestroySpeed = offCanHarvest ? ToolUtil.getToolHarvestSpeedWithEnchantments(offStack, targetBlockState) : 0.0f;
 
                 float destroySpeed = blocklingDestroySpeed + mainDestroySpeed + offDestroySpeed;
                 float blockStrength = targetBlockState.getDestroySpeed(world, targetPos);

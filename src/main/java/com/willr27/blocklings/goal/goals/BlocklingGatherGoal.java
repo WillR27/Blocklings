@@ -3,8 +3,10 @@ package com.willr27.blocklings.goal.goals;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.goal.BlocklingTargetGoal;
+import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
 import com.willr27.blocklings.skill.skills.GeneralSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
+import com.willr27.blocklings.util.ToolContext;
 import com.willr27.blocklings.util.ToolType;
 import com.willr27.blocklings.util.ToolUtil;
 import javafx.util.Pair;
@@ -117,7 +119,7 @@ public abstract class BlocklingGatherGoal extends BlocklingTargetGoal<BlockPos>
 
         if (blockling.getSkills().getSkill(GeneralSkills.AUTOSWITCH).isBought())
         {
-            blockling.getEquipment().trySwitchToBestTool(BlocklingHand.BOTH, getToolType());
+            blockling.getEquipment().trySwitchToBestTool(BlocklingHand.BOTH, new ToolContext(getToolType(), getTargetBlockState()));
         }
     }
 
@@ -148,7 +150,7 @@ public abstract class BlocklingGatherGoal extends BlocklingTargetGoal<BlockPos>
         }
         else if (blockling.getSkills().getSkill(GeneralSkills.AUTOSWITCH).isBought())
         {
-            Pair<ItemStack, ItemStack> bestTools = blockling.getEquipment().findBestToolsToSwitchTo(BlocklingHand.BOTH, getToolType());
+            Pair<ItemStack, ItemStack> bestTools = blockling.getEquipment().findBestToolsToSwitchTo(BlocklingHand.BOTH, new ToolContext(getToolType(), blockState));
 
             if (ToolUtil.canToolHarvestBlock(bestTools.getKey(), blockState) || ToolUtil.canToolHarvestBlock(bestTools.getValue(), blockState))
             {
