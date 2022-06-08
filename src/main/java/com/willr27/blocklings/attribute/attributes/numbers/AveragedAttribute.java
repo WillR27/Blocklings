@@ -64,6 +64,6 @@ public class AveragedAttribute extends ModifiableFloatAttribute
 
         value /= modifiers.size();
 
-        callUpdateCallbacks();
+        onValueChanged();
     }
 }

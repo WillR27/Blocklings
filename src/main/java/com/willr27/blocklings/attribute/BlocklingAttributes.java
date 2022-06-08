@@ -10,7 +10,9 @@ import com.willr27.blocklings.skill.skills.*;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import com.willr27.blocklings.util.IReadWriteNBT;
 import com.willr27.blocklings.util.Version;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
@@ -40,108 +42,108 @@ public class BlocklingAttributes implements IReadWriteNBT
     public final List<IModifier<?>> modifiers = new ArrayList<>();
 
     
-    @Nonnull public final IntAttribute combatLevel;
-    @Nonnull public final IntAttribute miningLevel;
-    @Nonnull public final IntAttribute woodcuttingLevel;
-    @Nonnull public final IntAttribute farmingLevel;
-    @Nonnull public final Attribute<Integer> totalLevel;
+    public final IntAttribute combatLevel;
+    public final IntAttribute miningLevel;
+    public final IntAttribute woodcuttingLevel;
+    public final IntAttribute farmingLevel;
+    public final Attribute<Integer> totalLevel;
 
-    @Nonnull public final IntAttribute combatXp;
-    @Nonnull public final IntAttribute miningXp;
-    @Nonnull public final IntAttribute woodcuttingXp;
-    @Nonnull public final IntAttribute farmingXp;
+    public final IntAttribute combatXp;
+    public final IntAttribute miningXp;
+    public final IntAttribute woodcuttingXp;
+    public final IntAttribute farmingXp;
 
-    @Nonnull public final EnumAttribute<BlocklingHand> hand;
+    public final EnumAttribute<BlocklingHand> hand;
 
-    @Nonnull public final ModifiableFloatAttribute maxHealth;
-    @Nonnull public final ModifiableFloatAttributeModifier maxHealthBlocklingModifier;
-    @Nonnull public final FloatAttributeModifier maxHealthTypeModifier;
-    @Nonnull public final FloatAttributeModifier maxHealthCombatLevelModifier;
+    public final ModifiableFloatAttribute maxHealth;
+    public final ModifiableFloatAttributeModifier maxHealthBlocklingModifier;
+    public final FloatAttributeModifier maxHealthTypeModifier;
+    public final FloatAttributeModifier maxHealthCombatLevelModifier;
 
-    @Nonnull public final ModifiableFloatAttributeModifier attackDamageBlocklingModifier;
-    @Nonnull public final FloatAttributeModifier attackDamageTypeModifier;
-    @Nonnull public final FloatAttributeModifier attackDamageCombatLevelModifier;
-    @Nonnull public final FloatAttributeModifier attackDamageSkillSharpnessModifier;
-    @Nonnull public final FloatAttributeModifier attackDamageSkillBerserkerModifier;
-    @Nonnull public final FloatAttributeModifier attackDamageSkillWrecklessModifier;
+    public final ModifiableFloatAttributeModifier attackDamageBlocklingModifier;
+    public final FloatAttributeModifier attackDamageTypeModifier;
+    public final FloatAttributeModifier attackDamageCombatLevelModifier;
+    public final FloatAttributeModifier attackDamageSkillSharpnessModifier;
+    public final FloatAttributeModifier attackDamageSkillBerserkerModifier;
+    public final FloatAttributeModifier attackDamageSkillWrecklessModifier;
 
-    @Nonnull public final ModifiableFloatAttribute mainHandAttackDamage;
-    @Nonnull public final FloatAttributeModifier mainHandAttackDamageToolModifier;
+    public final ModifiableFloatAttribute mainHandAttackDamage;
+    public final FloatAttributeModifier mainHandAttackDamageToolModifier;
 
-    @Nonnull public final ModifiableFloatAttribute offHandAttackDamage;
-    @Nonnull public final FloatAttributeModifier offHandAttackDamageToolModifier;
+    public final ModifiableFloatAttribute offHandAttackDamage;
+    public final FloatAttributeModifier offHandAttackDamageToolModifier;
 
-    @Nonnull public final AveragedAttribute attackSpeed;
-    @Nonnull public final ModifiableFloatAttributeModifier attackSpeedBlocklingModifier;
-    @Nonnull public final FloatAttributeModifier attackSpeedTypeModifier;
-    @Nonnull public final FloatAttributeModifier attackSpeedLevelModifier;
-    @Nonnull public final FloatAttributeModifier attackSpeedMainHandModifier;
-    @Nonnull public final FloatAttributeModifier attackSpeedOffHandModifier;
-    @Nonnull public final FloatAttributeModifier attackSpeedSkillMomentumModifier;
-    @Nonnull public final FloatAttributeModifier attackSpeedSkillPhotophileModifier;
+    public final AveragedAttribute attackSpeed;
+    public final ModifiableFloatAttributeModifier attackSpeedBlocklingModifier;
+    public final FloatAttributeModifier attackSpeedTypeModifier;
+    public final FloatAttributeModifier attackSpeedLevelModifier;
+    public final FloatAttributeModifier attackSpeedMainHandModifier;
+    public final FloatAttributeModifier attackSpeedOffHandModifier;
+    public final FloatAttributeModifier attackSpeedSkillMomentumModifier;
+    public final FloatAttributeModifier attackSpeedSkillPhotophileModifier;
 
-    @Nonnull public final ModifiableFloatAttribute armour;
-    @Nonnull public final ModifiableFloatAttributeModifier armourBlocklingModifier;
-    @Nonnull public final FloatAttributeModifier armourCombatLevelModifier;
-    @Nonnull public final FloatAttributeModifier armourTypeModifier;
+    public final ModifiableFloatAttribute armour;
+    public final ModifiableFloatAttributeModifier armourBlocklingModifier;
+    public final FloatAttributeModifier armourCombatLevelModifier;
+    public final FloatAttributeModifier armourTypeModifier;
 
-    @Nonnull public final ModifiableFloatAttribute armourToughness;
-    @Nonnull public final ModifiableFloatAttributeModifier armourToughnessBlocklingModifier;
-    @Nonnull public final FloatAttributeModifier armourToughnessCombatLevelModifier;
-    @Nonnull public final FloatAttributeModifier armourToughnessTypeModifier;
+    public final ModifiableFloatAttribute armourToughness;
+    public final ModifiableFloatAttributeModifier armourToughnessBlocklingModifier;
+    public final FloatAttributeModifier armourToughnessCombatLevelModifier;
+    public final FloatAttributeModifier armourToughnessTypeModifier;
 
-    @Nonnull public final ModifiableFloatAttribute knockbackResistance;
-    @Nonnull public final ModifiableFloatAttributeModifier knockbackResistanceBlocklingModifier;
-    @Nonnull public final FloatAttributeModifier knockbackResistanceCombatLevelModifier;
-    @Nonnull public final FloatAttributeModifier knockbackResistanceTypeModifier;
+    public final ModifiableFloatAttribute knockbackResistance;
+    public final ModifiableFloatAttributeModifier knockbackResistanceBlocklingModifier;
+    public final FloatAttributeModifier knockbackResistanceCombatLevelModifier;
+    public final FloatAttributeModifier knockbackResistanceTypeModifier;
 
-    @Nonnull public final ModifiableFloatAttribute moveSpeed;
-    @Nonnull public final ModifiableFloatAttributeModifier moveSpeedBlocklingModifier;
-    @Nonnull public final FloatAttributeModifier moveSpeedTypeModifier;
-    @Nonnull public final FloatAttributeModifier moveSpeedSkillSpeedModifier;
+    public final ModifiableFloatAttribute moveSpeed;
+    public final ModifiableFloatAttributeModifier moveSpeedBlocklingModifier;
+    public final FloatAttributeModifier moveSpeedTypeModifier;
+    public final FloatAttributeModifier moveSpeedSkillSpeedModifier;
 
-    @Nonnull public final ModifiableFloatAttribute miningRange;
-    @Nonnull public final ModifiableFloatAttribute miningRangeSq;
-    @Nonnull public final ModifiableFloatAttribute woodcuttingRange;
-    @Nonnull public final ModifiableFloatAttribute woodcuttingRangeSq;
-    @Nonnull public final ModifiableFloatAttribute farmingRange;
-    @Nonnull public final ModifiableFloatAttribute farmingRangeSq;
+    public final ModifiableFloatAttribute miningRange;
+    public final ModifiableFloatAttribute miningRangeSq;
+    public final ModifiableFloatAttribute woodcuttingRange;
+    public final ModifiableFloatAttribute woodcuttingRangeSq;
+    public final ModifiableFloatAttribute farmingRange;
+    public final ModifiableFloatAttribute farmingRangeSq;
 
-    @Nonnull public final ModifiableFloatAttribute miningSpeed;
-    @Nonnull public final ModifiableFloatAttributeModifier miningSpeedBlocklingModifier;
-    @Nonnull public final FloatAttributeModifier miningSpeedTypeModifier;
-    @Nonnull public final FloatAttributeModifier miningSpeedLevelModifier;
-    @Nonnull public final FloatAttributeModifier miningSpeedMainHandModifier;
-    @Nonnull public final FloatAttributeModifier miningSpeedOffHandModifier;
-    @Nonnull public final FloatAttributeModifier miningSpeedSkillEfficiencyModifier;
-    @Nonnull public final FloatAttributeModifier miningSpeedSkillAdrenalineModifier;
-    @Nonnull public final FloatAttributeModifier miningSpeedSkillMomentumModifier;
-    @Nonnull public final FloatAttributeModifier miningSpeedSkillHastyModifier;
-    @Nonnull public final FloatAttributeModifier miningSpeedSkillNightOwlModifier;
+    public final ModifiableFloatAttribute miningSpeed;
+    public final ModifiableFloatAttributeModifier miningSpeedBlocklingModifier;
+    public final FloatAttributeModifier miningSpeedTypeModifier;
+    public final FloatAttributeModifier miningSpeedLevelModifier;
+    public final FloatAttributeModifier miningSpeedMainHandModifier;
+    public final FloatAttributeModifier miningSpeedOffHandModifier;
+    public final FloatAttributeModifier miningSpeedSkillEfficiencyModifier;
+    public final FloatAttributeModifier miningSpeedSkillAdrenalineModifier;
+    public final FloatAttributeModifier miningSpeedSkillMomentumModifier;
+    public final FloatAttributeModifier miningSpeedSkillHastyModifier;
+    public final FloatAttributeModifier miningSpeedSkillNightOwlModifier;
 
-    @Nonnull public final ModifiableFloatAttribute woodcuttingSpeed;
-    @Nonnull public final ModifiableFloatAttributeModifier woodcuttingSpeedBlocklingModifier;
-    @Nonnull public final FloatAttributeModifier woodcuttingSpeedTypeModifier;
-    @Nonnull public final FloatAttributeModifier woodcuttingSpeedLevelModifier;
-    @Nonnull public final FloatAttributeModifier woodcuttingSpeedMainHandModifier;
-    @Nonnull public final FloatAttributeModifier woodcuttingSpeedOffHandModifier;
-    @Nonnull public final FloatAttributeModifier woodcuttingSpeedSkillEfficiencyModifier;
-    @Nonnull public final FloatAttributeModifier woodcuttingSpeedSkillAdrenalineModifier;
-    @Nonnull public final FloatAttributeModifier woodcuttingSpeedSkillMomentumModifier;
-    @Nonnull public final FloatAttributeModifier woodcuttingSpeedSkillHastyModifier;
-    @Nonnull public final FloatAttributeModifier woodcuttingSpeedSkillNightOwlModifier;
+    public final ModifiableFloatAttribute woodcuttingSpeed;
+    public final ModifiableFloatAttributeModifier woodcuttingSpeedBlocklingModifier;
+    public final FloatAttributeModifier woodcuttingSpeedTypeModifier;
+    public final FloatAttributeModifier woodcuttingSpeedLevelModifier;
+    public final FloatAttributeModifier woodcuttingSpeedMainHandModifier;
+    public final FloatAttributeModifier woodcuttingSpeedOffHandModifier;
+    public final FloatAttributeModifier woodcuttingSpeedSkillEfficiencyModifier;
+    public final FloatAttributeModifier woodcuttingSpeedSkillAdrenalineModifier;
+    public final FloatAttributeModifier woodcuttingSpeedSkillMomentumModifier;
+    public final FloatAttributeModifier woodcuttingSpeedSkillHastyModifier;
+    public final FloatAttributeModifier woodcuttingSpeedSkillNightOwlModifier;
 
-    @Nonnull public final ModifiableFloatAttribute farmingSpeed;
-    @Nonnull public final ModifiableFloatAttributeModifier farmingSpeedBlocklingModifier;
-    @Nonnull public final FloatAttributeModifier farmingSpeedTypeModifier;
-    @Nonnull public final FloatAttributeModifier farmingSpeedLevelModifier;
-    @Nonnull public final FloatAttributeModifier farmingSpeedMainHandModifier;
-    @Nonnull public final FloatAttributeModifier farmingSpeedOffHandModifier;
-    @Nonnull public final FloatAttributeModifier farmingSpeedSkillEfficiencyModifier;
-    @Nonnull public final FloatAttributeModifier farmingSpeedSkillAdrenalineModifier;
-    @Nonnull public final FloatAttributeModifier farmingSpeedSkillMomentumModifier;
-    @Nonnull public final FloatAttributeModifier farmingSpeedSkillHastyModifier;
-    @Nonnull public final FloatAttributeModifier farmingSpeedSkillNightOwlModifier;
+    public final ModifiableFloatAttribute farmingSpeed;
+    public final ModifiableFloatAttributeModifier farmingSpeedBlocklingModifier;
+    public final FloatAttributeModifier farmingSpeedTypeModifier;
+    public final FloatAttributeModifier farmingSpeedLevelModifier;
+    public final FloatAttributeModifier farmingSpeedMainHandModifier;
+    public final FloatAttributeModifier farmingSpeedOffHandModifier;
+    public final FloatAttributeModifier farmingSpeedSkillEfficiencyModifier;
+    public final FloatAttributeModifier farmingSpeedSkillAdrenalineModifier;
+    public final FloatAttributeModifier farmingSpeedSkillMomentumModifier;
+    public final FloatAttributeModifier farmingSpeedSkillHastyModifier;
+    public final FloatAttributeModifier farmingSpeedSkillNightOwlModifier;
 
     /**
      * The associated blockling.
@@ -189,18 +191,27 @@ public class BlocklingAttributes implements IReadWriteNBT
 
         addAttribute(hand = new EnumAttribute<>("f21fcbaa-f800-468e-8c22-ec4b4fd0fdc2", "hand", blockling, BlocklingHand.class, BlocklingHand.NONE, null, null, true));
 
-
         addModifier(maxHealthCombatLevelModifier = new FloatAttributeModifier("a78160fa-7bc3-493e-b74b-27af4206d111", "max_health_combat_level", blockling, 0.0f, Operation.ADD, null, combatLevel.displayStringNameSupplier, true));
         addModifier(maxHealthTypeModifier  = new FloatAttributeModifier("79043f39-6f44-4077-a358-0f75a0a1e995", "max_health_type", blockling, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString(), true));
         addModifier(maxHealthBlocklingModifier = new ModifiableFloatAttributeModifier("42418962-175b-4c06-84a2-f770ebd00a88", "max_health_blockling", blockling, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString(), true, maxHealthTypeModifier, maxHealthCombatLevelModifier));
-        addAttribute(maxHealth = new ModifiableFloatAttribute("9c6eb101-f025-4f8f-895b-10868b7d06b2", "max_health",blockling, 10.0f, null, null, true, maxHealthBlocklingModifier));
+        addAttribute(maxHealth = new ModifiableFloatAttribute("9c6eb101-f025-4f8f-895b-10868b7d06b2", "max_health", blockling, 10.0f, null, null, true, maxHealthBlocklingModifier));
 
         addModifier(attackDamageSkillWrecklessModifier = new FloatAttributeModifier("39b9820d-1805-484e-8bf0-9de9e12a878c", "attack_damage_skill_wreckless", blockling, 10.0f, Operation.ADD, null, () -> skillDisplayNameProvider(CombatSkills.WRECKLESS), false));
         addModifier(attackDamageSkillBerserkerModifier = new FloatAttributeModifier("2d1bc0b1-53cc-46e7-8a15-93c3bb538cdc", "attack_damage_skill_berserker", blockling, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(CombatSkills.BERSERKER), false));
         addModifier(attackDamageSkillSharpnessModifier = new FloatAttributeModifier("b27747e9-7e73-416f-bb1f-8853b4132e90", "attack_damage_skill_sharpness", blockling, 5.0f, Operation.ADD, null, () -> skillDisplayNameProvider(CombatSkills.SHARPNESS), false));
         addModifier(attackDamageCombatLevelModifier = new FloatAttributeModifier("406a98f7-df1f-4c7f-93e4-990d71c7747f", "attack_damage_combat_level", blockling, 0.0f, Operation.ADD, null, combatLevel.displayStringNameSupplier, true));
         addModifier(attackDamageTypeModifier = new FloatAttributeModifier("ddb441fc-2d8c-4950-b0a9-b96b60680ac1", "attack_damage_type", blockling, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString(), true));
-        addModifier(attackDamageBlocklingModifier = new ModifiableFloatAttributeModifier("9bfdfe35-c6c4-4364-8535-7aa50927f484", "attack_blockling", blockling, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString(), true, attackDamageTypeModifier, attackDamageCombatLevelModifier));
+        addModifier(attackDamageBlocklingModifier = new ModifiableFloatAttributeModifier("9bfdfe35-c6c4-4364-8535-7aa50927f484", "attack_damage_blockling", blockling, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString(), true, attackDamageTypeModifier, attackDamageCombatLevelModifier));
+
+//        attackDamageSkillWrecklessModifier.addUpdateCallback((v) -> applyVanillaModifier(Attributes.ATTACK_DAMAGE, attackDamageSkillWrecklessModifier));
+//        attackDamageSkillBerserkerModifier.addUpdateCallback((v) -> applyVanillaModifier(Attributes.ATTACK_DAMAGE, attackDamageSkillBerserkerModifier));
+//        attackDamageSkillSharpnessModifier.addUpdateCallback((v) -> applyVanillaModifier(Attributes.ATTACK_DAMAGE, attackDamageSkillSharpnessModifier));
+//        attackDamageBlocklingModifier.addUpdateCallback((v) -> blockling.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(v));
+
+        attackDamageSkillWrecklessModifier.setVanillaAttribute(Attributes.ATTACK_DAMAGE);
+        attackDamageSkillBerserkerModifier.setVanillaAttribute(Attributes.ATTACK_DAMAGE);
+        attackDamageSkillSharpnessModifier.setVanillaAttribute(Attributes.ATTACK_DAMAGE);
+        attackDamageBlocklingModifier.setVanillaAttribute(Attributes.ATTACK_DAMAGE);
 
         addModifier(mainHandAttackDamageToolModifier = new FloatAttributeModifier("2ae58b89-fed6-4b2f-90bc-e7dbc9d7b249", "main_hand_attack_damage_tool", blockling, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString(), true));
         addAttribute(mainHandAttackDamage = new ModifiableFloatAttribute("e8549f17-e473-4849-8f48-ae624ee0c242", "main_hand_attack_damage", blockling, 0.0f, null, null, true, attackDamageBlocklingModifier, mainHandAttackDamageToolModifier, attackDamageSkillSharpnessModifier, attackDamageSkillBerserkerModifier, attackDamageSkillWrecklessModifier));
@@ -290,6 +301,28 @@ public class BlocklingAttributes implements IReadWriteNBT
     }
 
     /**
+     * Applies the value of a vanilla attribute modifier on the given vanilla attribute.
+     * Vanilla modifier values are not mutable so they need to be reapplied each time the value changes.
+     *
+     * @param vanillaAttribute the vanilla attribute to update.
+     * @param modifier the modifier to apply to the vanilla attribute.
+     */
+    public void applyVanillaModifier(@Nonnull net.minecraft.entity.ai.attributes.Attribute vanillaAttribute, @Nonnull FloatAttributeModifier modifier)
+    {
+        ModifiableAttributeInstance attributeInstance = blockling.getAttribute(vanillaAttribute);
+
+        // Remove the modifier it exists as you can't just set the value again.
+        attributeInstance.removeModifier(modifier.id);
+
+        // Do not apply the modifier if it is not enabled.
+        if (modifier.isEnabled())
+        {
+            // Add the attribute modifier with the current value.
+            attributeInstance.addTransientModifier(new AttributeModifier(modifier.id, modifier.getDisplayStringNameSupplier().get(), modifier.getValue(), Operation.vanillaOperation(modifier.getOperation())));
+        }
+    }
+
+    /**
      * Used to produce a display name for an attribute relating to a skill.
      *
      * @param skillInfo the relate skill.
@@ -352,7 +385,7 @@ public class BlocklingAttributes implements IReadWriteNBT
 
         for (Attribute<?> attribute : attributes)
         {
-            attribute.callUpdateCallbacks();
+            attribute.onValueChanged();
         }
 
         updateCombatLevelBonuses(false);
@@ -377,8 +410,6 @@ public class BlocklingAttributes implements IReadWriteNBT
         woodcuttingRange.addUpdateCallback((f) -> woodcuttingRangeSq.setBaseValue(woodcuttingRange.getValue() * woodcuttingRange.getValue(), false));
         farmingRange.addUpdateCallback((f) -> farmingRangeSq.setBaseValue(farmingRange.getValue() * farmingRange.getValue(), false));
         maxHealth.addUpdateCallback((f) -> { Objects.requireNonNull(blockling.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(f); checkAndCapHealth(); });
-        mainHandAttackDamage.addUpdateCallback((f) -> setVanillaAttackDamageAttribute());
-        offHandAttackDamage.addUpdateCallback((f) -> setVanillaAttackDamageAttribute());
         armour.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.ARMOR)).setBaseValue(f));
         armourToughness.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.ARMOR_TOUGHNESS)).setBaseValue(f));
         knockbackResistance.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.KNOCKBACK_RESISTANCE)).setBaseValue(f));
@@ -451,29 +482,6 @@ public class BlocklingAttributes implements IReadWriteNBT
     public static int getXpForLevel(int level)
     {
         return (int) (Math.exp(level / 25.0) * 40) - 30;
-    }
-
-    /**
-     * Sets the matching vanilla attributes in case any vanilla code needs to use them.
-     */
-    private void setVanillaAttackDamageAttribute()
-    {
-        if (blockling.getEquipment().isAttackingWith(BlocklingHand.MAIN))
-        {
-            blockling.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(mainHandAttackDamage.getValue());
-        }
-        else if (blockling.getEquipment().isAttackingWith(BlocklingHand.OFF))
-        {
-            blockling.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(offHandAttackDamage.getValue());
-        }
-        else if (blockling.getEquipment().isAttackingWith(BlocklingHand.BOTH))
-        {
-            blockling.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(mainHandAttackDamage.getValue() + offHandAttackDamage.getValue());
-        }
-        else
-        {
-            blockling.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(0.0f);
-        }
     }
 
     /**

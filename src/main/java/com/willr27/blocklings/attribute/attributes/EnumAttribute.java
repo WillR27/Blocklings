@@ -86,7 +86,7 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
     {
         this.value = value;
 
-        callUpdateCallbacks();
+        onValueChanged();
 
         if (sync)
         {

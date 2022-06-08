@@ -117,24 +117,44 @@ public class EquipmentInventory extends AbstractInventory
 
     public BlocklingHand findAttackingHand()
     {
-        if (hasToolEquipped(Hand.MAIN_HAND, ToolType.WEAPON) && !hasToolEquipped(Hand.OFF_HAND, ToolType.WEAPON))
+        if (hasUseableWeapon(Hand.MAIN_HAND) && hasUseableWeapon(Hand.OFF_HAND))
+        {
+            return BlocklingHand.BOTH;
+        }
+        else if (hasUseableWeapon(Hand.MAIN_HAND) && !hasUseableWeapon(Hand.OFF_HAND))
         {
             return BlocklingHand.MAIN;
         }
-        else if (!hasToolEquipped(Hand.MAIN_HAND, ToolType.WEAPON) && hasToolEquipped(Hand.OFF_HAND, ToolType.WEAPON))
+        else if (!hasUseableWeapon(Hand.MAIN_HAND) && hasUseableWeapon(Hand.OFF_HAND))
         {
             return BlocklingHand.OFF;
         }
-        else if (!getHandStack(Hand.MAIN_HAND).isEmpty() && getHandStack(Hand.OFF_HAND).isEmpty())
+        else if (hasUseableTool(Hand.MAIN_HAND) && !hasUseableTool(Hand.OFF_HAND))
         {
             return BlocklingHand.MAIN;
         }
-        else if (getHandStack(Hand.MAIN_HAND).isEmpty() && !getHandStack(Hand.OFF_HAND).isEmpty())
+        else if (!hasUseableTool(Hand.MAIN_HAND) && hasUseableTool(Hand.OFF_HAND))
         {
             return BlocklingHand.OFF;
         }
 
         return BlocklingHand.BOTH;
+    }
+
+    /**
+     * @return true if the given hand has a weapon equipped that can currently be used.
+     */
+    public boolean hasUseableWeapon(@Nonnull Hand hand)
+    {
+        return hasToolEquipped(hand, ToolType.WEAPON) && ToolUtil.isUseableTool(getHandStack(hand));
+    }
+
+    /**
+     * @return true if the given hand has a tool equipped that can currently be used.
+     */
+    public boolean hasUseableTool(@Nonnull Hand hand)
+    {
+        return ToolUtil.isUseableTool(getHandStack(hand));
     }
 
     public boolean canHarvestBlockWithEquippedTools(BlockState blockState)
@@ -252,18 +272,21 @@ public class EquipmentInventory extends AbstractInventory
         }
         else
         {
-            float bestSpeed = ToolUtil.getToolSpeed(handStack, toolType);
+            float bestSpeed = ToolUtil.getToolHarvestSpeed(handStack, toolType);
 
             for (int i = TOOL_OFF_HAND + 1; i < getContainerSize(); i++)
             {
                 ItemStack stack = stacks[i];
 
-                float speed = ToolUtil.getToolSpeed(stack, toolType);
-
-                if (speed > bestSpeed)
+                if (toolType.is(stack))
                 {
-                    bestSlot = i;
-                    bestSpeed = speed;
+                    float speed = ToolUtil.getToolHarvestSpeed(stack, toolType);
+
+                    if (speed > bestSpeed)
+                    {
+                        bestSlot = i;
+                        bestSpeed = speed;
+                    }
                 }
             }
         }

@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 /**
  * A modifiable float attribute.
  */
-public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
+public class ModifiableFloatAttribute extends ModifiableNumberAttribute<Float>
 {
     /**
      * @param id the id of the attribute.
@@ -99,7 +99,7 @@ public class ModifiableFloatAttribute extends ModifiableAttribute<Float>
             value += tempBase;
         }
 
-        callUpdateCallbacks();
+        onValueChanged();
     }
 
     @Override

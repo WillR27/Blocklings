@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 /**
  * A modifiable int attribute.
  */
-public class ModifiableIntAttribute extends ModifiableAttribute<Integer>
+public class ModifiableIntAttribute extends ModifiableNumberAttribute<Integer>
 {
     /**
      * @param id the id of the attribute.
@@ -98,7 +98,7 @@ public class ModifiableIntAttribute extends ModifiableAttribute<Integer>
             value += tempBase;
         }
 
-        callUpdateCallbacks();
+        onValueChanged();
     }
 
     @Override

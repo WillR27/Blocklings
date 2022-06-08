@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 /**
  * A simple int attribute.
  */
-public class IntAttribute extends Attribute<Integer>
+public class IntAttribute extends NumberAttribute<Integer>
 {
     /**
      * @param id the id of the attribute.
@@ -27,8 +27,7 @@ public class IntAttribute extends Attribute<Integer>
      */
     public IntAttribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, int initialValue, @Nullable Function<Integer, String> displayStringValueFunction, @Nullable Supplier<String> displayStringNameSupplier, boolean isEnabled)
     {
-        super(id, key, blockling, displayStringValueFunction, displayStringNameSupplier, isEnabled);
-        this.value = initialValue;
+        super(id, key, blockling, initialValue, displayStringValueFunction, displayStringNameSupplier, isEnabled);
     }
 
     @Override
@@ -103,7 +102,7 @@ public class IntAttribute extends Attribute<Integer>
     {
         this.value = value;
 
-        callUpdateCallbacks();
+        onValueChanged();
 
         if (sync)
         {

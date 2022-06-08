@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 /**
  * A simple float attribute.
  */
-public class FloatAttribute extends Attribute<Float>
+public class FloatAttribute extends NumberAttribute<Float>
 {
     /**
      * @param id the id of the attribute.
@@ -27,8 +27,7 @@ public class FloatAttribute extends Attribute<Float>
      */
     public FloatAttribute(@Nonnull String id, @Nonnull String key, @Nonnull BlocklingEntity blockling, float initialValue, @Nullable Function<Float, String> displayStringValueFunction, @Nullable Supplier<String> displayStringNameSupplier, boolean isEnabled)
     {
-        super(id, key, blockling, displayStringValueFunction, displayStringNameSupplier, isEnabled);
-        this.value = initialValue;
+        super(id, key, blockling, initialValue, displayStringValueFunction, displayStringNameSupplier, isEnabled);
     }
 
     @Override
@@ -103,7 +102,7 @@ public class FloatAttribute extends Attribute<Float>
     {
         this.value = value;
 
-        callUpdateCallbacks();
+        onValueChanged();
 
         if (sync)
         {

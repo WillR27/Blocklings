@@ -172,10 +172,11 @@ public abstract class Attribute<T> implements IReadWriteNBT
      */
     protected abstract void setValue(T value, boolean sync);
 
+
     /**
-     * Calls each callback when the attribute value changes.
+     * Called when the value of the attribute changes.
      */
-    public void callUpdateCallbacks()
+    public void onValueChanged()
     {
         updateCallbacks.forEach(floatConsumer -> floatConsumer.accept(getValue()));
     }
@@ -229,6 +230,8 @@ public abstract class Attribute<T> implements IReadWriteNBT
     public void setIsEnabled(boolean isEnabled, boolean sync)
     {
         this.isEnabled = isEnabled;
+
+        onValueChanged();
 
         if (sync)
         {

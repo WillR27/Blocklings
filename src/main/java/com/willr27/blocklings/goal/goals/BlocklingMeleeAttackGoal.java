@@ -141,20 +141,6 @@ public abstract class BlocklingMeleeAttackGoal extends BlocklingTargetGoal<Livin
      */
     protected void attack(@Nonnull LivingEntity target, @Nonnull BlocklingHand attackingHand)
     {
-        ItemStack mainStack = blockling.getMainHandItem();
-        ItemStack offStack = blockling.getOffhandItem();
-
-        if (mainStack.hurt(attackingHand == BlocklingHand.MAIN ? blockling.getSkills().getSkill(CombatSkills.WRECKLESS).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
-        {
-            mainStack.shrink(1);
-        }
-
-        if (offStack.hurt(attackingHand == BlocklingHand.OFF ? blockling.getSkills().getSkill(CombatSkills.WRECKLESS).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
-        {
-            offStack.shrink(1);
-        }
-
-        blockling.incAttacksRecently();
         blockling.doHurtTarget(target);
 
         recalcPath(true);

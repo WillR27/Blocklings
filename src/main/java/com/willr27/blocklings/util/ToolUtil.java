@@ -10,18 +10,15 @@ import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.SwordItem;
+import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraftforge.common.ToolType;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import slimeknights.tconstruct.library.tools.helper.ToolAttackUtil;
+import slimeknights.tconstruct.library.tools.helper.ToolHarvestLogic;
+import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.tools.item.small.SwordTool;
 
 import javax.annotation.Nonnull;
@@ -90,7 +87,7 @@ public class ToolUtil
     {
         List<Item> weapons = Registry.ITEM.stream().filter(item -> item instanceof SwordItem).collect(Collectors.toList());
 
-        if (ModList.get().isLoaded("tconstruct"))
+        if (ModUtil.isTinkersConstructLoaded())
         {
             weapons.addAll(Registry.ITEM.stream().filter(item -> item instanceof SwordTool).collect(Collectors.toList()));
         }
@@ -179,11 +176,45 @@ public class ToolUtil
     }
 
     /**
+     * @return true if the given item is a tool from Tinkers' Construct.
+     */
+    public static boolean isTinkersTool(@Nonnull ItemStack stack)
+    {
+        return isTinkersTool(stack.getItem());
+    }
+
+    /**
+     * @return true if the given item is a tool from Tinkers' Construct.
+     */
+    public static boolean isTinkersTool(@Nonnull Item item)
+    {
+        return item instanceof slimeknights.tconstruct.library.tools.item.ToolItem;
+    }
+
+    /**
+     * @return true if the given tool is in a useable state (e.g. Tinkers' tools aren't broken).
+     */
+    public static boolean isUseableTool(@Nonnull ItemStack stack)
+    {
+        if (!isTool(stack))
+        {
+            return false;
+        }
+
+        if (ModUtil.isTinkersConstructLoaded() && isTinkersTool(stack))
+        {
+            return !ToolStack.from(stack).isBroken();
+        }
+
+        return true;
+    }
+
+    /**
      * @return the attack speed of the given tool.
      */
     public static float getToolAttackSpeed(@Nonnull ItemStack stack)
     {
-        if (isTool(stack))
+        if (isUseableTool(stack))
         {
             Multimap<Attribute, AttributeModifier> multimap = stack.getAttributeModifiers(EquipmentSlotType.MAINHAND);
 
@@ -209,7 +240,7 @@ public class ToolUtil
      */
     public static float getToolBaseDamage(@Nonnull ItemStack stack)
     {
-        if (isTool(stack))
+        if (isUseableTool(stack))
         {
             Multimap<Attribute, AttributeModifier> multimap = stack.getAttributeModifiers(EquipmentSlotType.MAINHAND);
 
@@ -220,9 +251,9 @@ public class ToolUtil
 
                 if (attributemodifier.getId() == baseAttackDamageAttributeId)
                 {
-                    // Add on 1.0f as this seems to be the default value the player has
-                    // This is why the item tooltips say +8.0 instead of +7.0 for example
-                    return (float) attributemodifier.getAmount() + 1.0f;
+                    // The tooltip the player sees includes the player's +1.0 damage as well.
+                    // But for mod compatibility reasons, we need to leave that off.
+                    return (float) attributemodifier.getAmount();
                 }
             }
         }
@@ -283,7 +314,7 @@ public class ToolUtil
      */
     public static float getToolMiningSpeed(@Nonnull ItemStack stack)
     {
-        return stack.getDestroySpeed(Blocks.STONE.defaultBlockState());
+        return getToolHarvestSpeed(stack, Blocks.STONE.defaultBlockState());
     }
 
     /**
@@ -291,7 +322,7 @@ public class ToolUtil
      */
     public static float getToolWoodcuttingSpeed(@Nonnull ItemStack stack)
     {
-        return stack.getDestroySpeed(Blocks.OAK_LOG.defaultBlockState());
+        return getToolHarvestSpeed(stack, Blocks.OAK_LOG.defaultBlockState());
     }
 
     /**
@@ -299,13 +330,36 @@ public class ToolUtil
      */
     public static float getToolFarmingSpeed(@Nonnull ItemStack stack)
     {
-        return stack.getDestroySpeed(Blocks.HAY_BLOCK.defaultBlockState());
+        return getToolHarvestSpeed(stack, Blocks.HAY_BLOCK.defaultBlockState());
+    }
+
+    /**
+     * @return the harvest speed of the given stack against the given block state.
+     */
+    public static float getToolHarvestSpeed(@Nonnull ItemStack stack, @Nonnull BlockState blockStateToTestAgainst)
+    {
+        if (isUseableTool(stack))
+        {
+            if (ModUtil.isTinkersConstructLoaded() && isTinkersTool(stack))
+            {
+                if (canToolHarvestBlock(stack, blockStateToTestAgainst))
+                {
+                    return ToolHarvestLogic.DEFAULT.getDestroySpeed(stack, blockStateToTestAgainst);
+                }
+            }
+            else
+            {
+                return stack.getDestroySpeed(blockStateToTestAgainst);
+            }
+        }
+
+        return 0.0f;
     }
 
     /**
      * @return the attack/mining/woodcutting/farming speed for the given tool and tool type.
      */
-    public static float getToolSpeed(@Nonnull ItemStack stack, @Nonnull com.willr27.blocklings.util.ToolType toolType)
+    public static float getToolHarvestSpeed(@Nonnull ItemStack stack, @Nonnull com.willr27.blocklings.util.ToolType toolType)
     {
         switch (toolType)
         {
@@ -351,15 +405,22 @@ public class ToolUtil
             return false;
         }
 
-        ToolType harvestTool = blockState.getHarvestTool();
-
-        for (ToolType toolType : stack.getToolTypes())
+        if (ModUtil.isTinkersConstructLoaded() && isTinkersTool(stack))
         {
-            if (toolType == harvestTool)
+            return ToolHarvestLogic.DEFAULT.isEffective(ToolStack.from(stack), stack, blockState);
+        }
+        else
+        {
+            ToolType harvestTool = blockState.getHarvestTool();
+
+            for (ToolType toolType : stack.getToolTypes())
             {
-                if (stack.getHarvestLevel(toolType, null, blockState) >= blockState.getHarvestLevel())
+                if (toolType == harvestTool)
                 {
-                    return true;
+                    if (stack.getHarvestLevel(toolType, null, blockState) >= blockState.getHarvestLevel())
+                    {
+                        return true;
+                    }
                 }
             }
         }
