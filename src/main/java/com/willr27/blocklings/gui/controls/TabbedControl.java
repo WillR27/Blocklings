@@ -57,6 +57,12 @@ public class TabbedControl extends Control
         }
     }
 
+    @Override
+    public void controlMouseReleased(@Nonnull MouseButtonEvent e)
+    {
+
+    }
+
     /**
      * The control for the tabs along the edge of the gui.
      */

@@ -446,11 +446,11 @@ public class SkillControl extends Control
             return;
         }
 
-        if (!skillsControl.isMouseOver(e.mouseX, e.mouseY) || !isMouseOver(e.mouseX, e.mouseY))
+        if (!isMouseOver(e.mouseX, e.mouseY))
         {
             isSelected = false;
         }
-        else if (!skill.isBought())
+        else if (!skill.isBought() && skill.getState() == Skill.State.UNLOCKED && !skill.hasConflict())
         {
             if (isSelected)
             {

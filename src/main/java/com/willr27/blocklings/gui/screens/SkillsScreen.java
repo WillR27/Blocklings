@@ -80,6 +80,7 @@ public class SkillsScreen extends TabbedScreen
         tabbedControl.setIsVisible(isVisible);
 
         skillsContainer = new Control(this, contentLeft + 9, contentTop + 9, 158, 148);
+        skillsContainer.setIsInteractive(false);
 
         skillsControl = new SkillsControl(skillsContainer, blockling, group, 0, 0, 158, 148);
         skillsControl.setIsFocused(true);
