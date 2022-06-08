@@ -2,17 +2,19 @@
   "entity.blocklings.blockling": "Blockling",
 
   "item.blocklings.blockling": "Blockling",
-  "item.blocklings.blockling_spawn_egg": "Blockling Spawn Egg",
+  "item.blocklings.blockling_spawn_egg": "Engendrar Blockling",
+  "item.blocklings.blockling_whistle": "Silbato Blockling",
+  "item.blocklings.blockling_whistle.location": "Ubicación: ",
 
-  "blocklings.gui.more_info": "Hold %s for more info",
-  "blocklings.gui.current_level": "Level: %1$s%2$d",
-  "blocklings.gui.xp_required": "XP: %1$s%2$d/%3$d",
-  "blocklings.gui.configure_task": "Configure Task",
+  "blocklings.gui.more_info": "Mantén pulsado %s para más información",
+  "blocklings.gui.current_level": "Nivel: %1$s%2$d",
+  "blocklings.gui.xp_required": "EXP: %1$s%2$d/%3$d",
+  "blocklings.gui.configure_task": "Configurar tarea",
 
-  "blocklings.type.name": "Type: ",
-  "blocklings.type.desc": "This is the current type of your blockling which can be changed by feeding them certain items.",
-  "blocklings.type.natural.name": "Natural Type: ",
-  "blocklings.type.natural.desc": "This is natural type of your blockling that they initially spawned as.",
+  "blocklings.type.name": "Tipo: ",
+  "blocklings.type.desc": "Este es el tipo actual de su blockling que se puede cambiar alimentándolo con ciertos elementos.",
+  "blocklings.type.natural.name": "Tipo natural: ",
+  "blocklings.type.natural.desc": "Este es el tipo natural de blockling que generaron inicialmente.",
   "blocklings.type.grass": "Césped",
   "blocklings.type.oak_log": "Tronco",
   "blocklings.type.stone": "Piedra",
@@ -25,7 +27,7 @@
   "blocklings.type.netherite": "Netherite",
   "blocklings.type.obsidian": "Obsidiana",
 
-  "blocklings.tab.stats": "Stats",
+  "blocklings.tab.stats": "Estadísticas",
   "blocklings.tab.tasks": "Tareas",
   "blocklings.tab.equipment": "Equipo",
   "blocklings.tab.utility_1": "Utilidad 1",
@@ -36,6 +38,17 @@
   "blocklings.tab.woodcutting": "Tala",
   "blocklings.tab.farming": "Agricultura",
 
+  "blocklings.task.ui.configure": "Configurar",
+  "blocklings.task.ui.disable": "Deshabilitado",
+  "blocklings.task.ui.enable": "Habilitado",
+  "blocklings.task.ui.add": "Agregar",
+  "blocklings.task.ui.remove": "Remover",
+  "blocklings.task.ui.tab.misc": "Varios",
+  "blocklings.task.ui.task_type": "Tipo de tarea",
+  "blocklings.task.property.follow_start_range.name": "Seguir rango de inicio",
+  "blocklings.task.property.follow_start_range.desc": "La distancia a la que tu blockling comenzará a seguirte.",
+  "blocklings.task.property.follow_stop_range.name": "Seguir rango de parada",
+  "blocklings.task.property.follow_stop_range.desc": "La distancia a la que tu blockling dejará de seguirte.",
   "blocklings.task.null.name": "Vacío",
   "blocklings.task.null.desc": "Haga clic en el botón de configuración para configurar esta tarea.",
   "blocklings.task.sit.name": "Sentarse",
@@ -190,7 +203,7 @@
   "blocklings.stats.attack.name": "§6Ataque",
   "blocklings.stats.defence.name": "§6Defensa",
   "blocklings.stats.gathering.name": "§6Recogida",
-  "blocklings.stats.movement.name": "§6Movemiento",
+  "blocklings.stats.movement.name": "§6Movimiento",
 
   "blocklings.attribute.health.name": "Salud",
   "blocklings.attribute.max_health.name": "Salud maxima",
@@ -229,5 +242,7 @@
   "blocklings.attribute.farming.speed": "Velocidad: %.1f",
   "blocklings.attribute.mining.range": "Rango: %.1f",
   "blocklings.attribute.woodcutting.range": "Rango: %.1f",
-  "blocklings.attribute.farming.range": "Rango: %.1f"
+  "blocklings.attribute.farming.range": "Rango: %.1f",
+
+  "blocklings.subtitle.blockling_whistle": "Silbato Blockling"
 }

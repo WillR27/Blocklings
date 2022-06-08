@@ -3,6 +3,8 @@
 
   "item.blocklings.blockling": "Призыв Blockling",
   "item.blocklings.blockling_spawn_egg": "Яйцо призыва Blockling",
+  "item.blocklings.blockling_whistle": "Blockling Whistle",
+  "item.blocklings.blockling_whistle.location": "Location: ",
 
   "blocklings.gui.more_info": "Hold %s for more info",
   "blocklings.gui.current_level": "Level: %1$s%2$d",
@@ -36,6 +38,17 @@
   "blocklings.tab.woodcutting": "Лесоводство",
   "blocklings.tab.farming": "Фермерство",
 
+  "blocklings.task.ui.configure": "Configure",
+  "blocklings.task.ui.disable": "Disable",
+  "blocklings.task.ui.enable": "Enable",
+  "blocklings.task.ui.add": "Add",
+  "blocklings.task.ui.remove": "Remove",
+  "blocklings.task.ui.tab.misc": "Misc",
+  "blocklings.task.ui.task_type": "Task type",
+  "blocklings.task.property.follow_start_range.name": "Follow start range",
+  "blocklings.task.property.follow_start_range.desc": "The distance at which your blockling will start following you.",
+  "blocklings.task.property.follow_stop_range.name": "Follow stop range",
+  "blocklings.task.property.follow_stop_range.desc": "The distance at which your blockling will stop following you.",
   "blocklings.task.null.name": "Blank team sheet",
   "blocklings.task.null.desc": "Нажмите кнопку «Настроить», чтобы настроить эту задачу.",
   "blocklings.task.sit.name": "Сидеть",
@@ -151,8 +164,8 @@
   "blocklings.skill.woodcutting.momentum.name": "Импульс",
   "blocklings.skill.woodcutting.momentum.desc": "Ваш Blockling рубит быстрее за каждое бревно, расколотое в течение 5 секунд.",
   "blocklings.skill.woodcutting.hasty.name": "Торопливый",
-      "blocklings.skill.woodcutting.hasty.desc": "Ваш Blockling рубит быстрее, но используются в 2 раза большей прочности топора.",
-    "blocklings.skill.woodcutting.night_owl.name": "Ночная Сова",
+  "blocklings.skill.woodcutting.hasty.desc": "Ваш Blockling рубит быстрее, но используются в 2 раза большей прочности топора.",
+  "blocklings.skill.woodcutting.night_owl.name": "Ночная Сова",
   "blocklings.skill.woodcutting.night_owl.desc": "Ваш Blockling рубит тем быстрее, чем ниже уровень освещения.",
   "blocklings.skill.woodcutting.leaf_blower.name": "Воздуходувка листьев",
   "blocklings.skill.woodcutting.leaf_blower.desc": "Ваш Blockling ломает соседние листья при рубке бревен.",
@@ -229,5 +242,7 @@
   "blocklings.attribute.farming.speed": "Скорость: %.1f",
   "blocklings.attribute.mining.range": "Ралиу добычи руд: %.1f",
   "blocklings.attribute.woodcutting.range": "Ралиу добычи дерева: %.1f",
-  "blocklings.attribute.farming.range": "Радиус сбора: %.1f"
+  "blocklings.attribute.farming.range": "Радиус сбора: %.1f",
+
+  "blocklings.subtitle.blockling_whistle": "Blockling whistle"
 }

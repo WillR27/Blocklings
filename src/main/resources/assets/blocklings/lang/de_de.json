@@ -3,16 +3,18 @@
 
   "item.blocklings.blockling": "Blockling",
   "item.blocklings.blockling_spawn_egg": "Blockling-Spawn-Ei",
+  "item.blocklings.blockling_whistle": "Blockling Whistle",
+  "item.blocklings.blockling_whistle.location": "Location: ",
 
-  "blocklings.gui.more_info": "Hold %s for more info",
+  "blocklings.gui.more_info": "Halte %s für mehr Informationen",
   "blocklings.gui.current_level": "Level: %1$s%2$d",
   "blocklings.gui.xp_required": "XP: %1$s%2$d/%3$d",
-  "blocklings.gui.configure_task": "Configure Task",
+  "blocklings.gui.configure_task": "Aufgabe konfigurieren",
 
-  "blocklings.type.name": "Type: ",
-  "blocklings.type.desc": "This is the current type of your blockling which can be changed by feeding them certain items.",
-  "blocklings.type.natural.name": "Natural Type: ",
-  "blocklings.type.natural.desc": "This is natural type of your blockling that they initially spawned as.",
+  "blocklings.type.name": "Art: ",
+  "blocklings.type.desc": "Das ist die aktuelle Art deines Blocklings, welche durch das Füttern mit bestimmten Items geändert werden kann.",
+  "blocklings.type.natural.name": "Natürliche Art: ",
+  "blocklings.type.natural.desc": "Das ist die ursprüngliche Art deines Blocklings, mit der er natürlich gespawnt ist.",
   "blocklings.type.grass": "Gras",
   "blocklings.type.oak_log": "Eichenstamm",
   "blocklings.type.stone": "Stein",
@@ -36,6 +38,17 @@
   "blocklings.tab.woodcutting": "Holzfällen",
   "blocklings.tab.farming": "Ackerbau",
 
+  "blocklings.task.ui.configure": "Configure",
+  "blocklings.task.ui.disable": "Disable",
+  "blocklings.task.ui.enable": "Enable",
+  "blocklings.task.ui.add": "Add",
+  "blocklings.task.ui.remove": "Remove",
+  "blocklings.task.ui.tab.misc": "Misc",
+  "blocklings.task.ui.task_type": "Task type",
+  "blocklings.task.property.follow_start_range.name": "Follow start range",
+  "blocklings.task.property.follow_start_range.desc": "The distance at which your blockling will start following you.",
+  "blocklings.task.property.follow_stop_range.name": "Follow stop range",
+  "blocklings.task.property.follow_stop_range.desc": "The distance at which your blockling will stop following you.",
   "blocklings.task.null.name": "Leer",
   "blocklings.task.null.desc": "Klicke auf die Konfigurieren Schaltfläche um diese Aufgabe zu erstellen.",
   "blocklings.task.sit.name": "Sitzen",
@@ -141,7 +154,7 @@
   "blocklings.skill.mining.hammer.desc": "Dein Blockling baut Erze in einem 3x3x3 Bereich ab.",
 
   "blocklings.skill.woodcutting.novice_lumberjack.name": "Holzfällanfänger",
-"blocklings.skill.woodcutting.novice_lumberjack.desc": "Schaltet die \"Fälle Bäume\" Aufgabe frei.",
+  "blocklings.skill.woodcutting.novice_lumberjack.desc": "Schaltet die \"Fälle Bäume\" Aufgabe frei.",
   "blocklings.skill.woodcutting.whitelist.name": "Erlaubtes Holz",
   "blocklings.skill.woodcutting.whitelist.desc": "Schaltet eine Liste frei, um Ziele beim Holzfällen zu bestimmen.",
   "blocklings.skill.woodcutting.efficiency.name": "Effizienz",
@@ -164,7 +177,7 @@
   "blocklings.skill.woodcutting.lumber_axe.desc": "Dein Blockling baut Bäume in einem 3x3x3 Bereich ab.",
 
   "blocklings.skill.farming.novice_farmer.name": "Anfängerlandwirt",
-"blocklings.skill.farming.novice_farmer.desc": "Schaltet die \"Ernte Pflanzen\" Aufgabe frei.",
+  "blocklings.skill.farming.novice_farmer.desc": "Schaltet die \"Ernte Pflanzen\" Aufgabe frei.",
   "blocklings.skill.farming.crop_whitelist.name": "Erlaubte Pflanzen",
   "blocklings.skill.farming.crop_whitelist.desc": "Schaltet eine Liste frei, um Ziele für Pflanzen zu bestimmen.",
   "blocklings.skill.farming.efficiency.name": "Effizienz",
@@ -201,7 +214,7 @@
 
   "blocklings.attribute.armour.name": "Rüstung",
   "blocklings.attribute.armour_toughness.name": "Rüstungshärte",
-  "blocklings.attribute.knockback_resistance.name": "Rückstoßwiderstand",
+  "blocklings.attribute.knockback_resistance.name": "Standfestigkeit",
 
   "blocklings.attribute.mining_speed.name": "Abbaugeschwindigkeit",
   "blocklings.attribute.mining_range.name": "Abbaureichweite",
@@ -229,5 +242,7 @@
   "blocklings.attribute.farming.speed": "Geschwindigkeit: %.1f",
   "blocklings.attribute.mining.range": "Reichweite: %.1f",
   "blocklings.attribute.woodcutting.range": "Reichweite: %.1f",
-  "blocklings.attribute.farming.range": "Reichweite: %.1f"
+  "blocklings.attribute.farming.range": "Reichweite: %.1f",
+
+  "blocklings.subtitle.blockling_whistle": "Blockling whistle"
 }

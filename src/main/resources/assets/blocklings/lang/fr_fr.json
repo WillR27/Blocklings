@@ -3,6 +3,8 @@
 
   "item.blocklings.blockling": "Blockling",
   "item.blocklings.blockling_spawn_egg": "Oeuf d'apparition de Blockling",
+  "item.blocklings.blockling_whistle": "Blockling Whistle",
+  "item.blocklings.blockling_whistle.location": "Location: ",
 
   "blocklings.gui.more_info": "Hold %s for more info",
   "blocklings.gui.current_level": "Level: %1$s%2$d",
@@ -36,6 +38,17 @@
   "blocklings.tab.woodcutting": "Bûcheron",
   "blocklings.tab.farming": "Agriculture",
 
+  "blocklings.task.ui.configure": "Configure",
+  "blocklings.task.ui.disable": "Disable",
+  "blocklings.task.ui.enable": "Enable",
+  "blocklings.task.ui.add": "Add",
+  "blocklings.task.ui.remove": "Remove",
+  "blocklings.task.ui.tab.misc": "Misc",
+  "blocklings.task.ui.task_type": "Task type",
+  "blocklings.task.property.follow_start_range.name": "Follow start range",
+  "blocklings.task.property.follow_start_range.desc": "The distance at which your blockling will start following you.",
+  "blocklings.task.property.follow_stop_range.name": "Follow stop range",
+  "blocklings.task.property.follow_stop_range.desc": "The distance at which your blockling will stop following you.",
   "blocklings.task.null.name": "Rien",
   "blocklings.task.null.desc": "Clickez sur le bouton de configuration pour configurer cette tâche.",
   "blocklings.task.sit.name": "S'asseoir",
@@ -229,5 +242,7 @@
   "blocklings.attribute.farming.speed": "Vitesse : %.1f",
   "blocklings.attribute.mining.range": "Portée : %.1f",
   "blocklings.attribute.woodcutting.range": "Portée : %.1f",
-  "blocklings.attribute.farming.range": "Portée : %.1f"
+  "blocklings.attribute.farming.range": "Portée : %.1f",
+
+  "blocklings.subtitle.blockling_whistle": "Blockling whistle"
 }
