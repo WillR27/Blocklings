@@ -10,21 +10,40 @@ import javafx.util.Pair;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 
+/**
+ * The blockling's equipment inventory.
+ */
 public class EquipmentInventory extends AbstractInventory
 {
+    /**
+     * The index of the slot containing the blockling's main hand tool.
+     */
     public static final int TOOL_MAIN_HAND = 0;
+
+    /**
+     * The index of the slot containing the blockling's off hand tool.
+     */
     public static final int TOOL_OFF_HAND = 1;
 
-    public EquipmentInventory(BlocklingEntity blockling)
+    /**
+     * @param blockling the blockling the inventory is attached to.
+     */
+    public EquipmentInventory(@Nonnull BlocklingEntity blockling)
     {
         super(blockling, 26);
     }
 
-    public BlocklingHand findHandToolEquipped(ToolType toolType)
+    /**
+     * @return which hand(s) the blockling currently has a tool in.
+     */
+    @Nonnull
+    public BlocklingHand findHandToolEquipped(@Nonnull ToolType toolType)
     {
         boolean hasInMain = hasToolEquipped(Hand.MAIN_HAND);
         boolean hasInOff = hasToolEquipped(Hand.OFF_HAND);
@@ -47,39 +66,43 @@ public class EquipmentInventory extends AbstractInventory
         }
     }
 
-    public boolean hasToolsEquipped(ToolType toolType1, ToolType toolType2, boolean handsDoNotMatter)
-    {
-        if (handsDoNotMatter)
-        {
-            return hasToolEquipped(toolType1) && hasToolEquipped(toolType2);
-        }
-        else
-        {
-            return hasToolEquipped(Hand.MAIN_HAND, toolType1) && hasToolEquipped(Hand.OFF_HAND, toolType2);
-        }
-    }
-
-    public boolean hasToolEquipped(Hand hand)
+    /**
+     * @return true if the blockling has a tool equipped in the given hand.
+     */
+    public boolean hasToolEquipped(@Nonnull Hand hand)
     {
         return ToolUtil.isTool(getHandStack(hand));
     }
 
-    public boolean hasToolEquipped(ToolType toolType)
+    /**
+     * @return true if the blockling has at least one tool equipped of the given type.
+     */
+    public boolean hasToolEquipped(@Nonnull ToolType toolType)
     {
         return hasToolEquipped(Hand.MAIN_HAND, toolType) || hasToolEquipped(Hand.OFF_HAND, toolType);
     }
 
-    public boolean hasToolEquipped(Hand hand, ToolType toolType)
+    /**
+     * @return true if the blockling has a tool equipped of the given type in the given hand.
+     */
+    public boolean hasToolEquipped(@Nonnull Hand hand, @Nonnull ToolType toolType)
     {
         return toolType.is(getHandStack(hand));
     }
 
-    public ItemStack getHandStack(Hand hand)
+    /**
+     * @return the stack in the given hand.
+     */
+    @Nonnull
+    public ItemStack getHandStack(@Nonnull Hand hand)
     {
         return hand == Hand.MAIN_HAND ? getItem(TOOL_MAIN_HAND) : getItem(TOOL_OFF_HAND);
     }
 
-    public void setHandStack(Hand hand, ItemStack stack)
+    /**
+     * Sets the stack in the given hand.
+     */
+    public void setHandStack(@Nonnull Hand hand, @Nonnull ItemStack stack)
     {
         if (hand == Hand.MAIN_HAND)
         {
@@ -91,7 +114,10 @@ public class EquipmentInventory extends AbstractInventory
         }
     }
 
-    public boolean isAttackingWith(BlocklingHand hand)
+    /**
+     * @return true if the blockling is attacking with the given hand.
+     */
+    public boolean isAttackingWith(@Nonnull BlocklingHand hand)
     {
         BlocklingHand attackingHand = findAttackingHand();
 
@@ -115,6 +141,10 @@ public class EquipmentInventory extends AbstractInventory
         return false;
     }
 
+    /**
+     * @return the hand the blockling is attacking with.
+     */
+    @Nonnull
     public BlocklingHand findAttackingHand()
     {
         if (hasUseableWeapon(Hand.MAIN_HAND) && hasUseableWeapon(Hand.OFF_HAND))
@@ -157,24 +187,33 @@ public class EquipmentInventory extends AbstractInventory
         return ToolUtil.isUseableTool(getHandStack(hand));
     }
 
-    public boolean canHarvestBlockWithEquippedTools(BlockState blockState)
+    /**
+     * @return true if the blockling can harvest the given block with their current tools.
+     */
+    public boolean canHarvestBlockWithEquippedTools(@Nonnull BlockState blockState)
     {
         return canHarvestBlockWithEquippedTool(Hand.MAIN_HAND, blockState) || canHarvestBlockWithEquippedTool(Hand.OFF_HAND, blockState);
     }
 
-    public boolean canHarvestBlockWithEquippedTool(Hand hand, BlockState blockState)
+    /**
+     * @return true if the blockling can harvest the given block with the current tool in the given hand.
+     */
+    public boolean canHarvestBlockWithEquippedTool(@Nonnull Hand hand, @Nonnull BlockState blockState)
     {
         return ToolUtil.canToolHarvestBlock(getHandStack(hand), blockState);
     }
 
-    public boolean trySwitchToBestTool(BlocklingHand hand, ToolType toolType)
+    /**
+     * @return true if any slots were switched.
+     */
+    public boolean trySwitchToBestTool(@Nonnull BlocklingHand hand, @Nonnull ToolType toolType)
     {
-        Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> bestToolSlots = findBestToolSlotsToSwitchTo(hand, toolType);
+        Pair<SwitchedTools, SwitchedTools> bestToolSlots = findBestToolSlotsToSwitchTo(hand, toolType);
 
-        int mainHandSlot = bestToolSlots.getKey().getKey();
-        int mainBestSlot = bestToolSlots.getKey().getValue();
-        int offHandSlot = bestToolSlots.getValue().getKey();
-        int offBestSlot = bestToolSlots.getValue().getValue();
+        int mainHandSlot = bestToolSlots.getKey().originalSlot;
+        int mainBestSlot = bestToolSlots.getKey().bestSlot;
+        int offHandSlot = bestToolSlots.getValue().originalSlot;
+        int offBestSlot = bestToolSlots.getValue().bestSlot;
 
         boolean result = false;
 
@@ -195,43 +234,51 @@ public class EquipmentInventory extends AbstractInventory
         return result;
     }
 
-    public Pair<ItemStack, ItemStack> findBestToolsToSwitchTo(BlocklingHand hand, ToolType toolType)
+    /**
+     * @return the best tools for the given hand slots.
+     */
+    @Nonnull
+    public Pair<ItemStack, ItemStack> findBestToolsToSwitchTo(@Nonnull BlocklingHand hand, @Nonnull ToolType toolType)
     {
-        Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> bestTools = findBestToolSlotsToSwitchTo(hand, toolType);
+        Pair<SwitchedTools, SwitchedTools> bestTools = findBestToolSlotsToSwitchTo(hand, toolType);
 
-        return new Pair<>(getItem(bestTools.getKey().getValue()), getItem(bestTools.getValue().getValue()));
+        return new Pair<>(getItem(bestTools.getKey().bestSlot), getItem(bestTools.getValue().bestSlot));
     }
 
-    public Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> findBestToolSlotsToSwitchTo(BlocklingHand hand, ToolType toolType)
+    /**
+     * @return the current hand slots and the best hand slots to switch to.
+     */
+    @Nonnull
+    public Pair<SwitchedTools, SwitchedTools> findBestToolSlotsToSwitchTo(@Nonnull BlocklingHand hand, @Nonnull ToolType toolType)
     {
         if (hand == BlocklingHand.MAIN)
         {
-            return new Pair<>(findBestToolSlotToSwitchTo(BlocklingHand.MAIN, toolType), new Pair<>(TOOL_OFF_HAND, TOOL_OFF_HAND));
+            return new Pair<>(findBestToolSlotToSwitchTo(BlocklingHand.MAIN, toolType), new SwitchedTools(TOOL_OFF_HAND, TOOL_OFF_HAND));
         }
         else if (hand == BlocklingHand.OFF)
         {
-            return new Pair<>(new Pair<>(TOOL_MAIN_HAND, TOOL_MAIN_HAND), findBestToolSlotToSwitchTo(BlocklingHand.OFF, toolType));
+            return new Pair<>(new SwitchedTools(TOOL_MAIN_HAND, TOOL_MAIN_HAND), findBestToolSlotToSwitchTo(BlocklingHand.OFF, toolType));
         }
         else if (hand == BlocklingHand.BOTH)
         {
-            Pair<Integer, Integer> toolSlotsMain = findBestToolSlotToSwitchTo(BlocklingHand.MAIN, toolType);
+            SwitchedTools toolSlotsMain = findBestToolSlotToSwitchTo(BlocklingHand.MAIN, toolType);
 
-            if (toolSlotsMain.getValue() != TOOL_MAIN_HAND)
+            if (toolSlotsMain.bestSlot != TOOL_MAIN_HAND)
             {
-                swapItems(toolSlotsMain.getKey(), toolSlotsMain.getValue());
+                swapItems(toolSlotsMain.originalSlot, toolSlotsMain.bestSlot);
             }
 
-            Pair<Integer, Integer> toolSlotsOff = findBestToolSlotToSwitchTo(BlocklingHand.OFF, toolType);
+            SwitchedTools toolSlotsOff = findBestToolSlotToSwitchTo(BlocklingHand.OFF, toolType);
 
-            if (toolSlotsMain.getValue() != TOOL_MAIN_HAND)
+            if (toolSlotsMain.bestSlot != TOOL_MAIN_HAND)
             {
-                swapItems(toolSlotsMain.getKey(), toolSlotsMain.getValue());
+                swapItems(toolSlotsMain.originalSlot, toolSlotsMain.bestSlot);
             }
 
             return new Pair<>(toolSlotsMain, toolSlotsOff);
         }
 
-        return new Pair<>(new Pair<>(TOOL_MAIN_HAND, TOOL_MAIN_HAND), new Pair<>(TOOL_OFF_HAND, TOOL_OFF_HAND));
+        return new Pair<>(new SwitchedTools(TOOL_MAIN_HAND, TOOL_MAIN_HAND), new SwitchedTools(TOOL_OFF_HAND, TOOL_OFF_HAND));
     }
 
     /**
@@ -240,13 +287,13 @@ public class EquipmentInventory extends AbstractInventory
      * @return a pair containing the slots to swap with the best items, hand slot first then the other slot to swap with.
      */
     @Nonnull
-    public Pair<Integer, Integer> findBestToolSlotToSwitchTo(@Nonnull BlocklingHand hand, @Nonnull ToolType toolType)
+    public SwitchedTools findBestToolSlotToSwitchTo(@Nonnull BlocklingHand hand, @Nonnull ToolType toolType)
     {
         if (!(hand == BlocklingHand.MAIN || hand == BlocklingHand.OFF))
         {
             Log.warn("Tried to find the best tool to switch to with a hand that wasn't MAIN or OFF!");
 
-            return new Pair<>(TOOL_OFF_HAND, TOOL_OFF_HAND);
+            return new SwitchedTools(TOOL_OFF_HAND, TOOL_OFF_HAND);
         }
 
         int bestSlot = hand == BlocklingHand.MAIN ? TOOL_MAIN_HAND : TOOL_OFF_HAND;
@@ -291,11 +338,11 @@ public class EquipmentInventory extends AbstractInventory
             }
         }
 
-        return new Pair<>(handSlot, bestSlot);
+        return new SwitchedTools(handSlot, bestSlot);
     }
 
     @Override
-    public ItemStack addItem(ItemStack stack)
+    public ItemStack addItem(@Nonnull ItemStack stack)
     {
         int maxStackSize = stack.getMaxStackSize();
 
@@ -346,7 +393,7 @@ public class EquipmentInventory extends AbstractInventory
     }
 
     @Override
-    public void setItem(int index, ItemStack stack)
+    public void setItem(int index, @Nonnull ItemStack stack)
     {
         super.setItem(index, stack);
 
@@ -356,6 +403,9 @@ public class EquipmentInventory extends AbstractInventory
         }
     }
 
+    /**
+     * Updates the values of the blockling's tool attributes.
+     */
     public void updateToolAttributes()
     {
         BlocklingAttributes stats = blockling.getStats();
@@ -411,6 +461,9 @@ public class EquipmentInventory extends AbstractInventory
         }
     }
 
+    /**
+     * Detects any changed slots and syncs them to the client.
+     */
     public void detectAndSendChanges()
     {
         if (!world.isClientSide)
@@ -434,6 +487,32 @@ public class EquipmentInventory extends AbstractInventory
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Represents a pair of slots to switch.
+     */
+    public static class SwitchedTools
+    {
+        /**
+         * The index of the slot that was being switched to.
+         */
+        public final int originalSlot;
+
+        /**
+         * The index of the slot that contained the best tool.
+         */
+        public final int bestSlot;
+
+        /**
+         * @param originalSlot the index of the slot that was being switched to.
+         * @param bestSlot the index of the slot that contained the best tool.
+         */
+        public SwitchedTools(int originalSlot, int bestSlot)
+        {
+            this.originalSlot = originalSlot;
+            this.bestSlot = bestSlot;
         }
     }
 }
