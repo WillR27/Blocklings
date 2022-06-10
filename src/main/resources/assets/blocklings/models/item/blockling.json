@@ -69,6 +69,12 @@
         "blocklings:type": 10
       },
       "model": "blocklings:item/blockling_obsidian"
+    },
+    {
+      "predicate": {
+        "blocklings:type": 11
+      },
+      "model": "blocklings:item/blockling_glowstone"
     }
   ]
 }

@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.action.BlocklingActions;
 import com.willr27.blocklings.attribute.BlocklingAttributes;
+import com.willr27.blocklings.block.BlocklingsBlocks;
 import com.willr27.blocklings.gui.BlocklingGuiHandler;
 import com.willr27.blocklings.interop.TinkersConstructProxy;
 import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
@@ -18,6 +19,8 @@ import com.willr27.blocklings.skill.skills.*;
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.util.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -36,6 +39,7 @@ import net.minecraft.potion.Effects;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -45,13 +49,15 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 import java.util.function.BiPredicate;
 
 import static com.willr27.blocklings.item.items.BlocklingsItems.BLOCKLING_WHISTLE;
@@ -59,6 +65,7 @@ import static com.willr27.blocklings.item.items.BlocklingsItems.BLOCKLING_WHISTL
 /**
  * The blockling entity.
  */
+@Mod.EventBusSubscriber(modid = Blocklings.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class BlocklingEntity extends TameableEntity implements IEntityAdditionalSpawnData, IReadWriteNBT
 {
     /**
@@ -157,6 +164,12 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     private boolean hasPlayerResetCrouchBetweenInteractions = true;
 
     /**
+     * The current position of the blockling's light source block.
+     */
+    @Nullable
+    private BlockPos currentLightPos = null;
+
+    /**
      * @param type the blockling entity type.
      * @param world the world the blockling is in.
      */
@@ -183,6 +196,15 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         equipmentInv.updateToolAttributes();
 
         setHealth(getMaxHealth());
+    }
+
+    @Override
+    public void remove(boolean keepData)
+    {
+        super.remove(keepData);
+
+        // Make sure any light sources are removed when the blockling is removed.
+        updateLightPos(true);
     }
 
     /**
@@ -338,14 +360,18 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     {
         super.tick();
 
-        if (!level.isClientSide && !hasPlayerResetCrouchBetweenInteractions)
+        if (!level.isClientSide)
         {
-            hasPlayerResetCrouchBetweenInteractions = !isTame() || (getOwner() != null && !getOwner().isCrouching());
+            if (!hasPlayerResetCrouchBetweenInteractions)
+            {
+                hasPlayerResetCrouchBetweenInteractions = !isTame() || (getOwner() != null && !getOwner().isCrouching());
+            }
         }
 
         skills.tick();
         actions.tick();
 
+        updateLightPos(false);
         checkAndUpdateCooldowns();
         
         equipmentInv.detectAndSendChanges();
@@ -358,6 +384,40 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         // Tick the tasks just after the goal and target selectors have ticked
         tasks.tick();
+    }
+
+    /**
+     * Updates the position of the blockling's light source.
+     *
+     * @param removeOnly whether to only remove the light source and not replace it.
+     */
+    public void updateLightPos(boolean removeOnly)
+    {
+        if (!level.isClientSide)
+        {
+            if (currentLightPos != null)
+            {
+                level.removeBlock(currentLightPos, false);
+            }
+
+            if (!removeOnly && blocklingType == BlocklingType.GLOWSTONE)
+            {
+                BlockPos blockPos = new BlockPos(position().add(0.0, 0.5 * getScale(), 0.0));
+
+                for (BlockPos testPos : Arrays.asList(blockPos, blockPos.above(), blockPos.below(), blockPos.north(), blockPos.south(), blockPos.east(), blockPos.west()))
+                {
+                    BlockState blockState = level.getBlockState(blockPos = testPos);
+                    Block block = blockState.getBlock();
+
+                    if (block.getBlock().isAir(blockState, level, blockPos) || (currentLightPos == null && block == BlocklingsBlocks.LIGHT.get()))
+                    {
+                        level.setBlock(currentLightPos = blockPos, BlocklingsBlocks.LIGHT.get().defaultBlockState(), 3);
+
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     /**

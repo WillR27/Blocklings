@@ -1,5 +1,6 @@
 package com.willr27.blocklings;
 
+import com.willr27.blocklings.block.BlocklingsBlocks;
 import com.willr27.blocklings.command.BlocklingsCommands;
 import com.willr27.blocklings.entity.BlocklingsEntityTypes;
 import com.willr27.blocklings.entity.renderers.blockling.BlocklingRenderer;
@@ -51,6 +52,7 @@ public class Blocklings
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         BlocklingsEntityTypes.register(modEventBus);
+        BlocklingsBlocks.register(modEventBus);
         BlocklingsItems.register(modEventBus);
         BlocklingsSounds.register(modEventBus);
 

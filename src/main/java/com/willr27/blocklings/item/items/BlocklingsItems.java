@@ -10,15 +10,26 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import javax.annotation.Nonnull;
+
+/**
+ * Handles the registration of items.
+ */
 public class BlocklingsItems
 {
+    /**
+     * The deferred item registry.
+     */
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Blocklings.MODID);
 
     public static final RegistryObject<Item> BLOCKLING_SPAWN_EGG = ITEMS.register("blockling_spawn_egg", () -> new ForgeSpawnEggItem(BlocklingsEntityTypes.BLOCKLING_ENTITY, 0x785439, 0x466f33, new Item.Properties().tab(ItemGroup.TAB_MISC)));
     public static final RegistryObject<Item> BLOCKLING = ITEMS.register("blockling", BlocklingItem::new);
     public static final RegistryObject<Item> BLOCKLING_WHISTLE = ITEMS.register("blockling_whistle", BlocklingWhistleItem::new);
 
-    public static void register(IEventBus modEventBus)
+    /**
+     * Registers the items.
+     */
+    public static void register(@Nonnull IEventBus modEventBus)
     {
         ITEMS.register(modEventBus);
     }
