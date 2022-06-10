@@ -3,7 +3,6 @@ package com.willr27.blocklings.goal.goals;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.goal.BlocklingTargetGoal;
-import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
 import com.willr27.blocklings.skill.skills.GeneralSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.util.ToolContext;
@@ -152,7 +151,7 @@ public abstract class BlocklingGatherGoal extends BlocklingTargetGoal<BlockPos>
         {
             Pair<ItemStack, ItemStack> bestTools = blockling.getEquipment().findBestToolsToSwitchTo(BlocklingHand.BOTH, new ToolContext(getToolType(), blockState));
 
-            if (ToolUtil.canToolHarvestBlock(bestTools.getKey(), blockState) || ToolUtil.canToolHarvestBlock(bestTools.getValue(), blockState))
+            if (ToolUtil.canToolHarvest(bestTools.getKey(), blockState) || ToolUtil.canToolHarvest(bestTools.getValue(), blockState))
             {
                 return true;
             }

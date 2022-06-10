@@ -199,7 +199,7 @@ public class EquipmentInventory extends AbstractInventory
      */
     public boolean canHarvestBlockWithEquippedTool(@Nonnull Hand hand, @Nonnull BlockState blockState)
     {
-        return ToolUtil.canToolHarvestBlock(getHandStack(hand), blockState);
+        return ToolUtil.canToolHarvest(getHandStack(hand), blockState);
     }
 
     /**
@@ -324,7 +324,7 @@ public class EquipmentInventory extends AbstractInventory
             {
                 ItemStack stack = stacks[i];
 
-                if (context.toolType.is(stack) && ToolUtil.canToolHarvestBlock(stack, context.blockState))
+                if (context.toolType.is(stack) && ToolUtil.canToolHarvest(stack, context.blockState))
                 {
                     float speed = ToolUtil.getToolHarvestSpeedWithEnchantments(stack, context.blockState);
 

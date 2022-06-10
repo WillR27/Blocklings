@@ -121,8 +121,8 @@ repositories {
 dependencies {
     minecraft 'net.minecraftforge:forge:' + minecraft_version + '-' + forge_version
 
-    implementation fg.deobf("slimeknights.mantle:Mantle:1.16.5-$mantle_version")
-    implementation fg.deobf("slimeknights.tconstruct:TConstruct:1.16.5-$tic_version")
+    compileOnly fg.deobf("slimeknights.mantle:Mantle:1.16.5-$mantle_version")
+    compileOnly fg.deobf("slimeknights.tconstruct:TConstruct:1.16.5-$tic_version")
 
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html

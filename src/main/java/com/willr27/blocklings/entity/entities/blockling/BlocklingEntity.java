@@ -5,6 +5,7 @@ import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.action.BlocklingActions;
 import com.willr27.blocklings.attribute.BlocklingAttributes;
 import com.willr27.blocklings.gui.BlocklingGuiHandler;
+import com.willr27.blocklings.interop.TinkersConstructProxy;
 import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
 import com.willr27.blocklings.item.items.BlocklingItem;
 import com.willr27.blocklings.item.items.BlocklingWhistleItem;
@@ -19,7 +20,6 @@ import com.willr27.blocklings.task.Task;
 import com.willr27.blocklings.util.*;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.item.ItemEntity;
@@ -45,16 +45,8 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.NetworkHooks;
-import slimeknights.tconstruct.common.TinkerTags;
-import slimeknights.tconstruct.library.tools.helper.ToolAttackUtil;
-import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
-import slimeknights.tconstruct.library.tools.item.IModifiableWeapon;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
-import slimeknights.tconstruct.tools.item.small.PickaxeTool;
-import slimeknights.tconstruct.tools.item.small.SwordTool;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -428,8 +420,8 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         boolean attackingWithMainHand = attackingHand == BlocklingHand.MAIN || attackingHand == BlocklingHand.BOTH;
         boolean attackingWithOffHand = attackingHand == BlocklingHand.OFF || attackingHand == BlocklingHand.BOTH;
 
-        boolean mainHandTinkersTool = ModUtil.isTinkersConstructLoaded() && ToolUtil.isTinkersTool(mainStack);
-        boolean offHandTinkersTool = ModUtil.isTinkersConstructLoaded() && ToolUtil.isTinkersTool(offStack);
+        boolean mainHandTinkersTool = ToolUtil.isTinkersTool(mainStack);
+        boolean offHandTinkersTool = ToolUtil.isTinkersTool(offStack);
 
         boolean hasHurt = false;
 
@@ -444,7 +436,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
             {
                 if (mainHandTinkersTool && ToolUtil.isUseableTool(mainStack))
                 {
-                    if (ToolAttackUtil.attackEntity((IModifiableWeapon) mainItem, ToolStack.from(mainStack), this, Hand.MAIN_HAND, target, () -> 1.0, false))
+                    if (TinkersConstructProxy.instance.attackEntity(mainStack, this, Hand.MAIN_HAND, target, () -> 1.0, false))
                     {
                         tinkersDamage += stats.mainHandAttackDamage.getValue(); // This won't take into account Tinkers' modifiers but is good enough.
                         hasHurt = true;
@@ -463,7 +455,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
             {
                 if (offHandTinkersTool && ToolUtil.isUseableTool(offStack))
                 {
-                    if (ToolAttackUtil.attackEntity((IModifiableWeapon) offItem, ToolStack.from(offStack), this, Hand.MAIN_HAND, target, () -> 1.0, false))
+                    if (TinkersConstructProxy.instance.attackEntity(offStack, this, Hand.MAIN_HAND, target, () -> 1.0, false))
                     {
                         tinkersDamage += stats.offHandAttackDamage.getValue(); // This won't take into account Tinkers' modifiers but is good enough.
                         hasHurt = true;
@@ -552,18 +544,18 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         int damage = getSkills().getSkill(CombatSkills.WRECKLESS).isBought() ? 2 : 1;
 
-        if (ModUtil.isTinkersConstructLoaded() && ToolUtil.isTinkersTool(item))
+        if (ToolUtil.isTinkersTool(item))
         {
             // Tinkers' will already have applied tool damage, but won't take the wreckless skill into account.
             damage--;
 
             // If the tool is not a weapon then double the damage.
-            if (!TinkerTags.Items.MELEE_PRIMARY.contains(item))
+            if (!ToolUtil.isWeapon(item))
             {
                 damage *= 2;
             }
 
-            ToolDamageUtil.damageAnimated(ToolStack.from(stack), damage, this);
+            TinkersConstructProxy.instance.damageTool(stack, damage, this);
         }
         else
         {

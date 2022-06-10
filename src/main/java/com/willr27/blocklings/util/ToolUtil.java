@@ -1,6 +1,7 @@
 package com.willr27.blocklings.util;
 
 import com.google.common.collect.Multimap;
+import com.willr27.blocklings.interop.TinkersConstructProxy;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
@@ -18,9 +19,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import slimeknights.tconstruct.library.tools.helper.ToolHarvestLogic;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
-import slimeknights.tconstruct.tools.item.small.SwordTool;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -88,11 +86,7 @@ public class ToolUtil
     private static List<Item> findAllWeapons()
     {
         List<Item> weapons = Registry.ITEM.stream().filter(item -> item instanceof SwordItem).collect(Collectors.toList());
-
-        if (ModUtil.isTinkersConstructLoaded())
-        {
-            weapons.addAll(Registry.ITEM.stream().filter(item -> item instanceof SwordTool).collect(Collectors.toList()));
-        }
+        weapons.addAll(TinkersConstructProxy.instance.findAllWeapons());
 
         return weapons;
     }
@@ -190,7 +184,7 @@ public class ToolUtil
      */
     public static boolean isTinkersTool(@Nonnull Item item)
     {
-        return item instanceof slimeknights.tconstruct.library.tools.item.ToolItem;
+        return TinkersConstructProxy.instance.isTinkersTool(item);
     }
 
     /**
@@ -203,9 +197,9 @@ public class ToolUtil
             return false;
         }
 
-        if (ModUtil.isTinkersConstructLoaded() && isTinkersTool(stack))
+        if (isTinkersTool(stack))
         {
-            return !ToolStack.from(stack).isBroken();
+            return TinkersConstructProxy.instance.isToolBroken(stack);
         }
 
         return true;
@@ -368,11 +362,11 @@ public class ToolUtil
     {
         if (isUseableTool(stack))
         {
-            if (ModUtil.isTinkersConstructLoaded() && isTinkersTool(stack))
+            if (isTinkersTool(stack))
             {
-                if (canToolHarvestBlock(stack, blockState))
+                if (canToolHarvest(stack, blockState))
                 {
-                    return ToolHarvestLogic.DEFAULT.getDestroySpeed(stack, blockState);
+                    return TinkersConstructProxy.instance.getToolHarvestSpeed(stack, blockState);
                 }
             }
             else
@@ -440,7 +434,7 @@ public class ToolUtil
     /**
      * @return true if the given tool can harvest the given block.
      */
-    public static boolean canToolHarvestBlock(@Nonnull ItemStack stack, @Nonnull BlockState blockState)
+    public static boolean canToolHarvest(@Nonnull ItemStack stack, @Nonnull BlockState blockState)
     {
         if (BlockUtil.isCrop(blockState.getBlock()) && ToolUtil.isHoe(stack))
         {
@@ -456,9 +450,9 @@ public class ToolUtil
             return false;
         }
 
-        if (ModUtil.isTinkersConstructLoaded() && isTinkersTool(stack))
+        if (isTinkersTool(stack))
         {
-            return ToolHarvestLogic.DEFAULT.isEffective(ToolStack.from(stack), stack, blockState);
+            return TinkersConstructProxy.instance.canToolHarvest(stack, blockState);
         }
         else
         {

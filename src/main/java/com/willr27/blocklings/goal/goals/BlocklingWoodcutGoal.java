@@ -102,8 +102,8 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
         BlockState targetBlockState = getTargetBlockState();
         Block targetBlock = getTargetBlock();
 
-        boolean mainCanHarvest = ToolUtil.canToolHarvestBlock(mainStack, targetBlockState);
-        boolean offCanHarvest = ToolUtil.canToolHarvestBlock(offStack, targetBlockState);
+        boolean mainCanHarvest = ToolUtil.canToolHarvest(mainStack, targetBlockState);
+        boolean offCanHarvest = ToolUtil.canToolHarvest(offStack, targetBlockState);
 
         if (mainCanHarvest || offCanHarvest)
         {

@@ -3,6 +3,7 @@ package com.willr27.blocklings;
 import com.willr27.blocklings.command.BlocklingsCommands;
 import com.willr27.blocklings.entity.BlocklingsEntityTypes;
 import com.willr27.blocklings.entity.renderers.blockling.BlocklingRenderer;
+import com.willr27.blocklings.interop.ModProxies;
 import com.willr27.blocklings.item.items.BlocklingItem;
 import com.willr27.blocklings.item.items.BlocklingsItems;
 import com.willr27.blocklings.network.NetworkHandler;
@@ -11,7 +12,6 @@ import com.willr27.blocklings.util.ObjectUtil;
 import com.willr27.blocklings.util.Version;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -67,6 +67,7 @@ public class Blocklings
      */
     private void setupCommon(final FMLCommonSetupEvent event)
     {
+        ModProxies.init();
         NetworkHandler.init();
         BlocklingsCommands.init();
     }
