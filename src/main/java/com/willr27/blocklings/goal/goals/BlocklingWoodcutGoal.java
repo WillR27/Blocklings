@@ -7,13 +7,14 @@ import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.util.*;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
-import javafx.util.Pair;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.math.BlockPos;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -267,7 +268,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
                 return false;
             }
 
-            Pair<BlockPos, Path> pathToTree = findPathToTree();
+                Pair<BlockPos, Path> pathToTree = findPathToTree();
 
             if (pathToTree == null)
             {
@@ -488,7 +489,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
 
             if (path != null)
             {
-                return new Pair<>(logBlockPos, path);
+                return new MutablePair<>(logBlockPos, path);
             }
         }
 
@@ -497,7 +498,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
 
     /**
      * Sets the tree's root position to the given block pos.
-     * Will then recalculate the tree.
+     * Will then     recalculate the tree.
      *
      * @param blockPos the block pos to use as the tree's root.
      */

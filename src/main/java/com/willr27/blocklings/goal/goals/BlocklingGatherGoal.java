@@ -8,13 +8,13 @@ import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.util.ToolContext;
 import com.willr27.blocklings.util.ToolType;
 import com.willr27.blocklings.util.ToolUtil;
-import javafx.util.Pair;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.command.arguments.EntityAnchorArgument;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
