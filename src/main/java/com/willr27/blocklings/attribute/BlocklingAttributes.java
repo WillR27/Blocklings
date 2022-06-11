@@ -397,23 +397,46 @@ public class BlocklingAttributes implements IReadWriteNBT
      */
     public void initUpdateCallbacks()
     {
-        combatLevel.addUpdateCallback((i) -> { updateCombatLevelBonuses(false); });
-        attackSpeed.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.ATTACK_SPEED)).setBaseValue(f));
-        miningLevel.addUpdateCallback((i) -> { miningSpeedLevelModifier.setValue(calcBlockBreakSpeedFromLevel(i), false); });
-        woodcuttingLevel.addUpdateCallback((i) -> { woodcuttingSpeedLevelModifier.setValue(calcBlockBreakSpeedFromLevel(i), false); });
-        farmingLevel.addUpdateCallback((i) -> { farmingSpeedLevelModifier.setValue(calcBlockBreakSpeedFromLevel(i), false); });
+        combatLevel.addUpdateCallback((i) -> { updateCombatLevelBonuses(false); updateOnLevelChange(Level.COMBAT); });
+        miningLevel.addUpdateCallback((i) -> { miningSpeedLevelModifier.setValue(calcBlockBreakSpeedFromLevel(i), false); updateOnLevelChange(Level.MINING); });
+        woodcuttingLevel.addUpdateCallback((i) -> { woodcuttingSpeedLevelModifier.setValue(calcBlockBreakSpeedFromLevel(i), false); updateOnLevelChange(Level.WOODCUTTING); });
+        farmingLevel.addUpdateCallback((i) -> { farmingSpeedLevelModifier.setValue(calcBlockBreakSpeedFromLevel(i), false); updateOnLevelChange(Level.FARMING); });
         combatXp.addUpdateCallback((i) -> checkForLevelUpAndUpdate(false));
         miningXp.addUpdateCallback((i) -> checkForLevelUpAndUpdate(false));
         woodcuttingXp.addUpdateCallback((i) -> checkForLevelUpAndUpdate(false));
         farmingXp.addUpdateCallback((i) -> checkForLevelUpAndUpdate(false));
-        miningRange.addUpdateCallback((f) -> miningRangeSq.setBaseValue(miningRange.getValue() * miningRange.getValue(), false));
-        woodcuttingRange.addUpdateCallback((f) -> woodcuttingRangeSq.setBaseValue(woodcuttingRange.getValue() * woodcuttingRange.getValue(), false));
-        farmingRange.addUpdateCallback((f) -> farmingRangeSq.setBaseValue(farmingRange.getValue() * farmingRange.getValue(), false));
         maxHealth.addUpdateCallback((f) -> { Objects.requireNonNull(blockling.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(f); checkAndCapHealth(); });
+        attackSpeed.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.ATTACK_SPEED)).setBaseValue(f));
         armour.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.ARMOR)).setBaseValue(f));
         armourToughness.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.ARMOR_TOUGHNESS)).setBaseValue(f));
         knockbackResistance.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.KNOCKBACK_RESISTANCE)).setBaseValue(f));
         moveSpeed.addUpdateCallback((f) -> Objects.requireNonNull(blockling.getAttribute(Attributes.MOVEMENT_SPEED)).setBaseValue(f / 10.0f));
+        miningRange.addUpdateCallback((f) -> miningRangeSq.setBaseValue(miningRange.getValue() * miningRange.getValue(), false));
+        woodcuttingRange.addUpdateCallback((f) -> woodcuttingRangeSq.setBaseValue(woodcuttingRange.getValue() * woodcuttingRange.getValue(), false));
+        farmingRange.addUpdateCallback((f) -> farmingRangeSq.setBaseValue(farmingRange.getValue() * farmingRange.getValue(), false));
+    }
+
+    /**
+     * Updates the health of the blockling and xp for the given level in case it is over the threshold after decreasing.
+     */
+    private void updateOnLevelChange(@Nonnull Level level)
+    {
+        IntAttribute xpAttribute = (IntAttribute) getLevelXpAttribute(level);
+        int currentXp = xpAttribute.getValue();
+        int targetXp = BlocklingAttributes.getXpForLevel(getLevelAttribute(level).getValue());
+
+        if (currentXp >= targetXp)
+        {
+            xpAttribute.setValue(targetXp - 1, false);
+        }
+
+        if (!blockling.level.isClientSide)
+        {
+            if (blockling.getHealth() > blockling.getMaxHealth())
+            {
+                blockling.setHealth(blockling.getMaxHealth());
+            }
+        }
     }
 
     @Override
@@ -701,6 +724,14 @@ public class BlocklingAttributes implements IReadWriteNBT
     {
         COMBAT, MINING, WOODCUTTING, FARMING, TOTAL;
 
-        public static int MAX = 100;
+        /**
+         * The minimum value a level can be.
+         */
+        public static final int MIN = 1;
+
+        /**
+         * The maximum value a level can be.
+         */
+        public static final int MAX = 100;
     }
 }

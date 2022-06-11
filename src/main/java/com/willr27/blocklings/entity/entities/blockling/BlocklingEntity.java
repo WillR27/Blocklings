@@ -807,32 +807,6 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 return ActionResultType.SUCCESS;
             }
         }
-        else if (item == Items.EXPERIENCE_BOTTLE)
-        {
-            if (player == getOwner() && player.abilities.instabuild)
-            {
-                if (!level.isClientSide())
-                {
-                    if (player.isCrouching())
-                    {
-                        stats.combatLevel.setValue(BlocklingAttributes.Level.MAX);
-                        stats.miningLevel.setValue(BlocklingAttributes.Level.MAX);
-                        stats.woodcuttingLevel.setValue(BlocklingAttributes.Level.MAX);
-                        stats.farmingLevel.setValue(BlocklingAttributes.Level.MAX);
-
-                    }
-
-                    stats.combatXp.setValue(BlocklingAttributes.getXpForLevel(stats.combatLevel.getValue()));
-                    stats.miningXp.setValue(BlocklingAttributes.getXpForLevel(stats.miningLevel.getValue()));
-                    stats.woodcuttingXp.setValue(BlocklingAttributes.getXpForLevel(stats.woodcuttingLevel.getValue()));
-                    stats.farmingXp.setValue(BlocklingAttributes.getXpForLevel(stats.farmingLevel.getValue()));
-
-                    heal(Float.MAX_VALUE);
-                }
-
-                return ActionResultType.SUCCESS;
-            }
-        }
 
         if (isTame() && player == getOwner())
         {

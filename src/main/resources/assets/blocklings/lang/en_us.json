@@ -26,6 +26,7 @@
   "blocklings.type.diamond": "Diamond",
   "blocklings.type.netherite": "Netherite",
   "blocklings.type.obsidian": "Obsidian",
+  "blocklings.type.glowstone": "Glowstone",
 
   "blocklings.tab.stats": "Stats",
   "blocklings.tab.tasks": "Tasks",
@@ -244,5 +245,7 @@
   "blocklings.attribute.woodcutting.range": "Range: %.1f",
   "blocklings.attribute.farming.range": "Range: %.1f",
 
-  "blocklings.subtitle.blockling_whistle": "Blockling whistle"
+  "blocklings.subtitle.blockling_whistle": "Blockling whistle",
+
+  "blocklings.argument.level.invalid": "Invalid level \"%s\"!"
 }

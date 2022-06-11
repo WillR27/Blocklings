@@ -1,35 +1,41 @@
 package com.willr27.blocklings.command;
 
-import com.google.gson.JsonObject;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.willr27.blocklings.Blocklings;
+import com.willr27.blocklings.attribute.BlocklingAttributes;
+import com.willr27.blocklings.attribute.BlocklingAttributes.Level;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingType;
 import com.willr27.blocklings.network.NetworkHandler;
+import com.willr27.blocklings.network.messages.SetLevelCommandMessage;
 import com.willr27.blocklings.network.messages.SetTypeCommandMessage;
-import com.willr27.blocklings.util.PacketBufferUtils;
+import com.willr27.blocklings.network.messages.SetXpCommandMessage;
+import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
 import net.minecraft.command.ISuggestionProvider;
+import net.minecraft.command.arguments.ArgumentSerializer;
 import net.minecraft.command.arguments.ArgumentTypes;
-import net.minecraft.command.arguments.EntityArgument;
-import net.minecraft.command.arguments.IArgumentSerializer;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+
+import static net.minecraft.command.Commands.argument;
+import static net.minecraft.command.Commands.literal;
 
 /**
  * Handles the setup of blocklings commands.
@@ -42,7 +48,8 @@ public class BlocklingsCommands
      */
     public static void init()
     {
-        ArgumentTypes.register("blocklings:blockling_type", BlocklingTypeArgument.class, new BlocklingTypeArgument.Serialiser());
+        ArgumentTypes.register("blocklings:blockling_type", BlocklingTypeArgument.class, new ArgumentSerializer<>(BlocklingTypeArgument::new));
+        ArgumentTypes.register("blocklings:level", BlocklingLevelArgument.class, new ArgumentSerializer<>(BlocklingLevelArgument::new));
     }
 
     /**
@@ -53,17 +60,23 @@ public class BlocklingsCommands
     {
         CommandDispatcher<CommandSource> dispatcher = event.getDispatcher();
 
-        dispatcher.register(Commands.literal("setblocklingtype")
-                  .requires(commandSource -> commandSource.hasPermission(2))
-                  .then(Commands.argument("type", new BlocklingTypeArgument())
-                  .executes(context -> executeTypeCommand(context, false)))
-        );
-
-        dispatcher.register(Commands.literal("setnaturalblocklingtype")
-                  .requires(commandSource -> commandSource.hasPermission(2))
-                  .then(Commands.argument("type", new BlocklingTypeArgument())
-                  .executes(context -> executeTypeCommand(context, true)))
-        );
+        dispatcher.register(
+                literal("blockling").requires(source -> source.hasPermission(2)).then(
+                        literal("set").then(
+                                literal("type").then(
+                                        argument("type", new BlocklingTypeArgument())
+                                                .executes(context -> executeTypeCommand(context, false)))).then(
+                                literal("natural").then(
+                                        argument("type", new BlocklingTypeArgument())
+                                                .executes(context -> executeTypeCommand(context, true)))).then(
+                                literal("level").then(
+                                        argument("level", new BlocklingLevelArgument()).then(
+                                                argument("value", IntegerArgumentType.integer(Level.MIN, Level.MAX))
+                                                        .executes(context -> executeLevelCommand(context))))).then(
+                                literal("xp").then(
+                                        argument("level", new BlocklingLevelArgument()).then(
+                                                argument("value", IntegerArgumentType.integer(0))
+                                                        .executes(context -> executeXpCommand(context)))))));
     }
 
     /**
@@ -81,7 +94,51 @@ public class BlocklingsCommands
             return 1;
         }
 
-        NetworkHandler.sendToClient(player, new SetTypeCommandMessage(context.getArgument("type", BlocklingType.class).key, natural));
+        BlocklingType blocklingType = context.getArgument("type", BlocklingType.class);
+
+        NetworkHandler.sendToClient(player, new SetTypeCommandMessage(blocklingType.key, natural));
+
+        return 0;
+    }
+
+    /**
+     * Executes the set blockling level commands.
+     */
+    private static int executeLevelCommand(@Nonnull CommandContext<CommandSource> context)
+    {
+        CommandSource source = context.getSource();
+        PlayerEntity player = (PlayerEntity) source.getEntity();
+
+        if (player == null)
+        {
+            return 1;
+        }
+
+        Level level = context.getArgument("level", Level.class);
+        int value = context.getArgument("value", Integer.class);
+
+        NetworkHandler.sendToClient(player, new SetLevelCommandMessage(level, value));
+
+        return 0;
+    }
+
+    /**
+     * Executes the set blockling xp commands.
+     */
+    private static int executeXpCommand(@Nonnull CommandContext<CommandSource> context)
+    {
+        CommandSource source = context.getSource();
+        PlayerEntity player = (PlayerEntity) source.getEntity();
+
+        if (player == null)
+        {
+            return 1;
+        }
+
+        Level level = context.getArgument("level", Level.class);
+        int value = context.getArgument("value", Integer.class);
+
+        NetworkHandler.sendToClient(player, new SetXpCommandMessage(level, value));
 
         return 0;
     }
@@ -91,42 +148,73 @@ public class BlocklingsCommands
      */
     public static class BlocklingTypeArgument implements ArgumentType<BlocklingType>
     {
-        @Override
-        public BlocklingType parse(StringReader reader) throws CommandSyntaxException
-        {
-            String typeString = reader.readString();
-
-            return BlocklingType.find(typeString);
-        }
-
-        @Override
-        public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder)
-        {
-            return ISuggestionProvider.suggest(BlocklingType.TYPES.stream().map(blocklingType -> blocklingType.key).collect(Collectors.toList()), builder);
-        }
-
         /**
-         * Serialiser for the blockling type argument.
+         * Examples of blockling types.
          */
-        public static class Serialiser implements IArgumentSerializer<BlocklingTypeArgument>
+        private static final Collection<String> EXAMPLES = Arrays.asList("oak_log", "stone", "diamond");
+
+        @Override
+        public BlocklingType parse(StringReader stringReader) throws CommandSyntaxException
         {
-            @Override
-            public void serializeToNetwork(BlocklingTypeArgument argument, PacketBuffer buf)
+            String argString = stringReader.readUnquotedString();
+
+            return BlocklingType.find(argString.toLowerCase());
+        }
+
+        @Override
+        public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder suggestionsBuilder)
+        {
+            return ISuggestionProvider.suggest(BlocklingType.TYPES.stream().map(blocklingType -> blocklingType.key), suggestionsBuilder);
+        }
+
+        @Override
+        public Collection<String> getExamples()
+        {
+            return EXAMPLES;
+        }
+    }
+
+    /**
+     * Represents a command argument of a blockling type.
+     */
+    public static class BlocklingLevelArgument implements ArgumentType<Level>
+    {
+        /**
+         * The error to throw if the argument is invalid.
+         */
+        public static final DynamicCommandExceptionType ERROR_INVALID_VALUE = new DynamicCommandExceptionType((obj) -> new BlocklingsTranslationTextComponent("argument.level.invalid", obj));
+
+        @Override
+        public Level parse(StringReader stringReader) throws CommandSyntaxException
+        {
+            String argString = stringReader.readUnquotedString();
+
+            try
             {
+                if (argString.equalsIgnoreCase("all"))
+                {
+                    return Level.TOTAL;
+                }
 
+                Level level = Level.valueOf(argString.toUpperCase());
+
+                if (level != Level.TOTAL)
+                {
+                    return level;
+                }
             }
+            catch (IllegalArgumentException e) { }
 
-            @Override
-            public BlocklingTypeArgument deserializeFromNetwork(PacketBuffer buf)
-            {
-                return new BlocklingTypeArgument();
-            }
+            throw ERROR_INVALID_VALUE.create(argString);
+        }
 
-            @Override
-            public void serializeToJson(BlocklingTypeArgument argument, JsonObject json)
-            {
+        @Override
+        public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder suggestionsBuilder)
+        {
+            List<String> levels = Arrays.stream(Level.values()).filter(level -> level != Level.TOTAL).map(level -> level.name().toLowerCase()).collect(Collectors.toList());
+            levels.add("all");
 
-            }
+            return ISuggestionProvider.suggest(levels, suggestionsBuilder);
         }
     }
 }

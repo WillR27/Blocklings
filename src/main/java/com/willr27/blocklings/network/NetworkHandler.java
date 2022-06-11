@@ -52,7 +52,9 @@ public class NetworkHandler
      */
     public static void init()
     {
+        HANDLER.registerMessage(id++, SetLevelCommandMessage.class, SetLevelCommandMessage::encode, SetLevelCommandMessage::decode, SetLevelCommandMessage::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         HANDLER.registerMessage(id++, SetTypeCommandMessage.class, SetTypeCommandMessage::encode, SetTypeCommandMessage::decode, SetTypeCommandMessage::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        HANDLER.registerMessage(id++, SetXpCommandMessage.class, SetXpCommandMessage::encode, SetXpCommandMessage::decode, SetXpCommandMessage::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 
         registerMessage(Attribute.IsEnabledMessage.class);
         registerMessage(EnumAttribute.Message.class);
