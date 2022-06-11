@@ -7,13 +7,14 @@ import com.willr27.blocklings.task.BlocklingTasks;
 import com.willr27.blocklings.util.*;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
-import javafx.util.Pair;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.math.BlockPos;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -315,7 +316,7 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal
 
         if (path != null)
         {
-            return new Pair<>(getTarget(), path);
+            return new MutablePair<>(getTarget(), path);
         }
 
         return null;

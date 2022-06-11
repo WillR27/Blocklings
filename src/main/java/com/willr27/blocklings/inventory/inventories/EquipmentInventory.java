@@ -6,10 +6,11 @@ import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.network.messages.EquipmentInventoryMessage;
 import com.willr27.blocklings.util.ToolType;
 import com.willr27.blocklings.util.ToolUtil;
-import javafx.util.Pair;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
@@ -179,18 +180,18 @@ public class EquipmentInventory extends AbstractInventory
     {
         Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> bestTools = findBestToolSlotsToSwitchTo(hand, toolType);
 
-        return new Pair<>(getItem(bestTools.getKey().getValue()), getItem(bestTools.getValue().getValue()));
+        return new MutablePair<>(getItem(bestTools.getKey().getValue()), getItem(bestTools.getValue().getValue()));
     }
 
     public Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> findBestToolSlotsToSwitchTo(BlocklingHand hand, ToolType toolType)
     {
         if (hand == BlocklingHand.MAIN)
         {
-            return new Pair<>(findBestToolSlotToSwitchTo(BlocklingHand.MAIN, toolType), new Pair<>(TOOL_OFF_HAND, TOOL_OFF_HAND));
+            return new MutablePair<>(findBestToolSlotToSwitchTo(BlocklingHand.MAIN, toolType), new MutablePair<>(TOOL_OFF_HAND, TOOL_OFF_HAND));
         }
         else if (hand == BlocklingHand.OFF)
         {
-            return new Pair<>(new Pair<>(TOOL_MAIN_HAND, TOOL_MAIN_HAND), findBestToolSlotToSwitchTo(BlocklingHand.OFF, toolType));
+            return new MutablePair<>(new MutablePair<>(TOOL_MAIN_HAND, TOOL_MAIN_HAND), findBestToolSlotToSwitchTo(BlocklingHand.OFF, toolType));
         }
         else if (hand == BlocklingHand.BOTH)
         {
@@ -208,10 +209,10 @@ public class EquipmentInventory extends AbstractInventory
                 swapItems(toolSlotsMain.getKey(), toolSlotsMain.getValue());
             }
 
-            return new Pair<>(toolSlotsMain, toolSlotsOff);
+            return new MutablePair<>(toolSlotsMain, toolSlotsOff);
         }
 
-        return new Pair<>(new Pair<>(TOOL_MAIN_HAND, TOOL_MAIN_HAND), new Pair<>(TOOL_OFF_HAND, TOOL_OFF_HAND));
+        return new MutablePair<>(new MutablePair<>(TOOL_MAIN_HAND, TOOL_MAIN_HAND), new MutablePair<>(TOOL_OFF_HAND, TOOL_OFF_HAND));
     }
 
     /**
@@ -226,7 +227,7 @@ public class EquipmentInventory extends AbstractInventory
         {
             Log.warn("Tried to find the best tool to switch to with a hand that wasn't MAIN or OFF!");
 
-            return new Pair<>(TOOL_OFF_HAND, TOOL_OFF_HAND);
+            return new MutablePair<>(TOOL_OFF_HAND, TOOL_OFF_HAND);
         }
 
         int bestSlot = hand == BlocklingHand.MAIN ? TOOL_MAIN_HAND : TOOL_OFF_HAND;
@@ -268,7 +269,7 @@ public class EquipmentInventory extends AbstractInventory
             }
         }
 
-        return new Pair<>(handSlot, bestSlot);
+        return new MutablePair<>(handSlot, bestSlot);
     }
 
     @Override
