@@ -7,10 +7,11 @@ import com.willr27.blocklings.network.messages.EquipmentInventoryMessage;
 import com.willr27.blocklings.util.ToolContext;
 import com.willr27.blocklings.util.ToolType;
 import com.willr27.blocklings.util.ToolUtil;
-import javafx.util.Pair;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
@@ -241,7 +242,7 @@ public class EquipmentInventory extends AbstractInventory
     {
         Pair<SwitchedTools, SwitchedTools> bestTools = findBestToolSlotsToSwitchTo(hand, context);
 
-        return new Pair<>(getItem(bestTools.getKey().bestSlot), getItem(bestTools.getValue().bestSlot));
+        return new MutablePair<>(getItem(bestTools.getKey().bestSlot), getItem(bestTools.getValue().bestSlot));
     }
 
     /**
@@ -252,11 +253,11 @@ public class EquipmentInventory extends AbstractInventory
     {
         if (hand == BlocklingHand.MAIN)
         {
-            return new Pair<>(findBestToolSlotToSwitchTo(BlocklingHand.MAIN, context), new SwitchedTools(TOOL_OFF_HAND, TOOL_OFF_HAND));
+            return new MutablePair<>(findBestToolSlotToSwitchTo(BlocklingHand.MAIN, context), new SwitchedTools(TOOL_OFF_HAND, TOOL_OFF_HAND));
         }
         else if (hand == BlocklingHand.OFF)
         {
-            return new Pair<>(new SwitchedTools(TOOL_MAIN_HAND, TOOL_MAIN_HAND), findBestToolSlotToSwitchTo(BlocklingHand.OFF, context));
+            return new MutablePair<>(new SwitchedTools(TOOL_MAIN_HAND, TOOL_MAIN_HAND), findBestToolSlotToSwitchTo(BlocklingHand.OFF, context));
         }
         else if (hand == BlocklingHand.BOTH)
         {
@@ -274,10 +275,10 @@ public class EquipmentInventory extends AbstractInventory
                 swapItems(toolSlotsMain.originalSlot, toolSlotsMain.bestSlot);
             }
 
-            return new Pair<>(toolSlotsMain, toolSlotsOff);
+            return new MutablePair<>(toolSlotsMain, toolSlotsOff);
         }
 
-        return new Pair<>(new SwitchedTools(TOOL_MAIN_HAND, TOOL_MAIN_HAND), new SwitchedTools(TOOL_OFF_HAND, TOOL_OFF_HAND));
+        return new MutablePair<>(new SwitchedTools(TOOL_MAIN_HAND, TOOL_MAIN_HAND), new SwitchedTools(TOOL_OFF_HAND, TOOL_OFF_HAND));
     }
 
     /**
