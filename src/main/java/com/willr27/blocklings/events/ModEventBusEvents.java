@@ -10,15 +10,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.client.renderer.texture.SimpleTexture;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.SpawnEggItem;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.common.ForgeSpawnEggItem;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -38,7 +33,7 @@ public class ModEventBusEvents
     @SubscribeEvent
     public static void addEntityAttributes(@Nonnull EntityAttributeCreationEvent event)
     {
-        event.put(BlocklingsEntityTypes.BLOCKLING_ENTITY.get(), BlocklingEntity.createAttributes().build());
+        event.put(BlocklingsEntityTypes.BLOCKLING.get(), BlocklingEntity.createAttributes().build());
     }
 
     /**

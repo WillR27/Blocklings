@@ -2,6 +2,7 @@ package com.willr27.blocklings.entity;
 
 import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.world.gen.EntityGeneration;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
@@ -25,8 +26,8 @@ public class BlocklingsEntityTypes
     /**
      * The blockling entity type.
      */
-    public static final RegistryObject<EntityType<BlocklingEntity>> BLOCKLING_ENTITY = ENTITY_TYPES.register("blockling",
-        () -> EntityType.Builder.of(BlocklingEntity::new, EntityClassification.AMBIENT)
+    public static final RegistryObject<EntityType<BlocklingEntity>> BLOCKLING = ENTITY_TYPES.register("blockling",
+        () -> EntityType.Builder.of(BlocklingEntity::new, EntityGeneration.BLOCKLING)
                                 .sized(1.0f, 1.0f)
                                 .build(new ResourceLocation(Blocklings.MODID, "blockling").toString()));
 

@@ -93,7 +93,7 @@ public class BlocklingItem extends Item
                 blockpos = blockpos.relative(direction);
             }
 
-            BlocklingEntity blockling = new BlocklingEntity(BlocklingsEntityTypes.BLOCKLING_ENTITY.get(), world);
+            BlocklingEntity blockling = new BlocklingEntity(BlocklingsEntityTypes.BLOCKLING.get(), world);
 
             CompoundNBT stackTag = stack.getTag();
             CompoundNBT entityTag = null;

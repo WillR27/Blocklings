@@ -4,7 +4,6 @@ import com.willr27.blocklings.entity.BlocklingsEntityTypes;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.entities.blockling.BlocklingHand;
 import com.willr27.blocklings.goal.BlocklingTargetGoal;
-import com.willr27.blocklings.inventory.inventories.EquipmentInventory;
 import com.willr27.blocklings.skill.skills.CombatSkills;
 import com.willr27.blocklings.skill.skills.GeneralSkills;
 import com.willr27.blocklings.task.BlocklingTasks;
@@ -15,7 +14,6 @@ import com.willr27.blocklings.util.ToolType;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
 import com.willr27.blocklings.whitelist.Whitelist;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.math.BlockPos;
 
@@ -40,7 +38,7 @@ public abstract class BlocklingMeleeAttackGoal extends BlocklingTargetGoal<Livin
         GoalWhitelist whitelist = new GoalWhitelist("540241cd-085a-4c1f-9e90-8aea973568a8", "targets", Whitelist.Type.ENTITY, this);
         whitelist.setIsUnlocked(blockling.getSkills().getSkill(CombatSkills.WHITELIST).isBought(), false);
         EntityUtil.VALID_ATTACK_TARGETS.get().keySet().forEach(type -> whitelist.put(type, true));
-        whitelist.put(BlocklingsEntityTypes.BLOCKLING_ENTITY.getId(), false);
+        whitelist.put(BlocklingsEntityTypes.BLOCKLING.getId(), false);
         whitelists.add(whitelist);
     }
 

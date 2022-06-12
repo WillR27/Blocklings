@@ -26,6 +26,7 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -1013,6 +1014,14 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         {
             setItemInHand(Hand.OFF_HAND, stack);
         }
+    }
+
+    /**
+     * @return true as the blockling needs to be created before it can decide whether it can spawn.
+     */
+    public static boolean checkBlocklingSpawnRules(EntityType<? extends AnimalEntity> p_223316_0_, IWorld p_223316_1_, SpawnReason p_223316_2_, BlockPos p_223316_3_, Random p_223316_4_)
+    {
+        return true;
     }
 
     @Override

@@ -38,10 +38,10 @@ public class BlocklingType
      */
     public static final List<BlocklingType> TYPES = new ArrayList<>();
 
-    public static final BlocklingType GRASS = create("grass", 8).addCombatStats(2.0f, 1.0f, 3.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 1.0f, 2.0f);
-    public static final BlocklingType OAK_LOG = create("oak_log", 2).addCombatStats(3.0f, 1.0f, 3.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 2.0f, 1.0f);
-    public static final BlocklingType STONE = create("stone", 12).addCombatStats(5.0f, 1.0f, 3.0f, 2.0f, 1.0f, 0.3f, 2.5f).addGatheringStats(1.5f, 0.5f, 0.5f);
-    public static final BlocklingType IRON = create("iron", 2).addCombatStats(6.0f, 2.0f, 3.0f, 2.0f, 1.0f, 0.1f, 3.0f).addGatheringStats(2.0f, 0.5f, 0.5f);
+    public static final BlocklingType GRASS = create("grass", 0).addCombatStats(2.0f, 1.0f, 3.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 1.0f, 2.0f);
+    public static final BlocklingType OAK_LOG = create("oak_log", 0).addCombatStats(3.0f, 1.0f, 3.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 2.0f, 1.0f);
+    public static final BlocklingType STONE = create("stone", 0).addCombatStats(5.0f, 1.0f, 3.0f, 2.0f, 1.0f, 0.3f, 2.5f).addGatheringStats(1.5f, 0.5f, 0.5f);
+    public static final BlocklingType IRON = create("iron", 0).addCombatStats(6.0f, 2.0f, 3.0f, 2.0f, 1.0f, 0.1f, 3.0f).addGatheringStats(2.0f, 0.5f, 0.5f);
     public static final BlocklingType QUARTZ = create("quartz", 0).addCombatStats(3.0f, 4.0f, 3.0f, 1.0f, 0.5f, 0.1f, 3.5f).addGatheringStats(2.0f, 0.5f, 0.5f);
     public static final BlocklingType LAPIS = create("lapis", 0).addCombatStats(5.0f, 3.0f, 3.0f, 1.0f, 0.5f, 0.1f, 3.0f).addGatheringStats(2.0f, 0.5f, 0.5f);
     public static final BlocklingType GOLD = create("gold", 0).addCombatStats(1.0f, 4.0f, 3.0f, 1.0f, 0.5f, 0.1f, 4.0f).addGatheringStats(2.5f, 0.5f, 0.5f);
@@ -49,7 +49,7 @@ public class BlocklingType
     public static final BlocklingType DIAMOND = create("diamond", 0).addCombatStats(8.0f, 6.0f, 3.0f, 3.0f, 1.5f, 0.2f, 3.0f).addGatheringStats(3.0f, 0.5f, 0.5f);
     public static final BlocklingType NETHERITE = create("netherite", 0).addCombatStats(15.0f, 7.0f, 3.0f, 4.0f, 2.0f, 0.3f, 2.5f).addGatheringStats(2.5f, 1.0f, 1.0f);
     public static final BlocklingType OBSIDIAN = create("obsidian", 0).addCombatStats(25.0f, 5.0f, 2.0f, 4.0f, 2.0f, 0.8f, 2.0f).addGatheringStats(1.0f, 0.5f, 0.5f);
-    public static final BlocklingType GLOWSTONE = create("glowstone", 20).addCombatStats(2.0f, 2.0f, 4.0f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(1.0f, 1.0f, 1.0f);
+    public static final BlocklingType GLOWSTONE = create("glowstone", 0).addCombatStats(2.0f, 2.0f, 4.0f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(1.0f, 1.0f, 1.0f);
 
     /**
      * Initialises the additional properties for each blockling type.
@@ -67,55 +67,58 @@ public class BlocklingType
         OAK_LOG.addFoods(Blocks.OAK_LOG);
         OAK_LOG.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
         OAK_LOG.spawnPredicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.GRASS_BLOCK));
-        OAK_LOG.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 16, Blocks.OAK_LOG));
+        OAK_LOG.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.OAK_LOG));
 
         STONE.addFoods(Blocks.STONE);
         STONE.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
-        STONE.spawnPredicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.STONE));
+        STONE.spawnPredicates.add((blockling, world) -> !blockBelowIs(blockling, world, Blocks.GRASS_BLOCK));
+        STONE.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 4, Blocks.STONE));
 
         IRON.addFoods(Items.IRON_INGOT);
         IRON.addFoods(Blocks.IRON_ORE, Blocks.IRON_BLOCK);
         IRON.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
-        IRON.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 5, Blocks.IRON_ORE));
+        IRON.spawnPredicates.add((blockling, world) -> !blockBelowIs(blockling, world, Blocks.GRASS_BLOCK));
+        IRON.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.IRON_ORE));
 
         QUARTZ.addFoods(Items.QUARTZ);
         QUARTZ.addFoods(Blocks.NETHER_QUARTZ_ORE, Blocks.QUARTZ_BLOCK);
         QUARTZ.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.NETHER));
-        QUARTZ.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 5, Blocks.NETHER_QUARTZ_ORE));
+        QUARTZ.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.NETHER_QUARTZ_ORE));
 
         LAPIS.addFoods(Items.LAPIS_LAZULI);
         LAPIS.addFoods(Blocks.LAPIS_ORE, Blocks.LAPIS_BLOCK);
         LAPIS.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
-        LAPIS.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 5, Blocks.LAPIS_ORE));
+        LAPIS.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.LAPIS_ORE));
 
         GOLD.addFoods(Items.GOLD_INGOT);
         GOLD.addFoods(Blocks.GOLD_ORE, Blocks.GOLD_BLOCK);
         GOLD.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
-        GOLD.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 5, Blocks.GOLD_ORE));
+        GOLD.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.GOLD_ORE));
 
         EMERALD.addFoods(Items.EMERALD);
         EMERALD.addFoods(Blocks.EMERALD_ORE, Blocks.EMERALD_BLOCK);
         EMERALD.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
         EMERALD.spawnPredicates.add((blockling, world) -> isInBiome(blockling, world, Biomes.MOUNTAINS, Biomes.MOUNTAIN_EDGE, Biomes.GRAVELLY_MOUNTAINS, Biomes.MODIFIED_GRAVELLY_MOUNTAINS, Biomes.SNOWY_MOUNTAINS, Biomes.SNOWY_TAIGA_MOUNTAINS, Biomes.TAIGA_MOUNTAINS, Biomes.WOODED_MOUNTAINS));
-        EMERALD.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 5, Blocks.EMERALD_ORE));
+        EMERALD.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.EMERALD_ORE));
 
         DIAMOND.addFoods(Items.DIAMOND);
         DIAMOND.addFoods(Blocks.DIAMOND_ORE, Blocks.DIAMOND_BLOCK);
         DIAMOND.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
-        DIAMOND.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 5, Blocks.DIAMOND_ORE));
+        DIAMOND.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.DIAMOND_ORE));
 
         NETHERITE.addFoods(Items.NETHERITE_SCRAP, Items.NETHERITE_INGOT);
         NETHERITE.addFoods(Blocks.ANCIENT_DEBRIS, Blocks.NETHERITE_BLOCK);
         NETHERITE.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.NETHER));
-        NETHERITE.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 20, Blocks.ANCIENT_DEBRIS));
+        NETHERITE.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 12, Blocks.ANCIENT_DEBRIS));
 
         OBSIDIAN.addFoods(Blocks.OBSIDIAN);
         OBSIDIAN.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
-        OBSIDIAN.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 5, Blocks.OBSIDIAN));
+        OBSIDIAN.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.OBSIDIAN));
 
         GLOWSTONE.addFoods(Items.GLOWSTONE_DUST);
         GLOWSTONE.addFoods(Blocks.GLOWSTONE);
-        OBSIDIAN.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.NETHER));
+        GLOWSTONE.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.NETHER));
+        GLOWSTONE.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 16, Blocks.GLOWSTONE));
     }
 
     /**

@@ -2,10 +2,16 @@ package com.willr27.blocklings.world.gen;
 
 import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.entity.BlocklingsEntityTypes;
+import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.RegistryKey;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.MobSpawnInfo;
+import net.minecraft.world.gen.Heightmap;
 import net.minecraftforge.common.world.MobSpawnInfoBuilder;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -17,10 +23,23 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = Blocklings.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class EntityGeneration
 {
+    /**
+     * Custom entity classification for blocklings.
+     */
+    public static final EntityClassification BLOCKLING = EntityClassification.create("BLOCKLING", "blockling", 30, true, true, 128);
+
+    /**
+     * Registers entities to be spawned in the world.
+     */
+    public static void init()
+    {
+        EntitySpawnPlacementRegistry.register(BlocklingsEntityTypes.BLOCKLING.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, BlocklingEntity::checkBlocklingSpawnRules);
+    }
+
     @SubscribeEvent
     public static void onBiomeLoad(final BiomeLoadingEvent event)
     {
-        addEntityToAllBiomes(event.getSpawns(), BlocklingsEntityTypes.BLOCKLING_ENTITY.get(), 200, 1, 2);
+        addEntityToAllBiomes(event.getSpawns(), BlocklingsEntityTypes.BLOCKLING.get(), 100, 4, 8);
     }
 
     private static void addEntityToAllBiomesExceptThese(BiomeLoadingEvent event, EntityType<?> type, int weight, int minCount, int maxCount, RegistryKey<Biome>... biomes)
