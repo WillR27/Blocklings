@@ -230,7 +230,12 @@ public class BlocklingWhistleItem extends Item
 
         if (blockling != null)
         {
-            return blockling.getCustomName().getString();
+            ITextComponent customName = blockling.getCustomName();
+
+            if (customName != null)
+            {
+                return customName.getString();
+            }
         }
 
         return null;
