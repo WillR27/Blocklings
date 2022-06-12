@@ -61,9 +61,16 @@ public class EntityUtil
         {
             Entity entity = Registry.ENTITY_TYPE.get(entry).create(latestWorld);
 
-            if (isValidAttackTarget(entity))
+            if (entity != null)
             {
-                validAttackTargets.put(entry, entity);
+                if (isValidAttackTarget(entity))
+                {
+                    validAttackTargets.put(entry, entity);
+                }
+            }
+            else
+            {
+                Blocklings.LOGGER.warn("Failed to create entity: " + entry);
             }
         }
 

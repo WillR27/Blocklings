@@ -3,7 +3,6 @@ package com.willr27.blocklings.gui.controls.tasks.config;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.Blocklings;
-import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
 import com.willr27.blocklings.gui.*;
 import com.willr27.blocklings.util.EntityUtil;
 import com.willr27.blocklings.whitelist.GoalWhitelist;
@@ -11,7 +10,6 @@ import com.willr27.blocklings.whitelist.Whitelist;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.Pose;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -115,7 +113,14 @@ public class EntryControl extends Control
         {
             LivingEntity entity = (LivingEntity) EntityUtil.VALID_ATTACK_TARGETS.get().get(entry.getKey());
 
-            GuiUtil.renderEntityOnScreen(matrixStack, screenX + width / 2, screenY + width / 2 + 11, 20, 25, -10, entity);
+            try
+            {
+                GuiUtil.renderEntityOnScreen(matrixStack, screenX + width / 2, screenY + width / 2 + 11, 20, 25, -10, entity);
+            }
+            catch (Exception ex)
+            {
+                Blocklings.LOGGER.warn("Failed to render entity on screen: " + entity.getType().getRegistryName());
+            }
         }
 
         GuiUtil.removeScissorBounds((int) (screenX + 2 * getEffectiveScale()), (int) (screenY + 2 * getEffectiveScale()), (int) (getScreenWidth() - 4 * getEffectiveScale()), (int) (getScreenHeight() - 4 * getEffectiveScale()));
