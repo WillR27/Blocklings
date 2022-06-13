@@ -1,15 +1,15 @@
 package com.willr27.blocklings.network;
 
 import com.willr27.blocklings.Blocklings;
-import com.willr27.blocklings.attribute.Attribute;
-import com.willr27.blocklings.attribute.attributes.EnumAttribute;
-import com.willr27.blocklings.attribute.attributes.numbers.FloatAttribute;
-import com.willr27.blocklings.attribute.attributes.numbers.IntAttribute;
-import com.willr27.blocklings.attribute.attributes.numbers.ModifiableFloatAttribute;
-import com.willr27.blocklings.attribute.attributes.numbers.ModifiableIntAttribute;
-import com.willr27.blocklings.gui.BlocklingGuiHandler;
+import com.willr27.blocklings.client.gui.BlocklingGuiHandler;
+import com.willr27.blocklings.entity.blockling.attribute.Attribute;
+import com.willr27.blocklings.entity.blockling.attribute.attributes.EnumAttribute;
+import com.willr27.blocklings.entity.blockling.attribute.attributes.numbers.FloatAttribute;
+import com.willr27.blocklings.entity.blockling.attribute.attributes.numbers.IntAttribute;
+import com.willr27.blocklings.entity.blockling.attribute.attributes.numbers.ModifiableFloatAttribute;
+import com.willr27.blocklings.entity.blockling.attribute.attributes.numbers.ModifiableIntAttribute;
+import com.willr27.blocklings.entity.blockling.task.config.Property;
 import com.willr27.blocklings.network.messages.*;
-import com.willr27.blocklings.task.config.Property;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;

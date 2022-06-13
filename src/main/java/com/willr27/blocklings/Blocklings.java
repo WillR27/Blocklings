@@ -1,17 +1,18 @@
 package com.willr27.blocklings;
 
 import com.willr27.blocklings.block.BlocklingsBlocks;
+import com.willr27.blocklings.client.renderer.entity.BlocklingRenderer;
 import com.willr27.blocklings.command.BlocklingsCommands;
+import com.willr27.blocklings.config.BlocklingsConfig;
 import com.willr27.blocklings.entity.BlocklingsEntityTypes;
-import com.willr27.blocklings.entity.renderers.blockling.BlocklingRenderer;
+import com.willr27.blocklings.entity.EntityGeneration;
 import com.willr27.blocklings.interop.ModProxies;
-import com.willr27.blocklings.item.items.BlocklingItem;
-import com.willr27.blocklings.item.items.BlocklingsItems;
+import com.willr27.blocklings.item.BlocklingItem;
+import com.willr27.blocklings.item.BlocklingsItems;
 import com.willr27.blocklings.network.NetworkHandler;
 import com.willr27.blocklings.sound.BlocklingsSounds;
 import com.willr27.blocklings.util.ObjectUtil;
 import com.willr27.blocklings.util.Version;
-import com.willr27.blocklings.world.gen.EntityGeneration;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;

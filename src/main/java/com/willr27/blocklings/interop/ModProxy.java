@@ -1,7 +1,5 @@
 package com.willr27.blocklings.interop;
 
-import javax.annotation.Nonnull;
-
 /**
  * A base class for all optional mod proxies.
  * Each derived class should have the @Proxy annotation and dummy implementations of the methods.

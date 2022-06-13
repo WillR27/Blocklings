@@ -1,10 +1,10 @@
 package com.willr27.blocklings.network.messages;
 
-import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.blockling.whitelist.GoalWhitelist;
+import com.willr27.blocklings.entity.blockling.whitelist.Whitelist;
 import com.willr27.blocklings.network.BlocklingMessage;
 import com.willr27.blocklings.util.PacketBufferUtils;
-import com.willr27.blocklings.whitelist.GoalWhitelist;
-import com.willr27.blocklings.whitelist.Whitelist;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;

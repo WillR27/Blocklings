@@ -1,9 +1,7 @@
 package com.willr27.blocklings.entity;
 
 import com.willr27.blocklings.Blocklings;
-import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
-import com.willr27.blocklings.world.gen.EntityGeneration;
-import net.minecraft.entity.EntityClassification;
+import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;

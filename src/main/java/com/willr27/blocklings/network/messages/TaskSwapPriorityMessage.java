@@ -1,8 +1,8 @@
 package com.willr27.blocklings.network.messages;
 
-import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.blockling.task.Task;
 import com.willr27.blocklings.network.BlocklingMessage;
-import com.willr27.blocklings.task.Task;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 

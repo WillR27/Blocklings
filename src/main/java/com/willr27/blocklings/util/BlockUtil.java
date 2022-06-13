@@ -1,7 +1,7 @@
 package com.willr27.blocklings.util;
 
 import com.willr27.blocklings.Blocklings;
-import com.willr27.blocklings.BlocklingsConfig;
+import com.willr27.blocklings.config.BlocklingsConfig;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;

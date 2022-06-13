@@ -1,8 +1,8 @@
 package com.willr27.blocklings.network.messages;
 
-import com.willr27.blocklings.attribute.BlocklingAttributes.Level;
-import com.willr27.blocklings.attribute.attributes.numbers.IntAttribute;
-import com.willr27.blocklings.entity.entities.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.blockling.attribute.BlocklingAttributes.Level;
+import com.willr27.blocklings.entity.blockling.attribute.attributes.numbers.IntAttribute;
 import com.willr27.blocklings.network.Message;
 import com.willr27.blocklings.util.PacketBufferUtils;
 import net.minecraft.client.Minecraft;
