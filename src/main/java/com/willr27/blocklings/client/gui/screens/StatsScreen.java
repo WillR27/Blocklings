@@ -119,21 +119,29 @@ public class StatsScreen extends TabbedScreen
                 List<IReorderingProcessor> tooltip = new ArrayList<>();
 
                 tooltip.add(new StringTextComponent(TextFormatting.GOLD + blockling.getCustomName().getString()).getVisualOrderText());
+                tooltip.add(new StringTextComponent(TextFormatting.GRAY + new BlocklingsTranslationTextComponent("type.natural.name").getString() + TextFormatting.WHITE + blockling.getNaturalBlocklingType().name.getString()).getVisualOrderText());
+
+                List<String> splitText;
+
+                if (GuiUtil.isKeyDown(Minecraft.getInstance().options.keyShift.getKey().getValue()))
+                {
+                    splitText = GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("type.natural.desc").getString(), 200);
+                    splitText.stream().map(s -> new StringTextComponent(TextFormatting.DARK_GRAY + s).getVisualOrderText()).forEach(tooltip::add);
+                }
+
+                splitText = GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("type." + blockling.getNaturalBlocklingType().key + ".passive").getString(), 200);
+                splitText.stream().map(s -> new StringTextComponent(TextFormatting.LIGHT_PURPLE + s).getVisualOrderText()).forEach(tooltip::add);
+
                 tooltip.add(new StringTextComponent(TextFormatting.GRAY + new BlocklingsTranslationTextComponent("type.name").getString() + TextFormatting.WHITE + blockling.getBlocklingType().name.getString()).getVisualOrderText());
 
                 if (GuiUtil.isKeyDown(Minecraft.getInstance().options.keyShift.getKey().getValue()))
                 {
-                    List<String> splitText = GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("type.desc").getString(), 150);
+                    splitText = GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("type.desc").getString(), 200);
                     splitText.stream().map(s -> new StringTextComponent(TextFormatting.DARK_GRAY + s).getVisualOrderText()).forEach(tooltip::add);
                 }
 
-                tooltip.add(new StringTextComponent(TextFormatting.GRAY + new BlocklingsTranslationTextComponent("type.natural.name").getString() + TextFormatting.WHITE + blockling.getNaturalBlocklingType().name.getString()).getVisualOrderText());
-
-                if (GuiUtil.isKeyDown(Minecraft.getInstance().options.keyShift.getKey().getValue()))
-                {
-                    List<String> splitText = GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("type.natural.desc").getString(), 150);
-                    splitText.stream().map(s -> new StringTextComponent(TextFormatting.DARK_GRAY + s).getVisualOrderText()).forEach(tooltip::add);
-                }
+                splitText = GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("type." + blockling.getBlocklingType().key + ".passive").getString(), 200);
+                splitText.stream().map(s -> new StringTextComponent(TextFormatting.LIGHT_PURPLE + s).getVisualOrderText()).forEach(tooltip::add);
 
                 if (!GuiUtil.isKeyDown(Minecraft.getInstance().options.keyShift.getKey().getValue()))
                 {

@@ -38,7 +38,8 @@ public class BlocklingType
      */
     public static final List<BlocklingType> TYPES = new ArrayList<>();
 
-    public static final BlocklingType GRASS = create("grass", 0).addCombatStats(2.0f, 1.0f, 3.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 1.0f, 2.0f);
+    public static final BlocklingType GRASS = create("grass", 5).addCombatStats(2.0f, 1.0f, 3.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.0f, 1.0f, 2.0f);
+    public static final BlocklingType DIRT = create("dirt", 0).addCombatStats(2.0f, 1.0f, 3.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.0f, 1.0f, 2.0f);
     public static final BlocklingType OAK_LOG = create("oak_log", 0).addCombatStats(3.0f, 1.0f, 3.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 2.0f, 1.0f);
     public static final BlocklingType STONE = create("stone", 0).addCombatStats(5.0f, 1.0f, 3.0f, 2.0f, 1.0f, 0.3f, 2.5f).addGatheringStats(1.5f, 0.5f, 0.5f);
     public static final BlocklingType IRON = create("iron", 0).addCombatStats(6.0f, 2.0f, 3.0f, 2.0f, 1.0f, 0.1f, 3.0f).addGatheringStats(2.0f, 0.5f, 0.5f);
@@ -59,10 +60,15 @@ public class BlocklingType
         FOODS.clear();
         TYPES.forEach(blocklingType -> { blocklingType.spawnPredicates.clear(); blocklingType.foods.clear(); });
 
-        GRASS.addFoods(Blocks.GRASS_BLOCK, Blocks.DIRT);
+        GRASS.addFoods(Blocks.GRASS_BLOCK);
         GRASS.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
         GRASS.spawnPredicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.GRASS_BLOCK));
         GRASS.spawnPredicates.add((blockling, world) -> canSeeSky(blockling, world));
+
+        DIRT.addFoods(Blocks.DIRT);
+        DIRT.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
+        DIRT.spawnPredicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.GRASS_BLOCK));
+        DIRT.spawnPredicates.add((blockling, world) -> canSeeSky(blockling, world));
 
         OAK_LOG.addFoods(Blocks.OAK_LOG);
         OAK_LOG.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));

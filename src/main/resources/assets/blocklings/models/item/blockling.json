@@ -14,65 +14,71 @@
       "predicate": {
         "blocklings:type": 1
       },
-      "model": "blocklings:item/blockling_oak_log"
+      "model": "blocklings:item/blockling_dirt"
     },
     {
       "predicate": {
         "blocklings:type": 2
       },
-      "model": "blocklings:item/blockling_stone"
+      "model": "blocklings:item/blockling_oak_log"
     },
     {
       "predicate": {
         "blocklings:type": 3
       },
-      "model": "blocklings:item/blockling_iron"
+      "model": "blocklings:item/blockling_stone"
     },
     {
       "predicate": {
         "blocklings:type": 4
       },
-      "model": "blocklings:item/blockling_quartz"
+      "model": "blocklings:item/blockling_iron"
     },
     {
       "predicate": {
         "blocklings:type": 5
       },
-      "model": "blocklings:item/blockling_lapis"
+      "model": "blocklings:item/blockling_quartz"
     },
     {
       "predicate": {
         "blocklings:type": 6
       },
-      "model": "blocklings:item/blockling_gold"
+      "model": "blocklings:item/blockling_lapis"
     },
     {
       "predicate": {
         "blocklings:type": 7
       },
-      "model": "blocklings:item/blockling_emerald"
+      "model": "blocklings:item/blockling_gold"
     },
     {
       "predicate": {
         "blocklings:type": 8
       },
-      "model": "blocklings:item/blockling_diamond"
+      "model": "blocklings:item/blockling_emerald"
     },
     {
       "predicate": {
         "blocklings:type": 9
       },
-      "model": "blocklings:item/blockling_netherite"
+      "model": "blocklings:item/blockling_diamond"
     },
     {
       "predicate": {
         "blocklings:type": 10
       },
-      "model": "blocklings:item/blockling_obsidian"
+      "model": "blocklings:item/blockling_netherite"
     },
     {
       "predicate": {
         "blocklings:type": 11
+      },
+      "model": "blocklings:item/blockling_obsidian"
+    },
+    {
+      "predicate": {
+        "blocklings:type": 12
       },
       "model": "blocklings:item/blockling_glowstone"
     }

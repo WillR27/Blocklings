@@ -24,6 +24,7 @@ import com.willr27.blocklings.util.ToolUtil;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -52,6 +53,7 @@ import net.minecraft.world.IServerWorld;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
@@ -375,7 +377,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         skills.tick();
         actions.tick();
 
-        updateLightPos(false);
+        updateNaturalPassiveAbilities();
         checkAndUpdateCooldowns();
         
         equipmentInv.detectAndSendChanges();
@@ -388,6 +390,41 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         // Tick the tasks just after the goal and target selectors have ticked
         tasks.tick();
+    }
+
+    /**
+     * Updates any passive abilities the blockling has from its natural type.
+     */
+    private void updateNaturalPassiveAbilities()
+    {
+        if (!level.isClientSide)
+        {
+           if (!((naturalBlocklingType == BlocklingType.GRASS || blocklingType == BlocklingType.GRASS) && (naturalBlocklingType == BlocklingType.DIRT || blocklingType == BlocklingType.DIRT)))
+           {
+               if (naturalBlocklingType == BlocklingType.GRASS || blocklingType == BlocklingType.GRASS)
+               {
+                   BlockPos belowPos = getOnPos();
+                   Block belowBlock = level.getBlockState(belowPos).getBlock();
+
+                   if (belowBlock == Blocks.DIRT)
+                   {
+                       level.setBlock(belowPos, Blocks.GRASS_BLOCK.defaultBlockState(), Constants.BlockFlags.DEFAULT);
+                   }
+               }
+               else if (naturalBlocklingType == BlocklingType.DIRT || blocklingType == BlocklingType.DIRT)
+               {
+                   BlockPos belowPos = getOnPos();
+                   Block belowBlock = level.getBlockState(belowPos).getBlock();
+
+                   if (belowBlock == Blocks.GRASS_BLOCK)
+                   {
+                       level.setBlock(belowPos, Blocks.DIRT.defaultBlockState(), Constants.BlockFlags.DEFAULT);
+                   }
+               }
+           }
+        }
+
+        updateLightPos(false);
     }
 
     /**
@@ -415,7 +452,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
                     if (block.getBlock().isAir(blockState, level, blockPos) || (currentLightPos == null && block == BlocklingsBlocks.LIGHT.get()))
                     {
-                        level.setBlock(currentLightPos = blockPos, BlocklingsBlocks.LIGHT.get().defaultBlockState(), 3);
+                        level.setBlock(currentLightPos = blockPos, BlocklingsBlocks.LIGHT.get().defaultBlockState(), Constants.BlockFlags.DEFAULT);
 
                         break;
                     }
