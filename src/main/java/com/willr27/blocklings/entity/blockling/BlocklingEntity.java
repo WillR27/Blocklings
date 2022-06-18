@@ -528,7 +528,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 level.removeBlock(currentLightPos, false);
             }
 
-            if (!removeOnly && blocklingType == BlocklingType.GLOWSTONE)
+            if (!removeOnly && (naturalBlocklingType == BlocklingType.GLOWSTONE || blocklingType == BlocklingType.GLOWSTONE))
             {
                 BlockPos blockPos = new BlockPos(position().add(0.0, 0.5 * getScale(), 0.0));
 

@@ -31,6 +31,7 @@
   "blocklings.type.netherite": "Netherite",
   "blocklings.type.obsidian": "Obsidian",
   "blocklings.type.glowstone": "Glowstone",
+  "blocklings.type.glowstone.passive": "Your blockling will emit light like a glowstone block.",
 
   "blocklings.tab.stats": "Stats",
   "blocklings.tab.tasks": "Tasks",
