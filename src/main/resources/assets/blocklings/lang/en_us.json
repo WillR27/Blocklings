@@ -24,6 +24,7 @@
   "blocklings.type.stone": "Stone",
   "blocklings.type.iron": "Iron",
   "blocklings.type.quartz": "Quartz",
+  "blocklings.type.quartz.passive": "Your blockling will reflect 15% of damage taken back to their attacker.",
   "blocklings.type.lapis": "Lapis",
   "blocklings.type.gold": "Gold",
   "blocklings.type.emerald": "Emerald",

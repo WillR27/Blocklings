@@ -779,6 +779,16 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     {
         boolean hurt = super.hurt(damageSource, damage);
 
+        if (hurt && (naturalBlocklingType == BlocklingType.QUARTZ || blocklingType == BlocklingType.QUARTZ))
+        {
+            LivingEntity livingEntity = (LivingEntity) damageSource.getEntity();
+
+            if (livingEntity != null)
+            {
+                livingEntity.hurt(DamageSource.mobAttack(this), damage / 15.0f);
+            }
+        }
+
         if (isDeadOrDying())
         {
             BlocklingWhistleItem.onBlocklingDestroyed(this);
