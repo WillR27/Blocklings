@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LootingLevelEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -51,6 +52,20 @@ public class ForgeEventBusEvents
         {
             float scale = ((BlocklingEntity) event.getEntity()).getScale();
             event.setNewSize(new EntitySize(scale * 1.0f, scale * 1.0f, true), true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLootingLevelEvent(@Nonnull LootingLevelEvent event)
+    {
+        BlocklingEntity blockling = (BlocklingEntity) event.getDamageSource().getEntity();
+
+        if (blockling != null)
+        {
+            if (blockling.getNaturalBlocklingType() == BlocklingType.LAPIS || blockling.getBlocklingType() == BlocklingType.LAPIS)
+            {
+                event.setLootingLevel(event.getLootingLevel() + 1);
+            }
         }
     }
 

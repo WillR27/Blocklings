@@ -1,10 +1,12 @@
 package com.willr27.blocklings.util;
 
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.blockling.BlocklingType;
 import com.willr27.blocklings.entity.blockling.skill.skills.MiningSkills;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipe;
@@ -43,6 +45,11 @@ public class DropUtil
             int mainLevel = EnchantmentHelper.getItemEnchantmentLevel(enchantment, mainStack);
             int offLevel = EnchantmentHelper.getItemEnchantmentLevel(enchantment, offStack);
             mergedStack.enchant(enchantment, Math.max(mainLevel, offLevel));
+        }
+
+        if (blockling.getNaturalBlocklingType() == BlocklingType.LAPIS || blockling.getBlocklingType() == BlocklingType.LAPIS)
+        {
+            mergedStack.enchant(Enchantments.BLOCK_FORTUNE, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, mergedStack) + 1);
         }
 
         List<ItemStack> drops = Block.getDrops(world.getBlockState(blockPos), (ServerWorld) world, blockPos, null, null, mergedStack);

@@ -26,6 +26,7 @@
   "blocklings.type.quartz": "Quartz",
   "blocklings.type.quartz.passive": "Your blockling will reflect 15% of damage taken back to their attacker.",
   "blocklings.type.lapis": "Lapis",
+  "blocklings.type.lapis.passive": "Your blockling has a bonus +1 looting/fortune level.",
   "blocklings.type.gold": "Gold",
   "blocklings.type.emerald": "Emerald",
   "blocklings.type.diamond": "Diamond",
