@@ -193,7 +193,7 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal
                 }
                 else if (targetBlockState.getMaterial().isSolid())
                 {
-                    world.destroyBlockProgress(blockling.getId(), targetPos, BlockUtil.calcBlockBreakProgress(blockling.getActions().gather.count()));
+                    world.destroyBlockProgress(blockling.getId(), targetPos, BlockUtil.calcBlockBreakProgress(blockling.getActions().gather.getCount()));
                 }
             }
         }

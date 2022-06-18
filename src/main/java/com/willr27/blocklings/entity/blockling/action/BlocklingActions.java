@@ -6,6 +6,7 @@ import com.willr27.blocklings.entity.blockling.action.actions.KnownTargetAction;
 import com.willr27.blocklings.entity.blockling.action.actions.UnknownTargetAction;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -58,10 +59,22 @@ public class BlocklingActions
     public final KnownTargetAction cropsHarvestedCooldown;
 
     /**
-     * The list of actions that are automatically ticked.
+     * The action used to track a log blockling's regeneration.
+     */
+    @Nonnull
+    public final KnownTargetAction logRegenerationCooldown;
+
+    /**
+     * The list of all actions.
      */
     @Nonnull
     private final List<Action> actions = new ArrayList<>();
+
+    /**
+     * The list of actions that are automatically ticked.
+     */
+    @Nonnull
+    private final List<Action> actionsToAutoTick = new ArrayList<>();
 
     /**
      * The blockling.
@@ -81,26 +94,36 @@ public class BlocklingActions
             return (1.0f / blockling.getStats().attackSpeed.getValue()) * 80.0f;
         };
 
-        attack = createAction("attack", attackTargetSupplier, attackTargetSupplier);
-        gather = new KnownTargetAction(blockling, "gather", () -> 1.0f);
-        regenerationCooldown = createAction("regeneration_cooldown", () -> 400.0f);
-        attacksCooldown = createAction("attacks_cooldown", () -> 100.0f);
-        oresMinedCooldown = createAction("ores_mined_cooldown", () -> 100.0f);
-        logsChoppedCooldown = createAction("logs_chopped_cooldown", () -> 100.0f);
-        cropsHarvestedCooldown = createAction("crops_harvested_cooldown", () -> 100.0f);
+        attack = createAction("attack", Action.Authority.BOTH, attackTargetSupplier, attackTargetSupplier, true);
+        gather = createAction("gather", Action.Authority.BOTH, () -> 1.0f, false);
+        gather.setCount(-1.0f, false);
+        regenerationCooldown = createAction("regeneration_cooldown", Action.Authority.BOTH, () -> 400.0f, true);
+        attacksCooldown = createAction("attacks_cooldown", Action.Authority.BOTH, () -> 100.0f, true);
+        oresMinedCooldown = createAction("ores_mined_cooldown", Action.Authority.BOTH, () -> 100.0f, true);
+        logsChoppedCooldown = createAction("logs_chopped_cooldown", Action.Authority.BOTH, () -> 100.0f, true);
+        cropsHarvestedCooldown = createAction("crops_harvested_cooldown", Action.Authority.BOTH, () -> 100.0f, true);
+        logRegenerationCooldown = createAction("log_regeneration_cooldown", Action.Authority.SERVER, () -> 200.0f, true);
+        logRegenerationCooldown.addCallback(blockling::updateLogPassiveAbility);
     }
 
     /**
      * Creates an unknown target action and adds it to the list of actions to tick automatically.
      *
      * @param key the key used to identify the action and for the underlying attribute.
+     * @param authority the side that has authority over the value of the action.
+     * @param autoTick whether to automatically tick the action.
      * @return the unknown target action.
      */
     public @Nonnull
-    UnknownTargetAction createAction(@Nonnull String key)
+    UnknownTargetAction createAction(@Nonnull String key, @Nonnull Action.Authority authority, boolean autoTick)
     {
-        UnknownTargetAction action = new UnknownTargetAction(blockling, key);
+        UnknownTargetAction action = new UnknownTargetAction(blockling, key, authority);
         actions.add(action);
+
+        if (autoTick)
+        {
+            actionsToAutoTick.add(action);
+        }
 
         return action;
     }
@@ -109,13 +132,20 @@ public class BlocklingActions
      * Creates known target action and adds it to the list of actions to tick automatically.
      *
      * @param key the key used to identify the action and for the underlying attribute.
+     * @param authority the side that has authority over the value of the action.
      * @param targetCountSupplier the supplier used to get the target count.
+     * @param autoTick whether to automatically tick the action.
      * @return the known target action.
      */
-    public @Nonnull KnownTargetAction createAction(@Nonnull String key, @Nonnull Supplier<Float> targetCountSupplier)
+    public @Nonnull KnownTargetAction createAction(@Nonnull String key, @Nonnull Action.Authority authority, @Nonnull Supplier<Float> targetCountSupplier, boolean autoTick)
     {
-        KnownTargetAction action = new KnownTargetAction(blockling, key, targetCountSupplier);
+        KnownTargetAction action = new KnownTargetAction(blockling, key, authority, targetCountSupplier);
         actions.add(action);
+
+        if (autoTick)
+        {
+            actionsToAutoTick.add(action);
+        }
 
         return action;
     }
@@ -124,16 +154,32 @@ public class BlocklingActions
      * Creates an attack action and adds it to the list of actions to tick automatically.
      *
      * @param key the key used to identify the action and for the underlying attribute.
+     * @param authority the side that has authority over the value of the action.
      * @param targetCountSupplier the supplier used to get the target count.
      * @param handTargetCountSupplier the supplier used to get the target count for the hands.
+     * @param autoTick whether to automatically tick the action.
      * @return the unknown target action.
      */
-    public @Nonnull AttackAction createAction(@Nonnull String key, @Nonnull Supplier<Float> targetCountSupplier, @Nonnull Supplier<Float> handTargetCountSupplier)
+    public @Nonnull AttackAction createAction(@Nonnull String key, @Nonnull Action.Authority authority, @Nonnull Supplier<Float> targetCountSupplier, @Nonnull Supplier<Float> handTargetCountSupplier, boolean autoTick)
     {
         AttackAction action = new AttackAction(this, blockling, key, targetCountSupplier, handTargetCountSupplier);
         actions.add(action);
 
+        if (autoTick)
+        {
+            actionsToAutoTick.add(action);
+        }
+
         return action;
+    }
+
+    /**
+     * @return finds the action with the given key, null if not found.
+     */
+    @Nullable
+    public Action find(@Nonnull String key)
+    {
+        return actions.stream().filter(action -> action.key.equals(key)).findFirst().orElse(null);
     }
 
     /**
@@ -141,6 +187,6 @@ public class BlocklingActions
      */
     public void tick()
     {
-        actions.forEach(action -> action.tick());
+        actionsToAutoTick.forEach(Action::tick);
     }
 }

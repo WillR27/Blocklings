@@ -39,7 +39,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
      * The current target tree.
      */
     @Nonnull
-    private final Tree tree = new Tree();
+    private final WorldUtil.Tree tree = new WorldUtil.Tree();
 
     /**
      * The log whitelist.
@@ -231,7 +231,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
                 }
                 else
                 {
-                    world.destroyBlockProgress(blockling.getId(), targetPos, BlockUtil.calcBlockBreakProgress(blockling.getActions().gather.count()));
+                    world.destroyBlockProgress(blockling.getId(), targetPos, BlockUtil.calcBlockBreakProgress(blockling.getActions().gather.getCount()));
                 }
             }
         }
@@ -328,7 +328,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
     {
         BlockPos blocklingBlockPos = blockling.blockPosition();
 
-        Tree tree = new Tree();
+        WorldUtil.Tree tree = new WorldUtil.Tree();
         List<BlockPos> testedBlockPositions = new ArrayList<>();
 
         double closestTreeDistSq = Float.MAX_VALUE;
@@ -348,12 +348,9 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
 
                     if (isValidTarget(testBlockPos))
                     {
-                        Tree treeToTest = findTreeFrom(testBlockPos);
+                        WorldUtil.Tree treeToTest = findTreeFrom(testBlockPos);
 
-                        // How many leaves we need per log for it to be a valid tree.
-                        final float leafToLogRatio = 0.8f;
-
-                        if (treeToTest.logs.size() / (float) treeToTest.leaves.size() > leafToLogRatio)
+                        if (!treeToTest.isValid())
                         {
                             continue;
                         }
@@ -428,41 +425,9 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
      * @return the tree.
      */
     @Nonnull
-    private Tree findTreeFrom(@Nonnull BlockPos blockPos)
+    private WorldUtil.Tree findTreeFrom(@Nonnull BlockPos blockPos)
     {
-        Tree tree = new Tree();
-        Set<BlockPos> logBlockPositionsToTest = new HashSet<>();
-
-        logBlockPositionsToTest.add(blockPos);
-        tree.logs.add(blockPos);
-
-        while (!logBlockPositionsToTest.isEmpty())
-        {
-            BlockPos testBlockPos = logBlockPositionsToTest.stream().findFirst().get();
-
-            for (BlockPos surroundingPos : BlockUtil.getSurroundingBlockPositions(testBlockPos))
-            {
-                if (isValidTarget(surroundingPos))
-                {
-                    if (!tree.logs.contains(surroundingPos))
-                    {
-                        tree.logs.add(surroundingPos);
-                        logBlockPositionsToTest.add(surroundingPos);
-                    }
-                }
-                else if (isValidLeavesPos(surroundingPos))
-                {
-                    if (!tree.leaves.contains(surroundingPos))
-                    {
-                        tree.leaves.add(surroundingPos);
-                    }
-                }
-            }
-
-            logBlockPositionsToTest.remove(testBlockPos);
-        }
-
-        return tree;
+        return WorldUtil.findTreeFromPos(world, blockPos, this::isValidTarget, this::isValidLeavesPos);
     }
 
     /**
@@ -498,7 +463,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
 
     /**
      * Sets the tree's root position to the given block pos.
-     * Will then     recalculate the tree.
+     * Will then recalculate the tree.
      *
      * @param blockPos the block pos to use as the tree's root.
      */
@@ -507,7 +472,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
         tree.logs.clear();
         tree.leaves.clear();
 
-        Tree newTree = findTreeFrom(blockPos);
+        WorldUtil.Tree newTree = findTreeFrom(blockPos);
 
         tree.logs.addAll(newTree.logs);
         tree.leaves.addAll(newTree.leaves);
@@ -617,14 +582,5 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
     public float getRangeSq()
     {
         return blockling.getStats().woodcuttingRangeSq.getValue();
-    }
-
-    /**
-     * Class to represent a tree.
-     */
-    public static class Tree
-    {
-        public final List<BlockPos> logs = new ArrayList<>();
-        public final List<BlockPos> leaves = new ArrayList<>();
     }
 }

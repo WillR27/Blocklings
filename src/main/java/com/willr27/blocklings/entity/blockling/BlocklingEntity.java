@@ -18,10 +18,7 @@ import com.willr27.blocklings.network.messages.BlocklingAttackTargetMessage;
 import com.willr27.blocklings.network.messages.BlocklingNameMessage;
 import com.willr27.blocklings.network.messages.BlocklingScaleMessage;
 import com.willr27.blocklings.network.messages.BlocklingTypeMessage;
-import com.willr27.blocklings.util.IReadWriteNBT;
-import com.willr27.blocklings.util.ObjectUtil;
-import com.willr27.blocklings.util.ToolUtil;
-import com.willr27.blocklings.util.Version;
+import com.willr27.blocklings.util.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -39,11 +36,13 @@ import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
@@ -58,6 +57,7 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.NetworkHooks;
+import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -186,8 +186,8 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
         stats.initUpdateCallbacks();
 
-        // Set up any values that are determined randomly here
-        // So that we can sync them up using read/writeSpawnData
+        // Set up any values that are determined randomly here.
+        // So that we can sync them up using read/writeSpawnData.
         if (!level.isClientSide())
         {
             blocklingTypeVariant = getRandom().nextInt(3);
@@ -377,7 +377,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         skills.tick();
         actions.tick();
 
-        updateNaturalPassiveAbilities();
+        updatePassiveAbilities();
         checkAndUpdateCooldowns();
         
         equipmentInv.detectAndSendChanges();
@@ -388,14 +388,101 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     {
         super.customServerAiStep();
 
-        // Tick the tasks just after the goal and target selectors have ticked
+        // Tick the tasks just after the goal and target selectors have ticked.
         tasks.tick();
     }
 
     /**
-     * Updates any passive abilities the blockling has from its natural type.
+     * Updates the passive abilities of the blockling with a type of log.
      */
-    private void updateNaturalPassiveAbilities()
+    public void updateLogPassiveAbility()
+    {
+        final int radius = 8;
+        final float healAmount = 2.0f;
+
+        if (naturalBlocklingType == BlocklingType.OAK_LOG || blocklingType == BlocklingType.OAK_LOG)
+        {
+            for (int i = -radius; i <= radius; i++)
+            {
+                for (int j = -radius; j <= radius; j++)
+                {
+                    for (int k = -radius; k <= radius; k++)
+                    {
+                        BlockPos testPos = blockPosition().offset(i, j, k);
+                        Block testBlock = level.getBlockState(testPos).getBlock();
+
+                        if (testBlock == Blocks.OAK_LOG)
+                        {
+                            WorldUtil.Tree treeToTest = WorldUtil.findTreeFromPos(level, testPos, (t) -> true, (t) -> true);
+
+                            if (!treeToTest.isValid())
+                            {
+                                continue;
+                            }
+
+                            // Heal themselves.
+                            if (getHealth() < getMaxHealth())
+                            {
+                                if (level.isClientSide)
+                                {
+                                    level.addParticle(ParticleTypes.HEART, getX(), getY() + getEyeHeight() + 0.75f, getZ(), 0.0f, 0.0f, 0.0f);
+                                }
+                                else
+                                {
+                                    heal(healAmount);
+                                }
+                            }
+
+                            // Heal the owner if they are in range.
+                            if (getOwner() != null && getOwner().distanceToSqr(this) < radius * radius)
+                            {
+                                if (getOwner().getHealth() < getOwner().getMaxHealth())
+                                {
+                                    if (level.isClientSide)
+                                    {
+                                        level.addParticle(ParticleTypes.HEART, getOwner().getX(), getOwner().getY() +  getOwner().getEyeHeight() + 0.75f, getOwner().getZ(), 0.0f, 0.0f, 0.0f);
+                                    }
+                                    else
+                                    {
+                                        getOwner().heal(healAmount);
+                                    }
+                                }
+                            }
+
+                            // Heal other blocklings in range with the same owner.
+                            if (getOwnerUUID() != null)
+                            {
+                                for (BlocklingEntity nearbyBlockling : level.getEntitiesOfClass(BlocklingEntity.class, AxisAlignedBB.ofSize(radius * 2, radius * 2, radius * 2).move(blockPosition())))
+                                {
+                                    if (getOwnerUUID().equals(nearbyBlockling.getOwnerUUID()))
+                                    {
+                                        if (nearbyBlockling.getHealth() < nearbyBlockling.getMaxHealth())
+                                        {
+                                            if (level.isClientSide)
+                                            {
+                                                level.addParticle(ParticleTypes.HEART, nearbyBlockling.getX(), nearbyBlockling.getY() + nearbyBlockling.getEyeHeight() + 0.75f, nearbyBlockling.getZ(), 0.0f, 0.0f, 0.0f);
+                                            }
+                                            else
+                                            {
+                                                nearbyBlockling.heal(healAmount);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Updates any generic passive abilities the blockling has.
+     */
+    private void updatePassiveAbilities()
     {
         if (!level.isClientSide)
         {
@@ -507,6 +594,8 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
             cropsHarvestedRecently = 0;
             stats.farmingSpeedSkillMomentumModifier.setValue(0.0f);
         }
+
+        actions.logRegenerationCooldown.tryStart();
     }
 
     @Override
@@ -603,7 +692,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         {
             stats.combatXp.incrementValue((int) (damage + tinkersDamage) + 1);
 
-            if (knockback > 0.0f && target instanceof LivingEntity)
+            if (knockback > 0.0f)
             {
                 ((LivingEntity) target).knockback(knockback * 0.5f, (double) MathHelper.sin(this.yRot * ((float) Math.PI / 180.0f)), (-MathHelper.cos(this.yRot * ((float) Math.PI / 180.0f))));
                 setDeltaMovement(getDeltaMovement().multiply(0.6, 1.0, 0.6));
@@ -887,10 +976,9 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
      * Attempts to tame the blockling with a 1 in 3 chance.
      *
      * @param player the player interacting with the blockling.
-     * @param stack the stack involved in the interaction.
-     * @return true if the blockling is successfully tamed.
+     * @param stack  the stack involved in the interaction.
      */
-    private boolean tryTame(@Nonnull ServerPlayerEntity player, @Nonnull ItemStack stack)
+    private void tryTame(@Nonnull ServerPlayerEntity player, @Nonnull ItemStack stack)
     {
         if (random.nextInt(3) == 0 && !ForgeEventFactory.onAnimalTame(this, player))
         {
@@ -907,14 +995,12 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
             navigation.stop();
             level.broadcastEntityEvent(this, (byte) 7);
 
-            return true;
         }
         else
         {
             level.broadcastEntityEvent(this, (byte) 6);
         }
 
-        return false;
     }
 
     @Override

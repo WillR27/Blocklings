@@ -25,11 +25,12 @@ public class KnownTargetAction extends Action
     /**
      * @param blockling the blockling.
      * @param key the key used to identify the action and for the underlying attribute.
+     * @param authority the side that has authority over the value of the action.
      * @param targetCountSupplier the supplier used to get the target count.
      */
-    public KnownTargetAction(@Nonnull BlocklingEntity blockling, @Nonnull String key, @Nonnull Supplier<Float> targetCountSupplier)
+    public KnownTargetAction(@Nonnull BlocklingEntity blockling, @Nonnull String key, @Nonnull Authority authority, @Nonnull Supplier<Float> targetCountSupplier)
     {
-        super(blockling, key);
+        super(blockling, key, authority);
         this.targetCountSupplier = targetCountSupplier;
     }
 
@@ -66,11 +67,13 @@ public class KnownTargetAction extends Action
 
         if (isRunning())
         {
-            if (count() > targetCountSupplier.get())
+            if (getCount() > targetCountSupplier.get())
             {
                 stop();
 
                 isFinished = true;
+
+                callCallbacks();
             }
         }
     }
@@ -94,11 +97,11 @@ public class KnownTargetAction extends Action
     @Override
     public float percentThroughAction(float targetCount)
     {
-        if (count() + targetCount < 0)
+        if (getCount() + targetCount < 0)
         {
             return 1.0f;
         }
 
-        return (count() + targetCount) / targetCountSupplier.get();
+        return (getCount() + targetCount) / targetCountSupplier.get();
     }
 }

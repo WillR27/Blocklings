@@ -1,34 +1,73 @@
 package com.willr27.blocklings.entity.blockling.action;
 
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
-import com.willr27.blocklings.entity.blockling.attribute.attributes.numbers.ModifiableFloatAttribute;
+import com.willr27.blocklings.network.BlocklingMessage;
+import com.willr27.blocklings.network.NetworkHandler;
+import com.willr27.blocklings.util.PacketBufferUtils;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nonnull;
-import java.util.UUID;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Action
 {
     /**
      * The blockling.
      */
-    @Nonnull
     public final BlocklingEntity blockling;
 
     /**
-     * The counter used for the action.
+     * The key used to identify the action.
      */
-    @Nonnull
-    protected final ModifiableFloatAttribute count;
+    public final String key;
+
+    /**
+     * The side that has authority over the value of the action.
+     */
+    public final Authority authority;
+
+    /**
+     * The current count of the action.
+     */
+    protected float count;
+
+    /**
+     * The list of callbacks to call when an action finishes.
+     */
+    protected final List<Runnable> callbacks = new ArrayList<>();
 
     /**
      * @param blockling the blockling.
-     * @param key the key used to identify the action and for the underlying attribute.
+     * @param key the key used to identify the action.
+     * @param authority the side that has authority over the value of the action.
      */
-    public Action(@Nonnull BlocklingEntity blockling, @Nonnull String key)
+    public Action(@Nonnull BlocklingEntity blockling, @Nonnull String key, @Nonnull Authority authority)
     {
         this.blockling = blockling;
+        this.key = key;
+        this.authority = authority;
+    }
 
-        blockling.getStats().addAttribute(count = new ModifiableFloatAttribute(UUID.randomUUID().toString(), key + "_action", blockling, -1.0f, null, null, true));
+    /**
+     * Adds the given callback to the list of callbacks to call when an action finishes.
+     */
+    public void addCallback(@Nonnull Runnable callback)
+    {
+        callbacks.add(callback);
+    }
+
+    /**
+     * Calls all the callbacks that should be called when an action finishes.
+     */
+    public void callCallbacks()
+    {
+        for (Runnable callback : callbacks)
+        {
+            callback.run();
+        }
     }
 
     /**
@@ -55,7 +94,7 @@ public abstract class Action
      */
     public void start()
     {
-        count.setBaseValue(0.0f);
+        setCount(0.0f);
     }
 
     /**
@@ -73,7 +112,7 @@ public abstract class Action
     {
         if (isRunning())
         {
-            count.incrementBaseValue(increment, false);
+            setCount(count + increment);
         }
     }
 
@@ -84,7 +123,7 @@ public abstract class Action
     {
         if (isRunning())
         {
-            count.setBaseValue(-1.0f);
+            setCount(-1.0f);
         }
     }
 
@@ -93,15 +132,41 @@ public abstract class Action
      */
     public boolean isRunning()
     {
-        return count.getValue() != -1;
+        return count != -1;
     }
 
     /**
      * @return the current value of the count attribute.
      */
-    public float count()
+    public float getCount()
     {
-        return count.getValue();
+        return count;
+    }
+
+    /**
+     * Sets the count to the given value.
+     *
+     * @param count the value to set the count to.
+     */
+    public void setCount(float count)
+    {
+        setCount(count, isCorrectSide() && authority != Authority.NONE);
+    }
+
+    /**
+     * Sets the count to the given value
+     *
+     * @param count the value to set the count to.
+     * @param sync whether to sync to the client/server.
+     */
+    public void setCount(float count, boolean sync)
+    {
+        this.count = count;
+
+        if (sync)
+        {
+            NetworkHandler.sync(blockling.level, new CountMessage(blockling, key, count));
+        }
     }
 
     /**
@@ -110,6 +175,90 @@ public abstract class Action
      */
     public float percentThroughAction(float targetCount)
     {
-        return count() / (float) targetCount;
+        return getCount() / (float) targetCount;
+    }
+
+    /**
+     * @return true if the authority matches the side.
+     */
+    public boolean isCorrectSide()
+    {
+        return authority == Authority.BOTH || authority == Authority.NONE || (authority == Authority.SERVER && !blockling.level.isClientSide) || (authority == Authority.CLIENT && blockling.level.isClientSide);
+    }
+
+    /**
+     * Which side has authority over the action.
+     */
+    public static enum Authority
+    {
+        BOTH,
+        CLIENT,
+        SERVER,
+        NONE
+    }
+
+    /**
+     * Used to sync the value of count between the client and server.
+     */
+    public static class CountMessage extends BlocklingMessage<CountMessage>
+    {
+        /**
+         * The key of the action.
+         */
+        private String key;
+
+        /**
+         * The count of the action.
+         */
+        private float count;
+
+        /**
+         * Empty constructor used ONLY for decoding.
+         */
+        public CountMessage()
+        {
+            super(null);
+        }
+
+        /**
+         * @param blockling the blockling.
+         * @param key the key of the action.
+         * @param count the count of the action.
+         */
+        public CountMessage(@Nullable BlocklingEntity blockling, @Nonnull String key, float count)
+        {
+            super(blockling);
+            this.key = key;
+            this.count = count;
+        }
+
+        @Override
+        public void encode(@Nonnull PacketBuffer buf)
+        {
+            super.encode(buf);
+
+            PacketBufferUtils.writeString(buf, key);
+            buf.writeFloat(count);
+        }
+
+        @Override
+        public void decode(@Nonnull PacketBuffer buf)
+        {
+            super.decode(buf);
+
+            key = PacketBufferUtils.readString(buf);
+            count = buf.readFloat();
+        }
+
+        @Override
+        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
+        {
+            Action action = blockling.getActions().find(key);
+
+            if (action != null)
+            {
+                action.setCount(count, false);
+            }
+        }
     }
 }

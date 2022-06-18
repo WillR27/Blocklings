@@ -13,9 +13,10 @@ public class UnknownTargetAction extends Action
     /**
      * @param blockling the blockling.
      * @param key the key used to identify the action and for the underlying attribute.
+     * @param authority the side that has authority over the value of the action.
      */
-    public UnknownTargetAction(@Nonnull BlocklingEntity blockling, @Nonnull String key)
+    public UnknownTargetAction(@Nonnull BlocklingEntity blockling, @Nonnull String key, @Nonnull Authority authority)
     {
-        super(blockling, key);
+        super(blockling, key, authority);
     }
 }

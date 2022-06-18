@@ -36,11 +36,12 @@ public class AttackAction extends KnownTargetAction
      */
     public AttackAction(@Nonnull BlocklingActions actions, @Nonnull BlocklingEntity blockling, @Nonnull String key, @Nonnull Supplier<Float> targetCountSupplier, @Nonnull Supplier<Float> handTargetCountSupplier)
     {
-        super(blockling, key, targetCountSupplier);
+        super(blockling, key, Authority.BOTH, targetCountSupplier);
 
         // Cap the animation to a minimum of 10 ticks.
         Supplier<Float> supplier = () -> handTargetCountSupplier.get() < 10.0f ? handTargetCountSupplier.get() : 10.0f;
-        handAction = actions.createAction(key + "_hand", supplier);
+        handAction = actions.createAction(key + "_hand", Authority.BOTH, supplier, true);
+        handAction.setCount(-1.0f, false);
 
         blockling.getStats().addAttribute(recentHand = new EnumAttribute<BlocklingHand>(UUID.randomUUID().toString(), key + "_recent_hand", blockling, BlocklingHand.class, BlocklingHand.BOTH, null, null, true));
     }

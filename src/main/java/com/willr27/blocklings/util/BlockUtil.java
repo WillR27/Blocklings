@@ -120,7 +120,7 @@ public class BlockUtil
     /**
      * Represents the 3 blocks that make up a tree.
      */
-    public static class Tree
+    public static class TreeTuple
     {
         /**
          * The block that makes up the trunk of the tree.
@@ -145,7 +145,7 @@ public class BlockUtil
          * @param leaves the leaves block.
          * @param sapling the sapling block.
          */
-        public Tree(@Nonnull Block log, @Nonnull Block leaves, @Nonnull Block sapling)
+        public TreeTuple(@Nonnull Block log, @Nonnull Block leaves, @Nonnull Block sapling)
         {
             this.log = log;
             this.leaves = leaves;
@@ -155,9 +155,9 @@ public class BlockUtil
         @Override
         public boolean equals(Object obj)
         {
-            if (obj instanceof Tree)
+            if (obj instanceof TreeTuple)
             {
-                Tree tree = (Tree) obj;
+                TreeTuple tree = (TreeTuple) obj;
 
                 return tree.log == log && tree.leaves == leaves && tree.sapling == sapling;
             }
@@ -170,28 +170,28 @@ public class BlockUtil
      * The list of trees.
      */
     @Nonnull
-    public static Lazy<List<Tree>> TREES = Lazy.of(BlockUtil::createTreesList);
+    public static Lazy<List<TreeTuple>> TREES = Lazy.of(BlockUtil::createTreesList);
 
     /**
      * @return the list of trees.
      */
     @Nonnull
-    public static List<Tree> createTreesList()
+    public static List<TreeTuple> createTreesList()
     {
         Blocklings.LOGGER.info("Creating trees list.");
 
-        List<Tree> trees = new ArrayList<>();
+        List<TreeTuple> trees = new ArrayList<>();
 
         List<? extends String> customTrees = BlocklingsConfig.COMMON.customTrees.get();
 
         trees.clear();
 
-        trees.add(new Tree(Blocks.ACACIA_LOG, Blocks.ACACIA_LEAVES, Blocks.ACACIA_SAPLING));
-        trees.add(new Tree(Blocks.BIRCH_LOG, Blocks.BIRCH_LEAVES, Blocks.BIRCH_SAPLING));
-        trees.add(new Tree(Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_LEAVES, Blocks.DARK_OAK_SAPLING));
-        trees.add(new Tree(Blocks.JUNGLE_LOG, Blocks.JUNGLE_LEAVES, Blocks.JUNGLE_SAPLING));
-        trees.add(new Tree(Blocks.OAK_LOG, Blocks.OAK_LEAVES, Blocks.OAK_SAPLING));
-        trees.add(new Tree(Blocks.SPRUCE_LOG, Blocks.SPRUCE_LEAVES, Blocks.SPRUCE_SAPLING));
+        trees.add(new TreeTuple(Blocks.ACACIA_LOG, Blocks.ACACIA_LEAVES, Blocks.ACACIA_SAPLING));
+        trees.add(new TreeTuple(Blocks.BIRCH_LOG, Blocks.BIRCH_LEAVES, Blocks.BIRCH_SAPLING));
+        trees.add(new TreeTuple(Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_LEAVES, Blocks.DARK_OAK_SAPLING));
+        trees.add(new TreeTuple(Blocks.JUNGLE_LOG, Blocks.JUNGLE_LEAVES, Blocks.JUNGLE_SAPLING));
+        trees.add(new TreeTuple(Blocks.OAK_LOG, Blocks.OAK_LEAVES, Blocks.OAK_SAPLING));
+        trees.add(new TreeTuple(Blocks.SPRUCE_LOG, Blocks.SPRUCE_LEAVES, Blocks.SPRUCE_SAPLING));
 
         for (String treeString : customTrees)
         {
@@ -224,7 +224,7 @@ public class BlockUtil
                 continue;
             }
 
-            Tree tree = new Tree(log, leaves, sapling);
+            TreeTuple tree = new TreeTuple(log, leaves, sapling);
 
             if (!trees.contains(tree))
             {
@@ -262,7 +262,7 @@ public class BlockUtil
     @Nullable
     public static Block getLog(@Nonnull Item blockItem)
     {
-        for (Tree tree : TREES.get())
+        for (TreeTuple tree : TREES.get())
         {
             if (new ItemStack(tree.log).getItem() == blockItem)
             {
@@ -292,6 +292,25 @@ public class BlockUtil
     }
 
     /**
+     * Gets the leaves block of the given log block.
+     *
+     * @return the block if it is leaves else null.
+     */
+    @Nullable
+    public static Block getLeaves(@Nonnull Block logBlock)
+    {
+        for (TreeTuple tree : TREES.get())
+        {
+            if (tree.log == logBlock)
+            {
+                return tree.leaves;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Gets the block of the given block item.
      *
      * @param blockItem a block in item form.
@@ -300,7 +319,7 @@ public class BlockUtil
     @Nullable
     public static Block getLeaves(@Nonnull Item blockItem)
     {
-        for (Tree tree : TREES.get())
+        for (TreeTuple tree : TREES.get())
         {
             if (new ItemStack(tree.leaves).getItem() == blockItem)
             {
@@ -338,7 +357,7 @@ public class BlockUtil
     @Nullable
     public static Block getSapling(@Nonnull Item blockItem)
     {
-        for (Tree tree : TREES.get())
+        for (TreeTuple tree : TREES.get())
         {
             if (new ItemStack(tree.sapling).getItem() == blockItem)
             {
@@ -358,7 +377,7 @@ public class BlockUtil
     @Nullable
     public static Block getSaplingFromLog(@Nonnull Block logBlock)
     {
-        for (Tree tree : TREES.get())
+        for (TreeTuple tree : TREES.get())
         {
             if (tree.log == logBlock)
             {

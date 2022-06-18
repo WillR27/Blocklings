@@ -2,6 +2,7 @@ package com.willr27.blocklings.network;
 
 import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.client.gui.BlocklingGuiHandler;
+import com.willr27.blocklings.entity.blockling.action.Action;
 import com.willr27.blocklings.entity.blockling.attribute.Attribute;
 import com.willr27.blocklings.entity.blockling.attribute.attributes.EnumAttribute;
 import com.willr27.blocklings.entity.blockling.attribute.attributes.numbers.FloatAttribute;
@@ -63,6 +64,7 @@ public class NetworkHandler
         registerMessage(IntAttribute.ValueMessage.class);
         registerMessage(ModifiableIntAttribute.BaseValueMessage.class);
 
+        registerMessage(Action.CountMessage.class);
         registerMessage(BlocklingAttackTargetMessage.class);
         registerMessage(BlocklingGuiHandler.OpenMessage.class);
         registerMessage(BlocklingNameMessage.class);
