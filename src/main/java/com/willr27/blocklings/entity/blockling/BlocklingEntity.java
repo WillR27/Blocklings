@@ -777,7 +777,12 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     @Override
     public boolean hurt(@Nonnull DamageSource damageSource, float damage)
     {
-        boolean hurt = super.hurt(damageSource, damage);
+        boolean hurt = false;
+
+        if (!((naturalBlocklingType == BlocklingType.NETHERITE || blocklingType == BlocklingType.NETHERITE) && getRandom().nextInt(10) == 0))
+        {
+            hurt = super.hurt(damageSource, damage);
+        }
 
         if (hurt)
         {
@@ -787,12 +792,12 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
                 if (attacker != null)
                 {
-                    if ((naturalBlocklingType == BlocklingType.QUARTZ || blocklingType == BlocklingType.QUARTZ))
+                    if (naturalBlocklingType == BlocklingType.QUARTZ || blocklingType == BlocklingType.QUARTZ)
                     {
                         attacker.hurt(DamageSource.mobAttack(this), damage / 15.0f);
                     }
 
-                    if ((naturalBlocklingType == BlocklingType.OBSIDIAN || blocklingType == BlocklingType.OBSIDIAN))
+                    if (naturalBlocklingType == BlocklingType.OBSIDIAN || blocklingType == BlocklingType.OBSIDIAN)
                     {
                         attacker.knockback(0.5f, (double) MathHelper.sin(this.yRot * ((float) Math.PI / 180.0f)), (-MathHelper.cos(this.yRot * ((float) Math.PI / 180.0f))));
                         setDeltaMovement(getDeltaMovement().multiply(0.6, 1.0, 0.6));
