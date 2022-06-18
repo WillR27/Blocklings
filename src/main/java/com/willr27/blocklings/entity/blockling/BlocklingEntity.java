@@ -779,13 +779,25 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     {
         boolean hurt = super.hurt(damageSource, damage);
 
-        if (hurt && (naturalBlocklingType == BlocklingType.QUARTZ || blocklingType == BlocklingType.QUARTZ))
+        if (hurt)
         {
-            LivingEntity livingEntity = (LivingEntity) damageSource.getEntity();
-
-            if (livingEntity != null)
+            if (damageSource.getEntity() instanceof LivingEntity)
             {
-                livingEntity.hurt(DamageSource.mobAttack(this), damage / 15.0f);
+                LivingEntity attacker = (LivingEntity) damageSource.getEntity();
+
+                if (attacker != null)
+                {
+                    if ((naturalBlocklingType == BlocklingType.QUARTZ || blocklingType == BlocklingType.QUARTZ))
+                    {
+                        attacker.hurt(DamageSource.mobAttack(this), damage / 15.0f);
+                    }
+
+                    if ((naturalBlocklingType == BlocklingType.OBSIDIAN || blocklingType == BlocklingType.OBSIDIAN))
+                    {
+                        attacker.knockback(0.5f, (double) MathHelper.sin(this.yRot * ((float) Math.PI / 180.0f)), (-MathHelper.cos(this.yRot * ((float) Math.PI / 180.0f))));
+                        setDeltaMovement(getDeltaMovement().multiply(0.6, 1.0, 0.6));
+                    }
+                }
             }
         }
 
@@ -1213,7 +1225,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     @Override
     public boolean fireImmune()
     {
-        return blocklingType == BlocklingType.NETHERITE || blocklingType == BlocklingType.OBSIDIAN;
+        return naturalBlocklingType == BlocklingType.NETHERITE || blocklingType == BlocklingType.NETHERITE || naturalBlocklingType == BlocklingType.OBSIDIAN || blocklingType == BlocklingType.OBSIDIAN;
     }
 
     /**

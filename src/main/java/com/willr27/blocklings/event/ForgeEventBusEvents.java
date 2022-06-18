@@ -58,13 +58,16 @@ public class ForgeEventBusEvents
     @SubscribeEvent
     public static void onLootingLevelEvent(@Nonnull LootingLevelEvent event)
     {
-        BlocklingEntity blockling = (BlocklingEntity) event.getDamageSource().getEntity();
-
-        if (blockling != null)
+        if (event.getDamageSource().getEntity() instanceof BlocklingEntity)
         {
-            if (blockling.getNaturalBlocklingType() == BlocklingType.LAPIS || blockling.getBlocklingType() == BlocklingType.LAPIS)
+            BlocklingEntity blockling = (BlocklingEntity) event.getDamageSource().getEntity();
+
+            if (blockling != null)
             {
-                event.setLootingLevel(event.getLootingLevel() + 1);
+                if (blockling.getNaturalBlocklingType() == BlocklingType.LAPIS || blockling.getBlocklingType() == BlocklingType.LAPIS)
+                {
+                    event.setLootingLevel(event.getLootingLevel() + 1);
+                }
             }
         }
     }

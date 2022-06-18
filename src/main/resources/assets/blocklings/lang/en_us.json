@@ -32,6 +32,7 @@
   "blocklings.type.diamond": "Diamond",
   "blocklings.type.netherite": "Netherite",
   "blocklings.type.obsidian": "Obsidian",
+  "blocklings.type.obsidian.passive": "Your blockling will knockback their attackers when attacked. Also provides fire immunity.",
   "blocklings.type.glowstone": "Glowstone",
   "blocklings.type.glowstone.passive": "Your blockling will emit light like a glowstone block.",
 
