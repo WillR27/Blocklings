@@ -22,6 +22,7 @@
   "blocklings.type.oak_log": "Oak Log",
   "blocklings.type.oak_log.passive": "Your blockling will heal itself, you and allied blocklings for 2 health every 10 seconds if they are near a tree matching their type.",
   "blocklings.type.stone": "Stone",
+  "blocklings.type.stone.passive": "Your blockling provides bonus resistance when nearby.",
   "blocklings.type.iron": "Iron",
   "blocklings.type.quartz": "Quartz",
   "blocklings.type.quartz.passive": "Your blockling will reflect 15% of damage taken back to their attacker.",
