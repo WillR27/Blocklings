@@ -508,11 +508,17 @@ public class ToolUtil
      */
     public static boolean damageTool(@Nonnull ItemStack stack, @Nonnull BlocklingEntity blockling, int damage)
     {
+        ItemStack copiedStack = stack.copy();
+
         if (blockling.getNaturalBlocklingType() == BlocklingType.DIAMOND || blockling.getBlocklingType() == BlocklingType.DIAMOND)
         {
-            stack.enchant(Enchantments.UNBREAKING, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, stack) + 1);
+            copiedStack.enchant(Enchantments.UNBREAKING, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, copiedStack) + 1);
         }
 
-        return stack.hurt(damage, blockling.getRandom(), null);
+        boolean destroyed = copiedStack.hurt(damage, blockling.getRandom(), null);
+
+        stack.setDamageValue(copiedStack.getDamageValue());
+
+        return destroyed;
     }
 }
