@@ -78,6 +78,12 @@ public class ModifiableFloatAttributeModifier extends ModifiableFloatAttribute i
     }
 
     @Override
+    public boolean isEffective()
+    {
+        return !((getOperation() == Operation.ADD && getValue() == 0.0f) || ((getOperation() == Operation.MULTIPLY_BASE || getOperation() == Operation.MULTIPLY_TOTAL) && getValue() == 1.0f));
+    }
+
+    @Override
     public void setIsEnabled(boolean isEnabled, boolean sync)
     {
         super.setIsEnabled(isEnabled, sync);

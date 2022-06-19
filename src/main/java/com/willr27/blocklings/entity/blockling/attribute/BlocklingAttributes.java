@@ -77,6 +77,7 @@ public class BlocklingAttributes implements IReadWriteNBT
     public final ModifiableFloatAttributeModifier attackSpeedBlocklingModifier;
     public final FloatAttributeModifier attackSpeedTypeModifier;
     public final FloatAttributeModifier attackSpeedLevelModifier;
+    public final ModifiableFloatAttributeModifier attackSpeedToolsModifier;
     public final FloatAttributeModifier attackSpeedMainHandModifier;
     public final FloatAttributeModifier attackSpeedOffHandModifier;
     public final FloatAttributeModifier attackSpeedSkillMomentumModifier;
@@ -227,10 +228,11 @@ public class BlocklingAttributes implements IReadWriteNBT
         addModifier(attackSpeedSkillMomentumModifier = new FloatAttributeModifier("b97dcf6f-d1e4-4988-aa42-819e79af4a02", "attack_speed_skill_momentum", blockling, 0.0f, Operation.ADD, null, () -> skillDisplayNameProvider(CombatSkills.MOMENTUM), false));
         addModifier(attackSpeedOffHandModifier = new FloatAttributeModifier("3566961d-db2b-4833-8c0c-cf6813ade8cc", "attack_speed_off_hand", blockling, 0.0f, Operation.ADD, null, () -> blockling.getOffhandItem().getHoverName().getString(), true));
         addModifier(attackSpeedMainHandModifier = new FloatAttributeModifier("87343a1e-7a0b-4963-8d7e-e95f809e90ee", "attack_speed_main_hand", blockling, 0.0f, Operation.ADD, null, () -> blockling.getMainHandItem().getHoverName().getString(), true));
+        addModifier(attackSpeedToolsModifier = new ModifiableFloatAttributeModifier("8642d8f0-7554-4764-a58d-ee926c808fc8", "attack_speed_tools", blockling, 0.0f, Operation.ADD, null, null, true, attackSpeedMainHandModifier, attackSpeedOffHandModifier));
         addModifier(attackSpeedLevelModifier = new FloatAttributeModifier("bfeb22fe-aaaf-4294-9850-27449e27e44f", "attack_speed_level", blockling, 0.0f, Operation.ADD, null, combatLevel.displayStringNameSupplier, true));
         addModifier(attackSpeedTypeModifier = new FloatAttributeModifier("f40d211d-c6fd-449a-a2f8-8bffd24ac810", "attack_speed_type", blockling, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString(), true));
         addModifier(attackSpeedBlocklingModifier = new ModifiableFloatAttributeModifier("8c4e3d41-2a17-4cd1-8dbb-8866008960a5", "attack_speed_blockling", blockling, 0.0f, Operation.ADD, null, () -> blockling.getCustomName().getString(), true, attackSpeedTypeModifier, attackSpeedLevelModifier));
-        addAttribute(attackSpeed = new AveragedAttribute("4cbc129d-281d-410e-bba0-45d4e064932a", "attack_speed", blockling, 0.0f, null, null, true, attackSpeedBlocklingModifier, attackSpeedMainHandModifier, attackSpeedOffHandModifier, attackSpeedSkillMomentumModifier, attackSpeedSkillPhotophileModifier));
+        addAttribute(attackSpeed = new AveragedAttribute("4cbc129d-281d-410e-bba0-45d4e064932a", "attack_speed", blockling, 0.0f, null, null, true, attackSpeedBlocklingModifier, attackSpeedToolsModifier, attackSpeedSkillMomentumModifier, attackSpeedSkillPhotophileModifier));
 
         addModifier(armourCombatLevelModifier = new FloatAttributeModifier("15f2f2ce-cdf1-4188-882e-67ceab22df41", "armour_combat_level", blockling, 0.0f, Operation.ADD, null, combatLevel.displayStringNameSupplier, true));
         addModifier(armourTypeModifier = new FloatAttributeModifier("a72fb401-abb7-4d95-ad7e-e83fc6a399d1", "armour_type", blockling, 0.0f, Operation.ADD, null, () -> blockling.getBlocklingType().name.getString(), true));
@@ -398,9 +400,9 @@ public class BlocklingAttributes implements IReadWriteNBT
     public void initUpdateCallbacks()
     {
         combatLevel.addUpdateCallback((i) -> { updateCombatLevelBonuses(false); updateOnLevelChange(Level.COMBAT); });
-        miningLevel.addUpdateCallback((i) -> { miningSpeedLevelModifier.setValue(calcBlockBreakSpeedFromLevel(i), false); updateOnLevelChange(Level.MINING); });
-        woodcuttingLevel.addUpdateCallback((i) -> { woodcuttingSpeedLevelModifier.setValue(calcBlockBreakSpeedFromLevel(i), false); updateOnLevelChange(Level.WOODCUTTING); });
-        farmingLevel.addUpdateCallback((i) -> { farmingSpeedLevelModifier.setValue(calcBlockBreakSpeedFromLevel(i), false); updateOnLevelChange(Level.FARMING); });
+        miningLevel.addUpdateCallback((i) -> { miningSpeedLevelModifier.setValue(calcBonusHarvestSpeedFromLevel(i), false); updateOnLevelChange(Level.MINING); });
+        woodcuttingLevel.addUpdateCallback((i) -> { woodcuttingSpeedLevelModifier.setValue(calcBonusHarvestSpeedFromLevel(i), false); updateOnLevelChange(Level.WOODCUTTING); });
+        farmingLevel.addUpdateCallback((i) -> { farmingSpeedLevelModifier.setValue(calcBonusHarvestSpeedFromLevel(i), false); updateOnLevelChange(Level.FARMING); });
         combatXp.addUpdateCallback((i) -> checkForLevelUpAndUpdate(false));
         miningXp.addUpdateCallback((i) -> checkForLevelUpAndUpdate(false));
         woodcuttingXp.addUpdateCallback((i) -> checkForLevelUpAndUpdate(false));
@@ -572,7 +574,7 @@ public class BlocklingAttributes implements IReadWriteNBT
     {
         maxHealthCombatLevelModifier.setValue(calcBonusHealthFromCombatLevel(), sync);
         attackDamageCombatLevelModifier.setValue(calcBonusDamageFromCombatLevel(), sync);
-        attackSpeedLevelModifier.setValue(calcBlockBreakSpeedFromLevel(combatLevel.getValue()), sync);
+        attackSpeedLevelModifier.setValue(calcBonusAttackSpeedFromLevel(combatLevel.getValue()), sync);
         armourCombatLevelModifier.setValue(calcBonusArmourFromCombatLevel(), sync);
         armourToughnessCombatLevelModifier.setValue(calcBonusArmourToughnessFromCombatLevel(), sync);
         knockbackResistanceCombatLevelModifier.setValue(calcBonusKnockbackResistanceFromCombatLevel(), sync);
@@ -602,7 +604,7 @@ public class BlocklingAttributes implements IReadWriteNBT
      * @param level the level to enquire about.
      * @return the block break speed for that level.
      */
-    private float calcBlockBreakSpeedFromLevel(int level)
+    private float calcBonusHarvestSpeedFromLevel(int level)
     {
         return (float) (10.0f * Math.tan((level / (float) Level.MAX) * (Math.PI / 4.0f)));
     }
@@ -621,6 +623,15 @@ public class BlocklingAttributes implements IReadWriteNBT
     private float calcBonusDamageFromCombatLevel()
     {
         return (float) (20.0f * Math.tan((combatLevel.getValue() / (float) Level.MAX) * (Math.PI / 4.0f)));
+    }
+
+    /**
+     * @param level the level to enquire about.
+     * @return the bonus attack speed for that level.
+     */
+    private float calcBonusAttackSpeedFromLevel(int level)
+    {
+        return (float) (5.0f * Math.tan((level / (float) Level.MAX) * (Math.PI / 4.0f)));
     }
 
     /**

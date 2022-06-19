@@ -1530,7 +1530,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         if (skills.getSkill(CombatSkills.MOMENTUM).isBought())
         {
             int cappedCount = Math.min(attacksRecently, 20);
-            stats.attackSpeedSkillMomentumModifier.setValue((float) cappedCount);
+            stats.attackSpeedSkillMomentumModifier.setValue((float) cappedCount / 2.0f);
         }
     }
 

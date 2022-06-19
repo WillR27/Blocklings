@@ -38,19 +38,19 @@ public class BlocklingType
      */
     public static final List<BlocklingType> TYPES = new ArrayList<>();
 
-    public static final BlocklingType GRASS = create("grass", 5).addCombatStats(2.0f, 1.0f, 3.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.0f, 1.0f, 2.0f);
-    public static final BlocklingType DIRT = create("dirt", 0).addCombatStats(2.0f, 1.0f, 3.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.0f, 1.0f, 2.0f);
-    public static final BlocklingType OAK_LOG = create("oak_log", 0).addCombatStats(3.0f, 1.0f, 3.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 2.0f, 1.0f);
-    public static final BlocklingType STONE = create("stone", 0).addCombatStats(5.0f, 1.0f, 3.0f, 2.0f, 1.0f, 0.3f, 2.5f).addGatheringStats(1.5f, 0.5f, 0.5f);
-    public static final BlocklingType IRON = create("iron", 0).addCombatStats(6.0f, 2.0f, 3.0f, 2.0f, 1.0f, 0.1f, 3.0f).addGatheringStats(2.0f, 0.5f, 0.5f);
-    public static final BlocklingType QUARTZ = create("quartz", 0).addCombatStats(3.0f, 4.0f, 3.0f, 1.0f, 0.5f, 0.1f, 3.5f).addGatheringStats(2.0f, 0.5f, 0.5f);
-    public static final BlocklingType LAPIS = create("lapis", 0).addCombatStats(5.0f, 3.0f, 3.0f, 1.0f, 0.5f, 0.1f, 3.0f).addGatheringStats(2.0f, 0.5f, 0.5f);
-    public static final BlocklingType GOLD = create("gold", 0).addCombatStats(1.0f, 4.0f, 3.0f, 1.0f, 0.5f, 0.1f, 4.0f).addGatheringStats(2.5f, 0.5f, 0.5f);
-    public static final BlocklingType EMERALD = create("emerald", 0).addCombatStats(5.0f, 3.0f, 3.0f, 2.0f, 1.0f, 0.2f, 3.0f).addGatheringStats(2.5f, 0.5f, 0.5f);
-    public static final BlocklingType DIAMOND = create("diamond", 0).addCombatStats(8.0f, 6.0f, 3.0f, 3.0f, 1.5f, 0.2f, 3.0f).addGatheringStats(3.0f, 0.5f, 0.5f);
-    public static final BlocklingType NETHERITE = create("netherite", 0).addCombatStats(15.0f, 7.0f, 3.0f, 4.0f, 2.0f, 0.3f, 2.5f).addGatheringStats(2.5f, 1.0f, 1.0f);
-    public static final BlocklingType OBSIDIAN = create("obsidian", 0).addCombatStats(25.0f, 5.0f, 2.0f, 4.0f, 2.0f, 0.8f, 2.0f).addGatheringStats(1.0f, 0.5f, 0.5f);
-    public static final BlocklingType GLOWSTONE = create("glowstone", 0).addCombatStats(2.0f, 2.0f, 4.0f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(1.0f, 1.0f, 1.0f);
+    public static final BlocklingType GRASS = create("grass", 5).addCombatStats(2.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.0f, 1.0f, 2.0f);
+    public static final BlocklingType DIRT = create("dirt", 0).addCombatStats(2.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.0f, 1.0f, 2.0f);
+    public static final BlocklingType OAK_LOG = create("oak_log", 0).addCombatStats(3.0f, 1.0f, 1.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 2.0f, 1.0f);
+    public static final BlocklingType STONE = create("stone", 0).addCombatStats(5.0f, 1.0f, 1.0f, 2.0f, 1.0f, 0.3f, 2.5f).addGatheringStats(1.5f, 0.5f, 0.5f);
+    public static final BlocklingType IRON = create("iron", 0).addCombatStats(6.0f, 2.0f, 1.0f, 2.0f, 1.0f, 0.1f, 3.0f).addGatheringStats(2.0f, 0.5f, 0.5f);
+    public static final BlocklingType QUARTZ = create("quartz", 0).addCombatStats(3.0f, 4.0f, 2.0f, 1.0f, 0.5f, 0.1f, 3.5f).addGatheringStats(2.0f, 0.5f, 0.5f);
+    public static final BlocklingType LAPIS = create("lapis", 0).addCombatStats(5.0f, 3.0f, 1.5f, 1.0f, 0.5f, 0.1f, 3.0f).addGatheringStats(2.0f, 0.5f, 0.5f);
+    public static final BlocklingType GOLD = create("gold", 0).addCombatStats(1.0f, 4.0f, 2.5f, 1.0f, 0.5f, 0.1f, 4.0f).addGatheringStats(2.5f, 0.5f, 0.5f);
+    public static final BlocklingType EMERALD = create("emerald", 0).addCombatStats(5.0f, 3.0f, 1.5f, 2.0f, 1.0f, 0.2f, 3.0f).addGatheringStats(2.5f, 0.5f, 0.5f);
+    public static final BlocklingType DIAMOND = create("diamond", 0).addCombatStats(8.0f, 6.0f, 2.0f, 3.0f, 1.5f, 0.2f, 3.0f).addGatheringStats(3.0f, 0.5f, 0.5f);
+    public static final BlocklingType NETHERITE = create("netherite", 0).addCombatStats(15.0f, 7.0f, 2.0f, 4.0f, 2.0f, 0.3f, 2.5f).addGatheringStats(2.5f, 1.0f, 1.0f);
+    public static final BlocklingType OBSIDIAN = create("obsidian", 0).addCombatStats(25.0f, 5.0f, 1.0f, 4.0f, 2.0f, 0.8f, 2.0f).addGatheringStats(1.0f, 0.5f, 0.5f);
+    public static final BlocklingType GLOWSTONE = create("glowstone", 0).addCombatStats(2.0f, 2.0f, 2.0f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(1.0f, 1.0f, 1.0f);
 
     /**
      * Initialises the additional properties for each blockling type.

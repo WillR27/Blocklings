@@ -4,6 +4,7 @@ import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.action.actions.AttackAction;
 import com.willr27.blocklings.entity.blockling.action.actions.KnownTargetAction;
 import com.willr27.blocklings.entity.blockling.action.actions.UnknownTargetAction;
+import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -95,9 +96,10 @@ public class BlocklingActions
     {
         this.blockling = blockling;
 
+        // Basically 5 ticks + 50 ticks divided by the attack speed.
         Supplier<Float> attackTargetSupplier = () ->
         {
-            return (1.0f / blockling.getStats().attackSpeed.getValue()) * 80.0f;
+            return 5.0f + (50.0f / blockling.getStats().attackSpeed.getValue());
         };
 
         ticks20 = createAction("ticks_20", Action.Authority.SERVER, () -> 20.0f, true);
@@ -193,6 +195,8 @@ public class BlocklingActions
      */
     public void tick()
     {
-        actionsToAutoTick.forEach(Action::tick);
+        // Auto tick the actions on their preferred side.
+        // In the case of BOTH, only tick server side to prevent double ticking.
+        actionsToAutoTick.stream().filter(action -> action.isCorrectSide() && (action.authority != Action.Authority.BOTH || !blockling.level.isClientSide)).forEach(Action::tick);
     }
 }

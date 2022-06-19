@@ -38,8 +38,8 @@ public class AttackAction extends KnownTargetAction
     {
         super(blockling, key, Authority.BOTH, targetCountSupplier);
 
-        // Cap the animation to a minimum of 10 ticks.
-        Supplier<Float> supplier = () -> handTargetCountSupplier.get() < 10.0f ? handTargetCountSupplier.get() : 10.0f;
+        // Cap the animation to a minimum of 5 ticks.
+        Supplier<Float> supplier = () -> handTargetCountSupplier.get() < 5.0f ? 5.0f : handTargetCountSupplier.get();
         handAction = actions.createAction(key + "_hand", Authority.BOTH, supplier, true);
         handAction.setCount(-1.0f, false);
 

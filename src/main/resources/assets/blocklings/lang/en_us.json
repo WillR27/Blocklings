@@ -228,6 +228,7 @@
   "blocklings.attribute.off_hand_attack_damage.name": "Attack Damage (Left)",
   "blocklings.attribute.main_hand_attack_damage.name": "Attack Damage (Right)",
   "blocklings.attribute.attack_speed.name": "Attack Speed (Average)",
+  "blocklings.attribute.attack_speed_tools.name": "Tools",
 
   "blocklings.attribute.armour.name": "Armour",
   "blocklings.attribute.armour_toughness.name": "Armour Toughness",

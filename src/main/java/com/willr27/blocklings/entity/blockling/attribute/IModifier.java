@@ -42,6 +42,11 @@ public interface IModifier<T>
     Supplier<String> getDisplayStringNameSupplier();
 
     /**
+     * @return true if the value and operation actually effect the attribute.
+     */
+    boolean isEffective();
+
+    /**
      * @return true if the attribute is enabled.
      */
     boolean isEnabled();

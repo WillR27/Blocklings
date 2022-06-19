@@ -190,7 +190,7 @@ public class CombatSkills
         {
             if (!skill.blockling.level.isClientSide)
             {
-                float value = 15.0f * (skill.blockling.level.getMaxLocalRawBrightness(skill.blockling.blockPosition()) / 15.0f);
+                float value = 5.0f * (skill.blockling.level.getMaxLocalRawBrightness(skill.blockling.blockPosition()) / 15.0f);
 
                 if (value != skill.blockling.getStats().attackSpeedSkillPhotophileModifier.getValue())
                 {
