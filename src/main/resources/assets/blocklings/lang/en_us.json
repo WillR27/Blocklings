@@ -32,7 +32,7 @@
   "blocklings.type.emerald.passive": "Your blockling provides bonus luck when nearby.",
   "blocklings.type.diamond": "Diamond",
   "blocklings.type.netherite": "Netherite",
-  "blocklings.type.netherite.passive": "Your blockling has a 10% chance to dodge an attack.",
+  "blocklings.type.netherite.passive": "Your blockling has a 10% chance to dodge an attack. Also provides fire immunity.",
   "blocklings.type.obsidian": "Obsidian",
   "blocklings.type.obsidian.passive": "Your blockling will knockback their attackers when attacked. Also provides fire immunity.",
   "blocklings.type.glowstone": "Glowstone",
