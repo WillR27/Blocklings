@@ -199,6 +199,9 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
             stats.init();
         }
 
+        actions.ticks20.addCallback(this::updatePassiveAbilities);
+        actions.logRegenerationCooldown.addCallback(this::updateLogPassiveAbility);
+
         equipmentInv.updateToolAttributes();
 
         setHealth(getMaxHealth());
@@ -377,7 +380,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         skills.tick();
         actions.tick();
 
-        updatePassiveAbilities();
+        updateLightPos(false);
         checkAndUpdateCooldowns();
         
         equipmentInv.detectAndSendChanges();
@@ -454,7 +457,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                             {
                                 for (BlocklingEntity nearbyBlockling : level.getEntitiesOfClass(BlocklingEntity.class, AxisAlignedBB.ofSize(radius * 2, radius * 2, radius * 2).move(blockPosition())))
                                 {
-                                    if (getOwnerUUID().equals(nearbyBlockling.getOwnerUUID()))
+                                    if (nearbyBlockling != this && getOwnerUUID().equals(nearbyBlockling.getOwnerUUID()))
                                     {
                                         if (nearbyBlockling.getHealth() < nearbyBlockling.getMaxHealth())
                                         {
@@ -480,15 +483,15 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     }
 
     /**
-     * Updates any generic passive abilities the blockling has.
+     * Updates any generic passive abilities the blockling has (should be called every 20 ticks).
      */
     private void updatePassiveAbilities()
     {
         if (!level.isClientSide)
         {
-           if (!((naturalBlocklingType == BlocklingType.GRASS || blocklingType == BlocklingType.GRASS) && (naturalBlocklingType == BlocklingType.DIRT || blocklingType == BlocklingType.DIRT)))
+           if (naturalBlocklingType == BlocklingType.GRASS || blocklingType == BlocklingType.GRASS)
            {
-               if (naturalBlocklingType == BlocklingType.GRASS || blocklingType == BlocklingType.GRASS)
+               if (random.nextInt(3) == 0)
                {
                    BlockPos belowPos = getOnPos();
                    Block belowBlock = level.getBlockState(belowPos).getBlock();
@@ -498,7 +501,11 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                        level.setBlock(belowPos, Blocks.GRASS_BLOCK.defaultBlockState(), Constants.BlockFlags.DEFAULT);
                    }
                }
-               else if (naturalBlocklingType == BlocklingType.DIRT || blocklingType == BlocklingType.DIRT)
+           }
+
+           if (naturalBlocklingType == BlocklingType.DIRT || blocklingType == BlocklingType.DIRT)
+           {
+               if (random.nextInt(3) == 0)
                {
                    BlockPos belowPos = getOnPos();
                    Block belowBlock = level.getBlockState(belowPos).getBlock();
@@ -518,7 +525,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
                 if (owner != null && owner.distanceToSqr(this) < range * range)
                 {
-                    owner.addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 205, level - 1, false, false, true));
+                    owner.addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 419, level - 1, false, false, true));
                 }
             }
 
@@ -530,7 +537,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
                 if (owner != null && owner.distanceToSqr(this) < range * range)
                 {
-                    owner.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 205, level - 1, false, false, true));
+                    owner.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 419, level - 1, false, false, true));
                 }
             }
 
@@ -542,7 +549,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
                 if (owner != null && owner.distanceToSqr(this) < range * range)
                 {
-                    owner.addEffect(new EffectInstance(Effects.DIG_SPEED, 205, level - 1, false, false, true));
+                    owner.addEffect(new EffectInstance(Effects.DIG_SPEED, 419, level - 1, false, false, true));
                 }
             }
 
@@ -554,12 +561,10 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
 
                if (owner != null && owner.distanceToSqr(this) < range * range)
                {
-                    owner.addEffect(new EffectInstance(Effects.LUCK, 205, level - 1, false, false, true));
+                    owner.addEffect(new EffectInstance(Effects.LUCK, 419, level - 1, false, false, true));
                }
            }
         }
-
-        updateLightPos(false);
     }
 
     /**
@@ -601,6 +606,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
      */
     private void checkAndUpdateCooldowns()
     {
+        actions.ticks20.tryStart();
         actions.regenerationCooldown.tryStart();
 
         if (actions.regenerationCooldown.isFinished())

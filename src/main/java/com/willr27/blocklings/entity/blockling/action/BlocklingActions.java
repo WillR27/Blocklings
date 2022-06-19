@@ -17,6 +17,12 @@ import java.util.function.Supplier;
 public class BlocklingActions
 {
     /**
+     * The action used as a timer that occurs every second.
+     */
+    @Nonnull
+    public final KnownTargetAction ticks20;
+
+    /**
      * The action used when a blockling attacks.
      */
     @Nonnull
@@ -94,6 +100,7 @@ public class BlocklingActions
             return (1.0f / blockling.getStats().attackSpeed.getValue()) * 80.0f;
         };
 
+        ticks20 = createAction("ticks_20", Action.Authority.SERVER, () -> 20.0f, true);
         attack = createAction("attack", Action.Authority.BOTH, attackTargetSupplier, attackTargetSupplier, true);
         gather = createAction("gather", Action.Authority.BOTH, () -> 1.0f, false);
         gather.setCount(-1.0f, false);
@@ -103,7 +110,6 @@ public class BlocklingActions
         logsChoppedCooldown = createAction("logs_chopped_cooldown", Action.Authority.BOTH, () -> 100.0f, true);
         cropsHarvestedCooldown = createAction("crops_harvested_cooldown", Action.Authority.BOTH, () -> 100.0f, true);
         logRegenerationCooldown = createAction("log_regeneration_cooldown", Action.Authority.SERVER, () -> 200.0f, true);
-        logRegenerationCooldown.addCallback(blockling::updateLogPassiveAbility);
     }
 
     /**
