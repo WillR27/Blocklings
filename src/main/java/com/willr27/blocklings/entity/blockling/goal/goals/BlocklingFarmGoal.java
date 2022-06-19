@@ -98,8 +98,8 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal
         BlockState targetBlockState = world.getBlockState(targetPos);
         Block targetBlock = targetBlockState.getBlock();
 
-        boolean mainCanHarvest = ToolUtil.isHoe(mainStack);
-        boolean offCanHarvest = ToolUtil.isHoe(offStack);
+        boolean mainCanHarvest = ToolUtil.canToolHarvest(mainStack, targetBlockState);
+        boolean offCanHarvest = ToolUtil.canToolHarvest(offStack, targetBlockState);
 
         if (mainCanHarvest || offCanHarvest)
         {

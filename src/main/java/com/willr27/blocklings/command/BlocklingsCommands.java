@@ -62,7 +62,7 @@ public class BlocklingsCommands
         dispatcher.register(
                 literal("blockling").requires(source -> source.hasPermission(2)).then(
                         literal("set").then(
-                                literal("type").then(
+                                literal("primary").then(
                                         argument("type", new BlocklingTypeArgument())
                                                 .executes(context -> executeTypeCommand(context, false)))).then(
                                 literal("natural").then(

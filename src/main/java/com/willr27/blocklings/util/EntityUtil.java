@@ -183,9 +183,15 @@ public class EntityUtil
             closestPath = path;
             closestDistanceSq = BlockUtil.distanceSq(blockPos, path.getTarget());
 
-            if (closestDistanceSq < stopDistanceSq)
+            // The block above is the least desirable target position (in most cases).
+            // So, only if we aren't targeting that position should we return now.
+            if (!path.getTarget().equals(blockPos.above()) && closestDistanceSq < stopDistanceSq)
             {
                 return closestPath;
+            }
+            else if (stopDistanceSq != 0)
+            {
+                closestDistanceSq = stopDistanceSq;
             }
         }
 
