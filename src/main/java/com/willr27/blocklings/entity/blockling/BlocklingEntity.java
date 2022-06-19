@@ -802,7 +802,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 damage *= 2;
             }
 
-            if (stack.hurt(damage, getRandom(), null))
+            if (ToolUtil.damageTool(stack, this, damage))
             {
                 stack.shrink(1);
             }

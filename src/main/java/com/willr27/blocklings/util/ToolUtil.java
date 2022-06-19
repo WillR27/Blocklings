@@ -1,6 +1,8 @@
 package com.willr27.blocklings.util;
 
 import com.google.common.collect.Multimap;
+import com.willr27.blocklings.entity.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.blockling.BlocklingType;
 import com.willr27.blocklings.interop.TinkersConstructProxy;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -25,10 +27,7 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -497,5 +496,23 @@ public class ToolUtil
         }
 
         return enchantments;
+    }
+
+    /**
+     * Damages the given tool by the given amount.
+     *
+     * @param stack the tool to damage.
+     * @param blockling the blockling equipping the tool.
+     * @param damage the amount of damage to apply.
+     * @return true if the stack was destroyed.
+     */
+    public static boolean damageTool(@Nonnull ItemStack stack, @Nonnull BlocklingEntity blockling, int damage)
+    {
+        if (blockling.getNaturalBlocklingType() == BlocklingType.DIAMOND || blockling.getBlocklingType() == BlocklingType.DIAMOND)
+        {
+            stack.enchant(Enchantments.UNBREAKING, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, stack) + 1);
+        }
+
+        return stack.hurt(damage, blockling.getRandom(), null);
     }
 }

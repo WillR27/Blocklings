@@ -34,6 +34,7 @@
   "blocklings.type.emerald": "Emerald",
   "blocklings.type.emerald.passive": "Your blockling provides bonus luck when nearby.",
   "blocklings.type.diamond": "Diamond",
+  "blocklings.type.diamond.passive": "Your blockling's tools have a natural unbreaking effect.",
   "blocklings.type.netherite": "Netherite",
   "blocklings.type.netherite.passive": "Your blockling has a 10% chance to dodge an attack. Also provides fire immunity.",
   "blocklings.type.obsidian": "Obsidian",

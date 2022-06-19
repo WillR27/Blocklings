@@ -130,12 +130,12 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal
                         blockling.dropItemStack(stack);
                     }
 
-                    if (mainStack.hurt(mainCanHarvest ? blockling.getSkills().getSkill(FarmingSkills.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
+                    if (ToolUtil.damageTool(mainStack, blockling, mainCanHarvest ? blockling.getSkills().getSkill(FarmingSkills.HASTY).isBought() ? 2 : 1 : 0))
                     {
                         mainStack.shrink(1);
                     }
 
-                    if (offStack.hurt(offCanHarvest ? blockling.getSkills().getSkill(FarmingSkills.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
+                    if (ToolUtil.damageTool(offStack, blockling, offCanHarvest ? blockling.getSkills().getSkill(FarmingSkills.HASTY).isBought() ? 2 : 1 : 0))
                     {
                         offStack.shrink(1);
                     }

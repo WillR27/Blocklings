@@ -3,6 +3,7 @@ package com.willr27.blocklings.entity.blockling.goal.goals;
 import com.mojang.datafixers.util.Pair;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.BlocklingHand;
+import com.willr27.blocklings.entity.blockling.skill.skills.FarmingSkills;
 import com.willr27.blocklings.entity.blockling.skill.skills.MiningSkills;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.whitelist.GoalWhitelist;
@@ -132,12 +133,12 @@ public class BlocklingMineGoal extends BlocklingGatherGoal
                         blockling.dropItemStack(stack);
                     }
 
-                    if (mainStack.hurt(mainCanHarvest ? blockling.getSkills().getSkill(MiningSkills.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
+                    if (ToolUtil.damageTool(mainStack, blockling, mainCanHarvest ? blockling.getSkills().getSkill(MiningSkills.HASTY).isBought() ? 2 : 1 : 0))
                     {
                         mainStack.shrink(1);
                     }
 
-                    if (offStack.hurt(offCanHarvest ? blockling.getSkills().getSkill(MiningSkills.HASTY).isBought() ? 2 : 1 : 0, blockling.getRandom(), null))
+                    if (ToolUtil.damageTool(offStack, blockling, offCanHarvest ? blockling.getSkills().getSkill(MiningSkills.HASTY).isBought() ? 2 : 1 : 0))
                     {
                         offStack.shrink(1);
                     }
