@@ -30,6 +30,7 @@
   "blocklings.type.lapis": "Lapis",
   "blocklings.type.lapis.passive": "Your blockling has a bonus +1 looting/fortune level.",
   "blocklings.type.gold": "Gold",
+  "blocklings.type.gold.passive": "Your blockling provides bonus haste when nearby.",
   "blocklings.type.emerald": "Emerald",
   "blocklings.type.emerald.passive": "Your blockling provides bonus luck when nearby.",
   "blocklings.type.diamond": "Diamond",
