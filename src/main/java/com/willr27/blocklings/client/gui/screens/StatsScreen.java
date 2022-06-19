@@ -143,6 +143,11 @@ public class StatsScreen extends TabbedScreen
                 splitText = GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("type." + blockling.getBlocklingType().key + ".passive").getString(), 200);
                 splitText.stream().map(s -> new StringTextComponent(TextFormatting.LIGHT_PURPLE + s).getVisualOrderText()).forEach(tooltip::add);
 
+                String foodsString = TextFormatting.GRAY + new BlocklingsTranslationTextComponent("type.foods").getString() + TextFormatting.WHITE + new BlocklingsTranslationTextComponent("type.foods.flowers").getString() + ", ";
+                foodsString += blockling.getBlocklingType().foods.stream().map(food -> food.getDescription().getString()).collect(joining(", "));
+                splitText = GuiUtil.splitText(font, foodsString, 200);
+                splitText.stream().map(s -> new StringTextComponent(s).getVisualOrderText()).forEach(tooltip::add);
+
                 if (!GuiUtil.isKeyDown(Minecraft.getInstance().options.keyShift.getKey().getValue()))
                 {
                     tooltip.add(new StringTextComponent(TextFormatting.DARK_GRAY + "" + TextFormatting.ITALIC + new BlocklingsTranslationTextComponent("gui.more_info", Minecraft.getInstance().options.keyShift.getTranslatedKeyMessage().getString()).getString()).getVisualOrderText());

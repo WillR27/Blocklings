@@ -210,7 +210,7 @@ public class BlocklingType
      * The foods for the blockling type.
      */
     @Nonnull
-    private final Set<Item> foods = new HashSet<>();
+    public final Set<Item> foods = new HashSet<>();
 
     /**
      * The list of predicates that need to be met for a blockling to spawn with for the blockling type.
