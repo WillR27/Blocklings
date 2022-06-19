@@ -130,7 +130,7 @@ public class StatsScreen extends TabbedScreen
                 }
 
                 splitText = GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("type." + blockling.getNaturalBlocklingType().key + ".passive").getString(), 200);
-                splitText.stream().map(s -> new StringTextComponent(TextFormatting.LIGHT_PURPLE + s).getVisualOrderText()).forEach(tooltip::add);
+                splitText.stream().map(s -> new StringTextComponent(TextFormatting.AQUA + s).getVisualOrderText()).forEach(tooltip::add);
 
                 tooltip.add(new StringTextComponent(TextFormatting.GRAY + new BlocklingsTranslationTextComponent("type.name").getString() + TextFormatting.WHITE + blockling.getBlocklingType().name.getString()).getVisualOrderText());
 
@@ -141,7 +141,7 @@ public class StatsScreen extends TabbedScreen
                 }
 
                 splitText = GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("type." + blockling.getBlocklingType().key + ".passive").getString(), 200);
-                splitText.stream().map(s -> new StringTextComponent(TextFormatting.LIGHT_PURPLE + s).getVisualOrderText()).forEach(tooltip::add);
+                splitText.stream().map(s -> new StringTextComponent(TextFormatting.AQUA + s).getVisualOrderText()).forEach(tooltip::add);
 
                 String foodsString = TextFormatting.GRAY + new BlocklingsTranslationTextComponent("type.foods").getString() + TextFormatting.WHITE + new BlocklingsTranslationTextComponent("type.foods.flowers").getString() + ", ";
                 foodsString += blockling.getBlocklingType().foods.stream().map(food -> food.getDescription().getString()).collect(joining(", "));
