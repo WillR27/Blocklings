@@ -63,8 +63,8 @@ public class BlocklingMeleeAttackHuntGoal extends BlocklingMeleeAttackGoal
     @Override
     protected void attack(@Nonnull LivingEntity target, @Nonnull BlocklingHand attackingHand)
     {
-        super.attack(target, attackingHand);
-
         blockling.wasLastAttackHunt = true;
+
+        super.attack(target, attackingHand);
     }
 }
