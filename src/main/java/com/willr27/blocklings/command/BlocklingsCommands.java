@@ -62,12 +62,13 @@ public class BlocklingsCommands
         dispatcher.register(
                 literal("blockling").requires(source -> source.hasPermission(2)).then(
                         literal("set").then(
-                                literal("primary").then(
-                                        argument("type", new BlocklingTypeArgument())
-                                                .executes(context -> executeTypeCommand(context, false)))).then(
-                                literal("natural").then(
-                                        argument("type", new BlocklingTypeArgument())
-                                                .executes(context -> executeTypeCommand(context, true)))).then(
+                                literal("type").then(
+                                        literal("primary").then(
+                                                argument("type", new BlocklingTypeArgument())
+                                                      .executes(context -> executeTypeCommand(context, false)))).then(
+                                        literal("natural").then(
+                                                argument("type", new BlocklingTypeArgument())
+                                                      .executes(context -> executeTypeCommand(context, true))))).then(
                                 literal("level").then(
                                         argument("level", new BlocklingLevelArgument()).then(
                                                 argument("value", IntegerArgumentType.integer(Level.MIN, Level.MAX))
