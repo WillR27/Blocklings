@@ -24,6 +24,7 @@
   "blocklings.type.stone": "Stone",
   "blocklings.type.stone.passive": "Your blockling provides bonus resistance when nearby.",
   "blocklings.type.iron": "Iron",
+  "blocklings.type.iron.passive": "Your blockling provides bonus strength when nearby.",
   "blocklings.type.quartz": "Quartz",
   "blocklings.type.quartz.passive": "Your blockling will reflect 15% of damage taken back to their attacker.",
   "blocklings.type.lapis": "Lapis",

@@ -522,6 +522,18 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 }
             }
 
+            if (naturalBlocklingType == BlocklingType.IRON || blocklingType == BlocklingType.IRON)
+            {
+                LivingEntity owner = getOwner();
+                final float range = 8.0f;
+                final int level = 1;
+
+                if (owner != null && owner.distanceToSqr(this) < range * range)
+                {
+                    owner.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 205, level - 1, false, false, true));
+                }
+            }
+
            if (naturalBlocklingType == BlocklingType.EMERALD || blocklingType == BlocklingType.EMERALD)
            {
                LivingEntity owner = getOwner();
