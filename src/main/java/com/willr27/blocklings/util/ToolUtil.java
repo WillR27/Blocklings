@@ -460,13 +460,19 @@ public class ToolUtil
         {
             ToolType harvestTool = blockState.getHarvestTool();
 
-            for (ToolType toolType : stack.getToolTypes())
+            if (harvestTool == null)
             {
-                if (toolType == harvestTool)
+                return true;
+            }
+            else {
+                for (ToolType toolType : stack.getToolTypes())
                 {
-                    if (stack.getHarvestLevel(toolType, null, blockState) >= blockState.getHarvestLevel())
+                    if (toolType == harvestTool)
                     {
-                        return true;
+                        if (stack.getHarvestLevel(toolType, null, blockState) >= blockState.getHarvestLevel())
+                        {
+                            return true;
+                        }
                     }
                 }
             }
