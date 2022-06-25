@@ -558,7 +558,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 }
             }
 
-            if (naturalBlocklingType == BlocklingType.IRON || blocklingType == BlocklingType.IRON)
+            if (naturalBlocklingType == BlocklingType.GOLD || blocklingType == BlocklingType.GOLD)
             {
                 LivingEntity owner = getOwner();
                 final float range = 8.0f;
