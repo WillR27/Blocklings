@@ -520,7 +520,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 final float range = 8.0f;
                 final int level = 1;
 
-                addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 419, level - 1, false, false, true));
+                addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 100, level - 1, false, false, true));
 
                 if (owner != null && owner.distanceToSqr(this) < range * range)
                 {
@@ -531,7 +531,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 {
                     if (getOwnerUUID() == null || getOwnerUUID().equals(nearbyBlockling.getOwnerUUID()))
                     {
-                        nearbyBlockling.addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 419, level - 1, false, false, true));
+                        nearbyBlockling.addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 100, level - 1, false, false, true));
                     }
                 }
             }
@@ -542,7 +542,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 final float range = 8.0f;
                 final int level = 1;
 
-                addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 419, level - 1, false, false, true));
+                addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 100, level - 1, false, false, true));
 
                 if (owner != null && owner.distanceToSqr(this) < range * range)
                 {
@@ -553,7 +553,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 {
                     if (getOwnerUUID() == null || getOwnerUUID().equals(nearbyBlockling.getOwnerUUID()))
                     {
-                        nearbyBlockling.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 419, level - 1, false, false, true));
+                        nearbyBlockling.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 100, level - 1, false, false, true));
                     }
                 }
             }
@@ -564,7 +564,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 final float range = 8.0f;
                 final int level = 1;
 
-                addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 419, level - 1, false, false, true));
+                addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 100, level - 1, false, false, true));
 
                 if (owner != null && owner.distanceToSqr(this) < range * range)
                 {
@@ -575,7 +575,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 {
                     if (getOwnerUUID() == null || getOwnerUUID().equals(nearbyBlockling.getOwnerUUID()))
                     {
-                        nearbyBlockling.addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 419, level - 1, false, false, true));
+                        nearbyBlockling.addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 100, level - 1, false, false, true));
                     }
                 }
             }
