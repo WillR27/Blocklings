@@ -3,7 +3,6 @@ package com.willr27.blocklings.entity.blockling.goal.goals;
 import com.mojang.datafixers.util.Pair;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.BlocklingHand;
-import com.willr27.blocklings.entity.blockling.skill.skills.FarmingSkills;
 import com.willr27.blocklings.entity.blockling.skill.skills.MiningSkills;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.whitelist.GoalWhitelist;
@@ -34,6 +33,11 @@ public class BlocklingMineGoal extends BlocklingGatherGoal
      * The y search radius.
      */
     private static final int SEARCH_RADIUS_Y = 8;
+
+    /**
+     * The max number of blocks that can be part of a vein.
+     */
+    private static final int MAX_VEIN_SIZE = 40;
 
     /**
      * The list of block positions in the current vein.
@@ -344,7 +348,7 @@ public class BlocklingMineGoal extends BlocklingGatherGoal
         veinBlockPositionsToTest.add(startingBlockPos);
         veinBlockPositions.add(startingBlockPos);
 
-        while (!veinBlockPositionsToTest.isEmpty())
+        while (!veinBlockPositionsToTest.isEmpty() && veinBlockPositions.size() < MAX_VEIN_SIZE)
         {
             BlockPos testBlockPos = veinBlockPositionsToTest.stream().findFirst().get();
 

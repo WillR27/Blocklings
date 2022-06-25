@@ -25,10 +25,11 @@ public class WorldUtil
     /**
      * @param world the world to search in.
      * @param blockPos the block position to start from (must be a log).
+     * @param maxTreeLogsSize the max number of blocks that can make up a tree's logs.
      * @return a tree containing all the blocks that make up the tree.
      */
     @Nonnull
-    public static Tree findTreeFromPos(@Nonnull World world, @Nonnull BlockPos blockPos, @Nonnull Predicate<BlockPos> isValidLogPos, @Nonnull Predicate<BlockPos> isValidLeavesPos)
+    public static Tree findTreeFromPos(@Nonnull World world, @Nonnull BlockPos blockPos, int maxTreeLogsSize, @Nonnull Predicate<BlockPos> isValidLogPos, @Nonnull Predicate<BlockPos> isValidLeavesPos)
     {
         Tree tree = new Tree();
         Block logBlock = world.getBlockState(blockPos).getBlock();
@@ -44,7 +45,7 @@ public class WorldUtil
         logBlockPositionsToTest.add(blockPos);
         tree.logs.add(blockPos);
 
-        while (!logBlockPositionsToTest.isEmpty())
+        while (!logBlockPositionsToTest.isEmpty() && tree.logs.size() < maxTreeLogsSize)
         {
             BlockPos testBlockPos = logBlockPositionsToTest.stream().findFirst().get();
 

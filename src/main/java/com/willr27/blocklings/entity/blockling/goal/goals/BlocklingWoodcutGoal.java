@@ -2,7 +2,6 @@ package com.willr27.blocklings.entity.blockling.goal.goals;
 
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.BlocklingHand;
-import com.willr27.blocklings.entity.blockling.skill.skills.FarmingSkills;
 import com.willr27.blocklings.entity.blockling.skill.skills.WoodcuttingSkills;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.whitelist.GoalWhitelist;
@@ -35,6 +34,11 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
      * The y search radius.
      */
     private static final int SEARCH_RADIUS_Y = 8;
+
+    /**
+     * The max number of blocks that can make up a tree's logs.
+     */
+    private static final int MAX_TREE_LOGS_SIZE = 30;
 
     /**
      * The current target tree.
@@ -428,7 +432,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
     @Nonnull
     private WorldUtil.Tree findTreeFrom(@Nonnull BlockPos blockPos)
     {
-        return WorldUtil.findTreeFromPos(world, blockPos, this::isValidTarget, this::isValidLeavesPos);
+        return WorldUtil.findTreeFromPos(world, blockPos, MAX_TREE_LOGS_SIZE, this::isValidTarget, this::isValidLeavesPos);
     }
 
     /**
