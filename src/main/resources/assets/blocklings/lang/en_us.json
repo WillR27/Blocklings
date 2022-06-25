@@ -32,7 +32,7 @@
   "blocklings.type.lapis": "Lapis",
   "blocklings.type.lapis.passive": "Lapis blocklings have an innate +1 looting/fortune level.",
   "blocklings.type.gold": "Gold",
-  "blocklings.type.gold.passive": "Gold blocklings provide bonus haste when nearby.",
+  "blocklings.type.gold.passive": "Gold blocklings provide their allies bonus speed when nearby.",
   "blocklings.type.emerald": "Emerald",
   "blocklings.type.emerald.passive": "Emerald blocklings provide bonus luck to their owner's when nearby.",
   "blocklings.type.diamond": "Diamond",

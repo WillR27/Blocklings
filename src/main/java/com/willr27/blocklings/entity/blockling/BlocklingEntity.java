@@ -558,15 +558,25 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 }
             }
 
-            if (naturalBlocklingType == BlocklingType.GOLD || blocklingType == BlocklingType.GOLD)
+            if (naturalBlocklingType == BlocklingType.IRON || blocklingType == BlocklingType.IRON)
             {
                 LivingEntity owner = getOwner();
                 final float range = 8.0f;
                 final int level = 1;
 
+                addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 419, level - 1, false, false, true));
+
                 if (owner != null && owner.distanceToSqr(this) < range * range)
                 {
-                    owner.addEffect(new EffectInstance(Effects.DIG_SPEED, 419, level - 1, false, false, true));
+                    owner.addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 419, level - 1, false, false, true));
+                }
+
+                for (BlocklingEntity nearbyBlockling : this.level.getEntitiesOfClass(BlocklingEntity.class, AxisAlignedBB.ofSize(range * 2, range * 2, range * 2).move(blockPosition())))
+                {
+                    if (getOwnerUUID() == null || getOwnerUUID().equals(nearbyBlockling.getOwnerUUID()))
+                    {
+                        nearbyBlockling.addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 419, level - 1, false, false, true));
+                    }
                 }
             }
 
