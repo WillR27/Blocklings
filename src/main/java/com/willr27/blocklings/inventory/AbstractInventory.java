@@ -86,7 +86,7 @@ public abstract class AbstractInventory implements IInventory, IReadWriteNBT
 
                 if (slot < stacks.length)
                 {
-                    stacks[slot] = stack;
+                    setItem(slot, stack);
                 }
             }
         }
@@ -104,7 +104,7 @@ public abstract class AbstractInventory implements IInventory, IReadWriteNBT
     {
         for (int i = 0; i < getContainerSize(); i++)
         {
-            stacks[i] = buf.readItem();
+            setItem(i, buf.readItem());
         }
     }
 

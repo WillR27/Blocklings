@@ -28,6 +28,12 @@ public class EquipmentContainer extends Container
     private static final int PLAYER_INV_Y = 84 + TabbedControl.OFFSET_Y;
 
     /**
+     * The blockling.
+     */
+    @Nonnull
+    public final BlocklingEntity blockling;
+
+    /**
      * @param windowId the window id.
      * @param player the player opening the container.
      * @param blockling the blockling.
@@ -35,6 +41,7 @@ public class EquipmentContainer extends Container
     public EquipmentContainer(int windowId, @Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
     {
         super(null, windowId);
+        this.blockling = blockling;
 
         if (!player.level.isClientSide)
         {
@@ -100,6 +107,8 @@ public class EquipmentContainer extends Container
                 return ItemStack.EMPTY;
             }
         }
+
+        blockling.getEquipment().updateToolAttributes();
 
         return ItemStack.EMPTY;
     }

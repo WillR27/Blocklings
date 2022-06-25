@@ -24,8 +24,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.TameableEntity;
@@ -61,9 +63,7 @@ import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Random;
+import java.util.*;
 import java.util.function.BiPredicate;
 
 import static com.willr27.blocklings.item.BlocklingsItems.BLOCKLING_WHISTLE;
@@ -759,6 +759,14 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
             {
                 livingTarget.addEffect(new EffectInstance(Effects.WITHER, 60));
             }
+        }
+
+        ModifiableAttributeInstance damageAttribute = getAttribute(Attributes.ATTACK_DAMAGE);
+        Optional<AttributeModifier> strengthModifier = damageAttribute.getModifiers().stream().filter(attributeModifier -> attributeModifier.getId().equals(UUID.fromString("648D7064-6A60-4F59-8ABE-C2C23A6DD7A9"))).findFirst();
+
+        if (strengthModifier.isPresent())
+        {
+            damage += strengthModifier.get().getAmount();
         }
 
         if (damage > 0)
