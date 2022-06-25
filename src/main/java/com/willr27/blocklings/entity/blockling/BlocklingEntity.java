@@ -452,23 +452,20 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                                 }
                             }
 
-                            // Heal other blocklings in range with the same owner.
-                            if (getOwnerUUID() != null)
+                            // Heal other blocklings in range with the same owner or no owner if this blockling is not tamed.
+                            for (BlocklingEntity nearbyBlockling : level.getEntitiesOfClass(BlocklingEntity.class, AxisAlignedBB.ofSize(radius * 2, radius * 2, radius * 2).move(blockPosition())))
                             {
-                                for (BlocklingEntity nearbyBlockling : level.getEntitiesOfClass(BlocklingEntity.class, AxisAlignedBB.ofSize(radius * 2, radius * 2, radius * 2).move(blockPosition())))
+                                if (nearbyBlockling != this && (getOwnerUUID() == null || getOwnerUUID().equals(nearbyBlockling.getOwnerUUID())))
                                 {
-                                    if (nearbyBlockling != this && getOwnerUUID().equals(nearbyBlockling.getOwnerUUID()))
+                                    if (nearbyBlockling.getHealth() < nearbyBlockling.getMaxHealth())
                                     {
-                                        if (nearbyBlockling.getHealth() < nearbyBlockling.getMaxHealth())
+                                        if (level.isClientSide)
                                         {
-                                            if (level.isClientSide)
-                                            {
-                                                level.addParticle(ParticleTypes.HEART, nearbyBlockling.getX(), nearbyBlockling.getY() + nearbyBlockling.getEyeHeight() + 0.75f, nearbyBlockling.getZ(), 0.0f, 0.0f, 0.0f);
-                                            }
-                                            else
-                                            {
-                                                nearbyBlockling.heal(healAmount);
-                                            }
+                                            level.addParticle(ParticleTypes.HEART, nearbyBlockling.getX(), nearbyBlockling.getY() + nearbyBlockling.getEyeHeight() + 0.75f, nearbyBlockling.getZ(), 0.0f, 0.0f, 0.0f);
+                                        }
+                                        else
+                                        {
+                                            nearbyBlockling.heal(healAmount);
                                         }
                                     }
                                 }
@@ -523,9 +520,19 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 final float range = 8.0f;
                 final int level = 1;
 
+                addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 419, level - 1, false, false, true));
+
                 if (owner != null && owner.distanceToSqr(this) < range * range)
                 {
                     owner.addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 419, level - 1, false, false, true));
+                }
+
+                for (BlocklingEntity nearbyBlockling : this.level.getEntitiesOfClass(BlocklingEntity.class, AxisAlignedBB.ofSize(range * 2, range * 2, range * 2).move(blockPosition())))
+                {
+                    if (getOwnerUUID() == null || getOwnerUUID().equals(nearbyBlockling.getOwnerUUID()))
+                    {
+                        nearbyBlockling.addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 419, level - 1, false, false, true));
+                    }
                 }
             }
 
@@ -535,9 +542,19 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 final float range = 8.0f;
                 final int level = 1;
 
+                addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 419, level - 1, false, false, true));
+
                 if (owner != null && owner.distanceToSqr(this) < range * range)
                 {
                     owner.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 419, level - 1, false, false, true));
+                }
+
+                for (BlocklingEntity nearbyBlockling : this.level.getEntitiesOfClass(BlocklingEntity.class, AxisAlignedBB.ofSize(range * 2, range * 2, range * 2).move(blockPosition())))
+                {
+                    if (getOwnerUUID() == null || getOwnerUUID().equals(nearbyBlockling.getOwnerUUID()))
+                    {
+                        nearbyBlockling.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 419, level - 1, false, false, true));
+                    }
                 }
             }
 
