@@ -428,6 +428,13 @@ public class SkillsControl extends Control
     @Override
     public void controlMouseScrolled(@Nonnull MouseScrollEvent e)
     {
+        if (dragging)
+        {
+            e.setIsHandled(true);
+
+            return;
+        }
+
         int localMouseX = (int) (toLocalX(e.mouseX) / getEffectiveScale());
         int localMouseY = (int) (toLocalY(e.mouseY) / getEffectiveScale());
 
