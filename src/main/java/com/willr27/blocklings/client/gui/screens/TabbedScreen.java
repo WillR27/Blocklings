@@ -270,9 +270,9 @@ public class TabbedScreen extends Screen implements IControl, IScreen
 
         RenderSystem.enableDepthTest();
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-        RenderSystem.enableDepthTest();
 
         renderScreen(matrixStack, mouseX, mouseY, partialTicks);
+        RenderSystem.enableDepthTest();
 
         if (getPressedControl() != null)
         {
@@ -310,6 +310,8 @@ public class TabbedScreen extends Screen implements IControl, IScreen
     @Override
     public void renderScreen(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
+        fillGradient(matrixStack, 0, 0, width, height, -1072689136, -804253680);
+
         renderTitle(matrixStack, mouseX, mouseY, partialTicks);
     }
 

@@ -281,6 +281,8 @@ public abstract class TabbedContainerScreen<T extends Container> extends Contain
     @Override
     public void renderScreen(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
+        fillGradient(matrixStack, 0, 0, width, height, -1072689136, -804253680);
+
         renderTitle(matrixStack, mouseX, mouseY, partialTicks);
     }
 

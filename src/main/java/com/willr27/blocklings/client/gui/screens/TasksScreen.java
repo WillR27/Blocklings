@@ -158,10 +158,10 @@ public class TasksScreen extends TabbedScreen
     @Override
     public void renderScreen(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
+        super.renderScreen(matrixStack, mouseX, mouseY, partialTicks);
+
         GuiUtil.bindTexture(GuiTextures.TASKS);
         blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedControl.CONTENT_WIDTH, TabbedControl.CONTENT_HEIGHT);
-
-        super.renderScreen(matrixStack, mouseX, mouseY, partialTicks);
     }
 
     /**

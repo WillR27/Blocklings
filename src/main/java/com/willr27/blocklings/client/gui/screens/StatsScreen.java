@@ -245,6 +245,8 @@ public class StatsScreen extends TabbedScreen
         mouseX /= getEffectiveScale();
         mouseY /= getEffectiveScale();
 
+        super.renderScreen(matrixStack, mouseX, mouseY, partialTicks);
+
         GuiUtil.bindTexture(GuiTextures.STATS);
         blit(matrixStack, contentLeft, contentTop, 0, 0, TabbedControl.CONTENT_WIDTH, TabbedControl.CONTENT_HEIGHT);
 
@@ -253,8 +255,6 @@ public class StatsScreen extends TabbedScreen
         RenderSystem.enableDepthTest();
 
         GuiUtil.renderEntityOnScreen(matrixStack, centerX, centerY + 10, 35, centerX - mouseX, centerY - mouseY, blockling);
-
-        super.renderScreen(matrixStack, mouseX, mouseY, partialTicks);
     }
 
     @Override
