@@ -284,7 +284,6 @@ public class BlocklingWhistleItem extends Item
             if (location != null)
             {
                 tooltip.add(new StringTextComponent(TextFormatting.GRAY + new TranslationTextComponent(getDescriptionId() + ".location").getString() + location));
-                tooltip.add(new StringTextComponent(""));
             }
         }
 
