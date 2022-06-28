@@ -438,15 +438,16 @@ public class ToolUtil
      */
     public static boolean canToolHarvest(@Nonnull ItemStack stack, @Nonnull BlockState blockState)
     {
+        if (BlockUtil.isCrop(blockState.getBlock()) && ToolUtil.isHoe(stack))
+        {
+            return true;
+        }
+
         if (BlockUtil.isOre(blockState.getBlock()) && !ToolUtil.isPickaxe(stack))
         {
             return false;
         }
         else if (BlockUtil.isLog(blockState.getBlock()) && !ToolUtil.isAxe(stack))
-        {
-            return false;
-        }
-        else if (BlockUtil.isCrop(blockState.getBlock()) && !ToolUtil.isHoe(stack))
         {
             return false;
         }
@@ -463,7 +464,8 @@ public class ToolUtil
             {
                 return true;
             }
-            else {
+            else
+            {
                 for (ToolType toolType : stack.getToolTypes())
                 {
                     if (toolType == harvestTool)
