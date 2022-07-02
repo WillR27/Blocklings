@@ -89,7 +89,7 @@
   "blocklings.task.farm_crops.name": "Ernte Pflanzen",
   "blocklings.task.farm_crops.desc": "Dein Blockling erntet Pflanzen in der Nähe ab wenn er eine Hacke trägt.",
   "blocklings.task.find_blocklings.name": "Find Blocklings",
-  "blocklings.task.find_blocklings.desc": "Your blockling will lead you to nearby blocklings with the same natural type as your blocklings primary type.",
+  "blocklings.task.find_blocklings.desc": "Your blockling will lead you to nearby blocklings with the same natural type as your blockling's primary type.",
 
   "blocklings.whitelist.targets": "Ziele",
   "blocklings.whitelist.ores": "Erze",

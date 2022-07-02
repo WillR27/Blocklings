@@ -89,7 +89,7 @@
   "blocklings.task.farm_crops.name": "Récolter les cultures",
   "blocklings.task.farm_crops.desc": "Votre blockling va récolter les cultures aux alentours s'il a une houe équipée.",
   "blocklings.task.find_blocklings.name": "Find Blocklings",
-  "blocklings.task.find_blocklings.desc": "Your blockling will lead you to nearby blocklings with the same natural type as your blocklings primary type.",
+  "blocklings.task.find_blocklings.desc": "Your blockling will lead you to nearby blocklings with the same natural type as your blockling's primary type.",
 
   "blocklings.whitelist.targets": "Cibles",
   "blocklings.whitelist.ores": "Minerais",

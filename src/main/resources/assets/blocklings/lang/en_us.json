@@ -89,7 +89,7 @@
   "blocklings.task.farm_crops.name": "Farm Crops",
   "blocklings.task.farm_crops.desc": "Your blockling will farm nearby crops if they have a hoe equipped.",
   "blocklings.task.find_blocklings.name": "Find Blocklings",
-  "blocklings.task.find_blocklings.desc": "Your blockling will lead you to nearby blocklings with the same natural type as your blocklings primary type.",
+  "blocklings.task.find_blocklings.desc": "Your blockling will lead you to nearby blocklings with the same natural type as your blockling's primary type.",
 
   "blocklings.whitelist.targets": "Targets",
   "blocklings.whitelist.ores": "Ores",

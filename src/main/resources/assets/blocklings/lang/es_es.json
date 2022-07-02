@@ -89,7 +89,7 @@
   "blocklings.task.farm_crops.name": "Cosechar",
   "blocklings.task.farm_crops.desc": "Tu blockling cosechará los cultivos cercanos si tiene una azada equipada.",
   "blocklings.task.find_blocklings.name": "Find Blocklings",
-  "blocklings.task.find_blocklings.desc": "Your blockling will lead you to nearby blocklings with the same natural type as your blocklings primary type.",
+  "blocklings.task.find_blocklings.desc": "Your blockling will lead you to nearby blocklings with the same natural type as your blockling's primary type.",
 
   "blocklings.whitelist.targets": "Objetivos",
   "blocklings.whitelist.ores": "Minerales",

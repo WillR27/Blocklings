@@ -89,7 +89,7 @@
   "blocklings.task.farm_crops.name": "Фермерские культуры",
   "blocklings.task.farm_crops.desc": "Ваш Blockling будет выращивать близлежащие культуры, если у них есть мотыга.",
   "blocklings.task.find_blocklings.name": "Find Blocklings",
-  "blocklings.task.find_blocklings.desc": "Your blockling will lead you to nearby blocklings with the same natural type as your blocklings primary type.",
+  "blocklings.task.find_blocklings.desc": "Your blockling will lead you to nearby blocklings with the same natural type as your blockling's primary type.",
 
   "blocklings.whitelist.targets": "Цели",
   "blocklings.whitelist.ores": "Руды",
