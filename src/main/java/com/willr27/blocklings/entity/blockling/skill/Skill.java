@@ -105,12 +105,9 @@ public class Skill
             return false;
         }
 
-        if (!info.onTryBuy(this))
-        {
-            return false;
-        }
-
         buy();
+
+        info.onBuy(this);
 
         if (sync)
         {

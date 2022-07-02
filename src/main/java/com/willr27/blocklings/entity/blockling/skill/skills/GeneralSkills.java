@@ -53,11 +53,9 @@ public class GeneralSkills
             new SkillGuiInfo(-100, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x662522, new SkillGuiInfo.SkillIconTexture(GuiTextures.GENERAL_ICONS, 3, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().moveSpeedSkillSpeedModifier.setValue(1.05f, false);
-
-            return true;
         }
     };
 
@@ -68,11 +66,9 @@ public class GeneralSkills
             new SkillGuiInfo(0, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xb06d1f, new SkillGuiInfo.SkillIconTexture(GuiTextures.GENERAL_ICONS, 4, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().moveSpeedSkillSpeedModifier.setValue(1.1f, false);
-
-            return true;
         }
 
         @Override
@@ -90,11 +86,9 @@ public class GeneralSkills
             new SkillGuiInfo(100, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x03595e, new SkillGuiInfo.SkillIconTexture(GuiTextures.GENERAL_ICONS, 5, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().moveSpeedSkillSpeedModifier.setValue(1.2f, false);
-
-            return true;
         }
 
         @Override
@@ -118,11 +112,9 @@ public class GeneralSkills
             new SkillGuiInfo(50, -100, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xaaaaff, new SkillGuiInfo.SkillIconTexture(GuiTextures.GENERAL_ICONS, 7, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.FIND_BLOCKLINGS, true);
-
-            return true;
         }
     };
 

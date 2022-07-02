@@ -25,12 +25,10 @@ public class CombatSkills
             new SkillGuiInfo(0, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 0, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT_BY, true);
             skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.MELEE_ATTACK_OWNER_HURT, true);
-
-            return true;
         }
     };
 
@@ -41,11 +39,9 @@ public class CombatSkills
             new SkillGuiInfo(0, 70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 1, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             BlocklingSkills.unlockExistingWhitelists(skill, "540241cd-085a-4c1f-9e90-8aea973568a8");
-
-            return true;
         }
 
         @Override
@@ -63,11 +59,9 @@ public class CombatSkills
             new SkillGuiInfo(70, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xffd56d, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 2, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().attackDamageSkillSharpnessModifier.setIsEnabled(true, false);
-
-            return true;
         }
 
         @Override
@@ -85,11 +79,9 @@ public class CombatSkills
             new SkillGuiInfo(140, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xb72626, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 3, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().attackDamageSkillBerserkerModifier.setIsEnabled(true, false);
-
-            return true;
         }
 
         @Override
@@ -120,11 +112,9 @@ public class CombatSkills
             new SkillGuiInfo(140, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xad79b5, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 4, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().attackSpeedSkillMomentumModifier.setIsEnabled(true, false);
-
-            return true;
         }
 
         @Override
@@ -149,11 +139,9 @@ public class CombatSkills
             new SkillGuiInfo(210, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x4eb2aa, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 5, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().attackDamageSkillWrecklessModifier.setIsEnabled(true, false);
-
-            return true;
         }
 
         @Override
@@ -178,11 +166,9 @@ public class CombatSkills
             new SkillGuiInfo(210, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xd3b630, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 6, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().attackSpeedSkillPhotophileModifier.setIsEnabled(true, false);
-
-            return true;
         }
 
         @Override
@@ -263,11 +249,9 @@ public class CombatSkills
             new SkillGuiInfo(0, -140, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x8e0000, new SkillGuiInfo.SkillIconTexture(GuiTextures.COMBAT_ICONS, 0, 1)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.MELEE_ATTACK_HUNT, true);
-
-            return super.onTryBuy(skill);
         }
 
         @Override

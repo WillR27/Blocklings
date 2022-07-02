@@ -68,12 +68,10 @@ public class SkillInfo
 
     /**
      * Called when the given skill is bought.
-     *
-     * @return whether to cancel the buying of the skill.
      */
-    public boolean onTryBuy(@Nonnull Skill skill)
+    public void onBuy(@Nonnull Skill skill)
     {
-        return true;
+
     }
 
     /**

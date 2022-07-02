@@ -25,11 +25,9 @@ public class MiningSkills
             new SkillGuiInfo(0, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 0, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.MINE, true);
-
-            return true;
         }
     };
 
@@ -40,11 +38,9 @@ public class MiningSkills
             new SkillGuiInfo(0, 70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 1, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             BlocklingSkills.unlockExistingWhitelists(skill, "24d7135e-607b-413b-a2a7-00d19119b9de");
-
-            return true;
         }
 
         @Override
@@ -62,11 +58,9 @@ public class MiningSkills
             new SkillGuiInfo(70, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xffd56d, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 2, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().miningSpeedSkillEfficiencyModifier.setIsEnabled(true, false);
-
-            return true;
         }
 
         @Override
@@ -84,11 +78,9 @@ public class MiningSkills
             new SkillGuiInfo(140, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xb72626, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 3, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().miningSpeedSkillAdrenalineModifier.setIsEnabled(true, false);
-
-            return true;
         }
 
         @Override
@@ -119,11 +111,9 @@ public class MiningSkills
             new SkillGuiInfo(140, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xad79b5, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 4, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().miningSpeedSkillMomentumModifier.setIsEnabled(true, false);
-
-            return true;
         }
 
         @Override
@@ -148,11 +138,9 @@ public class MiningSkills
             new SkillGuiInfo(210, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x4eb2aa, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 5, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().miningSpeedSkillHastyModifier.setIsEnabled(true, false);
-
-            return true;
         }
 
         @Override
@@ -177,11 +165,9 @@ public class MiningSkills
             new SkillGuiInfo(210, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x2b2a3d, new SkillGuiInfo.SkillIconTexture(GuiTextures.MINING_ICONS, 6, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().miningSpeedSkillNightOwlModifier.setIsEnabled(true, false);
-
-            return true;
         }
 
         @Override

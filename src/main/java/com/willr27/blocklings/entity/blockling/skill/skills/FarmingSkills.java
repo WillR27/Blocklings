@@ -25,11 +25,9 @@ public class FarmingSkills
             new SkillGuiInfo(0, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 0, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.FARM, true, false);
-
-            return true;
         }
     };
 
@@ -40,11 +38,9 @@ public class FarmingSkills
             new SkillGuiInfo(0, 70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 1, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             BlocklingSkills.unlockExistingWhitelists(skill, "25140edf-f60e-459e-b1f0-9ff82108ec0b");
-
-            return true;
         }
 
         @Override
@@ -62,11 +58,9 @@ public class FarmingSkills
             new SkillGuiInfo(70, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xffd56d, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 2, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().farmingSpeedSkillEfficiencyModifier.setIsEnabled(true, false);
-
-            return true;
         }
 
         @Override
@@ -105,11 +99,9 @@ public class FarmingSkills
         }
 
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             BlocklingSkills.unlockExistingWhitelists(skill, "d77bf1c1-7718-4733-b763-298b03340eea");
-
-            return true;
         }
     };
 
@@ -120,11 +112,9 @@ public class FarmingSkills
             new SkillGuiInfo(140, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xb72626, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 4, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().farmingSpeedSkillAdrenalineModifier.setIsEnabled(true, false);
-
-            return true;
         }
 
         @Override
@@ -155,11 +145,9 @@ public class FarmingSkills
             new SkillGuiInfo(140, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x39bb39, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 5, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().farmingSpeedSkillMomentumModifier.setIsEnabled(true, false);
-
-            return true;
         }
 
         @Override
@@ -184,11 +172,9 @@ public class FarmingSkills
             new SkillGuiInfo(210, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x4eb2aa, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 6, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().farmingSpeedSkillHastyModifier.setIsEnabled(true, false);
-
-            return true;
         }
 
         @Override
@@ -213,11 +199,9 @@ public class FarmingSkills
             new SkillGuiInfo(210, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x2b2a3d, new SkillGuiInfo.SkillIconTexture(GuiTextures.FARMING_ICONS, 7, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().farmingSpeedSkillNightOwlModifier.setIsEnabled(true, false);
-
-            return true;
         }
 
         @Override

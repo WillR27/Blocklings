@@ -25,11 +25,9 @@ public class WoodcuttingSkills
             new SkillGuiInfo(0, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xdddddd, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 0, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.WOODCUT, true, false);
-
-            return true;
         }
     };
 
@@ -40,11 +38,9 @@ public class WoodcuttingSkills
             new SkillGuiInfo(0, 70, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xe0f1ff, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 1, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             BlocklingSkills.unlockExistingWhitelists(skill, "fbfbfd44-c1b0-4420-824a-270b34c866f7");
-
-            return true;
         }
 
         @Override
@@ -62,11 +58,9 @@ public class WoodcuttingSkills
             new SkillGuiInfo(70, 0, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xffd56d, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 2, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().woodcuttingSpeedSkillEfficiencyModifier.setIsEnabled(true, false);
-
-            return true;
         }
 
         @Override
@@ -84,11 +78,9 @@ public class WoodcuttingSkills
             new SkillGuiInfo(140, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xb72626, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 3, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().woodcuttingSpeedSkillAdrenalineModifier.setIsEnabled(true, false);
-
-            return true;
         }
 
         @Override
@@ -119,11 +111,9 @@ public class WoodcuttingSkills
             new SkillGuiInfo(140, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x9f6a16, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 4, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().woodcuttingSpeedSkillMomentumModifier.setIsEnabled(true, false);
-
-            return true;
         }
 
         @Override
@@ -148,11 +138,9 @@ public class WoodcuttingSkills
             new SkillGuiInfo(210, -50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x4eb2aa, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 5, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().woodcuttingSpeedSkillHastyModifier.setIsEnabled(true, false);
-
-            return true;
         }
 
         @Override
@@ -177,11 +165,9 @@ public class WoodcuttingSkills
             new SkillGuiInfo(210, 50, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0x2b2a3d, new SkillGuiInfo.SkillIconTexture(GuiTextures.WOODCUTTING_ICONS, 6, 0)))
     {
         @Override
-        public boolean onTryBuy(@Nonnull Skill skill)
+        public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getStats().woodcuttingSpeedSkillNightOwlModifier.setIsEnabled(true, false);
-
-            return true;
         }
 
         @Override
