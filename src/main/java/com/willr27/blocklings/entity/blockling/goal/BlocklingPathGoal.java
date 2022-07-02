@@ -17,12 +17,6 @@ import java.util.*;
 public abstract class BlocklingPathGoal extends BlocklingGoal
 {
     /**
-     * The number of ticks between each recalc.
-     * Used to determine how often we want to recalculate the path.
-     */
-    private static final int RECALC_INTERVAL = 10;
-
-    /**
      * The number of ticks a bad path target needs elapse before it is removed.
      */
     private static final int BAD_PATH_TARGET_COOLDOWN_INTERVAL = 10 * 20;
@@ -160,7 +154,7 @@ public abstract class BlocklingPathGoal extends BlocklingGoal
     {
         recalcCounter++;
 
-        if (recalcCounter < RECALC_INTERVAL)
+        if (recalcCounter < getPathRecalcInterval())
         {
             return false;
         }
@@ -330,7 +324,15 @@ public abstract class BlocklingPathGoal extends BlocklingGoal
     }
 
     /**
-     * @return the range a blockling can reach the path target pos squared.
+     * @return the number of ticks to delay between an attempt at recalculating the path to the target.
+     */
+    public int getPathRecalcInterval()
+    {
+        return 10;
+    }
+
+    /**
+     * @return the max distance squared a blockling can be to be in range of their path target.
      */
     public abstract float getRangeSq();
 }

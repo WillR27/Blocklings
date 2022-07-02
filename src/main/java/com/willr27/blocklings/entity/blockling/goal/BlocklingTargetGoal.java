@@ -35,6 +35,11 @@ public abstract class BlocklingTargetGoal<T> extends BlocklingPathGoal
     public final Set<T> badTargets = new HashSet<>();
 
     /**
+     * The last time in ticks that a recalculation occurred.
+     */
+    private int lastRecalcTime = 0;
+
+    /**
      * @param id the id associated with the owning task of this goal.
      * @param blockling the blockling the goal is assigned to.
      * @param tasks the associated tasks.
@@ -55,11 +60,17 @@ public abstract class BlocklingTargetGoal<T> extends BlocklingPathGoal
             return false;
         }
 
-        boolean recalulatedTarget = tryRecalcTarget();
-
-        if (!recalulatedTarget || !recalcPath(false) || isStuck())
+        if (!isRecalcIntervalExceeded())
         {
-            if (!recalulatedTarget)
+            return false;
+        }
+
+        boolean recalculatedTarget = tryRecalcTarget();
+        lastRecalcTime = blockling.getAge();
+
+        if (!recalculatedTarget || !recalcPath(false) || isStuck())
+        {
+            if (!recalculatedTarget)
             {
                 badTargets.clear();
             }
@@ -84,11 +95,20 @@ public abstract class BlocklingTargetGoal<T> extends BlocklingPathGoal
 
         checkForAndRemoveInvalidTargets();
 
-        if (!tryRecalcTarget())
+        boolean recalculatedTarget = false;
+
+        if (isRecalcIntervalExceeded() || !isTargetValid())
         {
-            return false;
+            recalculatedTarget = true;
+            lastRecalcTime = blockling.getAge();
+
+            if (!tryRecalcTarget())
+            {
+                return false;
+            }
         }
-        else if (isStuck())
+
+        if (hasTarget() && isStuck() && !recalculatedTarget)
         {
             markEntireTargetBad();
             markPathTargetPosBad();
@@ -168,6 +188,22 @@ public abstract class BlocklingTargetGoal<T> extends BlocklingPathGoal
      * @return true if the given target is a valid target.
      */
     public abstract boolean isValidTarget(@Nullable T target);
+
+    /**
+     * @return the number of ticks to delay between an attempt at recalculating the target.
+     */
+    public int getRecalcInterval()
+    {
+        return 5;
+    }
+
+    /**
+     * @return true if enough time has passed for a recalc to occur.
+     */
+    public boolean isRecalcIntervalExceeded()
+    {
+        return blockling.tickCount - lastRecalcTime > getRecalcInterval();
+    }
 
     /**
      * @return true if the goal currently has a target.

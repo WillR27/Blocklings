@@ -88,6 +88,8 @@
   "blocklings.task.chop_trees.desc": "Dein Blockling fällt Bäume in der Nähe ab wenn er eine Axt trägt.",
   "blocklings.task.farm_crops.name": "Ernte Pflanzen",
   "blocklings.task.farm_crops.desc": "Dein Blockling erntet Pflanzen in der Nähe ab wenn er eine Hacke trägt.",
+  "blocklings.task.find_blocklings.name": "Find Blocklings",
+  "blocklings.task.find_blocklings.desc": "Your blockling will lead you to nearby blocklings with the same natural type as your blocklings primary type.",
 
   "blocklings.whitelist.targets": "Ziele",
   "blocklings.whitelist.ores": "Erze",
@@ -119,6 +121,8 @@
   "blocklings.skill.general.speed_3.desc": "Dein Blockling bewegt sich 20% schneller.",
   "blocklings.skill.general.autoswitch.name": "Autowechsel",
   "blocklings.skill.general.autoswitch.desc": "Dein Blockling wechselt zum besten Werkzeug, das er für seine Aufgabe hat.",
+  "blocklings.skill.general.find_blocklings.name": "Friend Finder",
+  "blocklings.skill.general.find_blocklings.desc": "Unlocks the \"Find Blocklings\" task.",
 
   "blocklings.skill.combat.novice_guard.name": "Anfängerwache",
   "blocklings.skill.combat.novice_guard.desc": "Schaltet die \"Greife den Angreifer des Besitzers an\" und \"Greife das Angriffsziel des Besitzers an.\" Aufgabe frei",

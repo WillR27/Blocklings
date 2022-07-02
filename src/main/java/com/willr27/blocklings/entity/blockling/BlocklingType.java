@@ -84,7 +84,7 @@ public class BlocklingType
         IRON.addFoods(Blocks.IRON_ORE, Blocks.IRON_BLOCK);
         IRON.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
         IRON.spawnPredicates.add((blockling, world) -> !blockBelowIs(blockling, world, Blocks.GRASS_BLOCK));
-        IRON.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.IRON_ORE));
+        IRON.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 6, Blocks.IRON_ORE));
 
         QUARTZ.addFoods(Items.QUARTZ);
         QUARTZ.addFoods(Blocks.NETHER_QUARTZ_ORE, Blocks.QUARTZ_BLOCK);
@@ -94,23 +94,23 @@ public class BlocklingType
         LAPIS.addFoods(Items.LAPIS_LAZULI);
         LAPIS.addFoods(Blocks.LAPIS_ORE, Blocks.LAPIS_BLOCK);
         LAPIS.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
-        LAPIS.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.LAPIS_ORE));
+        LAPIS.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 12, Blocks.LAPIS_ORE));
 
         GOLD.addFoods(Items.GOLD_INGOT);
         GOLD.addFoods(Blocks.GOLD_ORE, Blocks.GOLD_BLOCK);
         GOLD.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
-        GOLD.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.GOLD_ORE));
+        GOLD.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 12, Blocks.GOLD_ORE));
 
         EMERALD.addFoods(Items.EMERALD);
         EMERALD.addFoods(Blocks.EMERALD_ORE, Blocks.EMERALD_BLOCK);
         EMERALD.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
         EMERALD.spawnPredicates.add((blockling, world) -> isInBiome(blockling, world, Biomes.MOUNTAINS, Biomes.MOUNTAIN_EDGE, Biomes.GRAVELLY_MOUNTAINS, Biomes.MODIFIED_GRAVELLY_MOUNTAINS, Biomes.SNOWY_MOUNTAINS, Biomes.SNOWY_TAIGA_MOUNTAINS, Biomes.TAIGA_MOUNTAINS, Biomes.WOODED_MOUNTAINS));
-        EMERALD.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.EMERALD_ORE));
+        EMERALD.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 12, Blocks.EMERALD_ORE));
 
         DIAMOND.addFoods(Items.DIAMOND);
         DIAMOND.addFoods(Blocks.DIAMOND_ORE, Blocks.DIAMOND_BLOCK);
         DIAMOND.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
-        DIAMOND.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.DIAMOND_ORE));
+        DIAMOND.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 12, Blocks.DIAMOND_ORE));
 
         NETHERITE.addFoods(Items.NETHERITE_SCRAP, Items.NETHERITE_INGOT);
         NETHERITE.addFoods(Blocks.ANCIENT_DEBRIS, Blocks.NETHERITE_BLOCK);
@@ -119,7 +119,7 @@ public class BlocklingType
 
         OBSIDIAN.addFoods(Blocks.OBSIDIAN);
         OBSIDIAN.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
-        OBSIDIAN.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.OBSIDIAN));
+        OBSIDIAN.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 16, Blocks.OBSIDIAN));
 
         GLOWSTONE.addFoods(Items.GLOWSTONE_DUST);
         GLOWSTONE.addFoods(Blocks.GLOWSTONE);

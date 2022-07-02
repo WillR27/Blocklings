@@ -88,6 +88,8 @@
   "blocklings.task.chop_trees.desc": "Ваш Blockling будет рубить близлежащие деревья, если у них есть топор.",
   "blocklings.task.farm_crops.name": "Фермерские культуры",
   "blocklings.task.farm_crops.desc": "Ваш Blockling будет выращивать близлежащие культуры, если у них есть мотыга.",
+  "blocklings.task.find_blocklings.name": "Find Blocklings",
+  "blocklings.task.find_blocklings.desc": "Your blockling will lead you to nearby blocklings with the same natural type as your blocklings primary type.",
 
   "blocklings.whitelist.targets": "Цели",
   "blocklings.whitelist.ores": "Руды",
@@ -119,6 +121,8 @@
   "blocklings.skill.general.speed_3.desc": "Ваш Blockling движется на  20% быстрее.",
   "blocklings.skill.general.autoswitch.name": "Автопереключение",
   "blocklings.skill.general.autoswitch.desc": "Ваш Blockling переключится на соответствующий инструменты, которые у них есть для текущей задачи.",
+  "blocklings.skill.general.find_blocklings.name": "Friend Finder",
+  "blocklings.skill.general.find_blocklings.desc": "Unlocks the \"Find Blocklings\" task.",
 
   "blocklings.skill.combat.novice_guard.name": "Страж-новичок",
   "blocklings.skill.combat.novice_guard.desc": "Unlocks the \"Attack Owner''s Attacker\" and \"Attack Owner''s Target\" tasks.",

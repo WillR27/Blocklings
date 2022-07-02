@@ -6,6 +6,7 @@ import com.willr27.blocklings.entity.blockling.attribute.BlocklingAttributes;
 import com.willr27.blocklings.entity.blockling.skill.Skill;
 import com.willr27.blocklings.entity.blockling.skill.SkillGroup;
 import com.willr27.blocklings.entity.blockling.skill.info.*;
+import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -108,7 +109,22 @@ public class GeneralSkills
             new SkillGeneralInfo(Skill.Type.OTHER, "general.autoswitch"),
             new SkillDefaultsInfo(Skill.State.UNLOCKED),
             new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.TOTAL, 100); }}),
-            new SkillGuiInfo(0, -100, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xd8d8d8, new SkillGuiInfo.SkillIconTexture(GuiTextures.GENERAL_ICONS, 6, 0)));
+            new SkillGuiInfo(-50, -100, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xd8d8d8, new SkillGuiInfo.SkillIconTexture(GuiTextures.GENERAL_ICONS, 6, 0)));
+
+    public static final SkillInfo FIND_BLOCKLINGS = new SkillInfo("d28ea410-bd84-4a83-8aeb-0451c00314c3",
+            new SkillGeneralInfo(Skill.Type.AI, "general.find_blocklings"),
+            new SkillDefaultsInfo(Skill.State.UNLOCKED),
+            new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.TOTAL, 100); }}),
+            new SkillGuiInfo(50, -100, SkillControl.ConnectionType.SINGLE_LONGEST_FIRST, 0xaaaaff, new SkillGuiInfo.SkillIconTexture(GuiTextures.GENERAL_ICONS, 7, 0)))
+    {
+        @Override
+        public boolean onTryBuy(@Nonnull Skill skill)
+        {
+            skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.FIND_BLOCKLINGS, true);
+
+            return true;
+        }
+    };
 
     public static final List<Function<SkillGroup, Skill>> SKILLS = new ArrayList<Function<SkillGroup, Skill>>()
     {{
@@ -119,5 +135,6 @@ public class GeneralSkills
         add(group -> new Skill(SPEED_2, group));
         add(group -> new Skill(SPEED_3, group));
         add(group -> new Skill(AUTOSWITCH, group));
+        add(group -> new Skill(FIND_BLOCKLINGS, group));
     }};
 }

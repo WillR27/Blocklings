@@ -146,7 +146,8 @@ public class SkillControl extends Control
      * @param matrixStack the matrix stack.
      */
     public void renderHover(@Nonnull MatrixStack matrixStack)
-    {Skill.State state = skill.getState();
+    {
+        Skill.State state = skill.getState();
         String name = skill.info.general.name.getString();
         int maxWidth = font.width(name) + skill.info.gui.iconTexture.width + PADDING - 1;
         List<String> description = GuiUtil.splitText(font, skill.info.general.desc.getString(), Math.max(maxWidth, 130));
@@ -272,6 +273,8 @@ public class SkillControl extends Control
         matrixStack.translate(nameControl.getScreenX() - (nameControl.getScreenX() / nameControl.getEffectiveScale()), nameControl.getScreenY() - (nameControl.getScreenY() / nameControl.getEffectiveScale()), 0.0f);
         matrixStack.scale(1.0f / nameControl.getEffectiveScale(), 1.0f / nameControl.getEffectiveScale(), 1.0f);
 
+        if (state == Skill.State.LOCKED) RenderSystem.color3f(0.5f, 0.5f, 0.5f);
+        else RenderSystem.color3f(skill.info.gui.colour.getRed() / 255f, skill.info.gui.colour.getGreen() / 255f, skill.info.gui.colour.getBlue() / 255f);
         matrixStack.scale(nameControlEnd.getEffectiveScale(), nameControlEnd.getEffectiveScale(), 1.0f);
         matrixStack.translate((nameControlEnd.getScreenX() / nameControlEnd.getEffectiveScale()) - nameControlEnd.getScreenX(), (nameControlEnd.getScreenY() / nameControlEnd.getEffectiveScale()) - nameControlEnd.getScreenY(), 0.0f);
         nameControlEnd.render(matrixStack, 0, 0, 0);
@@ -450,7 +453,7 @@ public class SkillControl extends Control
         {
             isSelected = false;
         }
-        else if (!skill.isBought() && skill.getState() == Skill.State.UNLOCKED && !skill.hasConflict())
+        else if (!skill.isBought() && skill.getState() == Skill.State.UNLOCKED && skill.canBuy())
         {
             if (isSelected)
             {

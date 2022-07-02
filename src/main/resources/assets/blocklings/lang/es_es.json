@@ -88,6 +88,8 @@
   "blocklings.task.chop_trees.desc": "Tu blockling talará los arboles cercanos si tiene una hacha equipada.",
   "blocklings.task.farm_crops.name": "Cosechar",
   "blocklings.task.farm_crops.desc": "Tu blockling cosechará los cultivos cercanos si tiene una azada equipada.",
+  "blocklings.task.find_blocklings.name": "Find Blocklings",
+  "blocklings.task.find_blocklings.desc": "Your blockling will lead you to nearby blocklings with the same natural type as your blocklings primary type.",
 
   "blocklings.whitelist.targets": "Objetivos",
   "blocklings.whitelist.ores": "Minerales",
@@ -119,6 +121,8 @@
   "blocklings.skill.general.speed_3.desc": "Tu blockling se moverá un 20% mas rápido.",
   "blocklings.skill.general.autoswitch.name": "Autocambio",
   "blocklings.skill.general.autoswitch.desc": "Tu blockling cambiará a las mejores herramientas que tiene para su tarea actual.",
+  "blocklings.skill.general.find_blocklings.name": "Friend Finder",
+  "blocklings.skill.general.find_blocklings.desc": "Unlocks the \"Find Blocklings\" task.",
 
   "blocklings.skill.combat.novice_guard.name": "Guardia novato",
   "blocklings.skill.combat.novice_guard.desc": "Desbloqueá las tareas \"Atacar atacante del propietario\" and \"Atacar el objetivo del propietario\".",

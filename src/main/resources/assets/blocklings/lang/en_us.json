@@ -88,6 +88,8 @@
   "blocklings.task.chop_trees.desc": "Your blockling will chop nearby trees if they have an axe equipped.",
   "blocklings.task.farm_crops.name": "Farm Crops",
   "blocklings.task.farm_crops.desc": "Your blockling will farm nearby crops if they have a hoe equipped.",
+  "blocklings.task.find_blocklings.name": "Find Blocklings",
+  "blocklings.task.find_blocklings.desc": "Your blockling will lead you to nearby blocklings with the same natural type as your blocklings primary type.",
 
   "blocklings.whitelist.targets": "Targets",
   "blocklings.whitelist.ores": "Ores",
@@ -119,6 +121,8 @@
   "blocklings.skill.general.speed_3.desc": "Your blockling moves 20% faster.",
   "blocklings.skill.general.autoswitch.name": "Autoswitch",
   "blocklings.skill.general.autoswitch.desc": "Your blockling will switch to the best tools they have for their current task.",
+  "blocklings.skill.general.find_blocklings.name": "Friend Finder",
+  "blocklings.skill.general.find_blocklings.desc": "Unlocks the \"Find Blocklings\" task.",
 
   "blocklings.skill.combat.novice_guard.name": "Novice Guard",
   "blocklings.skill.combat.novice_guard.desc": "Unlocks the \"Attack Owner''s Attacker\" and \"Attack Owner''s Target\" tasks.",
