@@ -11,7 +11,7 @@
   "blocklings.gui.xp_required": "Expérience : %1$s%2$d/%3$d",
   "blocklings.gui.configure_task": "Configurer les tâches",
 
-  "blocklings.type.natural.name": "Type d'origine :",
+  "blocklings.type.natural.name": "Type d'origine sdn :",
   "blocklings.type.natural.desc": "Le type naturel de votre blockling n'a pas de bonus de statistiques, mais fournit tout de même un effet passif. C'est le type sous lequel il est apparu et il ne peut être modifié.",
   "blocklings.type.name": "Type actuel :",
   "blocklings.type.desc": "Le type actuel de votre blockling affecte ses statistiques et fournit également un effet passif. Il peut être changé en le nourrissant avec différents objets.",
