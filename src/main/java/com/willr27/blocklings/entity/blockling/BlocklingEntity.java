@@ -403,7 +403,15 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         final int radius = 8;
         final float healAmount = 2.0f;
 
-        if (naturalBlocklingType == BlocklingType.OAK_LOG || blocklingType == BlocklingType.OAK_LOG)
+        Block logBlock = null;
+        if (naturalBlocklingType == BlocklingType.OAK_LOG || blocklingType == BlocklingType.OAK_LOG) logBlock = Blocks.OAK_LOG;
+        else if (naturalBlocklingType == BlocklingType.BIRCH_LOG || blocklingType == BlocklingType.BIRCH_LOG) logBlock = Blocks.BIRCH_LOG;
+        else if (naturalBlocklingType == BlocklingType.SPRUCE_LOG || blocklingType == BlocklingType.SPRUCE_LOG) logBlock = Blocks.SPRUCE_LOG;
+        else if (naturalBlocklingType == BlocklingType.JUNGLE_LOG || blocklingType == BlocklingType.JUNGLE_LOG) logBlock = Blocks.JUNGLE_LOG;
+        else if (naturalBlocklingType == BlocklingType.DARK_OAK_LOG || blocklingType == BlocklingType.DARK_OAK_LOG) logBlock = Blocks.DARK_OAK_LOG;
+        else if (naturalBlocklingType == BlocklingType.ACACIA_LOG || blocklingType == BlocklingType.ACACIA_LOG) logBlock = Blocks.ACACIA_LOG;
+
+        if (logBlock != null)
         {
             for (int i = -radius; i <= radius; i++)
             {
@@ -414,7 +422,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                         BlockPos testPos = blockPosition().offset(i, j, k);
                         Block testBlock = level.getBlockState(testPos).getBlock();
 
-                        if (testBlock == Blocks.OAK_LOG)
+                        if (testBlock == logBlock)
                         {
                             WorldUtil.Tree treeToTest = WorldUtil.findTreeFromPos(level, testPos, 40, (t) -> true, (t) -> true);
 
@@ -1289,7 +1297,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 }
             }
         }
-
+Log.info(blocklingType.name.getString(), " ", getX(), ", ", getY(), ", ", getZ());
         return true;
     }
 

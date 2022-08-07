@@ -41,6 +41,11 @@ public class BlocklingType
     public static final BlocklingType GRASS = create("grass", 5).addCombatStats(2.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.0f, 1.0f, 2.0f);
     public static final BlocklingType DIRT = create("dirt", 0).addCombatStats(2.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.0f, 1.0f, 2.0f);
     public static final BlocklingType OAK_LOG = create("oak_log", 0).addCombatStats(3.0f, 1.0f, 1.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 2.0f, 1.0f);
+    public static final BlocklingType BIRCH_LOG = create("birch_log", 0).addCombatStats(3.0f, 1.0f, 1.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 2.0f, 1.0f);
+    public static final BlocklingType SPRUCE_LOG = create("spruce_log", 0).addCombatStats(3.0f, 1.0f, 1.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 2.0f, 1.0f);
+    public static final BlocklingType JUNGLE_LOG = create("jungle_log", 0).addCombatStats(3.0f, 1.0f, 1.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 2.0f, 1.0f);
+    public static final BlocklingType DARK_OAK_LOG = create("dark_oak_log", 0).addCombatStats(3.0f, 1.0f, 1.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 2.0f, 1.0f);
+    public static final BlocklingType ACACIA_LOG = create("acacia_log", 0).addCombatStats(3.0f, 1.0f, 1.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 2.0f, 1.0f);
     public static final BlocklingType STONE = create("stone", 0).addCombatStats(5.0f, 1.0f, 1.0f, 2.0f, 1.0f, 0.3f, 2.5f).addGatheringStats(1.5f, 0.5f, 0.5f);
     public static final BlocklingType IRON = create("iron", 0).addCombatStats(6.0f, 2.0f, 1.0f, 2.0f, 1.0f, 0.1f, 3.0f).addGatheringStats(2.0f, 0.5f, 0.5f);
     public static final BlocklingType QUARTZ = create("quartz", 0).addCombatStats(3.0f, 4.0f, 2.0f, 1.0f, 0.5f, 0.1f, 3.5f).addGatheringStats(2.0f, 0.5f, 0.5f);
@@ -74,6 +79,31 @@ public class BlocklingType
         OAK_LOG.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
         OAK_LOG.spawnPredicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.GRASS_BLOCK));
         OAK_LOG.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.OAK_LOG));
+
+        BIRCH_LOG.addFoods(Blocks.BIRCH_LOG);
+        BIRCH_LOG.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
+        BIRCH_LOG.spawnPredicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.GRASS_BLOCK));
+        BIRCH_LOG.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.BIRCH_LOG));
+
+        SPRUCE_LOG.addFoods(Blocks.SPRUCE_LOG);
+        SPRUCE_LOG.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
+        SPRUCE_LOG.spawnPredicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.GRASS_BLOCK));
+        SPRUCE_LOG.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.SPRUCE_LOG));
+
+        JUNGLE_LOG.addFoods(Blocks.JUNGLE_LOG);
+        JUNGLE_LOG.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
+        JUNGLE_LOG.spawnPredicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.GRASS_BLOCK));
+        JUNGLE_LOG.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.JUNGLE_LOG));
+
+        DARK_OAK_LOG.addFoods(Blocks.DARK_OAK_LOG);
+        DARK_OAK_LOG.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
+        DARK_OAK_LOG.spawnPredicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.GRASS_BLOCK));
+        DARK_OAK_LOG.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.DARK_OAK_LOG));
+
+        ACACIA_LOG.addFoods(Blocks.ACACIA_LOG);
+        ACACIA_LOG.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
+        ACACIA_LOG.spawnPredicates.add((blockling, world) -> blockBelowIs(blockling, world, Blocks.GRASS_BLOCK));
+        ACACIA_LOG.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.ACACIA_LOG));
 
         STONE.addFoods(Blocks.STONE);
         STONE.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
