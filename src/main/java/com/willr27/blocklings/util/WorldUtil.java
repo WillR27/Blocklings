@@ -92,11 +92,11 @@ public class WorldUtil
         public final List<BlockPos> leaves = new ArrayList<>();
 
         /**
-         * @return true if the tree is a valid tree (is the log to leaf ratio valid).
+         * @return true if the tree is a valid tree (is the leaves to logs ratio valid).
          */
-        public boolean isValid()
+        public boolean isValid(float minLeavesToLogsRatio)
         {
-            return leaves.size() != 0 && (logs.size() / (float) leaves.size()) <= MAX_LOGS_TO_LEAVES_RATIO;
+            return logs.size() != 0 && ((float) leaves.size() / logs.size()) >= minLeavesToLogsRatio;
         }
     }
 }

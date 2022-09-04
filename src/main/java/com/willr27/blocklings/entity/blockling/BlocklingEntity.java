@@ -426,7 +426,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                         {
                             WorldUtil.Tree treeToTest = WorldUtil.findTreeFromPos(level, testPos, 40, (t) -> true, (t) -> true);
 
-                            if (!treeToTest.isValid())
+                            if (!treeToTest.isValid(1.0f))
                             {
                                 continue;
                             }

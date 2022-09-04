@@ -4,6 +4,7 @@ import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.BlocklingHand;
 import com.willr27.blocklings.entity.blockling.skill.skills.WoodcuttingSkills;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
+import com.willr27.blocklings.entity.blockling.task.config.RangeProperty;
 import com.willr27.blocklings.entity.blockling.whitelist.GoalWhitelist;
 import com.willr27.blocklings.entity.blockling.whitelist.Whitelist;
 import com.willr27.blocklings.util.*;
@@ -59,6 +60,12 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
     private final Set<BlockPos> pathTargetPositionsTested = new HashSet<>();
 
     /**
+     * The minimum number of leaves blocks for each log block required to classify a tree as a tree.
+     */
+    @Nonnull
+    private final RangeProperty minLeavesToLogRatio;
+
+    /**
      * @param id the id associated with the owning task of this goal.
      * @param blockling the blockling the goal is assigned to.
      * @param tasks the associated tasks.
@@ -71,6 +78,12 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
         logWhitelist.setIsUnlocked(blockling.getSkills().getSkill(WoodcuttingSkills.WHITELIST).isBought(), false);
         BlockUtil.TREES.get().forEach(tree -> logWhitelist.put(tree.log.getRegistryName(), true));
         whitelists.add(logWhitelist);
+
+        properties.add(minLeavesToLogRatio = new RangeProperty(
+                "689c67a9-8c02-4eac-afff-bdc4eab861c6", this,
+                new BlocklingsTranslationTextComponent("task.property.min_leaves_to_log_ratio.name"),
+                new BlocklingsTranslationTextComponent("task.property.min_leaves_to_log_ratio.desc"),
+                0, 2, 1));
 
         setFlags(EnumSet.of(Flag.JUMP, Flag.MOVE));
     }
@@ -355,7 +368,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
                     {
                         WorldUtil.Tree treeToTest = findTreeFrom(testBlockPos);
 
-                        if (!treeToTest.isValid())
+                        if (!treeToTest.isValid(minLeavesToLogRatio.getValue()))
                         {
                             continue;
                         }
