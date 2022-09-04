@@ -58,6 +58,11 @@ public class ForgeEventBusEvents
     @SubscribeEvent
     public static void onLootingLevelEvent(@Nonnull LootingLevelEvent event)
     {
+        if (event.getDamageSource() == null)
+        {
+            return;
+        }
+
         if (event.getDamageSource().getEntity() instanceof BlocklingEntity)
         {
             BlocklingEntity blockling = (BlocklingEntity) event.getDamageSource().getEntity();
