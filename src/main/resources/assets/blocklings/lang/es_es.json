@@ -76,6 +76,8 @@
   "blocklings.task.property.follow_start_range.desc": "La distancia a la que tu blockling comenzará a seguirte.",
   "blocklings.task.property.follow_stop_range.name": "Seguir rango de parada",
   "blocklings.task.property.follow_stop_range.desc": "La distancia a la que tu blockling dejará de seguirte.",
+  "blocklings.task.property.min_leaves_to_log_ratio.name": "Min leaves to logs",
+  "blocklings.task.property.min_leaves_to_log_ratio.desc": "The minimum number of leaves blocks required for each log block to classify a tree as valid.",
   "blocklings.task.null.name": "Vacío",
   "blocklings.task.null.desc": "Haz clic en el botón de configuración para configurar esta tarea.",
   "blocklings.task.sit.name": "Sentarse",
