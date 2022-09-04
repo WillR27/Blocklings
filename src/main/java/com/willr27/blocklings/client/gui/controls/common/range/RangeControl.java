@@ -1,41 +1,49 @@
-package com.willr27.blocklings.client.gui.controls.common;
+package com.willr27.blocklings.client.gui.controls.common.range;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.Control;
 import com.willr27.blocklings.client.gui.GuiTextures;
 import com.willr27.blocklings.client.gui.IControl;
+import com.willr27.blocklings.client.gui.controls.common.TextFieldControl;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
+import java.text.NumberFormat;
+import java.text.ParseException;
 
 /**
  * A control used to display and edit a range.
  */
 @OnlyIn(Dist.CLIENT)
-public class RangeControl extends Control
+public abstract class RangeControl<T extends Number> extends Control
 {
     /**
      * The minimum value of the range.
      */
-    public final int min;
+    public final T min;
 
     /**
      * The maximum value of the range.
      */
-    public final int max;
+    public final T max;
 
     /**
      * The current value of the range.
      */
-    private int value;
+    protected T value;
+
+    /**
+     * The initial value of the range.
+     */
+    protected final T startingValue;
 
     /**
      * The percentage of the slider through the range.
      */
-    private float percentage = 0.0f;
+    protected float percentage = 0.0f;
 
     /**
      * The width of the slider portion of the control.
@@ -50,27 +58,31 @@ public class RangeControl extends Control
     /**
      * The grabber control used to change the value of the range.
      */
-    protected final GrabberControl grabberControl;
+    protected GrabberControl grabberControl;
 
     /**
      * The text field used to set the value of the range.
      */
-    protected final TextFieldControl valueTextFieldControl;
+    protected TextFieldControl valueTextFieldControl;
 
     /**
      * @param parent the parent control.
      * @param min the minimum value.
      * @param max the maximum value.
      * @param startingValue the starting value.
-     * @param textFieldWidth the width of the text field.
      */
-    public RangeControl(@Nonnull IControl parent, int min, int max, int startingValue, int textFieldWidth)
+    public RangeControl(@Nonnull IControl parent, T min, T max, T startingValue)
     {
         super(parent, 0, 0, parent.getWidth() - parent.getPadding(Side.LEFT) - parent.getPadding(Side.RIGHT), 20);
         this.min = min;
         this.max = max;
-        this.textFieldWidth = textFieldWidth;
-        this.sliderWidth = width - textFieldWidth - 4;
+        this.startingValue = startingValue;
+    }
+
+    protected void init()
+    {
+        textFieldWidth = calcTextFieldWidth();
+        sliderWidth = width - textFieldWidth - 4;
 
         grabberControl = new GrabberControl(this);
 
@@ -85,18 +97,20 @@ public class RangeControl extends Control
                 {
                     try
                     {
-                        RangeControl.this.setValue(Integer.parseInt(getValue()));
+                        RangeControl.this.setValue(parse(getValue()));
                     }
-                    catch (NumberFormatException e)
+                    catch (NumberFormatException ex)
                     {
                         RangeControl.this.setValue(RangeControl.this.getValue());
                     }
                 }
 
+                moveCursorToStart();
+
                 super.setFocus(focus);
             }
         };
-        valueTextFieldControl.setMaxLength(10);
+        valueTextFieldControl.setMaxLength(calcMaxNumberOfChars());
         valueTextFieldControl.setVisible(true);
         valueTextFieldControl.setTextColor(16777215);
 
@@ -186,9 +200,14 @@ public class RangeControl extends Control
     }
 
     /**
+     * @return the string value parsed as T.
+     */
+    abstract T parse(@Nonnull String value) throws NumberFormatException;
+
+    /**
      * Recalculates the grabber position.
      */
-    private void recalcGrabberPosition()
+    protected void recalcGrabberPosition()
     {
         grabberControl.setX((int) ((percentage * (sliderWidth - grabberControl.getWidth()))));
     }
@@ -207,15 +226,22 @@ public class RangeControl extends Control
     /**
      * @return the value from the given percentage.
      */
-    private int calcValueFromPercentage(float percentage)
-    {
-        return Math.round((percentage * (max - min)) + min);
-    }
+    abstract T calcValueFromPercentage(float percentage);
+
+    /**
+     * @return the maximum number of characters the value could have.
+     */
+    abstract int calcMaxNumberOfChars();
+
+    /**
+     * @return the width of the text field in pixels.
+     */
+    abstract int calcTextFieldWidth();
 
     /**
      * @return the current value of the range.
      */
-    public int getValue()
+    public T getValue()
     {
         return value;
     }
@@ -223,16 +249,7 @@ public class RangeControl extends Control
     /**
      * Sets the current value of the range.
      */
-    public void setValue(int value)
-    {
-        this.value = Math.max(min, Math.min(max, value));
-
-        valueTextFieldControl.setValue(String.valueOf(this.value));
-
-        percentage = (float) (this.value - min) / (float) (max - min);
-
-        recalcGrabberPosition();
-    }
+    abstract void setValue(T value);
 
     /**
      * @return the percentage of the slider through the range.
@@ -253,7 +270,7 @@ public class RangeControl extends Control
     /**
      * A grabber used by range controls.
      */
-    protected static class GrabberControl extends Control
+    protected class GrabberControl extends Control
     {
         /**
          * The parent range control.
@@ -274,7 +291,7 @@ public class RangeControl extends Control
         {
             if (isDragging())
             {
-                int value = rangeControl.calcValueFromPercentage(rangeControl.calcPercentageFromMouse(mouseX));
+                T value = (T) rangeControl.calcValueFromPercentage(rangeControl.calcPercentageFromMouse(mouseX));
 
                 if (value != rangeControl.value)
                 {

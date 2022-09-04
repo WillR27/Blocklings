@@ -1,6 +1,8 @@
 package com.willr27.blocklings.config;
 
 import com.electronwill.nightconfig.core.Config;
+import com.willr27.blocklings.entity.blockling.goal.goals.BlocklingWoodcutGoal;
+import com.willr27.blocklings.util.WorldUtil;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -85,6 +87,12 @@ public class BlocklingsConfig
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> excludedOres;
 
         /**
+         * The minimum number of leaves blocks for each log block to classify a tree as valid.
+         */
+        @Nonnull
+        public final ForgeConfigSpec.ConfigValue<Double> defaultMinLeavesToLogRatio;
+
+        /**
          * The list of tuples of blocks that the user wants to add as trees.
          * Format: ["[x:y; a:b; j:k]", "[x:y; a:b; j:k]"] (log, leaf, sapling).
          */
@@ -132,6 +140,14 @@ public class BlocklingsConfig
             builder.pop();
 
             builder.push("Woodcutting");
+
+            defaultMinLeavesToLogRatio = builder
+                    .comment("The default minimum number of leaves blocks for each log block to classify a tree as valid.",
+                             "E.g. a ratio of 2.0 means that 5 connected logs and more than 10 connected leaves would classify as a tree.",
+                             "This can be changed on a per task basis using the slider when configuring a woodcutting task.",
+                             "This is also used as the ratio to find trees for log blocklings' passive abilities.")
+                    .worldRestart()
+                    .defineInRange("defaultMinLeavesToLogRatio", WorldUtil.DEFAULT_MIN_LEAVES_TO_LOGS_RATIO, BlocklingWoodcutGoal.MIN_MIN_LEAVES_TO_LOGS_RATIO, BlocklingWoodcutGoal.MAX_MIN_LEAVES_TO_LOGS_RATIO);
 
             customTrees = builder
                     .comment("The list of tuples of blocks that you want to additionally add as trees",

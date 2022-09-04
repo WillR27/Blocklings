@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.block.BlocklingsBlocks;
 import com.willr27.blocklings.client.gui.BlocklingGuiHandler;
+import com.willr27.blocklings.config.BlocklingsConfig;
 import com.willr27.blocklings.entity.blockling.action.BlocklingActions;
 import com.willr27.blocklings.entity.blockling.attribute.BlocklingAttributes;
 import com.willr27.blocklings.entity.blockling.skill.BlocklingSkills;
@@ -426,7 +427,7 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                         {
                             WorldUtil.Tree treeToTest = WorldUtil.findTreeFromPos(level, testPos, 40, (t) -> true, (t) -> true);
 
-                            if (!treeToTest.isValid(1.0f))
+                            if (!treeToTest.isValid(BlocklingsConfig.COMMON.defaultMinLeavesToLogRatio.get().floatValue()))
                             {
                                 continue;
                             }

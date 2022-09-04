@@ -3,7 +3,8 @@ package com.willr27.blocklings.entity.blockling.goal.goals;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
-import com.willr27.blocklings.entity.blockling.task.config.RangeProperty;
+import com.willr27.blocklings.entity.blockling.task.config.range.IntRangeProperty;
+import com.willr27.blocklings.entity.blockling.task.config.range.RangeProperty;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.pathfinding.PathNavigator;
@@ -27,13 +28,13 @@ public class BlocklingFollowGoal extends BlocklingGoal
      * The distance to stop following at.
      */
     @Nonnull
-    private final RangeProperty stopDistance;
+    private final IntRangeProperty stopDistance;
 
     /**
      * The distance to start following at.
      */
     @Nonnull
-    private final RangeProperty startDistance;
+    private final IntRangeProperty startDistance;
 
     /**
      * The navigator used for pathing.
@@ -69,8 +70,16 @@ public class BlocklingFollowGoal extends BlocklingGoal
 
         setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
 
-        properties.add(startDistance = new RangeProperty("590fb919-6ac7-4af7-98ec-6e01919782c1", this, new BlocklingsTranslationTextComponent("task.property.follow_start_range.name"), new BlocklingsTranslationTextComponent("task.property.follow_start_range.desc"), 1, 20, 4));
-        properties.add(stopDistance = new RangeProperty("99d39a22-3abe-4109-b493-dcb922f0c08a", this, new BlocklingsTranslationTextComponent("task.property.follow_stop_range.name"), new BlocklingsTranslationTextComponent("task.property.follow_stop_range.desc"), 1, 20, 2));
+        properties.add(startDistance = new IntRangeProperty(
+                "590fb919-6ac7-4af7-98ec-6e01919782c1", this,
+                new BlocklingsTranslationTextComponent("task.property.follow_start_range.name"),
+                new BlocklingsTranslationTextComponent("task.property.follow_start_range.desc"),
+                1, 20, 4));
+        properties.add(stopDistance = new IntRangeProperty(
+                "99d39a22-3abe-4109-b493-dcb922f0c08a", this,
+                new BlocklingsTranslationTextComponent("task.property.follow_stop_range.name"),
+                new BlocklingsTranslationTextComponent("task.property.follow_stop_range.desc"),
+                1, 20, 2));
     }
 
     @Override
@@ -91,7 +100,7 @@ public class BlocklingFollowGoal extends BlocklingGoal
         {
             return false;
         }
-        else if (blockling.distanceToSqr(owner) < (double) (startDistance.value * startDistance.value))
+        else if (blockling.distanceToSqr(owner) < (double) (startDistance.getValue() * startDistance.getValue()))
         {
             return false;
         }
@@ -117,7 +126,7 @@ public class BlocklingFollowGoal extends BlocklingGoal
         }
         else
         {
-            return !(blockling.distanceToSqr(owner) <= (double) (stopDistance.value * stopDistance.value));
+            return !(blockling.distanceToSqr(owner) <= (double) (stopDistance.getValue() * stopDistance.getValue()));
         }
     }
 

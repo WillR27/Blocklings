@@ -1,10 +1,11 @@
 package com.willr27.blocklings.entity.blockling.goal.goals;
 
+import com.willr27.blocklings.config.BlocklingsConfig;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.BlocklingHand;
 import com.willr27.blocklings.entity.blockling.skill.skills.WoodcuttingSkills;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
-import com.willr27.blocklings.entity.blockling.task.config.RangeProperty;
+import com.willr27.blocklings.entity.blockling.task.config.range.FloatRangeProperty;
 import com.willr27.blocklings.entity.blockling.whitelist.GoalWhitelist;
 import com.willr27.blocklings.entity.blockling.whitelist.Whitelist;
 import com.willr27.blocklings.util.*;
@@ -26,6 +27,16 @@ import java.util.*;
  */
 public class BlocklingWoodcutGoal extends BlocklingGatherGoal
 {
+    /**
+     * The minimum minimum number of leaves blocks for each log block to classify a tree as valid.
+     */
+    public static final float MIN_MIN_LEAVES_TO_LOGS_RATIO = 0.0f;
+
+    /**
+     * The maximum minimum number of leaves blocks for each log block to classify a tree as valid.
+     */
+    public static final float MAX_MIN_LEAVES_TO_LOGS_RATIO = 4.0f;
+
     /**
      * The x and z search radius.
      */
@@ -63,7 +74,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
      * The minimum number of leaves blocks for each log block required to classify a tree as a tree.
      */
     @Nonnull
-    private final RangeProperty minLeavesToLogRatio;
+    private final FloatRangeProperty minLeavesToLogRatio;
 
     /**
      * @param id the id associated with the owning task of this goal.
@@ -79,11 +90,11 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
         BlockUtil.TREES.get().forEach(tree -> logWhitelist.put(tree.log.getRegistryName(), true));
         whitelists.add(logWhitelist);
 
-        properties.add(minLeavesToLogRatio = new RangeProperty(
+        properties.add(minLeavesToLogRatio = new FloatRangeProperty(
                 "689c67a9-8c02-4eac-afff-bdc4eab861c6", this,
                 new BlocklingsTranslationTextComponent("task.property.min_leaves_to_log_ratio.name"),
                 new BlocklingsTranslationTextComponent("task.property.min_leaves_to_log_ratio.desc"),
-                0, 2, 1));
+                MIN_MIN_LEAVES_TO_LOGS_RATIO, MAX_MIN_LEAVES_TO_LOGS_RATIO, BlocklingsConfig.COMMON.defaultMinLeavesToLogRatio.get().floatValue()));
 
         setFlags(EnumSet.of(Flag.JUMP, Flag.MOVE));
     }

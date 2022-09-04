@@ -5,7 +5,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,9 +17,9 @@ import java.util.function.Predicate;
 public class WorldUtil
 {
     /**
-     * The maximum number of log blocks there can be for each leaves block for a tree to be classed as a tree.
+     * The default minimum number of leaves blocks for each log block to classify a tree as valid.
      */
-    public static final float MAX_LOGS_TO_LEAVES_RATIO = 1.0f;
+    public static final float DEFAULT_MIN_LEAVES_TO_LOGS_RATIO = 1.0f;
 
     /**
      * @param world the world to search in.
