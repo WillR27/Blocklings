@@ -1,4 +1,4 @@
-package com.willr27.blocklings.entity.blockling.goal.goals;
+package com.willr27.blocklings.entity.blockling.goal.goals.misc;
 
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingTargetGoal;
@@ -118,7 +118,7 @@ public class BlocklingFindBlocklingsGoal extends BlocklingTargetGoal<BlocklingEn
     }
 
     @Override
-    protected void checkForAndRemoveInvalidTargets()
+    protected void checkForAndHandleInvalidTargets()
     {
         if (hasTarget() && getTarget().isDeadOrDying())
         {

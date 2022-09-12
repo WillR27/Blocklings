@@ -9,9 +9,11 @@ import com.willr27.blocklings.client.gui.IControl;
 import com.willr27.blocklings.client.gui.controls.TabbedControl;
 import com.willr27.blocklings.client.gui.controls.common.ScrollbarControl;
 import com.willr27.blocklings.client.gui.controls.common.TextFieldControl;
+import com.willr27.blocklings.client.gui.controls.tasks.config.configs.ItemsConfigControl;
 import com.willr27.blocklings.client.gui.controls.tasks.config.configs.TaskMiscConfigControl;
 import com.willr27.blocklings.client.gui.controls.tasks.config.configs.WhitelistConfigControl;
 import com.willr27.blocklings.client.gui.screens.TasksScreen;
+import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.task.Task;
 import com.willr27.blocklings.entity.blockling.whitelist.GoalWhitelist;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
@@ -120,14 +122,34 @@ public class TaskConfigContainerControl extends Control
         tabControl = new TabControl(this,9, 33, 140);
         tabControl.add(new BlocklingsTranslationTextComponent("task.ui.tab.misc").getString(), () -> { removeChild(currentConfigGui); currentConfigGui = new TaskMiscConfigControl(this, task, 9, 46, 140, 112, contentScrollbarControl); currentConfigGui.setZIndex(2); currentConfigGui.setIsFocused(true); });
 
-        if (task.isConfigured() && !task.getGoal().whitelists.isEmpty())
+        if (task.isConfigured())
         {
-            for (GoalWhitelist whitelist : task.getGoal().whitelists)
+            if (!task.getGoal().whitelists.isEmpty())
             {
-                if (whitelist.isUnlocked())
+                for (GoalWhitelist whitelist : task.getGoal().whitelists)
                 {
-                    tabControl.add(whitelist.name.getString(), () -> { removeChild(currentConfigGui); currentConfigGui = new WhitelistConfigControl(this, whitelist, 9, 46, 140, 112, contentScrollbarControl); currentConfigGui.setZIndex(2); currentConfigGui.setIsFocused(true); });
+                    if (whitelist.isUnlocked())
+                    {
+                        tabControl.add(whitelist.name.getString(), () ->
+                        {
+                            removeChild(currentConfigGui);
+                            currentConfigGui = new WhitelistConfigControl(this, whitelist, 9, 46, 140, 112, contentScrollbarControl);
+                            currentConfigGui.setZIndex(2);
+                            currentConfigGui.setIsFocused(true);
+                        });
+                    }
                 }
+            }
+
+            if (task.getType() == BlocklingTasks.STORE_ITEMS)
+            {
+                tabControl.add("TEST", () ->
+                {
+                    removeChild(currentConfigGui);
+                    currentConfigGui = new ItemsConfigControl(this, 9, 46, 140, 112, contentScrollbarControl);
+                    currentConfigGui.setZIndex(2);
+                    currentConfigGui.setIsFocused(true);
+                });
             }
         }
     }

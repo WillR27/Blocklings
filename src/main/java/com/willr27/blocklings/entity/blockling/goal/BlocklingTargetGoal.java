@@ -93,7 +93,7 @@ public abstract class BlocklingTargetGoal<T> extends BlocklingPathGoal
             return false;
         }
 
-        checkForAndRemoveInvalidTargets();
+        checkForAndHandleInvalidTargets();
 
         boolean recalculatedTarget = false;
 
@@ -141,9 +141,10 @@ public abstract class BlocklingTargetGoal<T> extends BlocklingPathGoal
     public abstract boolean tryRecalcTarget();
 
     /**
-     * Checks for and removes any invalid targets.
+     * Checks for and handles any invalid targets. This might involve marking the targets as bad
+     * and removing them from a target list (e.g. removing ores from a vein).
      */
-    protected abstract void checkForAndRemoveInvalidTargets();
+    protected abstract void checkForAndHandleInvalidTargets();
 
     /**
      * Marks the entire target bad.

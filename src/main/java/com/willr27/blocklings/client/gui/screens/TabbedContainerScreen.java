@@ -551,6 +551,11 @@ public abstract class TabbedContainerScreen<T extends Container> extends Contain
     @Override
     public void setDraggedControl(@Nullable IControl control)
     {
+        if (control != null && !control.isDraggable())
+        {
+            control = null;
+        }
+
         draggedControl = control;
     }
 

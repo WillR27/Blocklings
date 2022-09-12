@@ -1,4 +1,4 @@
-package com.willr27.blocklings.entity.blockling.goal.goals;
+package com.willr27.blocklings.entity.blockling.goal.goals.combat;
 
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
@@ -8,16 +8,16 @@ import javax.annotation.Nonnull;
 import java.util.UUID;
 
 /**
- * Attacks the last entity the blockling's owner attacked using melee.
+ * Attacks the last entity to attack the blockling using melee.
  */
-public class BlocklingMeleeAttackOwnerHurtGoal extends BlocklingMeleeAttackGoal
+public class BlocklingMeleeAttackHurtByGoal extends BlocklingMeleeAttackGoal
 {
     /**
      * @param id the id associated with the goal's task.
      * @param blockling the blockling.
      * @param tasks the blockling tasks.
      */
-    public BlocklingMeleeAttackOwnerHurtGoal(@Nonnull UUID id, @Nonnull BlocklingEntity blockling, @Nonnull BlocklingTasks tasks)
+    public BlocklingMeleeAttackHurtByGoal(@Nonnull UUID id, @Nonnull BlocklingEntity blockling, @Nonnull BlocklingTasks tasks)
     {
         super(id, blockling, tasks);
     }
@@ -30,26 +30,19 @@ public class BlocklingMeleeAttackOwnerHurtGoal extends BlocklingMeleeAttackGoal
             return false;
         }
 
-        LivingEntity owner = blockling.getOwner();
+        LivingEntity attacker = blockling.getLastHurtByMob();
 
-        if (owner == null)
+        if (attacker == null)
         {
             return false;
         }
 
-        LivingEntity ownersTarget = owner.getLastHurtMob();
-
-        if (ownersTarget == null)
+        if (!isValidTarget(attacker))
         {
             return false;
         }
 
-        if (!isValidTarget(ownersTarget))
-        {
-            return false;
-        }
-
-        setTarget(ownersTarget);
+        setTarget(attacker);
 
         return true;
     }

@@ -43,4 +43,17 @@ public class GuiTextures
 
     public static final GuiTexture SLIDER_GRABBER_RAISED = new GuiTexture(GuiTextures.COMMON_WIDGETS, 46, 0, 12, 12);
     public static final GuiTexture SLIDER_GRABBER_PRESSED = new GuiTexture(GuiTextures.COMMON_WIDGETS, 58, 0, 12, 12);
+
+    public static final GuiTexture TEXT_FIELD_DARK = new GuiTexture(GuiTextures.COMMON_WIDGETS, 0, 92, 256, 20);
+    public static final GuiTexture TEXT_FIELD_DARK_END = new GuiTexture(GuiTextures.COMMON_WIDGETS, 255, 92, 1, 20);
+
+    public static final GuiTexture TEXT_FIELD_LIGHT = new GuiTexture(GuiTextures.COMMON_WIDGETS, 0, 112, 256, 20);
+    public static final GuiTexture TEXT_FIELD_LIGHT_END = new GuiTexture(GuiTextures.COMMON_WIDGETS, 255, 112, 1, 20);
+
+    public static final GuiTexture SEARCH_ICON = new GuiTexture(GuiTextures.COMMON_WIDGETS, 70, 0, 14, 14);
+    public static final GuiTexture PLUS_ICON = new GuiTexture(GuiTextures.COMMON_WIDGETS, 84, 0, 12, 12);
+    public static final GuiTexture MINUS_ICON = new GuiTexture(GuiTextures.COMMON_WIDGETS, 96, 0, 10, 10);
+
+    public static final GuiTexture ITEM_SEARCH_BACKGROUND = TEXT_FIELD_DARK;
+    public static final GuiTexture ITEM_SEARCH_BACKGROUND_END = TEXT_FIELD_DARK_END;
 }

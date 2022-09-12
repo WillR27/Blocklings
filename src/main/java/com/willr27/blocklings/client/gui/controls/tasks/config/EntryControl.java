@@ -100,14 +100,14 @@ public class EntryControl extends Control
             Block block = Registry.BLOCK.get(entry.getKey());
             ItemStack stack = new ItemStack(block);
 
-            GuiUtil.renderItemStack(matrixStack, stack, (int) (screenX / getEffectiveScale()), (int) (screenY / getEffectiveScale()), 10);
+            GuiUtil.renderItemStack(matrixStack, stack, (int) (screenX / getEffectiveScale()) + getEffectiveWidth() / 2, (int) (screenY / getEffectiveScale()) + getEffectiveHeight() / 2, 24.0f);
         }
         else if (whitelist.type == Whitelist.Type.ITEM)
         {
             Item item = Registry.ITEM.get(entry.getKey());
             ItemStack stack = new ItemStack(item);
 
-            GuiUtil.renderItemStack(matrixStack, stack, (int) (screenX / getEffectiveScale()), (int) (screenY / getEffectiveScale()), 10);
+            GuiUtil.renderItemStack(matrixStack, stack, (int) (screenX / getEffectiveScale()) + getEffectiveWidth() / 2, (int) (screenY / getEffectiveScale()) + getEffectiveHeight() / 2, 24.0f);
         }
         else if (whitelist.type == Whitelist.Type.ENTITY)
         {

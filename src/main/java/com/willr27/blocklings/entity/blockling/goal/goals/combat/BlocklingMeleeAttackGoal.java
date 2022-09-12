@@ -1,4 +1,4 @@
-package com.willr27.blocklings.entity.blockling.goal.goals;
+package com.willr27.blocklings.entity.blockling.goal.goals.combat;
 
 import com.willr27.blocklings.entity.BlocklingsEntityTypes;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
@@ -149,7 +149,7 @@ public abstract class BlocklingMeleeAttackGoal extends BlocklingTargetGoal<Livin
     }
 
     @Override
-    protected void checkForAndRemoveInvalidTargets()
+    protected void checkForAndHandleInvalidTargets()
     {
         if (hasTarget() && !isTargetValid())
         {

@@ -1,7 +1,7 @@
 package com.willr27.blocklings.config;
 
 import com.electronwill.nightconfig.core.Config;
-import com.willr27.blocklings.entity.blockling.goal.goals.BlocklingWoodcutGoal;
+import com.willr27.blocklings.entity.blockling.goal.goals.gather.BlocklingWoodcutGoal;
 import com.willr27.blocklings.util.WorldUtil;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModContainer;

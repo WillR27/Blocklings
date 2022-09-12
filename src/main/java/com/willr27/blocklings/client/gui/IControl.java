@@ -706,6 +706,23 @@ public interface IControl
     }
 
     /**
+     * @return the current x-axis scrollbar control.
+     */
+    @Nullable
+    default ScrollbarControl getScrollbarX()
+    {
+        return getParent() != null ? getParent().getScrollbarX() : null;
+    }
+
+    /**
+     * Sets the current x-axis scrollbar control.
+     */
+    default void setScrollbarX(@Nullable ScrollbarControl scrollbarControlX)
+    {
+
+    }
+
+    /**
      * @return the current y-axis scrollbar control.
      */
     @Nullable
@@ -964,6 +981,22 @@ public interface IControl
     default int getPressedMouseY()
     {
         return getScreen().getPressedMouseY();
+    }
+
+    /**
+     * @return whether the control is draggable.
+     */
+    default boolean isDraggable()
+    {
+        return true;
+    }
+
+    /**
+     * Sets whether the control is draggable.
+     */
+    default void setIsDraggable(boolean isDraggable)
+    {
+
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.willr27.blocklings.entity.blockling.goal.goals;
+package com.willr27.blocklings.entity.blockling.goal.goals.gather;
 
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.BlocklingHand;
@@ -323,7 +323,7 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal
     }
 
     @Override
-    public void checkForAndRemoveInvalidTargets()
+    public void checkForAndHandleInvalidTargets()
     {
         if (!isTargetValid())
         {

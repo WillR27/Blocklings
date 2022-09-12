@@ -589,6 +589,11 @@ public class TabbedScreen extends Screen implements IControl, IScreen
     @Override
     public void setDraggedControl(@Nullable IControl control)
     {
+        if (control != null && !control.isDraggable())
+        {
+            control = null;
+        }
+
         draggedControl = control;
     }
 

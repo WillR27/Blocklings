@@ -130,7 +130,7 @@ public class GuiUtil
         return mouseX >= left && mouseX < left + width && mouseY >= top && mouseY <= top + height;
     }
 
-    public static void renderItemStack(MatrixStack matrixStack, ItemStack stack, int x, int y, int i)
+    public static void renderItemStack(MatrixStack matrixStack, ItemStack stack, int x, int y, float scale)
     {
 //        matrixStack.pushPose();
 //        RenderSystem.disableDepthTest();
@@ -157,10 +157,9 @@ public class GuiUtil
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.translatef((float)x + 7, (float)y + 7, 100.0F);
-        RenderSystem.translatef(8.0F, 8.0F, 0.0F);
+        RenderSystem.translatef((float)x, (float)y, 100.0F);
         RenderSystem.scalef(1.0F, -1.0F, 1.0F);
-        RenderSystem.scalef(24.0F, 24.0F, 24.0F);
+        RenderSystem.scalef(scale, scale, scale);
         MatrixStack matrixstack = new MatrixStack();
         IRenderTypeBuffer.Impl irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
         boolean flag = !itemRenderer.getModel(stack, null, null).usesBlockLight();

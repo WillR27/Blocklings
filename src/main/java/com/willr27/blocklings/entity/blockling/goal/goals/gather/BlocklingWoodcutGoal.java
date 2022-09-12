@@ -1,4 +1,4 @@
-package com.willr27.blocklings.entity.blockling.goal.goals;
+package com.willr27.blocklings.entity.blockling.goal.goals.gather;
 
 import com.willr27.blocklings.config.BlocklingsConfig;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
@@ -271,7 +271,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
         }
     }
     @Override
-    public void checkForAndRemoveInvalidTargets()
+    public void checkForAndHandleInvalidTargets()
     {
         for (BlockPos blockPos : new ArrayList<>(tree.logs))
         {

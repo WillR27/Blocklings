@@ -267,6 +267,42 @@ public abstract class AbstractInventory implements IInventory, IReadWriteNBT
         return true;
     }
 
+    /**
+     * Counts the number of items in the inventory of the given item stack.
+     *
+     * @param stack      the item stack to count.
+     * @return           the number of items in the inventory of the given item stack.
+     */
+    public int count(@Nonnull ItemStack stack)
+    {
+        return count(stack, 0, getContainerSize() - 1);
+    }
+
+    /**
+     * Counts the number of items in the inventory of the given item stack.
+     *
+     * @param stack      the item stack to count.
+     * @param startIndex the inclusive slot index to start looking from.
+     * @param endIndex   the exclusive slot index to end looking at.
+     * @return           the number of items in the inventory of the given item stack.
+     */
+    public int count(@Nonnull ItemStack stack, int startIndex, int endIndex)
+    {
+        int count = 0;
+
+        for (int i = startIndex; i < endIndex + 1; i++)
+        {
+            ItemStack slotStack = getItem(i);
+
+            if (ItemStack.isSame(slotStack, stack))
+            {
+                count += slotStack.getCount();
+            }
+        }
+
+        return count;
+    }
+
     public boolean couldAddItem(ItemStack stack, int slot)
     {
         boolean couldAdd = true;

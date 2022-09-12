@@ -10,6 +10,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.lwjgl.system.CallbackI;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,6 +49,12 @@ public class Control extends AbstractGui implements IControl
      */
     @Nonnull
     protected final ArrayList<Control> children = new ArrayList<>();
+
+    /**
+     * The associated x-axis scrollbar control.
+     */
+    @Nullable
+    protected ScrollbarControl scrollbarControlX = null;
 
     /**
      * The associated y-axis scrollbar control.
@@ -151,6 +158,11 @@ public class Control extends AbstractGui implements IControl
      * Whether control can be scrolled in the y-axis.
      */
     private boolean isScrollableY = false;
+
+    /**
+     * Whether the control is draggable7996bbf7-8a3e-4727-87d9-31389598c2d0.
+     */
+    private boolean isDraggable = true;
 
     /**
      * The event handler for hover events.
@@ -410,6 +422,18 @@ public class Control extends AbstractGui implements IControl
     }
 
     @Override
+    public ScrollbarControl getScrollbarX()
+    {
+        return scrollbarControlX != null ? scrollbarControlX : parent != null ? parent.getScrollbarX() : null;
+    }
+
+    @Override
+    public void setScrollbarX(@Nullable ScrollbarControl scrollbarControlX)
+    {
+        this.scrollbarControlX = scrollbarControlX;
+    }
+
+    @Override
     public ScrollbarControl getScrollbarY()
     {
         return scrollbarControlY != null ? scrollbarControlY : parent != null ? parent.getScrollbarY() : null;
@@ -461,7 +485,7 @@ public class Control extends AbstractGui implements IControl
      */
     public int toLocalX(int x)
     {
-        return x - this.screenX;
+        return (int) (x - this.screenX - (getPadding(Side.LEFT) * getEffectiveScale()));
     }
 
     /**
@@ -470,7 +494,7 @@ public class Control extends AbstractGui implements IControl
      */
     public int toLocalY(int y)
     {
-        return y - this.screenY;
+        return (int) (y - this.screenY - (getPadding(Side.TOP) * getEffectiveScale()));
     }
 
     /**
@@ -884,6 +908,18 @@ public class Control extends AbstractGui implements IControl
         }
     }
 
+    @Override
+    public boolean isDraggable()
+    {
+        return isDraggable;
+    }
+
+    @Override
+    public void setIsDraggable(boolean isDraggable)
+    {
+        this.isDraggable = isDraggable;
+    }
+
     /**
      * Sets the index of the control in the list of children to the given index.
      *
@@ -891,6 +927,7 @@ public class Control extends AbstractGui implements IControl
      */
     public void setZIndex(int index)
     {
+        // No parent means no siblings.
         if (parent == null)
         {
             return;
@@ -911,6 +948,78 @@ public class Control extends AbstractGui implements IControl
         children.set(children.indexOf(this), null);
         children.add(index, this);
         children.remove(null);
+    }
+
+    /**
+     * Moves the control directly before the given sibling control in the parent's list of children.
+     *
+     * @param siblingControl the sibling control to move this control before.
+     */
+    public void moveDirectlyBefore(@Nonnull Control siblingControl)
+    {
+        // No parent means no siblings.
+        if (parent == null)
+        {
+            return;
+        }
+
+        ArrayList<Control> parentsChildren = parent.getChildren();
+
+        int currentIndex = parentsChildren.indexOf(this);
+        int siblingIndex = parentsChildren.indexOf(siblingControl);
+
+        // Return if either control isn't present or the control is already in the correct position.
+        if (currentIndex == -1 || siblingIndex == -1 || currentIndex == siblingIndex - 1)
+        {
+            return;
+        }
+
+        // Remove the control temporarily.
+        parentsChildren.remove(currentIndex);
+
+        // If the control was before the sibling then take one off the sibling index.
+        siblingIndex = currentIndex < siblingIndex ? siblingIndex - 1 : siblingIndex;
+
+        // Re-add the control in the correct position.
+        parentsChildren.add(siblingIndex, this);
+    }
+
+    /**
+     * Moves the control directly after the given sibling control in the parent's list of children.
+     *
+     * @param siblingControl the sibling control to move this control after.
+     */
+    public void moveDirectlyAfter(@Nonnull Control siblingControl)
+    {
+        // No parent means no siblings.
+        if (parent == null)
+        {
+            return;
+        }
+
+        ArrayList<Control> parentsChildren = parent.getChildren();
+
+        int currentIndex = parentsChildren.indexOf(this);
+        int siblingIndex = parentsChildren.indexOf(siblingControl);
+
+        // Return if either control isn't present or the control is already in the correct position.
+        if (currentIndex == -1 || siblingIndex == -1 || currentIndex == siblingIndex + 1)
+        {
+            return;
+        }
+
+        // Remove the control temporarily.
+        parentsChildren.remove(currentIndex);
+
+        // If the control was before the sibling then take one off the sibling index.
+        siblingIndex = currentIndex < siblingIndex ? siblingIndex - 1 : siblingIndex;
+
+        // Remove the sibling control temporarily.
+        parentsChildren.remove(siblingIndex);
+
+        // Re-add the controls in the correct order in the correct positions.
+        parentsChildren.add(siblingIndex, this);
+        parentsChildren.add(siblingIndex, siblingControl);
     }
 
     @Nonnull
