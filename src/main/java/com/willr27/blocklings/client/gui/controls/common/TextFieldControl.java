@@ -52,8 +52,8 @@ public class TextFieldControl extends Widget implements IRenderable, IGuiEventLi
         return IReorderingProcessor.forward(p_195610_0_, Style.EMPTY);
     };
 
-    public TextFieldControl(FontRenderer p_i232260_1_, int p_i232260_2_, int p_i232260_3_, int p_i232260_4_, int p_i232260_5_, ITextComponent p_i232260_6_) {
-        this(p_i232260_1_, p_i232260_2_, p_i232260_3_, p_i232260_4_, p_i232260_5_, (net.minecraft.client.gui.widget.TextFieldWidget)null, p_i232260_6_);
+    public TextFieldControl(FontRenderer p_i232260_1_, int x, int y, int width, int height, ITextComponent p_i232260_6_) {
+        this(p_i232260_1_, x, y, width, height, (net.minecraft.client.gui.widget.TextFieldWidget)null, p_i232260_6_);
     }
 
     public TextFieldControl(FontRenderer p_i232259_1_, int p_i232259_2_, int p_i232259_3_, int p_i232259_4_, int p_i232259_5_, @Nullable net.minecraft.client.gui.widget.TextFieldWidget p_i232259_6_, ITextComponent p_i232259_7_) {

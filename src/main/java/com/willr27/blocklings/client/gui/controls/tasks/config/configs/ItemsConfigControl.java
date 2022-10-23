@@ -4,16 +4,13 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.*;
 import com.willr27.blocklings.client.gui.controls.Orientation;
 import com.willr27.blocklings.client.gui.controls.common.ScrollbarControl;
-import com.willr27.blocklings.client.gui.controls.common.panel.FlowPanel;
+import com.willr27.blocklings.client.gui.controls.common.TextFieldControl;
+import com.willr27.blocklings.client.gui.controls.common.panel.FlowPanelControl;
 import com.willr27.blocklings.client.gui.controls.tasks.config.ConfigControl;
-import com.willr27.blocklings.client.gui.controls.tasks.config.EntryControl;
-import com.willr27.blocklings.entity.blockling.whitelist.GoalWhitelist;
 import com.willr27.blocklings.util.BlockUtil;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -21,7 +18,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A control used to display a whitelist.
@@ -30,16 +26,10 @@ import java.util.Map;
 public class ItemsConfigControl extends ConfigControl
 {
     /**
-     * The scrollbar control to use with the whitelist.
-     */
-    @Nonnull
-    private final ScrollbarControl contentScrollbarControl;
-
-    /**
      * The panel that contains all the item controls.
      */
     @Nonnull
-    private final FlowPanel itemsPanel;
+    private final FlowPanelControl itemsPanel;
 
     /**
      * @param parent the parent control.
@@ -47,13 +37,10 @@ public class ItemsConfigControl extends ConfigControl
      * @param y the y position.
      * @param width the width.
      * @param height the height.
-     * @param contentScrollbarControl the scrollbar control to use.
      */
-    public ItemsConfigControl(@Nonnull IControl parent, int x, int y, int width, int height, @Nonnull ScrollbarControl contentScrollbarControl)
+    public ItemsConfigControl(@Nonnull IControl parent, int x, int y, int width, int height)
     {
         super(parent, x, y, width, height);
-        this.contentScrollbarControl = contentScrollbarControl;
-        contentScrollbarControl.setScrollY(0);
 
 //        int i = 0;
 //        for (Map.Entry<ResourceLocation, Boolean> entry : whitelist.entrySet())
@@ -63,14 +50,13 @@ public class ItemsConfigControl extends ConfigControl
 //            i++;
 //        }
 
-        itemsPanel = new FlowPanel(this, 0, 0, width, height);
+        itemsPanel = new FlowPanelControl(this, 0, 0, width, height);
         itemsPanel.setPadding(5, 8, 5, 5);
         itemsPanel.setOrientation(Orientation.HORIZONTAL);
+        itemsPanel.setIsAutoSizedY(true);
         itemsPanel.setItemGapX(2);
         itemsPanel.setItemGapY(2);
         itemsPanel.setIsReorderable(true);
-        itemsPanel.setIsScrollableY(true);
-        itemsPanel.setScrollbarY(contentScrollbarControl);
         itemsPanel.onReorder.subscribe((e ->
         {
             // Prevent the add control from moving.
@@ -83,9 +69,12 @@ public class ItemsConfigControl extends ConfigControl
 
         itemsPanel.addChild(new AddItemControl(this));
 
-        for (Block block : BlockUtil.ORES.get())
+        for (int i = 0; i < 10; i++)
         {
-            itemsPanel.addChild(new ItemControl(this, block.asItem()));
+            for (Block block : BlockUtil.ORES.get())
+            {
+                itemsPanel.addChild(new ItemControl(this, block.asItem()));
+            }
         }
     }
 
@@ -187,6 +176,50 @@ public class ItemsConfigControl extends ConfigControl
         public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
         {
             screen.renderTooltip(matrixStack, item.getName(item.getDefaultInstance()), mouseX, mouseY);
+        }
+    }
+
+    /**
+     * Used to search for and select items.
+     */
+    private static class ItemSelectionControl extends Control
+    {
+        /**
+         * The list of item controls to show that match the search criteria.
+         */
+        @Nonnull
+        private final List<ItemControl> items = new ArrayList<>();
+
+        /**
+         * The text field used to search for items.
+         */
+        @Nonnull
+        private final TextFieldControl searchTextFieldControl;
+
+        public ItemSelectionControl(@Nonnull Control parent, int width)
+        {
+            super(parent, 0, 0, width, 100);
+
+            IControl screen = (IControl) getScreen();
+            float scale = screen.getScale();
+            searchTextFieldControl = new TextFieldControl(font, (int) ((screenX / scale) + 20), (int) ((screenY / scale) + 0), width - 20, 20, new StringTextComponent(""))
+            {
+
+            };
+        }
+
+        @Override
+        public void preRender(int mouseX, int mouseY, float partialTicks)
+        {
+
+        }
+
+        private static class ItemControl extends Control
+        {
+            public ItemControl(@Nonnull Control parent)
+            {
+                super(parent, 0, 0, 16, 16);
+            }
         }
     }
 }

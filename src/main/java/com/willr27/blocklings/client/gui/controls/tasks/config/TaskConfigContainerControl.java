@@ -146,7 +146,9 @@ public class TaskConfigContainerControl extends Control
                 tabControl.add("TEST", () ->
                 {
                     removeChild(currentConfigGui);
-                    currentConfigGui = new ItemsConfigControl(this, 9, 46, 140, 112, contentScrollbarControl);
+                    currentConfigGui = new ItemsConfigControl(this, 9, 46, 140, 112);
+                    currentConfigGui.setScrollbarY(contentScrollbarControl);
+                    currentConfigGui.setIsScrollableY(true);
                     currentConfigGui.setZIndex(2);
                     currentConfigGui.setIsFocused(true);
                 });

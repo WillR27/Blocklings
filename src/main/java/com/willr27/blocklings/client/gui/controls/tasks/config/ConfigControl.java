@@ -1,7 +1,7 @@
 package com.willr27.blocklings.client.gui.controls.tasks.config;
 
-import com.willr27.blocklings.client.gui.Control;
 import com.willr27.blocklings.client.gui.IControl;
+import com.willr27.blocklings.client.gui.controls.common.panel.PanelControl;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
  * Used as a base class for displaying config controls.
  */
 @OnlyIn(Dist.CLIENT)
-public abstract class ConfigControl extends Control
+public abstract class ConfigControl extends PanelControl
 {
     /**
      * @param parent the parent control.

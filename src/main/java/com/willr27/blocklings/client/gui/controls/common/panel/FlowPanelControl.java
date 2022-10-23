@@ -7,10 +7,10 @@ import com.willr27.blocklings.client.gui.IControl;
 import com.willr27.blocklings.client.gui.controls.Orientation;
 import com.willr27.blocklings.client.gui.controls.common.ScrollbarControl;
 import com.willr27.blocklings.util.event.CancelableEvent;
+import com.willr27.blocklings.util.event.Event;
 import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.jline.utils.Log;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
@@ -24,12 +24,17 @@ import java.util.stream.Collectors;
  * when out of space.
  */
 @OnlyIn(Dist.CLIENT)
-public class FlowPanel extends Control
+public class FlowPanelControl extends PanelControl
 {
     /**
      * The event that is fired when the panel is reordered.
      */
     public final EventHandler<ReorderEvent> onReorder = new EventHandler<>();
+
+    /**
+     * The event that is fire when something inside the panel is dragged outside the bounds of the parent.
+     */
+    public final EventHandler<DraggedOutsideParentEvent> onDraggedOutsideParent = new EventHandler<>();
 
     /**
      * The primary direction to try layout controls.
@@ -58,7 +63,7 @@ public class FlowPanel extends Control
      * @param width the width.
      * @param height the height.
      */
-    public FlowPanel(@Nullable IControl parent, int x, int y, int width, int height)
+    public FlowPanelControl(@Nullable IControl parent, int x, int y, int width, int height)
     {
         super(parent, x, y, width, height);
     }
@@ -67,8 +72,9 @@ public class FlowPanel extends Control
     public void preRender(int mouseX, int mouseY, float partialTicks)
     {
         updateChildrenBasePositions();
+        tryResizeToFitContents();
         updateScrollbar();
-        updateDraggedControl(mouseX, mouseY);
+        updateDraggedControl(mouseX, mouseY, partialTicks);
     }
 
     /**
@@ -127,46 +133,9 @@ public class FlowPanel extends Control
     }
 
     /**
-     * Updates the scrollbar's maximum scroll and enables/disables accordingly.
-     */
-    private void updateScrollbar()
-    {
-        if (orientation == Orientation.HORIZONTAL)
-        {
-            if (scrollbarControlY != null)
-            {
-                if (getMaxScrollY() > 0)
-                {
-                    scrollbarControlY.setIsDisabled(false);
-                    scrollbarControlY.setScrollPercentage(getScrollY(), getMaxScrollY());
-                }
-                else
-                {
-                    scrollbarControlY.setIsDisabled(true);
-                }
-            }
-        }
-        else
-        {
-            if (scrollbarControlX != null)
-            {
-                if (getMaxScrollX() > 0)
-                {
-                    scrollbarControlX.setIsDisabled(false);
-                    scrollbarControlX.setScrollPercentage(getScrollX(), getMaxScrollX());
-                }
-                else
-                {
-                    scrollbarControlX.setIsDisabled(true);
-                }
-            }
-        }
-    }
-
-    /**
      * Updates the dragged control and tries to reorder the items.
      */
-    private void updateDraggedControl(int mouseX, int mouseY)
+    private void updateDraggedControl(int mouseX, int mouseY, float partialTicks)
     {
         if (!isReorderable())
         {
@@ -352,6 +321,46 @@ public class FlowPanel extends Control
         // Update the dragged control's position.
         draggedControl.setX(draggedControlX);
         draggedControl.setY(draggedControlY);
+
+        // Scroll the panel if the mouse is dragging outside the control.
+        if (scaledLocalMouseX < 0)
+        {
+            setScrollX((int) (getScrollX() - 12 * partialTicks));
+        }
+        else if (scaledLocalMouseX > width)
+        {
+            setScrollX((int) (getScrollX() + 12 * partialTicks));
+        }
+
+        // Scroll the panel if the mouse is dragging outside the control.
+        if (scaledLocalMouseY - getPadding(Side.TOP) < 0)
+        {
+            setScrollY((int) (getScrollY() - 12 * partialTicks));
+        }
+        else if (scaledLocalMouseY + getPadding(Side.TOP) > height)
+        {
+            setScrollY((int) (getScrollY() + 12 * partialTicks));
+        }
+
+        // Scroll the parent control if the mouse is dragging outside the parent control.
+        if (scaledLocalMouseX < 0)
+        {
+            getParent().setScrollX((int) (getParent().getScrollX() - 12 * partialTicks));
+        }
+        else if (scaledLocalMouseX > getParent().getWidth())
+        {
+            getParent().setScrollX((int) (getParent().getScrollX() + 12 * partialTicks));
+        }
+
+        // Scroll the parent control if the mouse is dragging outside the parent control.
+        if (scaledLocalMouseY - getParent().getPadding(Side.TOP) < 0)
+        {
+            getParent().setScrollY((int) (getParent().getScrollY() - 12 * partialTicks));
+        }
+        else if (scaledLocalMouseY + getParent().getPadding(Side.TOP) > getParent().getHeight())
+        {
+            getParent().setScrollY((int) (getParent().getScrollY() + 12 * partialTicks));
+        }
     }
 
     @Override
@@ -495,7 +504,7 @@ public class FlowPanel extends Control
     }
 
     /**
-     * Represents an event that occurs when the panel is reordered.
+     * An event that occurs when the panel is reordered.
      */
     public static class ReorderEvent extends CancelableEvent
     {
@@ -517,6 +526,32 @@ public class FlowPanel extends Control
         {
             this.oldIndex = oldIndex;
             this.newIndex = newIndex;
+        }
+    }
+
+    /**
+     * An event that occurs when a child control is dragged outside the bounds of the parent control.
+     */
+    public static class DraggedOutsideParentEvent extends Event
+    {
+        /**
+         * The horizontal edge of the drag. Negative indicates left, 0 indicates no drag and positive indicates right.
+         */
+        public final int dragX;
+
+        /**
+         * The vertical edge of the drag. Negative indicates top, 0 indicates no drag and positive indicates bottom.
+         */
+        public final int dragY;
+
+        /**
+         * @param dragX the horizontal edge of the drag.
+         * @param dragY the vertical edge of the drag.
+         */
+        public DraggedOutsideParentEvent(int dragX, int dragY)
+        {
+            this.dragX = dragX;
+            this.dragY = dragY;
         }
     }
 }

@@ -10,7 +10,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.lwjgl.system.CallbackI;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -107,7 +106,7 @@ public class Control extends AbstractGui implements IControl
     /**
      * The x position on the screen.
      */
-    public int screenX;
+    public int screenX; // TODO: Make private and add getters/setters.
 
     /**
      * The y position on the screen.
@@ -117,7 +116,7 @@ public class Control extends AbstractGui implements IControl
     /**
      * The width of the control.
      */
-    public int width;
+    public int width; // TODO: Make private and add getters/setters.
 
     /**
      * The height of the control.
@@ -140,6 +139,36 @@ public class Control extends AbstractGui implements IControl
     private final Map<Side, Integer> margins = new HashMap<>(4);
 
     /**
+     * Whether the control will resize automatically to fit its contents in the x-axis.
+     */
+    private boolean isAutoSizedX = false;
+
+    /**
+     * Whether the control will resize automatically to fit its contents in the y-axis.
+     */
+    private boolean isAutoSizedY = false;
+
+    /**
+     * The min width of the control.
+     */
+    private int minWidth = 0;
+
+    /**
+     * The min height of the control.
+     */
+    private int minHeight = 0;
+
+    /**
+     * The max width of the control.
+     */
+    private int maxWidth = Integer.MAX_VALUE;
+
+    /**
+     * The max height of the control.
+     */
+    private int maxHeight = Integer.MAX_VALUE;
+
+    /**
      * Whether control is visible.
      */
     private boolean isVisible = true;
@@ -160,7 +189,7 @@ public class Control extends AbstractGui implements IControl
     private boolean isScrollableY = false;
 
     /**
-     * Whether the control is draggable7996bbf7-8a3e-4727-87d9-31389598c2d0.
+     * Whether the control is draggable.
      */
     private boolean isDraggable = true;
 
@@ -263,13 +292,72 @@ public class Control extends AbstractGui implements IControl
         parent.removeChild(this);
     }
 
+
     /**
-     * Renders the control.
-     * @param matrixStack the current matrix stack.
-     * @param mouseX the scaled mouse x position.
-     * @param mouseY the scaled mouse y position.
-     * @param partialTicks the partial ticks.
+     * Tries to resize the width and height of the control to fit the current contents within the min/max
+     * width/height bounds. Only resizes in x/y if the associated auto size variables are true.
      */
+    public void tryResizeToFitContents()
+    {
+        if (isAutoSizedX)
+        {
+            resizeToFitContentsX();
+        }
+
+        if (isAutoSizedY)
+        {
+            resizeToFitContentsY();
+        }
+    }
+
+    /**
+     * Resizes the width and height of the control to fit the current contents within the min/max
+     * width/height bounds.
+     */
+    public void resizeToFitContents()
+    {
+        resizeToFitContentsX();
+        resizeToFitContentsY();
+    }
+
+    /**
+     * Resizes the width of the control to fit the current contents within the min/max
+     * width bounds.
+     */
+    public void resizeToFitContentsX()
+    {
+        int maxX = 0;
+
+        for (Control control : getChildren())
+        {
+            maxX = Math.max(maxX, control.getMaxX());
+        }
+
+        setWidth(maxX);
+    }
+
+    /**
+     * Resizes the height of the control to fit the current contents within the min/max
+     * height bounds.
+     */
+    public void resizeToFitContentsY()
+    {
+        int maxY = 0;
+
+        for (Control control : getChildren())
+        {
+            maxY = Math.max(maxY, control.getMaxY());
+        }
+
+        setHeight(maxY);
+    }
+
+    @Override
+    public void preRender(int mouseX, int mouseY, float partialTicks)
+    {
+        tryResizeToFitContents();
+    }
+
     @Override
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
@@ -586,6 +674,14 @@ public class Control extends AbstractGui implements IControl
     }
 
     /**
+     * @return the x position of the right side of the control (x + width).
+     */
+    public int getMaxX()
+    {
+        return x + width;
+    }
+
+    /**
      * Sets the x position relative to the parent control.
      *
      * @param x the local x position.
@@ -603,6 +699,14 @@ public class Control extends AbstractGui implements IControl
     public int getY()
     {
         return y;
+    }
+
+    /**
+     * @return the y position of the bottom side of the control (y + height).
+     */
+    public int getMaxY()
+    {
+        return y + height;
     }
 
     /**
@@ -742,7 +846,12 @@ public class Control extends AbstractGui implements IControl
      */
     public void setWidth(int width)
     {
-        this.width = width;
+        if (width < 0)
+        {
+            throw new IllegalArgumentException("Width must be positive.");
+        }
+
+        this.width = Math.max(minWidth, Math.min(maxWidth, width));
     }
 
     /**
@@ -764,7 +873,12 @@ public class Control extends AbstractGui implements IControl
      */
     public void setHeight(int height)
     {
-        this.height = height;
+        if (height < 0)
+        {
+            throw new IllegalArgumentException("Height must be positive.");
+        }
+
+        this.height = Math.max(minHeight, Math.min(maxHeight, height));
     }
 
     @Override
@@ -848,6 +962,167 @@ public class Control extends AbstractGui implements IControl
 
         recalcScreenX();
         recalcScreenY();
+    }
+
+    /**
+     * @return whether the control should automatically resize to fit its contents in both axes.
+     */
+    public boolean isAutoSized()
+    {
+        return isAutoSizedY && isAutoSizedY;
+    }
+
+    /**
+     * Sets whether the control should automatically resize to fit its contents in both axes.
+     */
+    public void setIsAutoSized(boolean autoSized)
+    {
+        setIsAutoSizedX(autoSized);
+        setIsAutoSizedY(autoSized);
+    }
+
+    /**
+     * @return whether the control should automatically resize to fit its contents in the x-axis.
+     */
+    public boolean isAutoSizedX()
+    {
+        return isAutoSizedX;
+    }
+
+    /**
+     * Sets whether the control should automatically resize to fit its contents in the x-axis.
+     */
+    public void setIsAutoSizedX(boolean autoSizedX)
+    {
+        isAutoSizedX = autoSizedX;
+    }
+
+    /**
+     * @return whether the control should automatically resize to fit its contents in the y-axis.
+     */
+    public boolean isAutoSizedY()
+    {
+        return isAutoSizedY;
+    }
+
+    /**
+     * Sets whether the control should automatically resize to fit its contents in the y-axis.
+     */
+    public void setIsAutoSizedY(boolean autoSizedY)
+    {
+        isAutoSizedY = autoSizedY;
+    }
+
+    /**
+     * @return the minimum width of the control.
+     */
+    public int getMinWidth()
+    {
+        return minWidth;
+    }
+
+    /**
+     * Sets the minimum width of the control.
+     */
+    public void setMinWidth(int minWidth)
+    {
+        if (minWidth < 0)
+        {
+            throw new IllegalArgumentException("Min width must be positive.");
+        }
+        else if (minWidth > maxWidth)
+        {
+            throw new IllegalArgumentException("Min width must not be greater than max width.");
+        }
+
+        this.minWidth = minWidth;
+
+        // This will clamp the width if outside the new min width.
+        setWidth(width);
+    }
+
+    /**
+     * @return the minimum height of the control.
+     */
+    public int getMinHeight()
+    {
+        return minHeight;
+    }
+
+    /**
+     * Sets the minimum height of the control.
+     */
+    public void setMinHeight(int minHeight)
+    {
+        if (minHeight < 0)
+        {
+            throw new IllegalArgumentException("Min height must be positive.");
+        }
+        else if (minHeight > maxHeight)
+        {
+            throw new IllegalArgumentException("Min height must not be greater than min width.");
+        }
+
+        this.minHeight = minHeight;
+
+        // This will clamp the height if outside the new min height.
+        setHeight(height);
+    }
+
+    /**
+     * @return the maximum width of the control.
+     */
+    public int getMaxWidth()
+    {
+        return maxWidth;
+    }
+
+    /**
+     * Sets the maximum width of the control.
+     */
+    public void setMaxWidth(int maxWidth)
+    {
+        if (maxWidth < 0)
+        {
+            throw new IllegalArgumentException("Max width must be positive.");
+        }
+        else if (maxWidth < minWidth)
+        {
+            throw new IllegalArgumentException("Max width must not be less than min width.");
+        }
+
+        this.maxWidth = maxWidth;
+
+        // This will clamp the width if outside the new max width.
+        setWidth(width);
+    }
+
+    /**
+     * @return the maximum height of the control.
+     */
+    public int getMaxHeight()
+    {
+        return maxHeight;
+    }
+
+    /**
+     * Sets the maximum height of the control.
+     */
+    public void setMaxHeight(int maxHeight)
+    {
+        if (maxHeight < 0)
+        {
+            throw new IllegalArgumentException("Max height must be positive.");
+        }
+        else if (maxHeight < minHeight)
+        {
+            throw new IllegalArgumentException("Max height must not be less than min height.");
+        }
+
+        this.maxHeight = maxHeight;
+
+        // This will clamp the height if outside the new max height.
+        setHeight(height);
     }
 
     @Override
