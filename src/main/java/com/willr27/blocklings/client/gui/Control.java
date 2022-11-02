@@ -2,7 +2,10 @@ package com.willr27.blocklings.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.willr27.blocklings.client.gui.controls.Anchor;
 import com.willr27.blocklings.client.gui.controls.common.ScrollbarControl;
+import com.willr27.blocklings.util.event.CancelableEvent;
+import com.willr27.blocklings.util.event.Event;
 import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -14,10 +17,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Something on the screen that might render something or be interactable.
@@ -149,6 +149,11 @@ public class Control extends AbstractGui implements IControl
     private boolean isAutoSizedY = false;
 
     /**
+     * How the control is positioned/sized relative to its parent (null for no anchor).
+     */
+    private EnumSet<Anchor> anchor = null;
+
+    /**
      * The min width of the control.
      */
     private int minWidth = 0;
@@ -192,6 +197,16 @@ public class Control extends AbstractGui implements IControl
      * Whether the control is draggable.
      */
     private boolean isDraggable = true;
+
+    /**
+     * The event handler for position changed events.
+     */
+    private final EventHandler<PositionEvent> onPositionChanged = new EventHandler<>();
+
+    /**
+     * The event handler for size changed events.
+     */
+    private final EventHandler<SizeEvent> onSizeChanged = new EventHandler<>();
 
     /**
      * The event handler for hover events.
@@ -291,7 +306,6 @@ public class Control extends AbstractGui implements IControl
     {
         parent.removeChild(this);
     }
-
 
     /**
      * Tries to resize the width and height of the control to fit the current contents within the min/max
@@ -608,6 +622,30 @@ public class Control extends AbstractGui implements IControl
         return !hasChildWithMouseOver && GuiUtil.isMouseOver(mouseX, mouseY, screenX, screenY, width, height);
     }
 
+    /**
+     * The event handler for when the parent's size changes.
+     */
+    protected void onParentSizeChanged(@Nonnull SizeEvent e)
+    {
+        if (anchor.contains(Anchor.LEFT) && anchor.contains(Anchor.RIGHT))
+        {
+            setWidth(width + e.dw);
+        }
+        else if (anchor.contains(Anchor.RIGHT))
+        {
+            setX(x + e.dw);
+        }
+
+        if (anchor.contains(Anchor.TOP) && anchor.contains(Anchor.BOTTOM))
+        {
+            setWidth(height + e.dh);
+        }
+        else if (anchor.contains(Anchor.BOTTOM))
+        {
+            setY(x + e.dh);
+        }
+    }
+
     @Nonnull
     @Override
     public IScreen getScreen()
@@ -627,6 +665,13 @@ public class Control extends AbstractGui implements IControl
     {
         if (this.parent != null)
         {
+            if (this.parent instanceof Control)
+            {
+                Control parentControl = (Control) this.parent;
+
+                parentControl.getOnSizeChanged().unsubscribe(this::onParentSizeChanged);
+            }
+
             this.parent.removeChild(this);
         }
 
@@ -634,6 +679,13 @@ public class Control extends AbstractGui implements IControl
 
         if (this.parent != null)
         {
+            if (this.parent instanceof Control)
+            {
+                Control parentControl = (Control) this.parent;
+
+                parentControl.getOnSizeChanged().subscribe(this::onParentSizeChanged);
+            }
+
             this.parent.addChild(this);
         }
     }
@@ -688,9 +740,16 @@ public class Control extends AbstractGui implements IControl
      */
     public void setX(int x)
     {
-        this.x = x;
+        PositionEvent e = new PositionEvent(this.x, this.y, x, this.y);
 
-        recalcScreenX();
+        onPositionChanged.handle(e);
+
+        if (!e.isCancelled())
+        {
+            this.x = x;
+
+            recalcScreenX();
+        }
     }
 
     /**
@@ -716,9 +775,17 @@ public class Control extends AbstractGui implements IControl
      */
     public void setY(int y)
     {
-        this.y = y;
+        PositionEvent e = new PositionEvent(this.x, this.y, this.x, y);
 
-        recalcScreenY();
+        onPositionChanged.handle(e);
+
+        if (!e.isCancelled())
+        {
+            this.y = y;
+
+            recalcScreenY();
+        }
+
     }
 
     @Override
@@ -846,12 +913,19 @@ public class Control extends AbstractGui implements IControl
      */
     public void setWidth(int width)
     {
-        if (width < 0)
-        {
-            throw new IllegalArgumentException("Width must be positive.");
-        }
+        SizeEvent e = new SizeEvent(width, this.height, this.width, this.height);
 
-        this.width = Math.max(minWidth, Math.min(maxWidth, width));
+        onSizeChanged.handle(e);
+
+        if (!e.isCancelled())
+        {
+            if (width < 0)
+            {
+                throw new IllegalArgumentException("Width must be positive.");
+            }
+
+            this.width = Math.max(minWidth, Math.min(maxWidth, width));
+        }
     }
 
     /**
@@ -873,12 +947,19 @@ public class Control extends AbstractGui implements IControl
      */
     public void setHeight(int height)
     {
-        if (height < 0)
-        {
-            throw new IllegalArgumentException("Height must be positive.");
-        }
+        SizeEvent e = new SizeEvent(this.width, height, this.width, this.height);
 
-        this.height = Math.max(minHeight, Math.min(maxHeight, height));
+        onSizeChanged.handle(e);
+
+        if (!e.isCancelled())
+        {
+            if (height < 0)
+            {
+                throw new IllegalArgumentException("Height must be positive.");
+            }
+
+            this.height = Math.max(minHeight, Math.min(maxHeight, height));
+        }
     }
 
     @Override
@@ -1011,6 +1092,23 @@ public class Control extends AbstractGui implements IControl
     public void setIsAutoSizedY(boolean autoSizedY)
     {
         isAutoSizedY = autoSizedY;
+    }
+
+
+    /**
+     * @return the anchor for the control.
+     */
+    public EnumSet<Anchor> getAnchor()
+    {
+        return anchor;
+    }
+
+    /**
+     * Sets the anchor for the control (null for no anchor).
+     */
+    public void setAnchor(EnumSet<Anchor> anchor)
+    {
+        this.anchor = anchor;
     }
 
     /**
@@ -1297,6 +1395,24 @@ public class Control extends AbstractGui implements IControl
         parentsChildren.add(siblingIndex, siblingControl);
     }
 
+    /**
+      @return the event handler for position changed events.
+     */
+    @Nonnull
+    public EventHandler<PositionEvent> getOnPositionChanged()
+    {
+        return onPositionChanged;
+    }
+
+    /**
+     @return the event handler for size changed events.
+     */
+    @Nonnull
+    public EventHandler<SizeEvent> getOnSizeChanged()
+    {
+        return onSizeChanged;
+    }
+
     @Nonnull
     @Override
     public EventHandler<MouseEvent> getOnControlHover()
@@ -1365,5 +1481,85 @@ public class Control extends AbstractGui implements IControl
     public EventHandler<CharEvent> getOnControlCharTyped()
     {
         return onControlCharTyped;
+    }
+
+    /**
+     * An event for position changes.
+     */
+    public static class PositionEvent extends CancelableEvent
+    {
+        /**
+         * The new x position.
+         */
+        public final int x;
+
+        /**
+         * The new y position.
+         */
+        public final int y;
+
+        /**
+         * The change in the x position.
+         */
+        public final int dx;
+
+        /**
+         * The change in the y position.
+         */
+        public final int dy;
+
+        /**
+         * @param newX the new x position.
+         * @param newY the new y position.
+         * @param prevX the change in the x position.
+         * @param prevY the change in the y position.
+         */
+        public PositionEvent(int newX, int newY, int prevX, int prevY)
+        {
+            this.x = newX;
+            this.y = newY;
+            this.dx = newX - prevX;
+            this.dy = newY - prevY;
+        }
+    }
+
+    /**
+     * An event for size changes.
+     */
+    public static class SizeEvent extends CancelableEvent
+    {
+        /**
+         * The new width.
+         */
+        public final int w;
+
+        /**
+         * The new height.
+         */
+        public final int h;
+
+        /**
+         * The change in the width.
+         */
+        public final int dw;
+
+        /**
+         * The change in the height.
+         */
+        public final int dh;
+
+        /**
+         * @param newWidth the new width.
+         * @param newHeight the new height.
+         * @param prevWidth the previous width.
+         * @param prevHeight the previous height.
+         */
+        public SizeEvent(int newWidth, int newHeight, int prevWidth, int prevHeight)
+        {
+            this.w = newWidth;
+            this.h = newHeight;
+            this.dw = newWidth - prevWidth;
+            this.dh = newHeight - prevHeight;
+        }
     }
 }

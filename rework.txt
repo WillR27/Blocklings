@@ -1,0 +1,11 @@
+properly handle padding/margins
+anchor/stretch to fill parent (dynamic sizing on controls)
+handle scrolling appropriately
+add panel controls that handle child control layout
+implement dragging as a global default behaviour
+
+Anchor property:
+~ Add Anchor enum/property to controls
+~ 5 options; NONE, LEFT, TOP, RIGHT, BOTTOM
+- In Control::preRender, apply Anchor to width/height x/y
+- Need to consider min/max width/height padding/margin
