@@ -1,11 +1,9 @@
 package com.willr27.blocklings.entity.blockling.task.config.range;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.willr27.blocklings.client.gui.GuiUtil;
-import com.willr27.blocklings.client.gui.IControl;
-import com.willr27.blocklings.client.gui.controls.common.range.FloatRangeControl;
-import com.willr27.blocklings.client.gui.controls.common.range.IntRangeControl;
-import com.willr27.blocklings.client.gui.controls.common.range.RangeControl;
+import com.willr27.blocklings.client.gui2.GuiUtil;
+import com.willr27.blocklings.client.gui2.IControl;
+import com.willr27.blocklings.client.gui2.controls.common.range.FloatRangeControl;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.nbt.CompoundNBT;

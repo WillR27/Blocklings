@@ -1,7 +1,7 @@
 package com.willr27.blocklings.entity.blockling.skill.info;
 
-import com.willr27.blocklings.client.gui.GuiTexture;
-import com.willr27.blocklings.client.gui.controls.skills.SkillControl;
+import com.willr27.blocklings.client.gui2.GuiTexture;
+import com.willr27.blocklings.client.gui2.controls.skills.SkillControl;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;

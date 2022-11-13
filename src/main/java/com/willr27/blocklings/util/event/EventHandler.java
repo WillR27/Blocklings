@@ -17,7 +17,7 @@ public class EventHandler<T extends Event>
     /**
      * Forwards the event to all subscribed event handlers until it is handled.
      */
-    public void handle(@Nonnull T event)
+    public T handle(@Nonnull T event)
     {
         for (Handler<T> handler : handlers)
         {
@@ -25,9 +25,11 @@ public class EventHandler<T extends Event>
 
             if (event.isHandled())
             {
-                return;
+                return event;
             }
         }
+
+        return event;
     }
 
     /**

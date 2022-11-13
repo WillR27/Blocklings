@@ -20,6 +20,10 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
+test {
+    useJUnitPlatform()
+}
+
 minecraft {
     mappings channel: 'official', version: minecraft_version
 
@@ -119,6 +123,7 @@ repositories {
 }
 
 dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
     minecraft 'net.minecraftforge:forge:' + minecraft_version + '-' + forge_version
 
     compileOnly fg.deobf("slimeknights.mantle:Mantle:1.16.5-$mantle_version")

@@ -21,8 +21,10 @@ public class CancelableEvent extends Event
     /**
      * Sets whether the event is cancelled.
      */
-    public void setCancelled(boolean cancelled)
+    public void setIsCancelled(boolean cancelled)
     {
         this.cancelled = cancelled;
+
+        setIsHandled(true);
     }
 }

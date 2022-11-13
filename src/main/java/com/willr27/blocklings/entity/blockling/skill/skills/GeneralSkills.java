@@ -1,7 +1,7 @@
 package com.willr27.blocklings.entity.blockling.skill.skills;
 
-import com.willr27.blocklings.client.gui.GuiTextures;
-import com.willr27.blocklings.client.gui.controls.skills.SkillControl;
+import com.willr27.blocklings.client.gui2.GuiTextures;
+import com.willr27.blocklings.client.gui2.controls.skills.SkillControl;
 import com.willr27.blocklings.entity.blockling.attribute.BlocklingAttributes;
 import com.willr27.blocklings.entity.blockling.skill.Skill;
 import com.willr27.blocklings.entity.blockling.skill.SkillGroup;
