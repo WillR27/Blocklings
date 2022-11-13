@@ -1,7 +1,7 @@
 package com.willr27.blocklings.client.gui.control.event.events;
 
 import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.client.gui.control.event.CancelableControlEvent;
+import com.willr27.blocklings.client.gui.control.event.ControlEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 /**
  * Occurs when a control's parent is changed.
  */
-public class ChildAddedEvent extends CancelableControlEvent
+public class ChildAddedEvent extends ControlEvent
 {
     /**
      * The new parent control.

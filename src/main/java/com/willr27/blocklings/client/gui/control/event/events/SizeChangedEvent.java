@@ -1,14 +1,14 @@
 package com.willr27.blocklings.client.gui.control.event.events;
 
 import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.client.gui.control.event.CancelableControlEvent;
+import com.willr27.blocklings.client.gui.control.event.ControlEvent;
 
 import javax.annotation.Nonnull;
 
 /**
  * Occurs when a control's size is changed.
  */
-public class SizeChangedEvent extends CancelableControlEvent
+public class SizeChangedEvent extends ControlEvent
 {
     /**
      * The new scaled width.

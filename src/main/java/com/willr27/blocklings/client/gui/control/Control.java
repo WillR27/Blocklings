@@ -88,6 +88,18 @@ public class Control extends Gui
     public final EventHandler<PositionChangedEvent> onPositionChanged = new EventHandler<>();
 
     /**
+     * The scaled width of the control on the screen. This is not necessarily the pixel width as it includes the
+     * gui scale option.
+     */
+    private int screenWidth = 100;
+
+    /**
+     * The scaled height of the control on the screen. This is not necessarily the pixel height as it includes the
+     * gui scale option.
+     */
+    private int screenHeight = 100;
+
+    /**
      * The scaled width of the control relative to the parent, i.e. 100 x 100 would be 200 x 200 pixels if the
      * cumulative product of the parent control's inner scale was 2.0f.
      */
@@ -159,6 +171,23 @@ public class Control extends Gui
      */
     @Nonnull
     public final EventHandler<InnerScaleChangedEvent> onInnerScaleChanged = new EventHandler<>();
+
+    /**
+     * Resizes the hitbox automatically when the size of the control changes.
+     */
+    private boolean autoSizeHitbox = true;
+
+    /**
+     * The hitbox used to handle collisions.
+     */
+    @Nonnull
+    private Hitbox hitbox = new Hitbox.RectangleHitbox(0, 0, width, height);
+
+    /**
+     * Called when the control's hitbox changes.
+     */
+    @Nonnull
+    public final EventHandler<HitboxChangedEvent> onHitboxChanged = new EventHandler<>();
 
     /**
      */
@@ -286,19 +315,17 @@ public class Control extends Gui
 
     /**
      * Sets the current parent control to the given control.
-     *
-     * @return whether the parent was changed.
      */
-    public boolean setParent(@Nullable Control parent)
+    public void setParent(@Nullable Control parent)
     {
         if (this.parent == parent)
         {
-            return false;
+            return;
         }
 
         ParentChangedEvent event = onParentChanged.handle(new ParentChangedEvent(this, parent));
 
-        if (!event.isCancelled())
+        if (!event.isHandled())
         {
             Control oldParent = this.parent;
 
@@ -314,8 +341,6 @@ public class Control extends Gui
                 this.parent.addChild(this);
             }
         }
-
-        return !event.isCancelled();
     }
 
     /**
@@ -329,50 +354,42 @@ public class Control extends Gui
 
     /**
      * Adds the given control as a child. This will change the parent of the given control too.
-     *
-     * @return whether the child was added.
      */
-    public boolean addChild(@Nonnull Control control)
+    public void addChild(@Nonnull Control control)
     {
         if (children.contains(control))
         {
-            return false;
+            return;
         }
 
         ChildAddedEvent event = onChildAdded.handle(new ChildAddedEvent(this, control));
 
-        if (!event.isCancelled())
+        if (!event.isHandled())
         {
             control.parent = this;
 
             children.add(control);
         }
-
-        return !event.isCancelled();
     }
 
     /**
      * Removes the given control as a child. This will remove the parent from the given control too.
-     *
-     * @return whether the child was removed.
      */
-    public boolean removeChild(@Nonnull Control control)
+    public void removeChild(@Nonnull Control control)
     {
         if (!children.contains(control))
         {
-            return false;
+            return;
         }
 
         ChildRemovedEvent event = onChildRemoved.handle(new ChildRemovedEvent(this, control));
 
-        if (!event.isCancelled())
+        if (!event.isHandled())
         {
             control.parent = null;
 
             children.remove(control);
         }
-
-        return !event.isCancelled();
     }
 
     /**
@@ -435,21 +452,17 @@ public class Control extends Gui
 
     /**
      * Sets the scaled local x position of the control.
-     *
-     * @return whether the x position was updated.
      */
-    public boolean setX(int x)
+    public void setX(int x)
     {
         PositionChangedEvent event = onPositionChanged.handle(new PositionChangedEvent(this, x, getY()));
 
-        if (!event.isCancelled())
+        if (!event.isHandled())
         {
             this.x = x;
 
             recalcScreenX();
         }
-
-        return !event.isCancelled();
     }
 
     /**
@@ -462,21 +475,49 @@ public class Control extends Gui
 
     /**
      * Sets the scaled local y position of the control.
-     *
-     * @return whether the x position was updated.
      */
-    public boolean setY(int y)
+    public void setY(int y)
     {
         PositionChangedEvent event = onPositionChanged.handle(new PositionChangedEvent(this, getX(), y));
 
-        if (!event.isCancelled())
+        if (!event.isHandled())
         {
             this.y = y;
 
             recalcScreenY();
         }
+    }
 
-        return !event.isCancelled();
+    /**
+     * @return the scaled width of the control.
+     */
+    public int getScreenWidth()
+    {
+        return screenWidth;
+    }
+
+    /**
+     * Recalculates the scaled width of the control.
+     */
+    public final void recalcScreenWidth()
+    {
+        screenWidth = (int) (getWidth() * getCumulativeScale());
+    }
+
+    /**
+     * @return the scaled height of the control.
+     */
+    public int getScreenHeight()
+    {
+        return screenHeight;
+    }
+
+    /**
+     * Recalculates the scaled height of the control.
+     */
+    public final void recalcScreenHeight()
+    {
+        screenHeight = (int) (getHeight() * getCumulativeScale());
     }
 
     /**
@@ -489,19 +530,24 @@ public class Control extends Gui
 
     /**
      * Sets the scaled width of the control.
-     *
-     * @return whether the width was updated.
      */
-    public boolean setWidth(int width)
+    public void setWidth(int width)
     {
+        width = Math.max(0, width);
+
         SizeChangedEvent event = onSizeChanged.handle(new SizeChangedEvent(this, width, getHeight()));
 
-        if (!event.isCancelled())
+        if (!event.isHandled())
         {
-            this.width = width;
-        }
+            if (autoSizeHitbox)
+            {
+                hitbox.resize(this.width, width, height, height);
+            }
 
-        return !event.isCancelled();
+            this.width = width;
+
+            recalcScreenWidth();
+        }
     }
 
     /**
@@ -514,19 +560,24 @@ public class Control extends Gui
 
     /**
      * Sets the scaled with of the control.
-     *
-     * @return whether the height was updated.
      */
-    public boolean setHeight(int height)
+    public void setHeight(int height)
     {
+        height = Math.max(0, height);
+
         SizeChangedEvent event = onSizeChanged.handle(new SizeChangedEvent(this, getWidth(), height));
 
-        if (!event.isCancelled())
+        if (!event.isHandled())
         {
-            this.height = height;
-        }
+            if (autoSizeHitbox)
+            {
+                hitbox.resize(width, width, this.height, height);
+            }
 
-        return !event.isCancelled();
+            this.height = height;
+
+            recalcScreenHeight();
+        }
     }
 
     /**
@@ -548,37 +599,29 @@ public class Control extends Gui
 
     /**
      * Sets the margin of the control for the given side.
-     *
-     * @return whether the margin was updated.
      */
-    public boolean setMargin(@Nonnull Side side, int margin)
+    public void setMargin(@Nonnull Side side, int margin)
     {
         switch (side)
         {
-            case LEFT: return setMargins(margin, getMargin(Side.TOP), getMargin(Side.RIGHT), getMargin(Side.BOTTOM));
-            case TOP: return setMargins(getMargin(Side.LEFT), margin, getMargin(Side.RIGHT), getMargin(Side.BOTTOM));
-            case RIGHT: return setMargins(getMargin(Side.LEFT), getMargin(Side.TOP), margin, getMargin(Side.BOTTOM));
-            case BOTTOM: return setMargins(getMargin(Side.LEFT), getMargin(Side.TOP), getMargin(Side.RIGHT), margin);
+            case LEFT: setMargins(margin, getMargin(Side.TOP), getMargin(Side.RIGHT), getMargin(Side.BOTTOM)); break;
+            case TOP: setMargins(getMargin(Side.LEFT), margin, getMargin(Side.RIGHT), getMargin(Side.BOTTOM)); break;
+            case RIGHT: setMargins(getMargin(Side.LEFT), getMargin(Side.TOP), margin, getMargin(Side.BOTTOM)); break;
+            case BOTTOM: setMargins(getMargin(Side.LEFT), getMargin(Side.TOP), getMargin(Side.RIGHT), margin); break;
         }
-
-        return false;
     }
 
     /**
      * Sets the margins of the control.
-     *
-     * @return whether the margins were updated.
      */
-    public boolean setMargins(int left, int top, int right, int bottom)
+    public void setMargins(int left, int top, int right, int bottom)
     {
         MarginsChangedEvent event = onMarginsChanged.handle(new MarginsChangedEvent(this, left, top, right, bottom));
 
-        if (!event.isCancelled())
+        if (!event.isHandled())
         {
             margins = event.getNewMargins();
         }
-
-        return !event.isCancelled();
     }
 
     /**
@@ -600,37 +643,29 @@ public class Control extends Gui
 
     /**
      * Sets the padding of the control for the given side.
-     *
-     * @return whether the padding was updated.
      */
-    public boolean setPadding(@Nonnull Side side, int padding)
+    public void setPadding(@Nonnull Side side, int padding)
     {
         switch (side)
         {
-            case LEFT: return setPadding(padding, getPadding(Side.TOP), getPadding(Side.RIGHT), getPadding(Side.BOTTOM));
-            case TOP: return setPadding(getPadding(Side.LEFT), padding, getPadding(Side.RIGHT), getPadding(Side.BOTTOM));
-            case RIGHT: return setPadding(getPadding(Side.LEFT), getPadding(Side.TOP), padding, getPadding(Side.BOTTOM));
-            case BOTTOM: return setPadding(getPadding(Side.LEFT), getPadding(Side.TOP), getPadding(Side.RIGHT), padding);
+            case LEFT: setPadding(padding, getPadding(Side.TOP), getPadding(Side.RIGHT), getPadding(Side.BOTTOM)); break;
+            case TOP: setPadding(getPadding(Side.LEFT), padding, getPadding(Side.RIGHT), getPadding(Side.BOTTOM)); break;
+            case RIGHT: setPadding(getPadding(Side.LEFT), getPadding(Side.TOP), padding, getPadding(Side.BOTTOM)); break;
+            case BOTTOM: setPadding(getPadding(Side.LEFT), getPadding(Side.TOP), getPadding(Side.RIGHT), padding); break;
         }
-
-        return false;
     }
 
     /**
      * Sets the padding for the control.
-     *
-     * @return whether the padding was updated.
      */
-    public boolean setPadding(int left, int top, int right, int bottom)
+    public void setPadding(int left, int top, int right, int bottom)
     {
         PaddingChangedEvent event = onPaddingChanged.handle(new PaddingChangedEvent(this, left, top, right, bottom));
 
-        if (!event.isCancelled())
+        if (!event.isHandled())
         {
             padding = event.getNewPadding();
         }
-
-        return !event.isCancelled();
     }
 
     /**
@@ -644,19 +679,15 @@ public class Control extends Gui
 
     /**
      * Sets the anchor for the control.
-     *
-     * @return whether the anchor was updated.
      */
-    public boolean setAnchor(@Nonnull Optional<EnumSet<Side>> anchor)
+    public void setAnchor(@Nonnull Optional<EnumSet<Side>> anchor)
     {
         AnchorChangedEvent event = onAnchorChanged.handle(new AnchorChangedEvent(this, anchor));
 
-        if (!event.isCancelled())
+        if (!event.isHandled())
         {
             this.anchor = anchor;
         }
-
-        return !event.isCancelled();
     }
 
     /**
@@ -709,14 +740,12 @@ public class Control extends Gui
 
     /**
      * Sets the inner scale of the control.
-     *
-     * @return whether the inner scale was updated.
      */
-    public boolean setInnerScale(float innerScale)
+    public void setInnerScale(float innerScale)
     {
         InnerScaleChangedEvent event = onInnerScaleChanged.handle(new InnerScaleChangedEvent(this, innerScale));
 
-        if (!event.isCancelled())
+        if (!event.isHandled())
         {
             this.innerScale = innerScale;
 
@@ -724,8 +753,52 @@ public class Control extends Gui
             recalcScreenX();
             recalcScreenY();
         }
+    }
 
-        return !event.isCancelled();
+    /**
+     * @return whether to auto resize the hitbox when the control's size changes.
+     */
+    public boolean isAutoSizeHitbox()
+    {
+        return autoSizeHitbox;
+    }
+
+    /**
+     * Sets whether to auto resize the hitbox when the control's size changes.
+     */
+    public void setAutoSizeHitbox(boolean autoSizeHitbox)
+    {
+        this.autoSizeHitbox = autoSizeHitbox;
+    }
+
+    /**
+     * @return the hitbox of the control.
+     */
+    @Nonnull
+    public Hitbox getHitbox()
+    {
+        return hitbox;
+    }
+
+    /**
+     * Sets the hitbox of the control.
+     */
+    public void setHitbox(@Nonnull Hitbox hitbox)
+    {
+        HitboxChangedEvent event = onHitboxChanged.handle(new HitboxChangedEvent(this, hitbox));
+
+        if (!event.isHandled())
+        {
+            this.hitbox = hitbox;
+        }
+    }
+
+    /**
+     * @return whether the given coordinates collide with the control's hitbox.
+     */
+    public boolean collidesWith(int screenX, int screenY)
+    {
+        return hitbox.collidesWith(this, screenX, screenY);
     }
 
     /**

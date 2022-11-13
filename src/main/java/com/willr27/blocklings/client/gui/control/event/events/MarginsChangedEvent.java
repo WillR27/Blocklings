@@ -2,7 +2,7 @@ package com.willr27.blocklings.client.gui.control.event.events;
 
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.Side;
-import com.willr27.blocklings.client.gui.control.event.CancelableControlEvent;
+import com.willr27.blocklings.client.gui.control.event.ControlEvent;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * Occurs when a control's margins change.
  */
-public class MarginsChangedEvent extends CancelableControlEvent
+public class MarginsChangedEvent extends ControlEvent
 {
     /**
      * The new margins for each side of the control.

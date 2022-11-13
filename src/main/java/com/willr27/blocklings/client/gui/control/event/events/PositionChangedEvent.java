@@ -1,15 +1,14 @@
 package com.willr27.blocklings.client.gui.control.event.events;
 
 import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.client.gui.control.event.CancelableControlEvent;
+import com.willr27.blocklings.client.gui.control.event.ControlEvent;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Occurs when a control's position is changed.
  */
-public class PositionChangedEvent extends CancelableControlEvent
+public class PositionChangedEvent extends ControlEvent
 {
     /**
      * The new scaled local x position.
