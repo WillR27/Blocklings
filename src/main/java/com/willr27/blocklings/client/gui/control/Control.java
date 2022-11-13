@@ -6,6 +6,7 @@ import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.control.event.events.*;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.util.event.EventHandler;
+import it.unimi.dsi.fastutil.BigSwapper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -141,6 +142,13 @@ public class Control extends Gui
     public final EventHandler<AnchorChangedEvent> onAnchorChanged = new EventHandler<>();
 
     /**
+     * The cumulative inner scale of the child controls. So this includes all ancestor {@link #innerScale} values.
+     * So if the control has an inner scale of 2.0f but the parent has an inner scale of 0.5f, the cumulative inner
+     * scale would be 1.0f.
+     */
+    private float cumulativeInnerScale = 1.0f;
+
+    /**
      * The scale of the child controls. So a control with an {@link #innerScale} of 2.0f would mean the child
      * controls are scaled up by 2. So 100x100 control would actually display at 200 x 200 in pixels.
      */
@@ -161,6 +169,22 @@ public class Control extends Gui
             margins.put(side, 0);
             padding.put(side, 0);
         }
+
+        BiConsumer<Control, RenderArgs> preRenderTransformations = (control, renderArgs) ->
+        {
+            // Scale the control, but also make sure to cancel out the translation caused by the scaling.
+            renderArgs.matrixStack.scale(getCumulativeScale(), getCumulativeScale(), 1.0f);
+            renderArgs.matrixStack.translate((getScreenX() / getCumulativeScale()) - getScreenX(), (getScreenY() / getCumulativeScale()) - getScreenY(), 0.0f);
+        };
+
+        BiConsumer<Control, RenderArgs> postRenderTransformations = (control, renderArgs) ->
+        {
+            // Revert the previous transformations.
+            renderArgs.matrixStack.translate(getScreenX() - (getScreenX() / getCumulativeScale()), getScreenY() - (getScreenY() / getCumulativeScale()), 0.0f);
+            renderArgs.matrixStack.scale(1.0f / getCumulativeScale(), 1.0f / getCumulativeScale(), 1.0f);
+        };
+
+        addRenderOperation(new RenderOperation(preRenderTransformations, postRenderTransformations));
     }
 
     /**
@@ -208,7 +232,7 @@ public class Control extends Gui
         List<RenderOperation> renderOperationsReversed = new ArrayList<>(renderOperations);
         Collections.reverse(renderOperations);
 
-        renderOperationsReversed.forEach(renderOperation -> renderOperation.preRenderOperation.accept(this, renderArgs));
+        renderOperationsReversed.forEach(renderOperation -> renderOperation.postRenderOperation.accept(this, renderArgs));
     }
 
     /**
@@ -248,7 +272,7 @@ public class Control extends Gui
      */
     protected void renderTexture(@Nonnull MatrixStack matrixStack, int dx, int dy, @Nonnull GuiTexture texture)
     {
-        renderTexture(matrixStack, texture, getX() + dx, getY() + dy);
+        renderTexture(matrixStack, texture, getScreenX() + dx, getScreenY() + dy);
     }
 
     /**
@@ -364,7 +388,16 @@ public class Control extends Gui
      */
     public void recalcScreenX()
     {
-        getParent()
+        if (getParent() != null)
+        {
+            screenX = (int) (getParent().getScreenX() + (getX() * getParent().getCumulativeInnerScale()));
+        }
+        else
+        {
+            screenX = getX();
+        }
+
+        children.forEach(Control::recalcScreenX);
     }
 
     /**
@@ -373,6 +406,23 @@ public class Control extends Gui
     public final int getScreenY()
     {
         return screenY;
+    }
+
+    /**
+     * Recalculates the value of {@link #screenY}.
+     */
+    public void recalcScreenY()
+    {
+        if (getParent() != null)
+        {
+            screenY = (int) (getParent().getScreenY() + (getY() * getParent().getCumulativeInnerScale()));
+        }
+        else
+        {
+            screenY = getY();
+        }
+
+        children.forEach(Control::recalcScreenY);
     }
 
     /**
@@ -395,6 +445,8 @@ public class Control extends Gui
         if (!event.isCancelled())
         {
             this.x = x;
+
+            recalcScreenX();
         }
 
         return !event.isCancelled();
@@ -420,6 +472,8 @@ public class Control extends Gui
         if (!event.isCancelled())
         {
             this.y = y;
+
+            recalcScreenY();
         }
 
         return !event.isCancelled();
@@ -606,6 +660,46 @@ public class Control extends Gui
     }
 
     /**
+     * @return the cumulative scale of the control, i.e. effectively the cumulative inner scale of the parent.
+     */
+    public final float getCumulativeScale()
+    {
+        if (getParent() != null)
+        {
+            return getParent().getCumulativeInnerScale();
+        }
+        else
+        {
+            return 1.0f;
+        }
+    }
+
+    /**
+     * @return the cumulative inner scale of the control.
+     */
+    public final float getCumulativeInnerScale()
+    {
+        return cumulativeInnerScale;
+    }
+
+    /**
+     * Recalculates the cumulative inner scale of the control.
+     */
+    public void recalcCumulativeInnerScale()
+    {
+        if (getParent() != null)
+        {
+            cumulativeInnerScale = getInnerScale() * getParent().getCumulativeInnerScale();
+        }
+        else
+        {
+            cumulativeInnerScale = getInnerScale();
+        }
+
+        children.forEach(Control::recalcCumulativeInnerScale);
+    }
+
+    /**
      * @return the inner scale of the control.
      */
     public float getInnerScale()
@@ -625,6 +719,10 @@ public class Control extends Gui
         if (!event.isCancelled())
         {
             this.innerScale = innerScale;
+
+            recalcCumulativeInnerScale();
+            recalcScreenX();
+            recalcScreenY();
         }
 
         return !event.isCancelled();

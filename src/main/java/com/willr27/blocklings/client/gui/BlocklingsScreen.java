@@ -31,6 +31,14 @@ public abstract class BlocklingsScreen extends Screen
     }
 
     @Override
+    protected void init()
+    {
+        super.init();
+
+        rootControl.getChildrenCopy().forEach(control -> rootControl.removeChild(control));
+    }
+
+    @Override
     public void render(@Nonnull MatrixStack matrixStack, int screenMouseX, int screenMouseY, float partialTicks)
     {
         rootControl.forwardRender(new RenderArgs(matrixStack, screenMouseX, screenMouseY, partialTicks));
