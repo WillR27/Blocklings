@@ -3,10 +3,11 @@ package com.willr27.blocklings.client.gui.control;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.Gui;
 import com.willr27.blocklings.client.gui.RenderArgs;
+import com.willr27.blocklings.client.gui.ScissorBounds;
 import com.willr27.blocklings.client.gui.control.event.events.*;
 import com.willr27.blocklings.client.gui2.GuiTexture;
+import com.willr27.blocklings.client.gui2.GuiUtil;
 import com.willr27.blocklings.util.event.EventHandler;
-import it.unimi.dsi.fastutil.BigSwapper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -198,22 +199,44 @@ public class Control extends Gui
             margins.put(side, 0);
             padding.put(side, 0);
         }
+    }
 
-        BiConsumer<Control, RenderArgs> preRenderTransformations = (control, renderArgs) ->
-        {
-            // Scale the control, but also make sure to cancel out the translation caused by the scaling.
-            renderArgs.matrixStack.scale(getCumulativeScale(), getCumulativeScale(), 1.0f);
-            renderArgs.matrixStack.translate((getScreenX() / getCumulativeScale()) - getScreenX(), (getScreenY() / getCumulativeScale()) - getScreenY(), 0.0f);
-        };
+    /**
+     * Applies the pre render transformations to the control.
+     */
+    protected void applyPreRenderTransformations(@Nonnull RenderArgs renderArgs)
+    {
+        // Scale the control, but also make sure to cancel out the translation caused by the scaling.
+        renderArgs.matrixStack.scale(getCumulativeScale(), getCumulativeScale(), 1.0f);
+        renderArgs.matrixStack.translate((getScreenX() / getCumulativeScale()) - getScreenX(), (getScreenY() / getCumulativeScale()) - getScreenY(), 0.0f);
+    }
 
-        BiConsumer<Control, RenderArgs> postRenderTransformations = (control, renderArgs) ->
-        {
-            // Revert the previous transformations.
-            renderArgs.matrixStack.translate(getScreenX() - (getScreenX() / getCumulativeScale()), getScreenY() - (getScreenY() / getCumulativeScale()), 0.0f);
-            renderArgs.matrixStack.scale(1.0f / getCumulativeScale(), 1.0f / getCumulativeScale(), 1.0f);
-        };
+    /**
+     * Applies the post render transformations to the control.
+     */
+    protected void applyPostRenderTransformations(@Nonnull RenderArgs renderArgs)
+    {
+        // Revert the previous transformations.
+        renderArgs.matrixStack.translate(getScreenX() - (getScreenX() / getCumulativeScale()), getScreenY() - (getScreenY() / getCumulativeScale()), 0.0f);
+        renderArgs.matrixStack.scale(1.0f / getCumulativeScale(), 1.0f / getCumulativeScale(), 1.0f);
+    }
 
-        addRenderOperation(new RenderOperation(preRenderTransformations, postRenderTransformations));
+    /**
+     * Applies any scissoring to the control before rendering.
+     */
+    protected void applyScissor(@Nonnull RenderArgs renderArgs)
+    {
+        renderArgs.scissorStack.push(new ScissorBounds(getScreenX(), getScreenY(), getScreenWidth(), getScreenHeight(), GuiUtil.getGuiScale()));
+        renderArgs.scissorStack.enable();
+    }
+
+    /**
+     * Undoes any scissoring to the control after rendering.
+     */
+    protected void undoScissor(@Nonnull RenderArgs renderArgs)
+    {
+        renderArgs.scissorStack.pop();
+        renderArgs.scissorStack.disable();
     }
 
     /**
@@ -224,11 +247,15 @@ public class Control extends Gui
      */
     public final void forwardRender(@Nonnull RenderArgs renderArgs)
     {
+        applyPreRenderTransformations(renderArgs);
         applyPreRenderOperations(renderArgs);
+        applyScissor(renderArgs);
         render(renderArgs);
         applyPostRenderOperations(renderArgs);
+        applyPostRenderTransformations(renderArgs);
 
         getChildrenCopy().forEach(control -> control.forwardRender(renderArgs));
+        undoScissor(renderArgs);
     }
 
     /**

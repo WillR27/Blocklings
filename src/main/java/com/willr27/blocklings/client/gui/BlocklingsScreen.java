@@ -35,6 +35,8 @@ public abstract class BlocklingsScreen extends Screen
         super.init();
 
         rootControl.getChildrenCopy().forEach(control -> rootControl.removeChild(control));
+        rootControl.setWidth(width);
+        rootControl.setHeight(height);
     }
 
     @Override

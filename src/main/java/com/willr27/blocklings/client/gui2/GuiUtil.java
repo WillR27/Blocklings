@@ -53,7 +53,7 @@ public class GuiUtil
     /**
      * @return the current gui scale.
      */
-    public static float getGuiScaled()
+    public static float getGuiScale()
     {
         return (float) Minecraft.getInstance().getWindow().getGuiScale();
     }
@@ -376,7 +376,7 @@ public class GuiUtil
         scissor(x, y, width, height, false);
     }
 
-    public static boolean useGuiScaleForScissor = true;
+    public static boolean useGuiScaleForScissor = false;
 
     public static void scissor(int x, int y, int width, int height, boolean useMaxBounds)
     {

@@ -28,5 +28,8 @@ public class TestScreen extends BlocklingsScreen
         control2.setY(1);
         control3.setX(2);
         control3.setY(2);
+
+        control1.setWidth(40);
+        control1.setHeight(30);
     }
 }
