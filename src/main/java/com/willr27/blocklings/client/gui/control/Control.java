@@ -5,6 +5,7 @@ import com.willr27.blocklings.client.gui.Gui;
 import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.ScissorBounds;
 import com.willr27.blocklings.client.gui.control.event.events.*;
+import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.client.gui2.GuiUtil;
 import com.willr27.blocklings.util.event.EventHandler;
@@ -59,16 +60,14 @@ public class Control extends Gui
     public final EventHandler<ChildRemovedEvent> onChildRemoved = new EventHandler<>();
 
     /**
-     * The x position of the top left of the control on the screen. This is not the pixel position as it
-     * includes the scaling done by the gui scale option.
+     * The x pixel position of the top left of the control on the screen.
      */
-    private int screenX = 0;
+    private int pixelX = 0;
 
     /**
-     * The y position of the top left of the control on the screen. This is not the pixel position as it
-     * includes the scaling done by the gui scale option.
+     * The y pixel position of the top left of the control on the screen.
      */
-    private int screenY = 0;
+    private int pixelY = 0;
 
     /**
      * The scaled local x position of the control relative to the parent, i.e. (0, 0) would be the top left corner
@@ -89,16 +88,14 @@ public class Control extends Gui
     public final EventHandler<PositionChangedEvent> onPositionChanged = new EventHandler<>();
 
     /**
-     * The scaled width of the control on the screen. This is not necessarily the pixel width as it includes the
-     * gui scale option.
+     * The pixel width of the control on the screen.
      */
-    private int screenWidth = 100;
+    private int pixelWidth = 100;
 
     /**
-     * The scaled height of the control on the screen. This is not necessarily the pixel height as it includes the
-     * gui scale option.
+     * The pixel height of the control on the screen.
      */
-    private int screenHeight = 100;
+    private int pixelHeight = 100;
 
     /**
      * The scaled width of the control relative to the parent, i.e. 100 x 100 would be 200 x 200 pixels if the
@@ -191,6 +188,16 @@ public class Control extends Gui
     public final EventHandler<HitboxChangedEvent> onHitboxChanged = new EventHandler<>();
 
     /**
+     * Whether the control can is rendered.
+     */
+    public boolean isVisible = true;
+
+    /**
+     * Whether the control can interact with any input events.
+     */
+    public boolean isInteractive = true;
+
+    /**
      */
     public Control()
     {
@@ -206,9 +213,12 @@ public class Control extends Gui
      */
     protected void applyPreRenderTransformations(@Nonnull RenderArgs renderArgs)
     {
+        float scale = getCumulativeScale() * GuiUtil.getGuiScale();
+
         // Scale the control, but also make sure to cancel out the translation caused by the scaling.
-        renderArgs.matrixStack.scale(getCumulativeScale(), getCumulativeScale(), 1.0f);
-        renderArgs.matrixStack.translate((getScreenX() / getCumulativeScale()) - getScreenX(), (getScreenY() / getCumulativeScale()) - getScreenY(), 0.0f);
+        renderArgs.matrixStack.pushPose();
+        renderArgs.matrixStack.scale(scale, scale, 1.0f);
+        renderArgs.matrixStack.translate((getPixelX() / scale) - getPixelX(), (getPixelY() / scale) - getPixelY(), 0.0f);
     }
 
     /**
@@ -217,8 +227,7 @@ public class Control extends Gui
     protected void applyPostRenderTransformations(@Nonnull RenderArgs renderArgs)
     {
         // Revert the previous transformations.
-        renderArgs.matrixStack.translate(getScreenX() - (getScreenX() / getCumulativeScale()), getScreenY() - (getScreenY() / getCumulativeScale()), 0.0f);
-        renderArgs.matrixStack.scale(1.0f / getCumulativeScale(), 1.0f / getCumulativeScale(), 1.0f);
+        renderArgs.matrixStack.popPose();
     }
 
     /**
@@ -226,7 +235,7 @@ public class Control extends Gui
      */
     protected void applyScissor(@Nonnull RenderArgs renderArgs)
     {
-        renderArgs.scissorStack.push(new ScissorBounds(getScreenX(), getScreenY(), getScreenWidth(), getScreenHeight(), GuiUtil.getGuiScale()));
+        renderArgs.scissorStack.push(new ScissorBounds(getPixelX(), getPixelY(), getPixelWidth(), getPixelHeight()));
         renderArgs.scissorStack.enable();
     }
 
@@ -240,13 +249,46 @@ public class Control extends Gui
     }
 
     /**
-     * Forwards the call to {@link #render(RenderArgs)} to the control's children before rendering
+     * Forwards the call to {@link #onHover(MousePosEvent)} to the control's children.
+     *
+     * @param mousePosEvent the mouse position event.
+     */
+    public final void forwardHover(@Nonnull MousePosEvent mousePosEvent)
+    {
+        if (!isInteractive())
+        {
+            return;
+        }
+
+        for (Control control : getChildrenCopy())
+        {
+
+        }
+
+        onHover(mousePosEvent);
+    }
+
+    /**
+     *
+     */
+    public void onHover(@Nonnull MousePosEvent mousePosEvent)
+    {
+
+    }
+
+    /**
+     * Forwards the call to {@link #render(RenderArgs)} to the control's children after rendering
      * itself.
      *
      * @param renderArgs the render args.
      */
     public final void forwardRender(@Nonnull RenderArgs renderArgs)
     {
+        if (!isVisible())
+        {
+            return;
+        }
+
         applyPreRenderTransformations(renderArgs);
         applyPreRenderOperations(renderArgs);
         applyScissor(renderArgs);
@@ -328,7 +370,7 @@ public class Control extends Gui
      */
     protected void renderTexture(@Nonnull MatrixStack matrixStack, int dx, int dy, @Nonnull GuiTexture texture)
     {
-        renderTexture(matrixStack, texture, getScreenX() + dx, getScreenY() + dy);
+        renderTexture(matrixStack, texture, getPixelX() + dx, getPixelY() + dy);
     }
 
     /**
@@ -367,6 +409,11 @@ public class Control extends Gui
             {
                 this.parent.addChild(this);
             }
+
+            recalcPixelX();
+            recalcPixelY();
+            recalcPixelWidth();
+            recalcPixelHeight();
         }
     }
 
@@ -396,6 +443,11 @@ public class Control extends Gui
             control.parent = this;
 
             children.add(control);
+
+            control.recalcPixelX();
+            control.recalcPixelY();
+            control.recalcPixelWidth();
+            control.recalcPixelHeight();
         }
     }
 
@@ -416,57 +468,62 @@ public class Control extends Gui
             control.parent = null;
 
             children.remove(control);
+
+            control.recalcPixelX();
+            control.recalcPixelY();
+            control.recalcPixelWidth();
+            control.recalcPixelHeight();
         }
     }
 
     /**
-     * @return the x position of the top left of the control on the screen.
+     * @return the x pixel position of the top left of the control on the screen.
      */
-    public final int getScreenX()
+    public final int getPixelX()
     {
-        return screenX;
+        return pixelX;
     }
 
     /**
-     * Recalculates the value of {@link #screenX}.
+     * Recalculates the value of {@link #pixelX}.
      */
-    public void recalcScreenX()
+    public void recalcPixelX()
     {
         if (getParent() != null)
         {
-            screenX = (int) (getParent().getScreenX() + (getX() * getParent().getCumulativeInnerScale()));
+            pixelX = (int) (getParent().getPixelX() + (getX() * getParent().getCumulativeInnerScale() * GuiUtil.getGuiScale()));
         }
         else
         {
-            screenX = getX();
+            pixelX = getX();
         }
 
-        children.forEach(Control::recalcScreenX);
+        children.forEach(Control::recalcPixelX);
     }
 
     /**
      * @return the y position of the top left of the control on the screen.
      */
-    public final int getScreenY()
+    public final int getPixelY()
     {
-        return screenY;
+        return pixelY;
     }
 
     /**
-     * Recalculates the value of {@link #screenY}.
+     * Recalculates the value of {@link #pixelY}.
      */
-    public void recalcScreenY()
+    public void recalcPixelY()
     {
         if (getParent() != null)
         {
-            screenY = (int) (getParent().getScreenY() + (getY() * getParent().getCumulativeInnerScale()));
+            pixelY = (int) (getParent().getPixelY() + (getY() * getParent().getCumulativeInnerScale() * GuiUtil.getGuiScale()));
         }
         else
         {
-            screenY = getY();
+            pixelY = getY();
         }
 
-        children.forEach(Control::recalcScreenY);
+        children.forEach(Control::recalcPixelY);
     }
 
     /**
@@ -488,7 +545,7 @@ public class Control extends Gui
         {
             this.x = x;
 
-            recalcScreenX();
+            recalcPixelX();
         }
     }
 
@@ -511,40 +568,40 @@ public class Control extends Gui
         {
             this.y = y;
 
-            recalcScreenY();
+            recalcPixelY();
         }
     }
 
     /**
-     * @return the scaled width of the control.
+     * @return the pixel width of the control.
      */
-    public int getScreenWidth()
+    public int getPixelWidth()
     {
-        return screenWidth;
+        return pixelWidth;
     }
 
     /**
-     * Recalculates the scaled width of the control.
+     * Recalculates the pixel width of the control.
      */
-    public final void recalcScreenWidth()
+    public final void recalcPixelWidth()
     {
-        screenWidth = (int) (getWidth() * getCumulativeScale());
+        pixelWidth = (int) (getWidth() * getCumulativeScale() * GuiUtil.getGuiScale());
     }
 
     /**
-     * @return the scaled height of the control.
+     * @return the pixel height of the control.
      */
-    public int getScreenHeight()
+    public int getPixelHeight()
     {
-        return screenHeight;
+        return pixelHeight;
     }
 
     /**
-     * Recalculates the scaled height of the control.
+     * Recalculates the pixel height of the control.
      */
-    public final void recalcScreenHeight()
+    public final void recalcPixelHeight()
     {
-        screenHeight = (int) (getHeight() * getCumulativeScale());
+        pixelHeight = (int) (getHeight() * getCumulativeScale() * GuiUtil.getGuiScale());
     }
 
     /**
@@ -573,7 +630,7 @@ public class Control extends Gui
 
             this.width = width;
 
-            recalcScreenWidth();
+            recalcPixelWidth();
         }
     }
 
@@ -603,7 +660,7 @@ public class Control extends Gui
 
             this.height = height;
 
-            recalcScreenHeight();
+            recalcPixelHeight();
         }
     }
 
@@ -754,7 +811,14 @@ public class Control extends Gui
             cumulativeInnerScale = getInnerScale();
         }
 
-        children.forEach(Control::recalcCumulativeInnerScale);
+        children.forEach((control) ->
+        {
+            control.recalcCumulativeInnerScale();
+            control.recalcPixelX();
+            control.recalcPixelY();
+            control.recalcPixelWidth();
+            control.recalcPixelHeight();
+        });
     }
 
     /**
@@ -777,8 +841,6 @@ public class Control extends Gui
             this.innerScale = innerScale;
 
             recalcCumulativeInnerScale();
-            recalcScreenX();
-            recalcScreenY();
         }
     }
 
@@ -826,6 +888,38 @@ public class Control extends Gui
     public boolean collidesWith(int screenX, int screenY)
     {
         return hitbox.collidesWith(this, screenX, screenY);
+    }
+
+    /**
+     * @return whether the control is rendered.
+     */
+    public boolean isVisible()
+    {
+        return isVisible;
+    }
+
+    /**
+     * Sets whether the control is rendered.
+     */
+    public void setVisible(boolean visible)
+    {
+        isVisible = visible;
+    }
+
+    /**
+     * @return whether the control can interact with input events.
+     */
+    public boolean isInteractive()
+    {
+        return isInteractive;
+    }
+
+    /**
+     * Sets whether the control can interact with input events.
+     */
+    public void setInteractive(boolean interactive)
+    {
+        isInteractive = interactive;
     }
 
     /**

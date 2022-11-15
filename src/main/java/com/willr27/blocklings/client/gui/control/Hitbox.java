@@ -23,11 +23,11 @@ public abstract class Hitbox
 
     /**
      * @param control the control to test against.
-     * @param screenX the scaled x coordinate to test against.
-     * @param screenY the scaled y coordinate to test against.
+     * @param pixelX the x pixel coordinate to test against.
+     * @param pixelY the y pixel coordinate to test against.
      * @return whether the position collides with the hitbox.
      */
-    public abstract boolean collidesWith(@Nonnull Control control, int screenX, int screenY);
+    public abstract boolean collidesWith(@Nonnull Control control, int pixelX, int pixelY);
 
     @Override
     public abstract boolean equals(Object object);
@@ -85,12 +85,12 @@ public abstract class Hitbox
         }
 
         @Override
-        public boolean collidesWith(@Nonnull Control control, int screenX, int screenY)
+        public boolean collidesWith(@Nonnull Control control, int pixelX, int pixelY)
         {
-            return screenX >= control.getScreenX() &&
-                   screenX <  control.getScreenX() + control.getScreenWidth() &&
-                   screenY >= control.getScreenY() &&
-                   screenY <  control.getScreenY() + control.getScreenHeight();
+            return pixelX >= control.getPixelX() &&
+                   pixelX <  control.getPixelX() + control.getPixelWidth() &&
+                   pixelY >= control.getPixelY() &&
+                   pixelY <  control.getPixelY() + control.getPixelHeight();
         }
 
         @Override

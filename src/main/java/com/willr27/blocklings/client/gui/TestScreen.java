@@ -19,17 +19,17 @@ public class TestScreen extends BlocklingsScreen
         control1.addChild(control2);
         control2.addChild(control3);
 
-        control1.setInnerScale(2.0f);
-        control2.setInnerScale(2.0f);
+        control1.setInnerScale(0.5f);
+        control2.setInnerScale(0.5f);
 
-        control1.setX(2);
-        control1.setY(2);
-        control2.setX(1);
-        control2.setY(1);
-        control3.setX(2);
-        control3.setY(2);
+        control1.setX(1);
+        control1.setY(1);
+        control2.setX(3);
+        control2.setY(3);
+        control3.setX(5);
+        control3.setY(5);
 
         control1.setWidth(40);
-        control1.setHeight(30);
+        control1.setHeight(15);
     }
 }

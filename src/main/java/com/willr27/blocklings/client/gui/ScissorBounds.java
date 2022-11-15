@@ -43,18 +43,6 @@ public class ScissorBounds
         this.pixelHeight = Math.max(0, pixelHeight);
     }
 
-    /**
-     * @param screenX      the left screen coordinate of the bounds.
-     * @param screenY      the top screen coordinate of the
-     * @param screenWidth  the screen width of the bounds.
-     * @param screenHeight the screen height of the bounds.
-     * @param guiScale     the current gui scale.
-     */
-    public ScissorBounds(int screenX, int screenY, int screenWidth, int screenHeight, float guiScale)
-    {
-        this((int) (screenX * guiScale), (int) (screenY * guiScale), (int) (screenWidth * guiScale), (int) (screenHeight * guiScale));
-    }
-
     @Override
     public boolean equals(Object obj)
     {
