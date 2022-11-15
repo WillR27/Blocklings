@@ -2,7 +2,7 @@ package com.willr27.blocklings.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.client.gui2.GuiUtil;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -44,9 +44,9 @@ public abstract class BlocklingsScreen extends Screen
     public void render(@Nonnull MatrixStack matrixStack, int screenMouseX, int screenMouseY, float partialTicks)
     {
         matrixStack.pushPose();
-        matrixStack.scale(1.0f / GuiUtil.getGuiScale(), 1.0f / GuiUtil.getGuiScale(), 1.0f);
+        matrixStack.scale(1.0f / GuiUtil.getInstance().getGuiScale(), 1.0f / GuiUtil.getInstance().getGuiScale(), 1.0f);
 
-        rootControl.forwardRender(new RenderArgs(matrixStack, GuiUtil.getPixelMouseX(), GuiUtil.getPixelMouseY(), partialTicks));
+        rootControl.forwardRender(new RenderArgs(matrixStack, GuiUtil.getInstance().getPixelMouseX(), GuiUtil.getInstance().getPixelMouseY(), partialTicks));
 
         matrixStack.popPose();
     }

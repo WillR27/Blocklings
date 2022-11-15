@@ -7,7 +7,7 @@ import com.willr27.blocklings.client.gui.ScissorBounds;
 import com.willr27.blocklings.client.gui.control.event.events.*;
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
 import com.willr27.blocklings.client.gui2.GuiTexture;
-import com.willr27.blocklings.client.gui2.GuiUtil;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -213,7 +213,7 @@ public class Control extends Gui
      */
     protected void applyPreRenderTransformations(@Nonnull RenderArgs renderArgs)
     {
-        float scale = getCumulativeScale() * GuiUtil.getGuiScale();
+        float scale = getCumulativeScale() * GuiUtil.getInstance().getGuiScale();
 
         // Scale the control, but also make sure to cancel out the translation caused by the scaling.
         renderArgs.matrixStack.pushPose();
@@ -491,7 +491,7 @@ public class Control extends Gui
     {
         if (getParent() != null)
         {
-            pixelX = (int) (getParent().getPixelX() + (getX() * getParent().getCumulativeInnerScale() * GuiUtil.getGuiScale()));
+            pixelX = (int) (getParent().getPixelX() + (getX() * getParent().getCumulativeInnerScale() * GuiUtil.getInstance().getGuiScale()));
         }
         else
         {
@@ -516,7 +516,7 @@ public class Control extends Gui
     {
         if (getParent() != null)
         {
-            pixelY = (int) (getParent().getPixelY() + (getY() * getParent().getCumulativeInnerScale() * GuiUtil.getGuiScale()));
+            pixelY = (int) (getParent().getPixelY() + (getY() * getParent().getCumulativeInnerScale() * GuiUtil.getInstance().getGuiScale()));
         }
         else
         {
@@ -585,7 +585,7 @@ public class Control extends Gui
      */
     public final void recalcPixelWidth()
     {
-        pixelWidth = (int) (getWidth() * getCumulativeScale() * GuiUtil.getGuiScale());
+        pixelWidth = (int) (getWidth() * getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
     }
 
     /**
@@ -601,7 +601,7 @@ public class Control extends Gui
      */
     public final void recalcPixelHeight()
     {
-        pixelHeight = (int) (getHeight() * getCumulativeScale() * GuiUtil.getGuiScale());
+        pixelHeight = (int) (getHeight() * getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
     }
 
     /**
