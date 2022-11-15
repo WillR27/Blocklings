@@ -2,12 +2,13 @@ package com.willr27.blocklings.client.gui.control;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.Gui;
+import com.willr27.blocklings.client.gui.IScreen;
 import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.ScissorBounds;
 import com.willr27.blocklings.client.gui.control.event.events.*;
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
-import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
+import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -28,6 +29,12 @@ public class Control extends Gui
      */
     @Nonnull
     private final List<RenderOperation> renderOperations = new ArrayList<>();
+
+    /**
+     * The screen the control is part of.
+     */
+    @Nullable
+    protected IScreen screen;
 
     /**
      * The optional parent control.
@@ -209,6 +216,78 @@ public class Control extends Gui
     }
 
     /**
+     * Forwards the call to {@link #onHover(MousePosEvent)} to the control's children.
+     *
+     * @param mousePosEvent the pixel position event.
+     */
+    public final void forwardHover(@Nonnull MousePosEvent mousePosEvent)
+    {
+        if (!isInteractive())
+        {
+            return;
+        }
+
+        if (!collidesWith(mousePosEvent.mousePixelX, mousePosEvent.mousePixelY))
+        {
+            return;
+        }
+
+        for (Control control : getChildrenCopy())
+        {
+            if (!mousePosEvent.isHandled())
+            {
+                control.forwardHover(mousePosEvent);
+            }
+        }
+
+        if (!mousePosEvent.isHandled())
+        {
+            mousePosEvent.mouseX = toLocalX(mousePosEvent.mousePixelX);
+            mousePosEvent.mouseY = toLocalY(mousePosEvent.mousePixelY);
+
+            onHover(mousePosEvent);
+
+            if (mousePosEvent.isHandled())
+            {
+                if (getScreen() != null)
+                {
+                    // This probably isn't necessary, but we can set it back to unhandled anyway.
+                    mousePosEvent.setIsHandled(false);
+
+                    getScreen().setHoveredControl(this, mousePosEvent);
+
+                    // Set back to handled so that the screen can detect if a control was hovered.
+                    mousePosEvent.setIsHandled(true);
+                }
+            }
+        }
+    }
+
+    /**
+     * Called when the control is initially hovered.
+     */
+    public void onHoverEnter(@Nonnull MousePosEvent mouseEvent)
+    {
+
+    }
+
+    /**
+     * Occurs when the mouse is hovering over the control's hitbox.
+     */
+    public void onHover(@Nonnull MousePosEvent mousePosEvent)
+    {
+        mousePosEvent.setIsHandled(true);
+    }
+
+    /**
+     * Called when the control is no longer hovered.
+     */
+    public void onHoverExit(@Nonnull MousePosEvent mouseEvent)
+    {
+
+    }
+
+    /**
      * Applies the pre render transformations to the control.
      */
     protected void applyPreRenderTransformations(@Nonnull RenderArgs renderArgs)
@@ -246,34 +325,6 @@ public class Control extends Gui
     {
         renderArgs.scissorStack.pop();
         renderArgs.scissorStack.disable();
-    }
-
-    /**
-     * Forwards the call to {@link #onHover(MousePosEvent)} to the control's children.
-     *
-     * @param mousePosEvent the mouse position event.
-     */
-    public final void forwardHover(@Nonnull MousePosEvent mousePosEvent)
-    {
-        if (!isInteractive())
-        {
-            return;
-        }
-
-        for (Control control : getChildrenCopy())
-        {
-
-        }
-
-        onHover(mousePosEvent);
-    }
-
-    /**
-     *
-     */
-    public void onHover(@Nonnull MousePosEvent mousePosEvent)
-    {
-
     }
 
     /**
@@ -374,6 +425,15 @@ public class Control extends Gui
     }
 
     /**
+     * @return the screen the control is a part of.
+     */
+    @Nullable
+    public IScreen getScreen()
+    {
+        return screen;
+    }
+
+    /**
      * @return the current parent control.
      */
     @Nullable
@@ -403,11 +463,15 @@ public class Control extends Gui
             if (oldParent != null)
             {
                 oldParent.children.remove(this);
+
+                this.screen = null;
             }
 
             if (this.parent != null)
             {
                 this.parent.addChild(this);
+
+                screen = this.parent.getScreen();
             }
 
             recalcPixelX();
@@ -441,6 +505,7 @@ public class Control extends Gui
         if (!event.isHandled())
         {
             control.parent = this;
+            control.screen = control.parent.getScreen();
 
             children.add(control);
 
@@ -466,6 +531,7 @@ public class Control extends Gui
         if (!event.isHandled())
         {
             control.parent = null;
+            control.screen = null;
 
             children.remove(control);
 
@@ -845,6 +911,22 @@ public class Control extends Gui
     }
 
     /**
+     * @return converts a pixel x coordinate into a local x coordinate.
+     */
+    public int toLocalX(int pixelX)
+    {
+        return (int) ((pixelX - getPixelX()) / (getCumulativeScale() * GuiUtil.getInstance().getGuiScale()));
+    }
+
+    /**
+     * @return converts a pixel y coordinate into a local y coordinate.
+     */
+    public int toLocalY(int pixelY)
+    {
+        return (int) ((pixelY - getPixelY()) / (getCumulativeScale() * GuiUtil.getInstance().getGuiScale()));
+    }
+
+    /**
      * @return whether to auto resize the hitbox when the control's size changes.
      */
     public boolean isAutoSizeHitbox()
@@ -885,9 +967,9 @@ public class Control extends Gui
     /**
      * @return whether the given coordinates collide with the control's hitbox.
      */
-    public boolean collidesWith(int screenX, int screenY)
+    public boolean collidesWith(int pixelX, int pixelY)
     {
-        return hitbox.collidesWith(this, screenX, screenY);
+        return hitbox.collidesWith(this, pixelX, pixelY);
     }
 
     /**

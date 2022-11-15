@@ -3,27 +3,27 @@ package com.willr27.blocklings.client.gui.control.event.events.input;
 /**
  * A mouse position event.
  */
-public class MousePosEvent extends MouseScreenPosEvent
+public class MousePosEvent extends MousePixelPosEvent
 {
     /**
-     * The mouse x position.
+     * The local mouse x position.
      */
-    public final int mouseX;
+    public int mouseX;
 
     /**
-     * The mouse y position.
+     * The local mouse y position.
      */
-    public final int mouseY;
+    public int mouseY;
 
     /**
      * @param mouseX the mouse x position.
      * @param mouseY the mouse y position.
-     * @param mouseScreenX the mouse screen x position.
-     * @param mouseScreenY the mouse screen y position.
+     * @param mousePixelX the mouse x pixel position.
+     * @param mousePixelY the mouse y pixel position.
      */
-    public MousePosEvent(int mouseX, int mouseY, int mouseScreenX, int mouseScreenY)
+    public MousePosEvent(int mouseX, int mouseY, int mousePixelX, int mousePixelY)
     {
-        super(mouseScreenX, mouseScreenY);
+        super(mousePixelX, mousePixelY);
         this.mouseX = mouseX;
         this.mouseY = mouseY;
     }
