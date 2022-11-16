@@ -493,6 +493,7 @@ public class Control extends Gui
                     mouseButtonEvent.setIsHandled(false);
 
                     getScreen().setFocusedControl(this, mouseButtonEvent);
+                    getScreen().setPressedControl(this, mouseButtonEvent);
 
                     // Set back to handled so that the screen can detect if a control handled the mouse clicked event.
                     mouseButtonEvent.setIsHandled(true);
@@ -571,7 +572,7 @@ public class Control extends Gui
 
             if (mouseButtonEvent.isHandled())
             {
-                if (getScreen() != null)
+                if (getScreen() != null && getScreen().getPressedControl() == null)
                 {
                     // This probably isn't necessary, but we can set it back to unhandled anyway.
                     mouseButtonEvent.setIsHandled(false);
@@ -591,6 +592,22 @@ public class Control extends Gui
     protected void onMouseReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
     {
         mouseButtonEvent.setIsHandled(true);
+    }
+
+    /**
+     * Occurs when the control is pressed from a mouse click.
+     */
+    public void onPressed(@Nonnull MouseButtonEvent mouseButtonEvent)
+    {
+
+    }
+
+    /**
+     * Occurs when the control is released from a mouse release.
+     */
+    public void onReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
+    {
+
     }
 
     /**
@@ -1187,6 +1204,30 @@ public class Control extends Gui
     public void setInteractive(boolean interactive)
     {
         isInteractive = interactive;
+    }
+
+    /**
+     * @return whether the control is currently hovered over.
+     */
+    public boolean isHovered()
+    {
+        return getScreen().getHoveredControl() == this;
+    }
+
+    /**
+     * @return whether the control is currently pressed.
+     */
+    public boolean isPressed()
+    {
+        return getScreen().getPressedControl() == this;
+    }
+
+    /**
+     * @return whether the control is currently focused.
+     */
+    public boolean isFocused()
+    {
+        return getScreen().getFocusedControl() == this;
     }
 
     /**

@@ -126,6 +126,19 @@ public abstract class BlocklingsScreen extends Screen implements IScreen
 
     @Nullable
     @Override
+    public Control getPressedControl()
+    {
+        return screenControl.getPressedControl();
+    }
+
+    @Override
+    public void setPressedControl(@Nullable Control control, @Nonnull MouseButtonEvent mouseButtonEvent)
+    {
+        screenControl.setPressedControl(control, mouseButtonEvent);
+    }
+
+    @Nullable
+    @Override
     public Control getFocusedControl()
     {
         return screenControl.getFocusedControl();

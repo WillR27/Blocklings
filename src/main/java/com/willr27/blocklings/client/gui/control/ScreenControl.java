@@ -22,6 +22,12 @@ public class ScreenControl extends Control implements IScreen
     private Control hoveredControl;
 
     /**
+     * The currently pressed control.
+     */
+    @Nullable
+    private Control pressedControl;
+
+    /**
      * The currently focused control.
      */
     @Nullable
@@ -32,6 +38,14 @@ public class ScreenControl extends Control implements IScreen
     public ScreenControl()
     {
         this.screen = this;
+    }
+
+    @Override
+    public void forwardMouseReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
+    {
+        super.forwardMouseReleased(mouseButtonEvent);
+
+        setPressedControl(null, mouseButtonEvent);
     }
 
     @Override
@@ -48,16 +62,54 @@ public class ScreenControl extends Control implements IScreen
         {
             if (hoveredControl != null)
             {
+                mousePosEvent.mouseX = hoveredControl.toLocalX(mousePosEvent.mousePixelX);
+                mousePosEvent.mouseY = hoveredControl.toLocalY(mousePosEvent.mousePixelY);
+
                 hoveredControl.onHoverExit(mousePosEvent);
             }
 
             if (control != null)
             {
+                mousePosEvent.mouseX = control.toLocalX(mousePosEvent.mousePixelX);
+                mousePosEvent.mouseY = control.toLocalY(mousePosEvent.mousePixelY);
+
                 control.onHoverEnter(mousePosEvent);
             }
         }
 
         hoveredControl = control;
+    }
+
+    @Nullable
+    @Override
+    public Control getPressedControl()
+    {
+        return pressedControl;
+    }
+
+    @Override
+    public void setPressedControl(@Nullable Control control, @Nonnull MouseButtonEvent mouseButtonEvent)
+    {
+        if (pressedControl != control)
+        {
+            if (pressedControl != null)
+            {
+                mouseButtonEvent.mouseX = pressedControl.toLocalX(mouseButtonEvent.mousePixelX);
+                mouseButtonEvent.mouseY = pressedControl.toLocalY(mouseButtonEvent.mousePixelY);
+
+                pressedControl.onReleased(mouseButtonEvent);
+            }
+
+            if (control != null)
+            {
+                mouseButtonEvent.mouseX = control.toLocalX(mouseButtonEvent.mousePixelX);
+                mouseButtonEvent.mouseY = control.toLocalY(mouseButtonEvent.mousePixelY);
+
+                control.onPressed(mouseButtonEvent);
+            }
+        }
+
+        pressedControl = control;
     }
 
     @Nullable
@@ -74,12 +126,18 @@ public class ScreenControl extends Control implements IScreen
         {
             if (focusedControl != null)
             {
-                focusedControl.onFocused(mouseButtonEvent);
+                mouseButtonEvent.mouseX = focusedControl.toLocalX(mouseButtonEvent.mousePixelX);
+                mouseButtonEvent.mouseY = focusedControl.toLocalY(mouseButtonEvent.mousePixelY);
+
+                focusedControl.onUnfocused(mouseButtonEvent);
             }
 
             if (control != null)
             {
-                control.onUnfocused(mouseButtonEvent);
+                mouseButtonEvent.mouseX = control.toLocalX(mouseButtonEvent.mousePixelX);
+                mouseButtonEvent.mouseY = control.toLocalY(mouseButtonEvent.mousePixelY);
+
+                control.onFocused(mouseButtonEvent);
             }
         }
 

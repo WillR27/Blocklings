@@ -30,6 +30,20 @@ public interface IScreen
     void setHoveredControl(@Nullable Control control, @Nonnull MousePosEvent mousePosEvent);
 
     /**
+     * @return the currently pressed control.
+     */
+    @Nullable
+    Control getPressedControl();
+
+    /**
+     * Sets the currently pressed control.
+     *
+     * @param control the new pressed control.
+     * @param mouseButtonEvent the mouse button event to pass on to {@link Control#onPressed(MouseButtonEvent)} and {@link Control#onReleased(MouseButtonEvent)}.
+     */
+    void setPressedControl(@Nullable Control control, @Nonnull MouseButtonEvent mouseButtonEvent);
+
+    /**
      * @return the currently focused control.
      */
     @Nullable

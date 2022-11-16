@@ -52,9 +52,26 @@ public class TestControl extends Control
     }
 
     @Override
-    public void onFocused(@Nonnull MouseButtonEvent mouseButtonEvent)
+    public void onPressed(@Nonnull MouseButtonEvent mouseButtonEvent)
+    {
+        texture = GuiTextures.FLAT_BAR;
+    }
+
+    @Override
+    public void onReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
     {
         texture = GuiTextures.RAISED_BAR;
+
+        if (isFocused())
+        {
+            texture = GuiTextures.DROPDOWN_DOWN_ARROW;
+        }
+    }
+
+    @Override
+    public void onFocused(@Nonnull MouseButtonEvent mouseButtonEvent)
+    {
+        texture = GuiTextures.DROPDOWN_DOWN_ARROW;
     }
 
     @Override
