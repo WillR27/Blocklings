@@ -4,26 +4,26 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
- * A mouse button event.
+ * A mouse scroll event.
  */
 @OnlyIn(Dist.CLIENT)
-public class MouseButtonEvent extends MousePosEvent
+public class MouseScrollEvent extends MousePosEvent
 {
     /**
-     * The mouse button clicked.
+     * The mouse scroll amount.
      */
-    public final int mouseButton;
+    public final double scrollAmount;
 
     /**
      * @param mouseX      the mouse x position.
      * @param mouseY      the mouse y position.
      * @param mousePixelX the mouse x pixel position.
      * @param mousePixelY the mouse y pixel position.
-     * @param mouseButton the mouse button.
+     * @param scrollAmount the scroll amount.
      */
-    public MouseButtonEvent(int mouseX, int mouseY, int mousePixelX, int mousePixelY, int mouseButton)
+    public MouseScrollEvent(int mouseX, int mouseY, int mousePixelX, int mousePixelY, double scrollAmount)
     {
         super(mouseX, mouseY, mousePixelX, mousePixelY);
-        this.mouseButton = mouseButton;
+        this.scrollAmount = scrollAmount;
     }
 }

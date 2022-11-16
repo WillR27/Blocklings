@@ -4,6 +4,7 @@ import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrollEvent;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.client.gui2.GuiTextures;
 import net.minecraftforge.api.distmarker.Dist;
@@ -78,6 +79,14 @@ public class TestControl extends Control
     public void onUnfocused(@Nonnull MouseButtonEvent mouseButtonEvent)
     {
         texture = GuiTextures.FLAT_BAR;
+    }
+
+    @Override
+    protected void onMouseScrolled(@Nonnull MouseScrollEvent mouseScrollEvent)
+    {
+        texture = mouseScrollEvent.scrollAmount > 0 ? GuiTextures.DROPDOWN_UP_ARROW : GuiTextures.DROPDOWN_DOWN_ARROW;
+
+//        mouseScrollEvent.setIsHandled(true);
     }
 
     @Override

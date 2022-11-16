@@ -8,6 +8,7 @@ import com.willr27.blocklings.client.gui.ScissorBounds;
 import com.willr27.blocklings.client.gui.control.event.events.*;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrollEvent;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.util.event.EventHandler;
@@ -622,6 +623,76 @@ public class Control extends Gui
      * Occurs when the control is unfocused from a mouse click.
      */
     public void onUnfocused(@Nonnull MouseButtonEvent mouseButtonEvent)
+    {
+
+    }
+
+    /**
+     * Forwards the call to {@link #onGlobalMouseScrolled(MouseScrollEvent)} to the child controls before itself.
+     */
+    public void forwardGlobalMouseScrolled(@Nonnull MouseScrollEvent mouseScrollEvent)
+    {
+        for (Control control : getChildrenCopy())
+        {
+            if (!mouseScrollEvent.isHandled())
+            {
+                control.forwardGlobalMouseScrolled(mouseScrollEvent);
+            }
+        }
+
+        if (!mouseScrollEvent.isHandled())
+        {
+            mouseScrollEvent.mouseX = toLocalX(mouseScrollEvent.mousePixelX);
+            mouseScrollEvent.mouseY = toLocalY(mouseScrollEvent.mousePixelY);
+
+            onGlobalMouseScrolled(mouseScrollEvent);
+        }
+    }
+
+    /**
+     * Occurs when the mouse is released anywhere.
+     */
+    protected void onGlobalMouseScrolled(@Nonnull MouseScrollEvent mouseScrollEvent)
+    {
+
+    }
+
+    /**
+     * Forwards the call to {@link #onMouseScrolled(MouseScrollEvent)} to the child controls before itself.
+     */
+    public void forwardMouseScrolled(@Nonnull MouseScrollEvent mouseScrollEvent)
+    {
+        if (!isInteractive())
+        {
+            return;
+        }
+
+        if (!collidesWith(mouseScrollEvent.mousePixelX, mouseScrollEvent.mousePixelY))
+        {
+            return;
+        }
+
+        for (Control control : getChildrenCopy())
+        {
+            if (!mouseScrollEvent.isHandled())
+            {
+                control.forwardMouseScrolled(mouseScrollEvent);
+            }
+        }
+
+        if (!mouseScrollEvent.isHandled())
+        {
+            mouseScrollEvent.mouseX = toLocalX(mouseScrollEvent.mousePixelX);
+            mouseScrollEvent.mouseY = toLocalY(mouseScrollEvent.mousePixelY);
+
+            onMouseScrolled(mouseScrollEvent);
+        }
+    }
+
+    /**
+     * Occurs when the mouse is released on the control.
+     */
+    protected void onMouseScrolled(@Nonnull MouseScrollEvent mouseScrollEvent)
     {
 
     }

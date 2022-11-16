@@ -5,6 +5,7 @@ import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.ScreenControl;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrollEvent;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.StringTextComponent;
@@ -109,6 +110,25 @@ public abstract class BlocklingsScreen extends Screen implements IScreen
         }
 
         return super.mouseReleased(screenMouseX, screenMouseY, mouseButton);
+    }
+
+    @Override
+    public boolean mouseScrolled(double screenMouseX, double screenMouseY, double scrollAmount)
+    {
+        int pixelMouseX = GuiUtil.getInstance().getPixelMouseX();
+        int pixelMouseY = GuiUtil.getInstance().getPixelMouseY();
+
+        MouseScrollEvent mouseScrollEvent = new MouseScrollEvent(screenControl.toLocalX(pixelMouseX), screenControl.toLocalY(pixelMouseY), pixelMouseX, pixelMouseY, scrollAmount);
+
+        screenControl.forwardGlobalMouseScrolled(mouseScrollEvent);
+        screenControl.forwardMouseScrolled(mouseScrollEvent);
+
+        if (mouseScrollEvent.isHandled())
+        {
+            return true;
+        }
+
+        return super.mouseScrolled(screenMouseX, screenMouseY, scrollAmount);
     }
 
     @Nullable
