@@ -2,6 +2,7 @@ package com.willr27.blocklings.client.gui.control.controls;
 
 import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.control.Control;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.client.gui2.GuiTextures;
@@ -25,17 +26,43 @@ public class TestControl extends Control
     @Override
     public void onHoverEnter(@Nonnull MousePosEvent mousePosEvent)
     {
-        texture = GuiTextures.RAISED_BAR;
+//        texture = GuiTextures.RAISED_BAR;
     }
 
     @Override
     public void onHoverExit(@Nonnull MousePosEvent mousePosEvent)
     {
+//        texture = GuiTextures.FLAT_BAR;
+    }
+
+    @Override
+    protected void onMouseClicked(@Nonnull MouseButtonEvent mouseButtonEvent)
+    {
+        mouseButtonEvent.setIsHandled(true);
+    }
+
+    @Override
+    protected void onGlobalMouseClicked(@Nonnull MouseButtonEvent mouseButtonEvent)
+    {
+        Log.info("CLICKED ", getClass().getName());
+
+//        mouseButtonEvent.setIsHandled(true);
+    }
+
+    @Override
+    public void onFocused(@Nonnull MouseButtonEvent mouseButtonEvent)
+    {
+        texture = GuiTextures.RAISED_BAR;
+    }
+
+    @Override
+    public void onUnfocused(@Nonnull MouseButtonEvent mouseButtonEvent)
+    {
         texture = GuiTextures.FLAT_BAR;
     }
 
     @Override
-    protected void render(@Nonnull RenderArgs renderArgs)
+    protected void onRender(@Nonnull RenderArgs renderArgs)
     {
         renderTexture(renderArgs.matrixStack, texture);
     }

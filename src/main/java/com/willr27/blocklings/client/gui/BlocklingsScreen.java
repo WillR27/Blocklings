@@ -2,7 +2,8 @@ package com.willr27.blocklings.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.client.gui.control.RootControl;
+import com.willr27.blocklings.client.gui.control.ScreenControl;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import net.minecraft.client.gui.screen.Screen;
@@ -23,13 +24,7 @@ public abstract class BlocklingsScreen extends Screen implements IScreen
      * The root control that contains all the sub controls on the screen.
      */
     @Nonnull
-    protected final RootControl rootControl = new RootControl(this);
-
-    /**
-     * The currently hovered control.
-     */
-    @Nullable
-    private Control hoveredControl;
+    protected final ScreenControl screenControl = new ScreenControl();
 
     /**
      * Default constructor.
@@ -44,9 +39,9 @@ public abstract class BlocklingsScreen extends Screen implements IScreen
     {
         super.init();
 
-        rootControl.getChildrenCopy().forEach(control -> rootControl.removeChild(control));
-        rootControl.setWidth(width);
-        rootControl.setHeight(height);
+        screenControl.getChildrenCopy().forEach(control -> screenControl.removeChild(control));
+        screenControl.setWidth(width);
+        screenControl.setHeight(height);
     }
 
     @Override
@@ -57,9 +52,9 @@ public abstract class BlocklingsScreen extends Screen implements IScreen
         int pixelMouseY = GuiUtil.getInstance().getPixelMouseY();
 
         {
-            MousePosEvent mousePosEvent = new MousePosEvent(rootControl.toLocalX(pixelMouseX), rootControl.toLocalY(pixelMouseY), pixelMouseX, pixelMouseY);
+            MousePosEvent mousePosEvent = new MousePosEvent(screenControl.toLocalX(pixelMouseX), screenControl.toLocalY(pixelMouseY), pixelMouseX, pixelMouseY);
 
-            rootControl.forwardHover(mousePosEvent);
+            screenControl.forwardHover(mousePosEvent);
 
             if (!mousePosEvent.isHandled())
             {
@@ -73,34 +68,53 @@ public abstract class BlocklingsScreen extends Screen implements IScreen
         matrixStack.pushPose();
         matrixStack.scale(1.0f / guiScale, 1.0f / guiScale, 1.0f);
 
-        rootControl.forwardRender(new RenderArgs(matrixStack, pixelMouseX, pixelMouseY, partialTicks));
+        screenControl.forwardRender(new RenderArgs(matrixStack, pixelMouseX, pixelMouseY, partialTicks));
 
         matrixStack.popPose();
     }
 
     @Override
+    public boolean mouseClicked(double screenMouseX, double screenMouseY, int mouseButton)
+    {
+        int pixelMouseX = GuiUtil.getInstance().getPixelMouseX();
+        int pixelMouseY = GuiUtil.getInstance().getPixelMouseY();
+
+        MouseButtonEvent mouseButtonEvent = new MouseButtonEvent(screenControl.toLocalX(pixelMouseX), screenControl.toLocalY(pixelMouseY), pixelMouseX, pixelMouseY, mouseButton);
+
+        screenControl.forwardGlobalMouseClicked(mouseButtonEvent);
+        screenControl.forwardMouseClicked(mouseButtonEvent);
+
+        if (mouseButtonEvent.isHandled())
+        {
+            return true;
+        }
+
+        return super.mouseClicked(screenMouseX, screenMouseY, mouseButton);
+    }
+
     @Nullable
+    @Override
     public Control getHoveredControl()
     {
-        return hoveredControl;
+        return screenControl.getHoveredControl();
     }
 
     @Override
     public void setHoveredControl(@Nullable Control control, @Nonnull MousePosEvent mousePosEvent)
     {
-        if (hoveredControl != control)
-        {
-            if (hoveredControl != null)
-            {
-                hoveredControl.onHoverExit(mousePosEvent);
-            }
+        screenControl.setHoveredControl(control, mousePosEvent);
+    }
 
-            if (control != null)
-            {
-                control.onHoverEnter(mousePosEvent);
-            }
-        }
+    @Nullable
+    @Override
+    public Control getFocusedControl()
+    {
+        return screenControl.getFocusedControl();
+    }
 
-        hoveredControl = control;
+    @Override
+    public void setFocusedControl(@Nullable Control control, @Nonnull MouseButtonEvent mouseButtonEvent)
+    {
+        screenControl.setFocusedControl(control, mouseButtonEvent);
     }
 }

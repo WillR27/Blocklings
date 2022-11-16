@@ -1,6 +1,7 @@
 package com.willr27.blocklings.client.gui;
 
 import com.willr27.blocklings.client.gui.control.Control;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -27,4 +28,18 @@ public interface IScreen
      * @param mousePosEvent the mouse event to pass on to {@link Control#onHoverEnter(MousePosEvent)} and {@link Control#onHoverExit(MousePosEvent)}.
      */
     void setHoveredControl(@Nullable Control control, @Nonnull MousePosEvent mousePosEvent);
+
+    /**
+     * @return the currently focused control.
+     */
+    @Nullable
+    Control getFocusedControl();
+
+    /**
+     * Sets the currently focused control.
+     *
+     * @param control the new focused control.
+     * @param mouseButtonEvent the mouse button event to pass on to {@link Control#onFocused(MouseButtonEvent)} and {@link Control#onUnfocused(MouseButtonEvent)}.
+     */
+    void setFocusedControl(@Nullable Control control, @Nonnull MouseButtonEvent mouseButtonEvent);
 }

@@ -1,8 +1,12 @@
 package com.willr27.blocklings.client.gui.control.event.events.input;
 
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
 /**
  * A mouse position event.
  */
+@OnlyIn(Dist.CLIENT)
 public class MousePosEvent extends MousePixelPosEvent
 {
     /**

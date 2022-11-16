@@ -15,7 +15,7 @@ public class TestScreen extends BlocklingsScreen
         TestControl control1 = new TestControl();
         TestControl control2 = new TestControl();
         TestControl control3 = new TestControl();
-        rootControl.addChild(control1);
+        screenControl.addChild(control1);
         control1.addChild(control2);
         control2.addChild(control3);
 

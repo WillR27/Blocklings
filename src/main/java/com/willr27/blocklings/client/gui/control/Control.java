@@ -6,6 +6,7 @@ import com.willr27.blocklings.client.gui.IScreen;
 import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.ScissorBounds;
 import com.willr27.blocklings.client.gui.control.event.events.*;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui2.GuiTexture;
@@ -216,6 +217,143 @@ public class Control extends Gui
     }
 
     /**
+     * Applies the pre render transformations to the control.
+     */
+    protected void applyPreRenderTransformations(@Nonnull RenderArgs renderArgs)
+    {
+        float scale = getCumulativeScale() * GuiUtil.getInstance().getGuiScale();
+
+        // Scale the control, but also make sure to cancel out the translation caused by the scaling.
+        renderArgs.matrixStack.pushPose();
+        renderArgs.matrixStack.scale(scale, scale, 1.0f);
+        renderArgs.matrixStack.translate((getPixelX() / scale) - getPixelX(), (getPixelY() / scale) - getPixelY(), 0.0f);
+    }
+
+    /**
+     * Applies the post render transformations to the control.
+     */
+    protected void applyPostRenderTransformations(@Nonnull RenderArgs renderArgs)
+    {
+        // Revert the previous transformations.
+        renderArgs.matrixStack.popPose();
+    }
+
+    /**
+     * Applies any scissoring to the control before rendering.
+     */
+    protected void applyScissor(@Nonnull RenderArgs renderArgs)
+    {
+        renderArgs.scissorStack.push(new ScissorBounds(getPixelX(), getPixelY(), getPixelWidth(), getPixelHeight()));
+        renderArgs.scissorStack.enable();
+    }
+
+    /**
+     * Undoes any scissoring to the control after rendering.
+     */
+    protected void undoScissor(@Nonnull RenderArgs renderArgs)
+    {
+        renderArgs.scissorStack.pop();
+        renderArgs.scissorStack.disable();
+    }
+
+    /**
+     * Forwards the call to {@link #onRender(RenderArgs)} to the control's children after rendering
+     * itself.
+     *
+     * @param renderArgs the render args.
+     */
+    public final void forwardRender(@Nonnull RenderArgs renderArgs)
+    {
+        if (!isVisible())
+        {
+            return;
+        }
+
+        applyPreRenderTransformations(renderArgs);
+        applyPreRenderOperations(renderArgs);
+        applyScissor(renderArgs);
+        onRender(renderArgs);
+        applyPostRenderOperations(renderArgs);
+        applyPostRenderTransformations(renderArgs);
+
+        getChildrenCopy().forEach(control -> control.forwardRender(renderArgs));
+        undoScissor(renderArgs);
+    }
+
+    /**
+     * Applies any pre render operations added via {@link #addRenderOperation(RenderOperation)}.
+     *
+     * @param renderArgs the render args.
+     */
+    private void applyPreRenderOperations(@Nonnull RenderArgs renderArgs)
+    {
+        renderOperations.forEach(renderOperation -> renderOperation.preRenderOperation.accept(this, renderArgs));
+    }
+
+    /**
+     * Renders the control.
+     *
+     * @param renderArgs the render args.
+     */
+    protected void onRender(@Nonnull RenderArgs renderArgs)
+    {
+
+    }
+
+    /**
+     * Applies any post render operations added via {@link #addRenderOperation(RenderOperation)} in reverse order.
+     *
+     * @param renderArgs the render args.
+     */
+    private void applyPostRenderOperations(@Nonnull RenderArgs renderArgs)
+    {
+        List<RenderOperation> renderOperationsReversed = new ArrayList<>(renderOperations);
+        Collections.reverse(renderOperations);
+
+        renderOperationsReversed.forEach(renderOperation -> renderOperation.postRenderOperation.accept(this, renderArgs));
+    }
+
+    /**
+     * Adds a render operation to be applied before and after rendering.
+     */
+    public void addRenderOperation(@Nonnull RenderOperation renderOperation)
+    {
+        renderOperations.add(renderOperation);
+    }
+
+    /**
+     * Removes a render operation that is applied before and after rendering.
+     */
+    public void removeRenderOperation(@Nonnull RenderOperation renderOperation)
+    {
+        renderOperations.remove(renderOperation);
+    }
+
+    /**
+     * Renders the given texture at the control's position.
+     *
+     * @param matrixStack the matrix stack.
+     * @param texture the texture to render.
+     */
+    protected void renderTexture(@Nonnull MatrixStack matrixStack, @Nonnull GuiTexture texture)
+    {
+        renderTexture(matrixStack, 0, 0, texture);
+    }
+
+    /**
+     * Renders the given texture at the control's position, with the given offset.
+     *
+     * @param matrixStack the matrix stack.
+     * @param dx the x offset.
+     * @param dy the y offset.
+     * @param texture the texture to render.
+     */
+    protected void renderTexture(@Nonnull MatrixStack matrixStack, int dx, int dy, @Nonnull GuiTexture texture)
+    {
+        renderTexture(matrixStack, texture, getPixelX() + dx, getPixelY() + dy);
+    }
+
+     /**
      * Forwards the call to {@link #onHover(MousePosEvent)} to the control's children.
      *
      * @param mousePosEvent the pixel position event.
@@ -288,140 +426,103 @@ public class Control extends Gui
     }
 
     /**
-     * Applies the pre render transformations to the control.
+     * Forwards the call to {@link #onGlobalMouseClicked(MouseButtonEvent)} to the child controls before itself.
      */
-    protected void applyPreRenderTransformations(@Nonnull RenderArgs renderArgs)
+    public void forwardGlobalMouseClicked(@Nonnull MouseButtonEvent mouseButtonEvent)
     {
-        float scale = getCumulativeScale() * GuiUtil.getInstance().getGuiScale();
+        for (Control control : getChildrenCopy())
+        {
+            if (!mouseButtonEvent.isHandled())
+            {
+                control.forwardGlobalMouseClicked(mouseButtonEvent);
+            }
+        }
 
-        // Scale the control, but also make sure to cancel out the translation caused by the scaling.
-        renderArgs.matrixStack.pushPose();
-        renderArgs.matrixStack.scale(scale, scale, 1.0f);
-        renderArgs.matrixStack.translate((getPixelX() / scale) - getPixelX(), (getPixelY() / scale) - getPixelY(), 0.0f);
+        if (!mouseButtonEvent.isHandled())
+        {
+            mouseButtonEvent.mouseX = toLocalX(mouseButtonEvent.mousePixelX);
+            mouseButtonEvent.mouseY = toLocalY(mouseButtonEvent.mousePixelY);
+
+            onGlobalMouseClicked(mouseButtonEvent);
+        }
     }
 
     /**
-     * Applies the post render transformations to the control.
+     * Occurs when the mouse is clicked anywhere.
      */
-    protected void applyPostRenderTransformations(@Nonnull RenderArgs renderArgs)
+    protected void onGlobalMouseClicked(@Nonnull MouseButtonEvent mouseButtonEvent)
     {
-        // Revert the previous transformations.
-        renderArgs.matrixStack.popPose();
+
     }
 
     /**
-     * Applies any scissoring to the control before rendering.
+     * Forwards the call to {@link #onMouseClicked(MouseButtonEvent)} to the child controls before itself.
      */
-    protected void applyScissor(@Nonnull RenderArgs renderArgs)
+    public void forwardMouseClicked(@Nonnull MouseButtonEvent mouseButtonEvent)
     {
-        renderArgs.scissorStack.push(new ScissorBounds(getPixelX(), getPixelY(), getPixelWidth(), getPixelHeight()));
-        renderArgs.scissorStack.enable();
-    }
-
-    /**
-     * Undoes any scissoring to the control after rendering.
-     */
-    protected void undoScissor(@Nonnull RenderArgs renderArgs)
-    {
-        renderArgs.scissorStack.pop();
-        renderArgs.scissorStack.disable();
-    }
-
-    /**
-     * Forwards the call to {@link #render(RenderArgs)} to the control's children after rendering
-     * itself.
-     *
-     * @param renderArgs the render args.
-     */
-    public final void forwardRender(@Nonnull RenderArgs renderArgs)
-    {
-        if (!isVisible())
+        if (!isInteractive())
         {
             return;
         }
 
-        applyPreRenderTransformations(renderArgs);
-        applyPreRenderOperations(renderArgs);
-        applyScissor(renderArgs);
-        render(renderArgs);
-        applyPostRenderOperations(renderArgs);
-        applyPostRenderTransformations(renderArgs);
+        if (!collidesWith(mouseButtonEvent.mousePixelX, mouseButtonEvent.mousePixelY))
+        {
+            return;
+        }
 
-        getChildrenCopy().forEach(control -> control.forwardRender(renderArgs));
-        undoScissor(renderArgs);
+        for (Control control : getChildrenCopy())
+        {
+            if (!mouseButtonEvent.isHandled())
+            {
+                control.forwardMouseClicked(mouseButtonEvent);
+            }
+        }
+
+        if (!mouseButtonEvent.isHandled())
+        {
+            mouseButtonEvent.mouseX = toLocalX(mouseButtonEvent.mousePixelX);
+            mouseButtonEvent.mouseY = toLocalY(mouseButtonEvent.mousePixelY);
+
+            onMouseClicked(mouseButtonEvent);
+
+            if (mouseButtonEvent.isHandled())
+            {
+                if (getScreen() != null)
+                {
+                    // This probably isn't necessary, but we can set it back to unhandled anyway.
+                    mouseButtonEvent.setIsHandled(false);
+
+                    getScreen().setFocusedControl(this, mouseButtonEvent);
+
+                    // Set back to handled so that the screen can detect if a control was hovered.
+                    mouseButtonEvent.setIsHandled(true);
+                }
+            }
+        }
     }
 
     /**
-     * Applies any pre render operations added via {@link #addRenderOperation(RenderOperation)}.
-     *
-     * @param renderArgs the render args.
+     * Occurs when the mouse is clicked on the control.
      */
-    private void applyPreRenderOperations(@Nonnull RenderArgs renderArgs)
+    protected void onMouseClicked(@Nonnull MouseButtonEvent mouseButtonEvent)
     {
-        renderOperations.forEach(renderOperation -> renderOperation.preRenderOperation.accept(this, renderArgs));
+        mouseButtonEvent.setIsHandled(true);
     }
 
     /**
-     * Renders the control.
-     *
-     * @param renderArgs the render args.
+     * Occurs when the control is focused from a mouse click.
      */
-    protected void render(@Nonnull RenderArgs renderArgs)
+    public void onFocused(@Nonnull MouseButtonEvent mouseButtonEvent)
     {
 
     }
 
     /**
-     * Applies any post render operations added via {@link #addRenderOperation(RenderOperation)} in reverse order.
-     *
-     * @param renderArgs the render args.
+     * Occurs when the control is unfocused from a mouse click.
      */
-    private void applyPostRenderOperations(@Nonnull RenderArgs renderArgs)
+    public void onUnfocused(@Nonnull MouseButtonEvent mouseButtonEvent)
     {
-        List<RenderOperation> renderOperationsReversed = new ArrayList<>(renderOperations);
-        Collections.reverse(renderOperations);
 
-        renderOperationsReversed.forEach(renderOperation -> renderOperation.postRenderOperation.accept(this, renderArgs));
-    }
-
-    /**
-     * Adds a render operation to be applied before and after rendering.
-     */
-    public void addRenderOperation(@Nonnull RenderOperation renderOperation)
-    {
-        renderOperations.add(renderOperation);
-    }
-
-    /**
-     * Removes a render operation that is applied before and after rendering.
-     */
-    public void removeRenderOperation(@Nonnull RenderOperation renderOperation)
-    {
-        renderOperations.remove(renderOperation);
-    }
-
-    /**
-     * Renders the given texture at the control's position.
-     *
-     * @param matrixStack the matrix stack.
-     * @param texture the texture to render.
-     */
-    protected void renderTexture(@Nonnull MatrixStack matrixStack, @Nonnull GuiTexture texture)
-    {
-        renderTexture(matrixStack, 0, 0, texture);
-    }
-
-    /**
-     * Renders the given texture at the control's position, with the given offset.
-     *
-     * @param matrixStack the matrix stack.
-     * @param dx the x offset.
-     * @param dy the y offset.
-     * @param texture the texture to render.
-     */
-    protected void renderTexture(@Nonnull MatrixStack matrixStack, int dx, int dy, @Nonnull GuiTexture texture)
-    {
-        renderTexture(matrixStack, texture, getPixelX() + dx, getPixelY() + dy);
     }
 
     /**
