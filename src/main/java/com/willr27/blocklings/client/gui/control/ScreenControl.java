@@ -28,10 +28,26 @@ public class ScreenControl extends Control implements IScreen
     private Control pressedControl;
 
     /**
+     * The pixel x coordinate that the pressed control was pressed at.
+     */
+    private int pressedStartPixelX = 0;
+
+    /**
+     * The pixel y coordinate that the pressed control was pressed at.
+     */
+    private int pressedStartPixelY = 0;
+
+    /**
      * The currently focused control.
      */
     @Nullable
     private Control focusedControl;
+
+    /**
+     * The currently dragged control.
+     */
+    @Nullable
+    private Control draggedControl;
 
     /**
      */
@@ -46,6 +62,7 @@ public class ScreenControl extends Control implements IScreen
         super.forwardMouseReleased(mouseButtonEvent);
 
         setPressedControl(null, mouseButtonEvent);
+        setDraggedControl(null, mouseButtonEvent);
     }
 
     @Override
@@ -102,6 +119,9 @@ public class ScreenControl extends Control implements IScreen
 
             if (control != null)
             {
+                pressedStartPixelX = mouseButtonEvent.mousePixelX;
+                pressedStartPixelY = mouseButtonEvent.mousePixelY;
+
                 mouseButtonEvent.mouseX = control.toLocalX(mouseButtonEvent.mousePixelX);
                 mouseButtonEvent.mouseY = control.toLocalY(mouseButtonEvent.mousePixelY);
 
@@ -110,6 +130,18 @@ public class ScreenControl extends Control implements IScreen
         }
 
         pressedControl = control;
+    }
+
+    @Override
+    public int getPressedStartPixelX()
+    {
+        return pressedStartPixelX;
+    }
+
+    @Override
+    public int getPressedStartPixelY()
+    {
+        return pressedStartPixelY;
     }
 
     @Nullable
@@ -142,5 +174,37 @@ public class ScreenControl extends Control implements IScreen
         }
 
         focusedControl = control;
+    }
+
+    @Nullable
+    @Override
+    public Control getDraggedControl()
+    {
+        return draggedControl;
+    }
+
+    @Override
+    public void setDraggedControl(@Nullable Control control, @Nonnull MousePosEvent mousePosEvent)
+    {
+        if (draggedControl != control)
+        {
+            if (draggedControl != null)
+            {
+                mousePosEvent.mouseX = draggedControl.toLocalX(mousePosEvent.mousePixelX);
+                mousePosEvent.mouseY = draggedControl.toLocalY(mousePosEvent.mousePixelY);
+
+                draggedControl.onDragEnd(mousePosEvent);
+            }
+
+            if (control != null)
+            {
+                mousePosEvent.mouseX = control.toLocalX(mousePosEvent.mousePixelX);
+                mousePosEvent.mouseY = control.toLocalY(mousePosEvent.mousePixelY);
+
+                control.onDragStart(mousePosEvent);
+            }
+        }
+
+        draggedControl = control;
     }
 }

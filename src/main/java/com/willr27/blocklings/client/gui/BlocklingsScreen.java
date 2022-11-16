@@ -66,6 +66,20 @@ public abstract class BlocklingsScreen extends Screen implements IScreen
             }
         }
 
+        {
+            MousePosEvent mousePosEvent = new MousePosEvent(screenControl.toLocalX(pixelMouseX), screenControl.toLocalY(pixelMouseY), pixelMouseX, pixelMouseY);
+
+            screenControl.forwardTryDrag(mousePosEvent);
+
+            if (getDraggedControl() != null)
+            {
+                mousePosEvent.mouseX = getDraggedControl().toLocalX(mousePosEvent.mousePixelX);
+                mousePosEvent.mouseY = getDraggedControl().toLocalY(mousePosEvent.mousePixelY);
+
+                getDraggedControl().onDrag(mousePosEvent);
+            }
+        }
+
         matrixStack.pushPose();
         matrixStack.scale(1.0f / guiScale, 1.0f / guiScale, 1.0f);
 
@@ -157,6 +171,18 @@ public abstract class BlocklingsScreen extends Screen implements IScreen
         screenControl.setPressedControl(control, mouseButtonEvent);
     }
 
+    @Override
+    public int getPressedStartPixelX()
+    {
+        return screenControl.getPressedStartPixelX();
+    }
+
+    @Override
+    public int getPressedStartPixelY()
+    {
+        return screenControl.getPressedStartPixelY();
+    }
+
     @Nullable
     @Override
     public Control getFocusedControl()
@@ -168,5 +194,18 @@ public abstract class BlocklingsScreen extends Screen implements IScreen
     public void setFocusedControl(@Nullable Control control, @Nonnull MouseButtonEvent mouseButtonEvent)
     {
         screenControl.setFocusedControl(control, mouseButtonEvent);
+    }
+
+    @Nullable
+    @Override
+    public Control getDraggedControl()
+    {
+        return screenControl.getDraggedControl();
+    }
+
+    @Override
+    public void setDraggedControl(@Nullable Control control, @Nonnull MousePosEvent mousePosEvent)
+    {
+        screenControl.setDraggedControl(control, mousePosEvent);
     }
 }

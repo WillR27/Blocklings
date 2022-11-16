@@ -20,8 +20,9 @@ public class TestControl extends Control
 
     public TestControl()
     {
-        setWidth(20);
-        setHeight(10);
+        setWidth(50);
+        setHeight(20);
+        setDraggableXY(true);
     }
 
     @Override

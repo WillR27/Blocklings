@@ -44,6 +44,16 @@ public interface IScreen
     void setPressedControl(@Nullable Control control, @Nonnull MouseButtonEvent mouseButtonEvent);
 
     /**
+     * @return the pixel x coordinate the pressed control was pressed at.
+     */
+    int getPressedStartPixelX();
+
+    /**
+     * @return the pixel y coordinate the pressed control was pressed at.
+     */
+    int getPressedStartPixelY();
+
+    /**
      * @return the currently focused control.
      */
     @Nullable
@@ -56,4 +66,18 @@ public interface IScreen
      * @param mouseButtonEvent the mouse button event to pass on to {@link Control#onFocused(MouseButtonEvent)} and {@link Control#onUnfocused(MouseButtonEvent)}.
      */
     void setFocusedControl(@Nullable Control control, @Nonnull MouseButtonEvent mouseButtonEvent);
+
+    /**
+     * @return the currently dragged control.
+     */
+    @Nullable
+    Control getDraggedControl();
+
+    /**
+     * Sets the currently dragged control.
+     *
+     * @param control the new dragged control.
+     * @param mousePosEvent the mouse button event to pass on to {@link Control#onDragStart(MousePosEvent)} and {@link Control#onDragEnd(MousePosEvent)}.
+     */
+    void setDraggedControl(@Nullable Control control, @Nonnull MousePosEvent mousePosEvent);
 }

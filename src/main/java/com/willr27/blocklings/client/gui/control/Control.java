@@ -199,12 +199,33 @@ public class Control extends Gui
     /**
      * Whether the control can is rendered.
      */
-    public boolean isVisible = true;
+    private boolean isVisible = true;
 
     /**
      * Whether the control can interact with any input events.
      */
-    public boolean isInteractive = true;
+    private boolean isInteractive = true;
+
+    /**
+     * Whether the control blocks dragging at its boundaries. So descendant control that is attempted
+     * to be dragged outside this control will be blocked.
+     */
+    private boolean blocksDrag = false;
+
+    /**
+     * Whether the control is draggable in the x-axis.
+     */
+    private boolean isDraggableX = false;
+
+    /**
+     * Whether the control is draggable in the y-axis.
+     */
+    private boolean isDraggableY = false;
+
+    /**
+     * The distance the mouse needs to move while pressed in the to start dragging.
+     */
+    private int dragThreshold = 3;
 
     /**
      */
@@ -405,7 +426,7 @@ public class Control extends Gui
     /**
      * Called when the control is initially hovered.
      */
-    public void onHoverEnter(@Nonnull MousePosEvent mouseEvent)
+    public void onHoverEnter(@Nonnull MousePosEvent mousePosEvent)
     {
 
     }
@@ -421,7 +442,84 @@ public class Control extends Gui
     /**
      * Called when the control is no longer hovered.
      */
-    public void onHoverExit(@Nonnull MousePosEvent mouseEvent)
+    public void onHoverExit(@Nonnull MousePosEvent mousePosEvent)
+    {
+
+    }
+
+    /**
+     * Forwards the attempt to drag the control to its children before attempting to drag itself.
+     */
+    public void forwardTryDrag(@Nonnull MousePosEvent mousePosEvent)
+    {
+        if (!isInteractive())
+        {
+            return;
+        }
+
+        for (Control control : getChildrenCopy())
+        {
+            if (!mousePosEvent.isHandled())
+            {
+                control.forwardTryDrag(mousePosEvent);
+            }
+        }
+
+        if (!mousePosEvent.isHandled())
+        {
+            mousePosEvent.mouseX = toLocalX(mousePosEvent.mousePixelX);
+            mousePosEvent.mouseY = toLocalY(mousePosEvent.mousePixelY);
+
+            if (isPressed() && (isDraggableX() || isDraggableY()))
+            {
+                int pixelDragDifX = mousePosEvent.mousePixelX - getScreen().getPressedStartPixelX();
+                int pixelDragDifY = mousePosEvent.mousePixelY - getScreen().getPressedStartPixelY();
+                int localDragDifX = (int) ((pixelDragDifX / getCumulativeScale()) / GuiUtil.getInstance().getGuiScale());
+                int localDragDifY = (int) ((pixelDragDifY / getCumulativeScale()) / GuiUtil.getInstance().getGuiScale());
+                int absLocalDragDifX = Math.abs(localDragDifX);
+                int absLocalDragDifY = Math.abs(localDragDifY);
+
+                boolean isDraggedX = absLocalDragDifX >= getDragThreshold();
+                boolean isDraggedY = absLocalDragDifY >= getDragThreshold();
+
+                if ((isDraggableX() && isDraggedX) || (isDraggableY() && isDraggedY) || ((isDraggedX || isDraggedY) && isDraggableXY()))
+                {
+                    getScreen().setDraggedControl(this, mousePosEvent);
+
+                    mousePosEvent.setIsHandled(true);
+                }
+            }
+        }
+    }
+
+    /**
+     * Occurs when the control is initially dragged.
+     */
+    public void onDragStart(@Nonnull MousePosEvent mousePosEvent)
+    {
+
+    }
+
+    /**
+     * Occurs when a control is being dragged.
+     */
+    public void onDrag(@Nonnull MousePosEvent mousePosEvent)
+    {
+        if (isDraggableX())
+        {
+            setX(getParent().toLocalX((int) (mousePosEvent.mousePixelX / getParent().getInnerScale())) - getWidth() / 2);
+        }
+
+        if (isDraggableY())
+        {
+            setY(getParent().toLocalY((int) (mousePosEvent.mousePixelY / getParent().getInnerScale())) - getHeight() / 2);
+        }
+    }
+
+    /**
+     * Occurs when the control stops being dragged.
+     */
+    public void onDragEnd(@Nonnull MousePosEvent mousePosEvent)
     {
 
     }
@@ -1278,6 +1376,87 @@ public class Control extends Gui
     }
 
     /**
+     * @return whether this control blocks dragging of child controls.
+     */
+    public boolean isBlocksDrag()
+    {
+        return blocksDrag;
+    }
+
+    /**
+     * Sets whether this control blocks dragging of child controls.
+     */
+    public void setBlocksDrag(boolean blocksDrag)
+    {
+        this.blocksDrag = blocksDrag;
+    }
+
+    /**
+     * @return whether the control is draggable in the x and y axes.
+     */
+    public boolean isDraggableXY()
+    {
+        return isDraggableX() && isDraggableY();
+    }
+
+    /**
+     * Sets whether the control is draggable in the x and y axes.
+     */
+    public void setDraggableXY(boolean draggableXY)
+    {
+        setDraggableX(draggableXY);
+        setDraggableY(draggableXY);
+    }
+
+    /**
+     * @return whether the control is draggable in the x-axis.
+     */
+    public boolean isDraggableX()
+    {
+        return isDraggableX;
+    }
+
+    /**
+     * Sets whether the control is draggable in the x-axis.
+     */
+    public void setDraggableX(boolean draggableX)
+    {
+        isDraggableX = draggableX;
+    }
+
+    /**
+     * @return whether the control is draggable in the y-axis.
+     */
+    public boolean isDraggableY()
+    {
+        return isDraggableY;
+    }
+
+    /**
+     * Sets whether the control is draggable in the y-axis.
+     */
+    public void setDraggableY(boolean draggableY)
+    {
+        isDraggableY = draggableY;
+    }
+
+    /**
+     * @return the distance the mouse needs to move while pressed to start dragging.
+     */
+    public int getDragThreshold()
+    {
+        return dragThreshold;
+    }
+
+    /**
+     * Sets the distance the mouse needs to move while pressed to start dragging.
+     */
+    public void setDragThreshold(int dragThreshold)
+    {
+        this.dragThreshold = dragThreshold;
+    }
+
+    /**
      * @return whether the control is currently hovered over.
      */
     public boolean isHovered()
@@ -1299,6 +1478,14 @@ public class Control extends Gui
     public boolean isFocused()
     {
         return getScreen().getFocusedControl() == this;
+    }
+
+    /**
+     * @return whether the control is currently being dragged.
+     */
+    public boolean isDragging()
+    {
+        return getScreen().getDraggedControl() == this;
     }
 
     /**
