@@ -494,7 +494,7 @@ public class Control extends Gui
 
                     getScreen().setFocusedControl(this, mouseButtonEvent);
 
-                    // Set back to handled so that the screen can detect if a control was hovered.
+                    // Set back to handled so that the screen can detect if a control handled the mouse clicked event.
                     mouseButtonEvent.setIsHandled(true);
                 }
             }
@@ -505,6 +505,90 @@ public class Control extends Gui
      * Occurs when the mouse is clicked on the control.
      */
     protected void onMouseClicked(@Nonnull MouseButtonEvent mouseButtonEvent)
+    {
+        mouseButtonEvent.setIsHandled(true);
+    }
+
+    /**
+     * Forwards the call to {@link #onGlobalMouseReleased(MouseButtonEvent)} to the child controls before itself.
+     */
+    public void forwardGlobalMouseReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
+    {
+        for (Control control : getChildrenCopy())
+        {
+            if (!mouseButtonEvent.isHandled())
+            {
+                control.forwardGlobalMouseReleased(mouseButtonEvent);
+            }
+        }
+
+        if (!mouseButtonEvent.isHandled())
+        {
+            mouseButtonEvent.mouseX = toLocalX(mouseButtonEvent.mousePixelX);
+            mouseButtonEvent.mouseY = toLocalY(mouseButtonEvent.mousePixelY);
+
+            onGlobalMouseReleased(mouseButtonEvent);
+        }
+    }
+
+    /**
+     * Occurs when the mouse is released anywhere.
+     */
+    protected void onGlobalMouseReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
+    {
+
+    }
+
+    /**
+     * Forwards the call to {@link #onMouseReleased(MouseButtonEvent)} to the child controls before itself.
+     */
+    public void forwardMouseReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
+    {
+        if (!isInteractive())
+        {
+            return;
+        }
+
+        if (!collidesWith(mouseButtonEvent.mousePixelX, mouseButtonEvent.mousePixelY))
+        {
+            return;
+        }
+
+        for (Control control : getChildrenCopy())
+        {
+            if (!mouseButtonEvent.isHandled())
+            {
+                control.forwardMouseReleased(mouseButtonEvent);
+            }
+        }
+
+        if (!mouseButtonEvent.isHandled())
+        {
+            mouseButtonEvent.mouseX = toLocalX(mouseButtonEvent.mousePixelX);
+            mouseButtonEvent.mouseY = toLocalY(mouseButtonEvent.mousePixelY);
+
+            onMouseReleased(mouseButtonEvent);
+
+            if (mouseButtonEvent.isHandled())
+            {
+                if (getScreen() != null)
+                {
+                    // This probably isn't necessary, but we can set it back to unhandled anyway.
+                    mouseButtonEvent.setIsHandled(false);
+
+                    getScreen().setFocusedControl(this, mouseButtonEvent);
+
+                    // Set back to handled so that the screen can detect if a control handled the mouse released event.
+                    mouseButtonEvent.setIsHandled(true);
+                }
+            }
+        }
+    }
+
+    /**
+     * Occurs when the mouse is released on the control.
+     */
+    protected void onMouseReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
     {
         mouseButtonEvent.setIsHandled(true);
     }

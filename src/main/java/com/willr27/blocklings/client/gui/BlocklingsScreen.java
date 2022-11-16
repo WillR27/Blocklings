@@ -92,6 +92,25 @@ public abstract class BlocklingsScreen extends Screen implements IScreen
         return super.mouseClicked(screenMouseX, screenMouseY, mouseButton);
     }
 
+    @Override
+    public boolean mouseReleased(double screenMouseX, double screenMouseY, int mouseButton)
+    {
+        int pixelMouseX = GuiUtil.getInstance().getPixelMouseX();
+        int pixelMouseY = GuiUtil.getInstance().getPixelMouseY();
+
+        MouseButtonEvent mouseButtonEvent = new MouseButtonEvent(screenControl.toLocalX(pixelMouseX), screenControl.toLocalY(pixelMouseY), pixelMouseX, pixelMouseY, mouseButton);
+
+        screenControl.forwardGlobalMouseReleased(mouseButtonEvent);
+        screenControl.forwardMouseReleased(mouseButtonEvent);
+
+        if (mouseButtonEvent.isHandled())
+        {
+            return true;
+        }
+
+        return super.mouseReleased(screenMouseX, screenMouseY, mouseButton);
+    }
+
     @Nullable
     @Override
     public Control getHoveredControl()

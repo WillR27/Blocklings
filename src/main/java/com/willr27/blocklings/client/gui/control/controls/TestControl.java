@@ -36,15 +36,17 @@ public class TestControl extends Control
     }
 
     @Override
-    protected void onMouseClicked(@Nonnull MouseButtonEvent mouseButtonEvent)
+    protected void onMouseReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
     {
+        Log.info("Released ", getClass().getName());
+
         mouseButtonEvent.setIsHandled(true);
     }
 
     @Override
-    protected void onGlobalMouseClicked(@Nonnull MouseButtonEvent mouseButtonEvent)
+    protected void onGlobalMouseReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
     {
-        Log.info("CLICKED ", getClass().getName());
+        Log.info("Released ", getClass().getName());
 
 //        mouseButtonEvent.setIsHandled(true);
     }
