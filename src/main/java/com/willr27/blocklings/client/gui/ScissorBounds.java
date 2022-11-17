@@ -37,8 +37,8 @@ public class ScissorBounds
      */
     public ScissorBounds(int pixelX, int pixelY, int pixelWidth, int pixelHeight)
     {
-        this.pixelX = Math.max(0, pixelX);
-        this.pixelY = Math.max(0, pixelY);
+        this.pixelX = pixelX;
+        this.pixelY = pixelY;
         this.pixelWidth = Math.max(0, pixelWidth);
         this.pixelHeight = Math.max(0, pixelHeight);
     }

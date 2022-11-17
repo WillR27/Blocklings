@@ -1,6 +1,7 @@
 package com.willr27.blocklings.client.gui;
 
 import com.willr27.blocklings.client.gui.control.controls.TestControl;
+import com.willr27.blocklings.client.gui2.Colour;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -20,18 +21,24 @@ public class TestScreen extends BlocklingsScreen
         control2.addChild(control3);
 
         control1.setInnerScale(2.0f);
-        control2.setInnerScale(2.0f);
+        control2.setInnerScale(4.0f);
 
-        control1.setX(1);
-        control1.setY(1);
-        control2.setX(3);
-        control2.setY(3);
-        control3.setX(5);
-        control3.setY(5);
+        control1.setX(2);
+        control1.setY(2);
+        control2.setX(4);
+        control2.setY(4);
+        control3.setX(0);
+        control3.setY(0);
 
-//        control1.setWidth(120);
-//        control1.setHeight(60);
-//        control2.setWidth(100);
-//        control2.setHeight(100);
+        control1.setWidth(120);
+        control1.setHeight(91);
+        control2.setWidth(36);
+        control2.setHeight(21);
+        control3.setWidth(3);
+        control3.setHeight(6);
+
+        control1.setBackgroundColour(new Colour(255, 0, 255));
+        control2.setBackgroundColour(new Colour(0, 255, 255));
+        control3.setBackgroundColour(new Colour(255, 255, 0));
     }
 }

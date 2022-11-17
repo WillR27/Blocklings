@@ -63,6 +63,27 @@ public class Colour
     }
 
     /**
+     * @param r the red value.
+     * @param g the green value.
+     * @param b the blue value.
+     */
+    public Colour(int r, int g, int b)
+    {
+        this(r, g, b, 255);
+    }
+
+    /**
+     * @param r the red value.
+     * @param g the green value.
+     * @param b the blue value.
+     * @param a the alpha value.
+     */
+    public Colour(int r, int g, int b, int a)
+    {
+        this(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+    }
+
+    /**
      * Applies the colour to the render system.
      */
     public void apply()
@@ -161,5 +182,45 @@ public class Colour
     public void setA(float a)
     {
         this.a = a;
+    }
+
+    /**
+     * @return the red value as an int.
+     */
+    public int r()
+    {
+        return (int) (r * 255);
+    }
+
+    /**
+     * @return the green value as an int.
+     */
+    public int g()
+    {
+        return (int) (g * 255);
+    }
+
+    /**
+     * @return the blue value as an int.
+     */
+    public int b()
+    {
+        return (int) (b * 255);
+    }
+
+    /**
+     * @return the alpha value as an int.
+     */
+    public int a()
+    {
+        return (int) (a * 255);
+    }
+
+    /**
+     * @return the colour as an integer.
+     */
+    public int rgba()
+    {
+        return (a() << 24) + (r() << 16) + (g() << 8) + (b());
     }
 }

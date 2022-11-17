@@ -10,6 +10,7 @@ import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonE
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrollEvent;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
+import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraftforge.api.distmarker.Dist;
@@ -207,10 +208,10 @@ public class Control extends Gui
     private boolean isInteractive = true;
 
     /**
-     * Whether the control blocks dragging at its boundaries. So descendant control that is attempted
+     * Whether the control blocks dragging at its boundaries. So child controls that attempt
      * to be dragged outside this control will be blocked.
      */
-    private boolean blocksDrag = false;
+    private boolean blocksDrag = true;
 
     /**
      * Whether the control is draggable in the x-axis.
@@ -226,6 +227,12 @@ public class Control extends Gui
      * The distance the mouse needs to move while pressed in the to start dragging.
      */
     private int dragThreshold = 3;
+
+    /**
+     * The background colour of the control.
+     */
+    @Nonnull
+    private Colour backgroundColour = new Colour(0, 0, 0, 0);
 
     /**
      */
@@ -294,6 +301,7 @@ public class Control extends Gui
         applyPreRenderTransformations(renderArgs);
         applyPreRenderOperations(renderArgs);
         applyScissor(renderArgs);
+        onRenderBackground(renderArgs);
         onRender(renderArgs);
         applyPostRenderOperations(renderArgs);
         applyPostRenderTransformations(renderArgs);
@@ -310,6 +318,16 @@ public class Control extends Gui
     private void applyPreRenderOperations(@Nonnull RenderArgs renderArgs)
     {
         renderOperations.forEach(renderOperation -> renderOperation.preRenderOperation.accept(this, renderArgs));
+    }
+
+    /**
+     * Renders the control's background.
+     *
+     * @param renderArgs the render args.
+     */
+    protected void onRenderBackground(@Nonnull RenderArgs renderArgs)
+    {
+        renderRectangle(renderArgs.matrixStack, backgroundColour.rgba());
     }
 
     /**
@@ -373,6 +391,32 @@ public class Control extends Gui
     protected void renderTexture(@Nonnull MatrixStack matrixStack, int dx, int dy, @Nonnull GuiTexture texture)
     {
         renderTexture(matrixStack, texture, getPixelX() + dx, getPixelY() + dy);
+    }
+
+    /**
+     * Renders a rectangle at the control's position.
+     *
+     * @param matrixStack the matrix stack.
+     * @param colour the colour of the rectangle.
+     */
+    public void renderRectangle(@Nonnull MatrixStack matrixStack, int colour)
+    {
+        fill(matrixStack, getPixelX(), getPixelY(), getPixelX() + getWidth(), getPixelY() + getHeight(), colour);
+    }
+
+    /**
+     * Renders a rectangle at the given localised position and scaled width/height.
+     *
+     * @param matrixStack the matrix stack.
+     * @param x the localised x position.
+     * @param y the localised y position.
+     * @param width the scaled width.
+     * @param height the scaled height.
+     * @param colour the colour of the rectangle.
+     */
+    public void renderRectangle(@Nonnull MatrixStack matrixStack, int x, int y, int width, int height, int colour)
+    {
+        fill(matrixStack, getPixelX() + x, getPixelY() + y, getPixelX() + x + width, getPixelY() + y + height, colour);
     }
 
      /**
@@ -507,13 +551,70 @@ public class Control extends Gui
     {
         if (isDraggableX())
         {
-            setX(getParent().toLocalX((int) (mousePosEvent.mousePixelX / getParent().getInnerScale())) - getWidth() / 2);
+            setX((int) ((getParent().toLocalX(mousePosEvent.mousePixelX) / getParent().getInnerScale()) - getWidth() / 2));
         }
 
         if (isDraggableY())
         {
-            setY(getParent().toLocalY((int) (mousePosEvent.mousePixelY / getParent().getInnerScale())) - getHeight() / 2);
+            setY((int) ((getParent().toLocalY(mousePosEvent.mousePixelY) / getParent().getInnerScale()) - getHeight() / 2));
         }
+
+        List<Side> atParentBounds = getParentBoundsAt();
+
+        if (isDraggableX() && getParent().isBlocksDrag())
+        {
+            if (atParentBounds.contains(Side.LEFT))
+            {
+                setX(0);
+            }
+            else if (atParentBounds.contains(Side.RIGHT))
+            {
+                setX((int) ((getParent().toLocalX(getParent().getPixelX() + getParent().getPixelWidth()) / getParent().getInnerScale()) - getWidth()));
+            }
+        }
+
+        if (isDraggableY() && getParent().isBlocksDrag())
+        {
+            if (atParentBounds.contains(Side.TOP))
+            {
+                setY(0);
+            }
+            else if (atParentBounds.contains(Side.BOTTOM))
+            {
+                setY((int) ((getParent().toLocalY(getParent().getPixelY() + getParent().getPixelHeight()) / getParent().getInnerScale()) - getHeight()));
+            }
+        }
+    }
+
+    /**
+     * @return the sides of the parent the control is currently at or exceeding, null if not.
+     */
+    @Nonnull
+    public List<Side> getParentBoundsAt()
+    {
+        List<Side> sides = new ArrayList<>();
+
+        if (getPixelX() <= getParent().getPixelX())
+        {
+            sides.add(Side.LEFT);
+        }
+
+        if (getPixelX() + getPixelWidth() >= getParent().getPixelX() + getParent().getPixelWidth())
+        {
+            sides.add(Side.RIGHT);
+        }
+
+        if (getPixelY() <= getParent().getPixelY())
+        {
+            sides.add(Side.TOP);
+        }
+
+        if (getPixelY() + getPixelHeight() >= getParent().getPixelY() + getParent().getPixelHeight())
+        {
+            sides.add(Side.BOTTOM);
+        }
+
+        return sides;
     }
 
     /**
@@ -1454,6 +1555,23 @@ public class Control extends Gui
     public void setDragThreshold(int dragThreshold)
     {
         this.dragThreshold = dragThreshold;
+    }
+
+    /**
+     * @return the background colour.
+     */
+    @Nonnull
+    public Colour getBackgroundColour()
+    {
+        return backgroundColour;
+    }
+
+    /**
+     * Sets the background colour.
+     */
+    public void setBackgroundColour(@Nonnull Colour backgroundColour)
+    {
+        this.backgroundColour = backgroundColour;
     }
 
     /**
