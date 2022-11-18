@@ -1,6 +1,7 @@
 package com.willr27.blocklings.client.gui.util;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.util.InputMappings;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -26,5 +27,11 @@ public class FullGuiUtil extends GuiUtil
     public int getPixelMouseY()
     {
         return (int) Minecraft.getInstance().mouseHandler.ypos();
+    }
+
+    @Override
+    public boolean isKeyDown(int key)
+    {
+        return InputMappings.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), key);
     }
 }

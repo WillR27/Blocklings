@@ -27,4 +27,10 @@ public class TestGuiUtil extends GuiUtil
     {
         return 0;
     }
+
+    @Override
+    public boolean isKeyDown(int key)
+    {
+        return false;
+    }
 }

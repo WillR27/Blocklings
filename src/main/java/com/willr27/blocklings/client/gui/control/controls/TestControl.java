@@ -89,6 +89,8 @@ public class TestControl extends Control
         texture = mouseScrollEvent.scrollAmount > 0 ? GuiTextures.DROPDOWN_UP_ARROW : GuiTextures.DROPDOWN_DOWN_ARROW;
 
 //        mouseScrollEvent.setIsHandled(true);
+
+        super.onMouseScrolled(mouseScrollEvent);
     }
 
     @Override

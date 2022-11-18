@@ -37,6 +37,13 @@ public class TestScreen extends BlocklingsScreen
         control3.setWidth(3);
         control3.setHeight(6);
 
+        control1.setScrollableXY(true);
+        control1.setMaxScrollOffsetX(200);
+        control1.setMaxScrollOffsetY(300);
+        control2.setScrollableXY(true);
+        control2.setMaxScrollOffsetX(5);
+        control2.setMaxScrollOffsetY(5);
+
         control1.setBackgroundColour(new Colour(255, 0, 255));
         control2.setBackgroundColour(new Colour(0, 255, 255));
         control3.setBackgroundColour(new Colour(255, 255, 0));

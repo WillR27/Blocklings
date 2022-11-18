@@ -55,4 +55,9 @@ public abstract class GuiUtil
      * @return the current mouse pixel y coordinate.
      */
     public abstract int getPixelMouseY();
+
+    /**
+     * @return whether the given key is currently pressed.
+     */
+    public abstract boolean isKeyDown(int key);
 }

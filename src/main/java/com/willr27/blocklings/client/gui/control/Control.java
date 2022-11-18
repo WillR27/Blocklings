@@ -15,6 +15,7 @@ import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -227,6 +228,36 @@ public class Control extends Gui
      * The distance the mouse needs to move while pressed in the to start dragging.
      */
     private int dragThreshold = 3;
+
+    /**
+     * Whether the control is scrollable in the x-axis.
+     */
+    private boolean isScrollableX = false;
+
+    /**
+     * Whether the control is scrollable in the y-axis.
+     */
+    private boolean isScrollableY = false;
+
+    /**
+     * The scroll offset in the x-axis.
+     */
+    private int scrollOffsetX = 0;
+
+    /**
+     * The scroll offset in the y-axis.
+     */
+    private int scrollOffsetY = 0;
+
+    /**
+     * The max scroll offset in the x-axis.
+     */
+    private int maxScrollOffsetX = 0;
+
+    /**
+     * The max scroll offset in the y-axis.
+     */
+    private int maxScrollOffsetY = 0;
 
     /**
      * The background colour of the control.
@@ -893,7 +924,38 @@ public class Control extends Gui
      */
     protected void onMouseScrolled(@Nonnull MouseScrollEvent mouseScrollEvent)
     {
+        scrollControl(mouseScrollEvent);
+    }
 
+    /**
+     * Uses the given scroll event and attempts to scroll the control.
+     *
+     * @param mouseScrollEvent the scroll event to use.
+     */
+    protected void scrollControl(@Nonnull MouseScrollEvent mouseScrollEvent)
+    {
+        float scrollAmount = 10.0f / (getCumulativeScale() * getCumulativeScale());
+
+        if (GuiUtil.getInstance().isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL) || GuiUtil.getInstance().isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL))
+        {
+            if (isScrollableX())
+            {
+                if (scrollX((int) (scrollAmount * mouseScrollEvent.scrollAmount)) != 0)
+                {
+                    mouseScrollEvent.setIsHandled(true);
+                }
+            }
+        }
+        else
+        {
+            if (isScrollableY())
+            {
+                if (scrollY((int) (scrollAmount * mouseScrollEvent.scrollAmount)) != 0)
+                {
+                    mouseScrollEvent.setIsHandled(true);
+                }
+            }
+        }
     }
 
     /**
@@ -1555,6 +1617,169 @@ public class Control extends Gui
     public void setDragThreshold(int dragThreshold)
     {
         this.dragThreshold = dragThreshold;
+    }
+
+    /**
+     * @return whether the control is scrollable in both axes.
+     */
+    public boolean isScrollableXY()
+    {
+        return isScrollableX() && isScrollableY();
+    }
+
+    /**
+     * Sets whether the control is scrollable in both axes.
+     */
+    public void setScrollableXY(boolean scrollableXY)
+    {
+        setScrollableX(scrollableXY);
+        setScrollableY(scrollableXY);
+    }
+
+    /**
+     * @return whether the control is scrollable in the x-axis.
+     */
+    public boolean isScrollableX()
+    {
+        return isScrollableX;
+    }
+
+    /**
+     * Sets whether the control is scrollable in the x-axis.
+     */
+    public void setScrollableX(boolean scrollableX)
+    {
+        isScrollableX = scrollableX;
+    }
+
+    /**
+     * @return whether the control is scrollable in the y-axis.
+     */
+    public boolean isScrollableY()
+    {
+        return isScrollableY;
+    }
+
+    /**
+     * Sets whether the control is scrollable in the y-axis.
+     */
+    public void setScrollableY(boolean scrollableY)
+    {
+        isScrollableY = scrollableY;
+    }
+
+    /**
+     * @return the scroll offset in the x-axis.
+     */
+    public int getScrollOffsetX()
+    {
+        return scrollOffsetX;
+    }
+
+    /**
+     * Increments the scroll offset in the x-axis by the given amount.
+     *
+     * @return the amount actually scrolled.
+     */
+    public int scrollX(int scrollAmount)
+    {
+        return setScrollOffsetX(getScrollOffsetX() + scrollAmount);
+    }
+
+    /**
+     * Sets the scroll offset in the x-axis.
+     *
+     * @return the amount scrolled.
+     */
+    public int setScrollOffsetX(int scrollOffsetX)
+    {
+        int prevOffset = this.scrollOffsetX;
+
+        this.scrollOffsetX = Math.max(0, Math.min(getMaxScrollOffsetX(), scrollOffsetX));
+
+        int amountScrolled = this.scrollOffsetX - prevOffset;
+
+        getChildrenCopy().forEach(control -> control.setX(control.getX() + amountScrolled));
+
+        return amountScrolled;
+    }
+
+    /**
+     * @return the scroll offset in the y-axis.
+     */
+    public int getScrollOffsetY()
+    {
+        return scrollOffsetY;
+    }
+
+    /**
+     * Increments the scroll offset in the y-axis by the given amount.
+     *
+     * @return the amount actually scrolled.
+     */
+    public int scrollY(int scrollAmount)
+    {
+        return setScrollOffsetY(getScrollOffsetY() + scrollAmount);
+    }
+
+    /**
+     * Sets the scroll offset in the y-axis.
+     *
+     * @return the amount scrolled.
+     */
+    public int setScrollOffsetY(int scrollOffsetY)
+    {
+        int prevOffset = this.scrollOffsetY;
+
+        this.scrollOffsetY = Math.max(0, Math.min(getMaxScrollOffsetY(), scrollOffsetY));
+
+        int amountScrolled = this.scrollOffsetY - prevOffset;
+
+        getChildrenCopy().forEach(control -> control.setY(control.getY() + amountScrolled));
+
+        return amountScrolled;
+    }
+
+    /**
+     * @return the max scroll offset in the x-axis.
+     */
+    public int getMaxScrollOffsetX()
+    {
+        return maxScrollOffsetX;
+    }
+
+    /**
+     * Sets the max scroll offset in the x-axis.
+     */
+    public void setMaxScrollOffsetX(int maxScrollOffsetX)
+    {
+        this.maxScrollOffsetX = Math.max(0, maxScrollOffsetX);
+
+        if (getScrollOffsetX() > getMaxScrollOffsetX())
+        {
+            setScrollOffsetX(getMaxScrollOffsetX());
+        }
+    }
+
+    /**
+     * @return the max scroll offset in the y-axis.
+     */
+    public int getMaxScrollOffsetY()
+    {
+        return maxScrollOffsetY;
+    }
+
+    /**
+     * Sets the max scroll offset in the y-axis.
+     */
+    public void setMaxScrollOffsetY(int maxScrollOffsetY)
+    {
+        this.maxScrollOffsetY = Math.max(0, maxScrollOffsetY);
+
+        if (getScrollOffsetY() > getMaxScrollOffsetY())
+        {
+            setScrollOffsetY(getMaxScrollOffsetY());
+        }
     }
 
     /**
