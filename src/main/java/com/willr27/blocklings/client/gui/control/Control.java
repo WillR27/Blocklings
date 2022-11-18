@@ -240,6 +240,11 @@ public class Control extends Gui
     private boolean isScrollableY = false;
 
     /**
+     * The multiplier used to adjust the amount scrolled.
+     */
+    private float scrollSpeed = 10.0f;
+
+    /**
      * The scroll offset in the x-axis.
      */
     private int scrollOffsetX = 0;
@@ -591,15 +596,26 @@ public class Control extends Gui
         }
 
         List<Side> atParentBounds = getParentBoundsAt();
+        float scrollAmount = getParent().getScrollSpeed() / (getParent().getCumulativeScale() * getParent().getCumulativeScale());
 
         if (isDraggableX() && getParent().isBlocksDrag())
         {
             if (atParentBounds.contains(Side.LEFT))
             {
+                if (getParent().isScrollableX())
+                {
+                    getParent().scrollX((int) (scrollAmount * -1));
+                }
+
                 setX(0);
             }
             else if (atParentBounds.contains(Side.RIGHT))
             {
+                if (getParent().isScrollableX())
+                {
+                    getParent().scrollX((int) (scrollAmount));
+                }
+
                 setX((int) ((getParent().toLocalX(getParent().getPixelX() + getParent().getPixelWidth()) / getParent().getInnerScale()) - getWidth()));
             }
         }
@@ -608,10 +624,20 @@ public class Control extends Gui
         {
             if (atParentBounds.contains(Side.TOP))
             {
+                if (getParent().isScrollableY())
+                {
+                    getParent().scrollY((int) (scrollAmount) * -1);
+                }
+
                 setY(0);
             }
             else if (atParentBounds.contains(Side.BOTTOM))
             {
+                if (getParent().isScrollableY())
+                {
+                    getParent().scrollY((int) (scrollAmount));
+                }
+
                 setY((int) ((getParent().toLocalY(getParent().getPixelY() + getParent().getPixelHeight()) / getParent().getInnerScale()) - getHeight()));
             }
         }
@@ -934,7 +960,7 @@ public class Control extends Gui
      */
     protected void scrollControl(@Nonnull MouseScrollEvent mouseScrollEvent)
     {
-        float scrollAmount = 10.0f / (getCumulativeScale() * getCumulativeScale());
+        float scrollAmount = getScrollSpeed() / (getCumulativeScale() * getCumulativeScale());
 
         if (GuiUtil.getInstance().isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL) || GuiUtil.getInstance().isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL))
         {
@@ -1666,6 +1692,22 @@ public class Control extends Gui
     public void setScrollableY(boolean scrollableY)
     {
         isScrollableY = scrollableY;
+    }
+
+    /**
+     * @return the multiplier used to adjust the amount scrolled.
+     */
+    public float getScrollSpeed()
+    {
+        return scrollSpeed;
+    }
+
+    /**
+     * Sets the multiplier used to adjust the amount scrolled.
+     */
+    public void setScrollSpeed(float scrollSpeed)
+    {
+        this.scrollSpeed = scrollSpeed;
     }
 
     /**
