@@ -291,7 +291,7 @@ public class Control extends Gui
         // Scale the control, but also make sure to cancel out the translation caused by the scaling.
         renderArgs.matrixStack.pushPose();
         renderArgs.matrixStack.scale(scale, scale, 1.0f);
-        renderArgs.matrixStack.translate((getPixelX() / scale) - getPixelX(), (getPixelY() / scale) - getPixelY(), 0.0f);
+        renderArgs.matrixStack.translate((getPixelX() / scale) - getPixelX(), (getPixelY() / scale) - getPixelY(), isDraggingOrAncestorIsDragging() ? 100.0f : 0.0f);
     }
 
     /**
@@ -596,49 +596,61 @@ public class Control extends Gui
         }
 
         List<Side> atParentBounds = getParentBoundsAt();
-        float scrollAmount = getParent().getScrollSpeed() / (getParent().getCumulativeScale() * getParent().getCumulativeScale());
+        int scrollAmount = (int) ((getParent().getScrollSpeed() / (getParent().getCumulativeScale() * getParent().getCumulativeScale())) / 2.0f);
 
-        if (isDraggableX() && getParent().isBlocksDrag())
+        if (isDraggableX())
         {
             if (atParentBounds.contains(Side.LEFT))
             {
                 if (getParent().isScrollableX())
                 {
-                    getParent().scrollX((int) (scrollAmount * -1));
+                    getParent().scrollX(scrollAmount * -1);
                 }
 
-                setX(0);
+                if (getParent().blocksDrag())
+                {
+                    setX(0);
+                }
             }
             else if (atParentBounds.contains(Side.RIGHT))
             {
                 if (getParent().isScrollableX())
                 {
-                    getParent().scrollX((int) (scrollAmount));
+                    getParent().scrollX(scrollAmount);
                 }
 
-                setX((int) ((getParent().toLocalX(getParent().getPixelX() + getParent().getPixelWidth()) / getParent().getInnerScale()) - getWidth()));
+                if (getParent().blocksDrag())
+                {
+                    setX((int) ((getParent().toLocalX(getParent().getPixelX() + getParent().getPixelWidth()) / getParent().getInnerScale()) - getWidth()));
+                }
             }
         }
 
-        if (isDraggableY() && getParent().isBlocksDrag())
+        if (isDraggableY())
         {
             if (atParentBounds.contains(Side.TOP))
             {
                 if (getParent().isScrollableY())
                 {
-                    getParent().scrollY((int) (scrollAmount) * -1);
+                    getParent().scrollY(scrollAmount * -1);
                 }
 
-                setY(0);
+                if (getParent().blocksDrag())
+                {
+                    setY(0);
+                }
             }
             else if (atParentBounds.contains(Side.BOTTOM))
             {
                 if (getParent().isScrollableY())
                 {
-                    getParent().scrollY((int) (scrollAmount));
+                    getParent().scrollY(scrollAmount);
                 }
 
-                setY((int) ((getParent().toLocalY(getParent().getPixelY() + getParent().getPixelHeight()) / getParent().getInnerScale()) - getHeight()));
+                if (getParent().blocksDrag())
+                {
+                    setY((int) ((getParent().toLocalY(getParent().getPixelY() + getParent().getPixelHeight()) / getParent().getInnerScale()) - getHeight()));
+                }
             }
         }
     }
@@ -960,13 +972,13 @@ public class Control extends Gui
      */
     protected void scrollControl(@Nonnull MouseScrollEvent mouseScrollEvent)
     {
-        float scrollAmount = getScrollSpeed() / (getCumulativeScale() * getCumulativeScale());
+        int scrollAmount = (int) ((getScrollSpeed() / (getCumulativeScale() * getCumulativeScale())) * -1.0f * mouseScrollEvent.scrollAmount);
 
         if (GuiUtil.getInstance().isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL) || GuiUtil.getInstance().isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL))
         {
             if (isScrollableX())
             {
-                if (scrollX((int) (scrollAmount * mouseScrollEvent.scrollAmount)) != 0)
+                if (scrollX(scrollAmount) != 0)
                 {
                     mouseScrollEvent.setIsHandled(true);
                 }
@@ -976,7 +988,7 @@ public class Control extends Gui
         {
             if (isScrollableY())
             {
-                if (scrollY((int) (scrollAmount * mouseScrollEvent.scrollAmount)) != 0)
+                if (scrollY(scrollAmount) != 0)
                 {
                     mouseScrollEvent.setIsHandled(true);
                 }
@@ -997,7 +1009,7 @@ public class Control extends Gui
      * @return the current parent control.
      */
     @Nullable
-    public Control getParent()
+    public final Control getParent()
     {
         return parent;
     }
@@ -1005,47 +1017,48 @@ public class Control extends Gui
     /**
      * Sets the current parent control to the given control.
      */
-    public void setParent(@Nullable Control parent)
+    public final void setParent(@Nullable Control parent)
     {
         if (this.parent == parent)
         {
             return;
         }
 
-        ParentChangedEvent event = onParentChanged.handle(new ParentChangedEvent(this, parent));
+        Control oldParent = this.parent;
 
-        if (!event.isHandled())
+        this.parent = parent;
+
+        if (oldParent != null)
         {
-            Control oldParent = this.parent;
+            oldParent.children.remove(this);
 
-            this.parent = parent;
+            this.screen = null;
 
-            if (oldParent != null)
-            {
-                oldParent.children.remove(this);
-
-                this.screen = null;
-            }
-
-            if (this.parent != null)
-            {
-                this.parent.addChild(this);
-
-                screen = this.parent.getScreen();
-            }
-
-            recalcPixelX();
-            recalcPixelY();
-            recalcPixelWidth();
-            recalcPixelHeight();
+            oldParent.onChildRemoved.handle(new ChildRemovedEvent(oldParent, this));
         }
+
+        if (this.parent != null)
+        {
+            this.parent.children.add(this);
+
+            screen = this.parent.getScreen();
+
+            this.parent.onChildAdded.handle(new ChildAddedEvent(this.parent, this));
+        }
+
+        recalcPixelX();
+        recalcPixelY();
+        recalcPixelWidth();
+        recalcPixelHeight();
+
+        onParentChanged.handle(new ParentChangedEvent(this, parent));
     }
 
     /**
      * @return a copy of the list of children.
      */
     @Nonnull
-    public List<Control> getChildrenCopy()
+    public final List<Control> getChildrenCopy()
     {
         return new ArrayList<>(children);
     }
@@ -1053,53 +1066,17 @@ public class Control extends Gui
     /**
      * Adds the given control as a child. This will change the parent of the given control too.
      */
-    public void addChild(@Nonnull Control control)
+    public final void addChild(@Nonnull Control control)
     {
-        if (children.contains(control))
-        {
-            return;
-        }
-
-        ChildAddedEvent event = onChildAdded.handle(new ChildAddedEvent(this, control));
-
-        if (!event.isHandled())
-        {
-            control.parent = this;
-            control.screen = control.parent.getScreen();
-
-            children.add(control);
-
-            control.recalcPixelX();
-            control.recalcPixelY();
-            control.recalcPixelWidth();
-            control.recalcPixelHeight();
-        }
+        control.setParent(this);
     }
 
     /**
      * Removes the given control as a child. This will remove the parent from the given control too.
      */
-    public void removeChild(@Nonnull Control control)
+    public final void removeChild(@Nonnull Control control)
     {
-        if (!children.contains(control))
-        {
-            return;
-        }
-
-        ChildRemovedEvent event = onChildRemoved.handle(new ChildRemovedEvent(this, control));
-
-        if (!event.isHandled())
-        {
-            control.parent = null;
-            control.screen = null;
-
-            children.remove(control);
-
-            control.recalcPixelX();
-            control.recalcPixelY();
-            control.recalcPixelWidth();
-            control.recalcPixelHeight();
-        }
+        control.setParent(null);
     }
 
     /**
@@ -1231,6 +1208,14 @@ public class Control extends Gui
     }
 
     /**
+     * @return the width of the control including margins.
+     */
+    public int getEffectiveWidth()
+    {
+        return getWidth() + getMargin(Side.LEFT) + getMargin(Side.RIGHT);
+    }
+
+    /**
      * @return the scaled width of the control.
      */
     public int getWidth()
@@ -1258,6 +1243,14 @@ public class Control extends Gui
 
             recalcPixelWidth();
         }
+    }
+
+    /**
+     * @return the height of the control including margins.
+     */
+    public int getEffectiveHeight()
+    {
+        return getHeight() + getMargin(Side.TOP) + getMargin(Side.BOTTOM);
     }
 
     /**
@@ -1567,7 +1560,7 @@ public class Control extends Gui
     /**
      * @return whether this control blocks dragging of child controls.
      */
-    public boolean isBlocksDrag()
+    public boolean blocksDrag()
     {
         return blocksDrag;
     }
@@ -1741,7 +1734,7 @@ public class Control extends Gui
 
         int amountScrolled = this.scrollOffsetX - prevOffset;
 
-        getChildrenCopy().forEach(control -> control.setX(control.getX() + amountScrolled));
+        getChildrenCopy().forEach(control -> control.setX(control.getX() - amountScrolled));
 
         return amountScrolled;
     }
@@ -1777,7 +1770,7 @@ public class Control extends Gui
 
         int amountScrolled = this.scrollOffsetY - prevOffset;
 
-        getChildrenCopy().forEach(control -> control.setY(control.getY() + amountScrolled));
+        getChildrenCopy().forEach(control -> control.setY(control.getY() - amountScrolled));
 
         return amountScrolled;
     }
@@ -1871,6 +1864,24 @@ public class Control extends Gui
     public boolean isDragging()
     {
         return getScreen().getDraggedControl() == this;
+    }
+
+    /**
+     * @return whether the control or its ancestor is currently being dragged.
+     */
+    public boolean isDraggingOrAncestorIsDragging()
+    {
+        if (isDragging())
+        {
+            return true;
+        }
+
+        if (getParent() == null)
+        {
+            return false;
+        }
+
+        return getParent().isDraggingOrAncestorIsDragging();
     }
 
     /**

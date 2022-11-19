@@ -3,7 +3,7 @@ package com.willr27.blocklings.client.gui2;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.client.gui2.controls.common.ScrollbarControl;
-import com.willr27.blocklings.util.event.Event;
+import com.willr27.blocklings.util.event.HandleableEvent;
 import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -1208,7 +1208,7 @@ public interface IControl
     /**
      * A class containing the information about a mouse event.
      */
-    class MouseEvent extends Event
+    class MouseEvent extends HandleableEvent
     {
         /**
          * The x position of the mouse.
@@ -1278,7 +1278,7 @@ public interface IControl
     /**
      * A class containing the information about a key event.
      */
-    class KeyEvent extends Event
+    class KeyEvent extends HandleableEvent
     {
         /**
          * The key code.
@@ -1311,7 +1311,7 @@ public interface IControl
     /**
      * A class containing the information about a character event.
      */
-    class CharEvent extends Event
+    class CharEvent extends HandleableEvent
     {
         /**
          * The character.

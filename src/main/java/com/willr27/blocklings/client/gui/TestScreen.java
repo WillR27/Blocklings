@@ -1,9 +1,16 @@
 package com.willr27.blocklings.client.gui;
 
+import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.TestControl;
+import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
 import com.willr27.blocklings.client.gui2.Colour;
+import com.willr27.blocklings.client.gui2.controls.Orientation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+
+import javax.annotation.Nonnull;
 
 @OnlyIn(Dist.CLIENT)
 public class TestScreen extends BlocklingsScreen
@@ -13,6 +20,65 @@ public class TestScreen extends BlocklingsScreen
     {
         super.init();
 
+        pog();
+    }
+
+    private void pog()
+    {
+        FlowPanel flowPanel = new FlowPanel();
+        flowPanel.setInnerScale(0.5f);
+        flowPanel.setParent(screenControl);
+        flowPanel.setWidth(300);
+        flowPanel.setHeight(200);
+        flowPanel.setPadding(3, 5, 2, 6);
+        flowPanel.setBackgroundColour(new Colour(1.0f, 0.0f, 0.0f));
+        flowPanel.setBlocksDrag(false);
+        flowPanel.setDraggableXY(true);
+        flowPanel.setScrollableXY(true);
+        flowPanel.setOrientation(Orientation.VERTICAL);
+        flowPanel.setItemGapX(3);
+        flowPanel.setItemGapY(5);
+
+        for (int i = 0; i < 100; i++)
+        {
+            Control control = new Control()
+            {
+                @Override
+                public void onDragStart(@Nonnull MousePosEvent mousePosEvent)
+                {
+                    setBackgroundColour(new Colour(0.0f, 1.0f, 1.0f));
+                }
+
+                @Override
+                public void onDragEnd(@Nonnull MousePosEvent mousePosEvent)
+                {
+                    setBackgroundColour(new Colour(1.0f, 1.0f, 1.0f));
+                }
+
+                @Override
+                protected void onMouseReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
+                {
+                    getParent().removeChild(this);
+
+                    super.onMouseReleased(mouseButtonEvent);
+                }
+            };
+            control.setParent(flowPanel);
+            control.setDraggableXY(true);
+            control.setWidth(20);
+            control.setHeight(100);
+            control.setMargins(4, 1, 3, 5);
+            control.setBackgroundColour(new Colour(1.0f, 1.0f, 1.0f));
+        }
+
+        Control control = new Control();
+        control.setWidth(0);
+        control.setHeight(0);
+        control.setParent(flowPanel);
+    }
+
+    private void egg()
+    {
         TestControl control1 = new TestControl();
         TestControl control2 = new TestControl();
         TestControl control3 = new TestControl();

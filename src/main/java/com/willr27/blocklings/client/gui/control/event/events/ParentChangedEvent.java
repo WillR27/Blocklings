@@ -12,18 +12,18 @@ import javax.annotation.Nullable;
 public class ParentChangedEvent extends ControlEvent
 {
     /**
-     * The new parent control.
+     * The old parent control.
      */
     @Nullable
-    public final Control newParent;
+    public final Control oldParent;
 
     /**
      * @param control the control to change the parent of.
-     * @param newParent the new parent control.
+     * @param oldParent the old parent control.
      */
-    public ParentChangedEvent(@Nonnull Control control, @Nullable Control newParent)
+    public ParentChangedEvent(@Nonnull Control control, @Nullable Control oldParent)
     {
         super(control);
-        this.newParent = newParent;
+        this.oldParent = oldParent;
     }
 }

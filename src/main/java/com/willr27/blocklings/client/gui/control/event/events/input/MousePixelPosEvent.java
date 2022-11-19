@@ -1,11 +1,11 @@
 package com.willr27.blocklings.client.gui.control.event.events.input;
 
-import com.willr27.blocklings.util.event.Event;
+import com.willr27.blocklings.util.event.HandleableEvent;
 
 /**
  * A mouse pixel position event.
  */
-public class MousePixelPosEvent extends Event
+public class MousePixelPosEvent extends HandleableEvent
 {
     /**
      * The mouse x pixel position.

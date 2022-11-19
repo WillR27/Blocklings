@@ -7,23 +7,23 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Occurs when a control's parent is changed.
+ * Occurs when a child is removed from a control.
  */
 public class ChildRemovedEvent extends ControlEvent
 {
     /**
-     * The new parent control.
+     * The child that was removed.
      */
     @Nullable
-    public final Control childToRemove;
+    public final Control childRemoved;
 
     /**
-     * @param control the control to remove the child from.
-     * @param childToRemove the control to remove as a child.
+     * @param control the control the child was removed from.
+     * @param childRemoved the child removed.
      */
-    public ChildRemovedEvent(@Nonnull Control control, @Nullable Control childToRemove)
+    public ChildRemovedEvent(@Nonnull Control control, @Nullable Control childRemoved)
     {
         super(control);
-        this.childToRemove = childToRemove;
+        this.childRemoved = childRemoved;
     }
 }

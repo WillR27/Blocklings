@@ -1,14 +1,14 @@
 package com.willr27.blocklings.client.gui.control.event.events;
 
 import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.client.gui.control.event.ControlEvent;
+import com.willr27.blocklings.client.gui.control.event.HandleableControlEvent;
 
 import javax.annotation.Nonnull;
 
 /**
  * Occurs when a control's inner scale is changed.
  */
-public class InnerScaleChangedEvent extends ControlEvent
+public class InnerScaleChangedEvent extends HandleableControlEvent
 {
     /**
      * The new scale of the control.

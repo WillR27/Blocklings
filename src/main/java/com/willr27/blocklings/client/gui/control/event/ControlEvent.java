@@ -1,17 +1,18 @@
 package com.willr27.blocklings.client.gui.control.event;
 
 import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.util.event.CancelableEvent;
-import com.willr27.blocklings.util.event.Event;
+import com.willr27.blocklings.util.event.IEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 
 /**
- * An event that is associated with a control. Any change of state applied to the control
- * should occur after the event has been handled so the current state of the control can still be
- * queried inside event handlers.
+ * An event that is associated with a control that cannot be handled. Is useful for notifying
+ * listeners when actions have taken place.
  */
-public abstract class ControlEvent extends Event
+@OnlyIn(Dist.CLIENT)
+public class ControlEvent implements IEvent
 {
     /**
      * The control the event is associated with.

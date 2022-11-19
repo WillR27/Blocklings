@@ -24,7 +24,7 @@ import com.willr27.blocklings.network.messages.TaskTypeIsUnlockedMessage;
 import com.willr27.blocklings.util.IReadWriteNBT;
 import com.willr27.blocklings.util.PacketBufferUtils;
 import com.willr27.blocklings.util.Version;
-import com.willr27.blocklings.util.event.Event;
+import com.willr27.blocklings.util.event.HandleableEvent;
 import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.GoalSelector;
@@ -504,7 +504,7 @@ public class BlocklingTasks implements IReadWriteNBT
     /**
      * An event that occurs when a task is created.
      */
-    public static class CreateTaskEvent extends Event
+    public static class CreateTaskEvent extends HandleableEvent
     {
         /**
          * The task that was created.
@@ -524,7 +524,7 @@ public class BlocklingTasks implements IReadWriteNBT
     /**
      * An event that occurs when a task is removed.
      */
-    public static class RemoveTaskEvent extends Event
+    public static class RemoveTaskEvent extends HandleableEvent
     {
         /**
          * The task that was removed.

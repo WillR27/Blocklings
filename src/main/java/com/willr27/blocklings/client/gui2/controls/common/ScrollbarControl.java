@@ -3,7 +3,7 @@ package com.willr27.blocklings.client.gui2.controls.common;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.client.gui2.*;
-import com.willr27.blocklings.util.event.Event;
+import com.willr27.blocklings.util.event.HandleableEvent;
 import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -200,7 +200,7 @@ public class ScrollbarControl extends Control
     /**
      * Represents a scroll event.
      */
-    public static class ScrollEvent extends Event
+    public static class ScrollEvent extends HandleableEvent
     {
         /**
          * The scroll percentage.

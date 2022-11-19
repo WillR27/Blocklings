@@ -28,6 +28,12 @@ public abstract class BlocklingsScreen extends Screen implements IScreen
     protected final ScreenControl screenControl = new ScreenControl();
 
     /**
+     * Used to prevent a mouse released event from triggering when a mouse clicked event never occurred.
+     * Useful for when the UI first opens to prevent a mouse released event from triggering by itself.
+     */
+    private boolean wasMouseClickedBeforeRelease = false;
+
+    /**
      * Default constructor.
      */
     protected BlocklingsScreen()
@@ -91,6 +97,8 @@ public abstract class BlocklingsScreen extends Screen implements IScreen
     @Override
     public boolean mouseClicked(double screenMouseX, double screenMouseY, int mouseButton)
     {
+        wasMouseClickedBeforeRelease = true;
+
         int pixelMouseX = GuiUtil.getInstance().getPixelMouseX();
         int pixelMouseY = GuiUtil.getInstance().getPixelMouseY();
 
@@ -110,6 +118,13 @@ public abstract class BlocklingsScreen extends Screen implements IScreen
     @Override
     public boolean mouseReleased(double screenMouseX, double screenMouseY, int mouseButton)
     {
+        if (!wasMouseClickedBeforeRelease)
+        {
+            return false;
+        }
+
+        wasMouseClickedBeforeRelease = false;
+
         int pixelMouseX = GuiUtil.getInstance().getPixelMouseX();
         int pixelMouseY = GuiUtil.getInstance().getPixelMouseY();
 

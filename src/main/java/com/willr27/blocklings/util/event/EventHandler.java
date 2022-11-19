@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * A class used to handle events.
  */
-public class EventHandler<T extends Event>
+public class EventHandler<T extends IEvent>
 {
     /**
      * The list of subscribed event handlers.
@@ -23,9 +23,12 @@ public class EventHandler<T extends Event>
         {
             handler.handle(event);
 
-            if (event.isHandled())
+            if (event instanceof HandleableEvent)
             {
-                return event;
+                if (((HandleableEvent) event).isHandled())
+                {
+                    return event;
+                }
             }
         }
 
@@ -54,7 +57,7 @@ public class EventHandler<T extends Event>
      * @param <T> the type of event.
      */
     @FunctionalInterface
-    public interface Handler<T extends Event>
+    public interface Handler<T extends IEvent>
     {
         void handle(@Nonnull T event);
     }

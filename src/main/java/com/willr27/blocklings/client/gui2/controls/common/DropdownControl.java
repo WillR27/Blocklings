@@ -2,7 +2,7 @@ package com.willr27.blocklings.client.gui2.controls.common;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui2.*;
-import com.willr27.blocklings.util.event.Event;
+import com.willr27.blocklings.util.event.HandleableEvent;
 import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.StringTextComponent;
@@ -449,7 +449,7 @@ public class DropdownControl extends Control
     /**
      * An event used when the dropdown selection is changed.
      */
-    public static class DropDownSelectionChangedEvent extends Event
+    public static class DropDownSelectionChangedEvent extends HandleableEvent
     {
         /**
          * The previous selection.

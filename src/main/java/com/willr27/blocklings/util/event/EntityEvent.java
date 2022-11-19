@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 /**
  * An event relating to an entity.
  */
-public class EntityEvent<T extends Entity> extends Event
+public class EntityEvent<T extends Entity> extends HandleableEvent
 {
     /**
      * The entity.

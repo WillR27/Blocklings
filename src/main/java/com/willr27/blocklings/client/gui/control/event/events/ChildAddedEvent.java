@@ -7,23 +7,23 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Occurs when a control's parent is changed.
+ * Occurs when a child is added to a control.
  */
 public class ChildAddedEvent extends ControlEvent
 {
     /**
-     * The new parent control.
+     * The child that has been added.
      */
     @Nullable
-    public final Control childToAdd;
+    public final Control childAdded;
 
     /**
-     * @param control the control to add the child to.
-     * @param childToAdd the control to add as a child.
+     * @param control the control the child was added to.
+     * @param childAdded the child that has been added.
      */
-    public ChildAddedEvent(@Nonnull Control control, @Nullable Control childToAdd)
+    public ChildAddedEvent(@Nonnull Control control, @Nullable Control childAdded)
     {
         super(control);
-        this.childToAdd = childToAdd;
+        this.childAdded = childAdded;
     }
 }

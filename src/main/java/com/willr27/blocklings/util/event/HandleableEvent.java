@@ -3,7 +3,7 @@ package com.willr27.blocklings.util.event;
 /**
  * A class that represents an event.
  */
-public class Event
+public class HandleableEvent implements IEvent
 {
     /**
      * Whether the event is handled.

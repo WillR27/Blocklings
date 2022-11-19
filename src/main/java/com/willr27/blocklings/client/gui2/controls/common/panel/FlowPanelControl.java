@@ -6,7 +6,7 @@ import com.willr27.blocklings.client.gui2.IControl;
 import com.willr27.blocklings.client.gui2.controls.Orientation;
 import com.willr27.blocklings.client.gui2.controls.common.ScrollbarControl;
 import com.willr27.blocklings.util.event.CancelableEvent;
-import com.willr27.blocklings.util.event.Event;
+import com.willr27.blocklings.util.event.HandleableEvent;
 import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -514,7 +514,7 @@ public class FlowPanelControl extends PanelControl
     /**
      * An event that occurs when a child control is dragged outside the bounds of the parent control.
      */
-    public static class DraggedOutsideParentEvent extends Event
+    public static class DraggedOutsideParentEvent extends HandleableEvent
     {
         /**
          * The horizontal edge of the drag. Negative indicates left, 0 indicates no drag and positive indicates right.

@@ -3,7 +3,7 @@ package com.willr27.blocklings.util.event;
 /**
  * A cancellable event.
  */
-public class CancelableEvent extends Event
+public class CancelableEvent extends HandleableEvent
 {
     /**
      * Whether the event is cancelled.
