@@ -15,6 +15,7 @@ import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jline.utils.Log;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
@@ -57,6 +58,12 @@ public class Control extends Gui
      */
     @Nonnull
     private List<Control> children = new ArrayList<>();
+
+    /**
+     * Occurs when the control's children are reordered.
+     */
+    @Nonnull
+    public final EventHandler<ChildrenReorderedEvent> onChildrenReordered = new EventHandler<>();
 
     /**
      * Occurs when a control is added as a child.
@@ -225,6 +232,18 @@ public class Control extends Gui
     private boolean isDraggableY = false;
 
     /**
+     * Occurs when the control is first dragged.
+     */
+    @Nonnull
+    public final EventHandler<DragStartEvent> onDragStart = new EventHandler<>();
+
+    /**
+     * Occurs when the control stops being dragged.
+     */
+    @Nonnull
+    public final EventHandler<DragEndEvent> onDragEnd = new EventHandler<>();
+
+    /**
      * The distance the mouse needs to move while pressed in the to start dragging.
      */
     private int dragThreshold = 3;
@@ -337,6 +356,7 @@ public class Control extends Gui
         applyPreRenderTransformations(renderArgs);
         applyPreRenderOperations(renderArgs);
         applyScissor(renderArgs);
+        onRenderUpdate(renderArgs);
         onRenderBackground(renderArgs);
         onRender(renderArgs);
         applyPostRenderOperations(renderArgs);
@@ -354,6 +374,16 @@ public class Control extends Gui
     private void applyPreRenderOperations(@Nonnull RenderArgs renderArgs)
     {
         renderOperations.forEach(renderOperation -> renderOperation.preRenderOperation.accept(this, renderArgs));
+    }
+
+    /**
+     * Called before anything is rendered on the control.
+     *
+     * @param renderArgs the render args.
+     */
+    protected void onRenderUpdate(@Nonnull RenderArgs renderArgs)
+    {
+
     }
 
     /**
@@ -1055,12 +1085,79 @@ public class Control extends Gui
     }
 
     /**
+     * @return the list of children (be careful of concurrent modification).
+     */
+    @Nonnull
+    public final List<Control> getChildren()
+    {
+        return children;
+    }
+
+    /**
      * @return a copy of the list of children.
      */
     @Nonnull
     public final List<Control> getChildrenCopy()
     {
         return new ArrayList<>(children);
+    }
+
+    /**
+     * Inserts the given control before the given child control in the list of children.
+     *
+     * @param controlToInsert the control to insert (can be an existing child).
+     * @param childToInsertBefore the child to insert the control before.
+     */
+    public final void insertChildBefore(@Nonnull Control controlToInsert, @Nonnull Control childToInsertBefore)
+    {
+        if (childToInsertBefore.getParent() != this)
+        {
+            throw new IllegalArgumentException("The child to insert before was not a child.");
+        }
+
+        if (controlToInsert.getParent() != this)
+        {
+            addChild(controlToInsert);
+        }
+
+        if (children.indexOf(childToInsertBefore) == children.indexOf(controlToInsert))
+        {
+            return;
+        }
+
+        children.remove(controlToInsert);
+        children.add(children.indexOf(childToInsertBefore), controlToInsert);
+
+        onChildrenReordered.handle(new ChildrenReorderedEvent(this));
+    }
+
+    /**
+     * Inserts the given control after the given child control in the list of children.
+     *
+     * @param controlToInsert the control to insert (can be an existing child).
+     * @param childToInsertAfter the child to insert the control after.
+     */
+    public final void insertChildAfter(@Nonnull Control controlToInsert, @Nonnull Control childToInsertAfter)
+    {
+        if (childToInsertAfter.getParent() != this)
+        {
+            throw new IllegalArgumentException("The child to insert after was not a child.");
+        }
+
+        if (controlToInsert.getParent() != this)
+        {
+            addChild(controlToInsert);
+        }
+
+        if (children.indexOf(childToInsertAfter) + 1 == children.indexOf(controlToInsert))
+        {
+            return;
+        }
+
+        children.remove(controlToInsert);
+        children.add(children.indexOf(childToInsertAfter) + 1, controlToInsert);
+
+        onChildrenReordered.handle(new ChildrenReorderedEvent(this));
     }
 
     /**
@@ -1130,6 +1227,14 @@ public class Control extends Gui
     }
 
     /**
+     * @return the x position of the middle of the control, including margins.
+     */
+    public final int getMidX()
+    {
+        return getX() + getEffectiveWidth() / 2;
+    }
+
+    /**
      * @return the scaled local x position of the control.
      */
     public int getX()
@@ -1150,6 +1255,14 @@ public class Control extends Gui
 
             recalcPixelX();
         }
+    }
+
+    /**
+     * @return the y position of the middle of the control, including margins.
+     */
+    public final int getMidY()
+    {
+        return getY() + getEffectiveHeight() / 2;
     }
 
     /**
@@ -1176,6 +1289,14 @@ public class Control extends Gui
     }
 
     /**
+     * @return the pixel width of the control including margins.
+     */
+    public int getEffectivePixelWidth()
+    {
+        return (int) ((getWidth() + getMargin(Side.LEFT) + getMargin(Side.RIGHT)) * getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
+    }
+
+    /**
      * @return the pixel width of the control.
      */
     public int getPixelWidth()
@@ -1189,6 +1310,14 @@ public class Control extends Gui
     public final void recalcPixelWidth()
     {
         pixelWidth = (int) (getWidth() * getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
+    }
+
+    /**
+     * @return the pixel height of the control including margins.
+     */
+    public int getEffectivePixelHeight()
+    {
+        return (int) ((getHeight() + getMargin(Side.TOP) + getMargin(Side.BOTTOM)) * getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
     }
 
     /**

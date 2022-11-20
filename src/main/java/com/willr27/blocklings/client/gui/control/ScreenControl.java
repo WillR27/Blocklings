@@ -1,6 +1,8 @@
 package com.willr27.blocklings.client.gui.control;
 
 import com.willr27.blocklings.client.gui.IScreen;
+import com.willr27.blocklings.client.gui.control.event.events.DragEndEvent;
+import com.willr27.blocklings.client.gui.control.event.events.DragStartEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -193,6 +195,7 @@ public class ScreenControl extends Control implements IScreen
                 mousePosEvent.mouseX = draggedControl.toLocalX(mousePosEvent.mousePixelX);
                 mousePosEvent.mouseY = draggedControl.toLocalY(mousePosEvent.mousePixelY);
 
+                draggedControl.onDragEnd.handle(new DragEndEvent(draggedControl));
                 draggedControl.onDragEnd(mousePosEvent);
             }
 
@@ -201,6 +204,7 @@ public class ScreenControl extends Control implements IScreen
                 mousePosEvent.mouseX = control.toLocalX(mousePosEvent.mousePixelX);
                 mousePosEvent.mouseY = control.toLocalY(mousePosEvent.mousePixelY);
 
+                control.onDragStart.handle(new DragStartEvent(control));
                 control.onDragStart(mousePosEvent);
             }
         }
