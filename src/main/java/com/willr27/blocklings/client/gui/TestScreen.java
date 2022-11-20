@@ -29,19 +29,20 @@ public class TestScreen extends BlocklingsScreen
     private void pog()
     {
         FlowPanel flowPanel = new FlowPanel();
-        flowPanel.setInnerScale(0.5f);
+        flowPanel.setInnerScale(2.0f);
         flowPanel.setParent(screenControl);
         flowPanel.setWidth(300);
         flowPanel.setHeight(200);
-        flowPanel.setPadding(3, 5, 2, 6);
+        flowPanel.setPadding(3, 2, 5, 7);
         flowPanel.setBackgroundColour(new Colour(1.0f, 0.0f, 0.0f));
-        flowPanel.setBlocksDrag(false);
+        flowPanel.setBlocksDrag(true);
         flowPanel.setDraggableXY(true);
         flowPanel.setScrollableXY(true);
         flowPanel.setFlowDirection(Direction.TOP_TO_BOTTOM);
+        flowPanel.setOverflowDirection(Direction.LEFT_TO_RIGHT);
         flowPanel.setDragReorderType(DragReorderType.INSERT_ON_RELEASE);
-        flowPanel.setItemGapX(3);
-        flowPanel.setItemGapY(20);
+        flowPanel.setItemGapX(1);
+        flowPanel.setItemGapY(1);
 
         Random random = new Random();
         for (int i = 0; i < 99; i++)
@@ -70,9 +71,9 @@ public class TestScreen extends BlocklingsScreen
             };
             control.setParent(flowPanel);
             control.setDraggableXY(true);
-            control.setWidth(90);
-            control.setHeight(76);
-            control.setMargins(4, 1, 3, 5);
+            control.setWidth(23);
+            control.setHeight(35);
+            control.setMargins(5, 2, 1, 3);
             control.setBackgroundColour(new Colour(random.nextFloat(), random.nextFloat(), random.nextFloat()));
         }
     }

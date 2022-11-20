@@ -2,6 +2,8 @@ package com.willr27.blocklings.client.gui.control;
 
 import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.control.event.events.DragEndEvent;
+import com.willr27.blocklings.client.gui.control.event.events.MarginsChangedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.SizeChangedEvent;
 import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -32,8 +34,22 @@ public abstract class Panel extends Control
             updateDraggedControlOnRelease(e.control);
             layoutContents(true);
         };
-        onChildAdded.subscribe((e) -> e.childAdded.onDragEnd.subscribe(onDragEnd));
-        onChildRemoved.subscribe((e) -> e.childRemoved.onDragEnd.unsubscribe(onDragEnd));
+
+        EventHandler.Handler<SizeChangedEvent> onSizeChanged = (e) -> layoutContents(false);
+        EventHandler.Handler<MarginsChangedEvent> onMarginsChanged = (e) -> layoutContents(false);
+
+        onChildAdded.subscribe((e) ->
+        {
+            e.childAdded.onDragEnd.subscribe(onDragEnd);
+            e.childAdded.onSizeChanged.subscribe(onSizeChanged);
+            e.childAdded.onMarginsChanged.subscribe(onMarginsChanged);
+        });
+        onChildRemoved.subscribe((e) ->
+        {
+            e.childRemoved.onDragEnd.unsubscribe(onDragEnd);
+            e.childRemoved.onSizeChanged.unsubscribe(onSizeChanged);
+            e.childRemoved.onMarginsChanged.unsubscribe(onMarginsChanged);
+        });
     }
 
     /**

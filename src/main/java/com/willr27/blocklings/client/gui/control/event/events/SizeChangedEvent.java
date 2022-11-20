@@ -1,24 +1,24 @@
 package com.willr27.blocklings.client.gui.control.event.events;
 
 import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.client.gui.control.event.HandleableControlEvent;
+import com.willr27.blocklings.client.gui.control.event.ControlEvent;
 
 import javax.annotation.Nonnull;
 
 /**
  * Occurs when a control's size is changed.
  */
-public class SizeChangedEvent extends HandleableControlEvent
+public class SizeChangedEvent extends ControlEvent
 {
     /**
-     * The new scaled width.
+     * The previous scaled width.
      */
-    public final int newWidth;
+    public final int prevWidth;
 
     /**
-     * The new scaled height.
+     * The previous scaled height.
      */
-    public final int newHeight;
+    public final int prevHeight;
 
     /**
      * The change in the width.
@@ -32,15 +32,15 @@ public class SizeChangedEvent extends HandleableControlEvent
 
     /**
      * @param control the control to change the size of.
-     * @param newWidth the new scaled width.
-     * @param newHeight the new scaled height.
+     * @param prevWidth the previous scaled width.
+     * @param prevHeight the previous scaled height.
      */
-    public SizeChangedEvent(@Nonnull Control control, int newWidth, int newHeight)
+    public SizeChangedEvent(@Nonnull Control control, int prevWidth, int prevHeight)
     {
         super(control);
-        this.newWidth = newWidth;
-        this.newHeight = newHeight;
-        this.dWidth = newWidth - control.getWidth();
-        this.dHeight = newHeight - control.getHeight();
+        this.prevWidth = prevWidth;
+        this.prevHeight = prevHeight;
+        this.dWidth = control.getWidth() - prevWidth;
+        this.dHeight = control.getHeight() - prevHeight;
     }
 }

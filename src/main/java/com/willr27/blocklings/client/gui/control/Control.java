@@ -15,7 +15,6 @@ import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.jline.utils.Log;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
@@ -1357,21 +1356,20 @@ public class Control extends Gui
      */
     public void setWidth(int width)
     {
+        int oldWidth = this.width;
+
         width = Math.max(0, width);
 
-        SizeChangedEvent event = onSizeChanged.handle(new SizeChangedEvent(this, width, getHeight()));
-
-        if (!event.isHandled())
+        if (autoSizeHitbox)
         {
-            if (autoSizeHitbox)
-            {
-                hitbox.resize(this.width, width, height, height);
-            }
-
-            this.width = width;
-
-            recalcPixelWidth();
+            hitbox.resize(this.width, width, height, height);
         }
+
+        this.width = width;
+
+        recalcPixelWidth();
+
+        onSizeChanged.handle(new SizeChangedEvent(this, oldWidth, getHeight()));
     }
 
     /**
@@ -1395,21 +1393,20 @@ public class Control extends Gui
      */
     public void setHeight(int height)
     {
+        int oldHeight = this.height;
+
         height = Math.max(0, height);
 
-        SizeChangedEvent event = onSizeChanged.handle(new SizeChangedEvent(this, getWidth(), height));
-
-        if (!event.isHandled())
+        if (autoSizeHitbox)
         {
-            if (autoSizeHitbox)
-            {
-                hitbox.resize(width, width, this.height, height);
-            }
-
-            this.height = height;
-
-            recalcPixelHeight();
+            hitbox.resize(width, width, this.height, height);
         }
+
+        this.height = height;
+
+        recalcPixelHeight();
+
+        onSizeChanged.handle(new SizeChangedEvent(this, oldHeight, getHeight()));
     }
 
     /**
@@ -1448,12 +1445,14 @@ public class Control extends Gui
      */
     public void setMargins(int left, int top, int right, int bottom)
     {
-        MarginsChangedEvent event = onMarginsChanged.handle(new MarginsChangedEvent(this, left, top, right, bottom));
+        Map<Side, Integer> prevMargins = new HashMap<>(margins);
 
-        if (!event.isHandled())
-        {
-            margins = event.getNewMargins();
-        }
+        margins.put(Side.LEFT, left);
+        margins.put(Side.TOP, top);
+        margins.put(Side.RIGHT, right);
+        margins.put(Side.BOTTOM, bottom);
+
+        onMarginsChanged.handle(new MarginsChangedEvent(this, prevMargins.get(Side.LEFT), prevMargins.get(Side.TOP), prevMargins.get(Side.RIGHT), prevMargins.get(Side.BOTTOM)));
     }
 
     /**

@@ -1,10 +1,8 @@
 package com.willr27.blocklings.client.gui.control.controls.panels;
 
 import com.willr27.blocklings.client.gui.control.*;
-import com.willr27.blocklings.client.gui2.controls.Orientation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.lwjgl.system.CallbackI;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -22,6 +20,24 @@ public class FlowPanel extends Panel
      */
     @Nonnull
     private Direction flowDirection = Direction.LEFT_TO_RIGHT;
+
+    /**
+     * The direction the panel will lay out contents that don't fit within the panel's bounds.
+     */
+    @Nonnull
+    private Direction overflowDirection = Direction.TOP_TO_BOTTOM;
+
+    /**
+     * Whether to automatically adjust the max scroll offset to fit any overflow in the x-axis. So if the items
+     * overflow by 10, the max scroll offset will be set to 10.
+     */
+    private boolean fitMaxScrollOffsetToOverflowX = true;
+
+    /**
+     * Whether to automatically adjust the max scroll offset to fit any overflow in the y-axis. So if the items
+     * overflow by 10, the max scroll offset will be set to 10.
+     */
+    private boolean fitMaxScrollOffsetToOverflowY = true;
 
     /**
      * The horizontal gap between each item.
@@ -46,6 +62,8 @@ public class FlowPanel extends Panel
         // The current positions to use for the next control.
         int controlX = getPadding(Side.LEFT);
         int controlY = getPadding(Side.TOP);
+        int rowY = controlY;
+        int colX = controlX;
 
         // The current max coords reached in each direction. This is needed to work out where to put a
         // control when wrapping. If there are 2 controls with different heights on one row then if the
@@ -54,53 +72,78 @@ public class FlowPanel extends Panel
         int maxSoFarY = 0;
 
         rowOrColumnBoundsCoords.clear();
-        rowOrColumnBoundsCoords.add(getFlowDirection() == Direction.LEFT_TO_RIGHT ? getPadding(Side.LEFT) : getPadding(Side.TOP));
+        rowOrColumnBoundsCoords.add(0);
 
-        for (Control control : getChildrenCopy())
+        for (Control control : getChildren())
         {
+            if (getFlowDirection() == Direction.LEFT_TO_RIGHT)
+            {
+                controlY = rowY;
+            }
+            else
+            {
+                controlX = colX;
+            }
+
             // Wrap if the control is going to overlap the edge of the panel.
             if (getFlowDirection() == Direction.LEFT_TO_RIGHT)
             {
-                if (controlX + control.getEffectiveWidth() > (getWidth() - getPadding(Side.RIGHT)) / getInnerScale())
+                if (getOverflowDirection() != Direction.LEFT_TO_RIGHT && controlX + control.getEffectiveWidth() > (getWidth() - getPadding(Side.RIGHT)) / getInnerScale())
                 {
                     controlX = getPadding(Side.LEFT);
-                    controlY = maxSoFarY + getItemGapY();
+                    rowY = maxSoFarY + getItemGapY();
+                    controlY = rowY;
                     rowOrColumnBoundsCoords.add((controlY - getItemGapY() / 2));
                 }
             }
             else
             {
-                if (controlY + control.getEffectiveHeight() > (getHeight() - getPadding(Side.BOTTOM)) / getInnerScale())
+                if (getOverflowDirection() != Direction.TOP_TO_BOTTOM && controlY + control.getEffectiveWidth() > (getHeight() - getPadding(Side.BOTTOM)) / getInnerScale())
                 {
                     controlY = getPadding(Side.TOP);
-                    controlX = maxSoFarX + getItemGapX();
+                    colX = maxSoFarX + getItemGapX();
+                    controlX = colX;
                     rowOrColumnBoundsCoords.add((controlX - getItemGapX() / 2));
                 }
             }
 
+            controlX += control.getMargin(Side.LEFT);
+            controlY += control.getMargin(Side.TOP);
+
+            // Set the position on the control.
             if (!control.isDragging() || setDraggedPosition)
             {
                 control.setX(controlX - getScrollOffsetX());
                 control.setY(controlY - getScrollOffsetY());
             }
 
+            maxSoFarX = Math.max(maxSoFarX, controlX + control.getWidth() + control.getMargin(Side.RIGHT));
+            maxSoFarY = Math.max(maxSoFarY, controlY + control.getHeight() + control.getMargin(Side.BOTTOM));
+
+            // Update the values for the next control.
             if (getFlowDirection() == Direction.LEFT_TO_RIGHT)
             {
-                controlX += control.getEffectiveWidth() + getItemGapX();
-                maxSoFarY = Math.max(maxSoFarY, controlY + control.getEffectiveHeight());
+                controlX += control.getWidth() + control.getMargin(Side.RIGHT) + getItemGapX();
             }
             else
             {
-                controlY += control.getEffectiveHeight() + getItemGapY();
-                maxSoFarX = Math.max(maxSoFarX, controlX + control.getEffectiveWidth());
+                controlY += control.getHeight() + control.getMargin(Side.BOTTOM) + getItemGapY();
             }
         }
 
+        maxSoFarX += getPadding(Side.RIGHT);
+        maxSoFarY += getPadding(Side.BOTTOM);
+
         rowOrColumnBoundsCoords.add(getFlowDirection() == Direction.LEFT_TO_RIGHT ? maxSoFarY : maxSoFarX);
 
-        // Update the maximum possible scroll values.
-        setMaxScrollOffsetX((int) (maxSoFarX + getInnerScale() + (getPadding(Side.RIGHT) - getWidth() / getInnerScale())));
-        setMaxScrollOffsetY((int) (maxSoFarY + getInnerScale() + (getPadding(Side.BOTTOM) - getHeight() / getInnerScale())));
+        if (shouldFitMaxScrollOffsetToOverflowX() && getOverflowDirection() == Direction.LEFT_TO_RIGHT)
+        {
+            setMaxScrollOffsetX((int) (maxSoFarX - (getWidth() / getInnerScale())));
+        }
+        else if (shouldFitMaxScrollOffsetToOverflowY() && getOverflowDirection() == Direction.TOP_TO_BOTTOM)
+        {
+            setMaxScrollOffsetY((int) (maxSoFarY - (getHeight() / getInnerScale())));
+        }
     }
 
     @Override
@@ -296,6 +339,7 @@ public class FlowPanel extends Panel
     /**
      * @return the current flow direction.
      */
+    @Nonnull
     public Direction getFlowDirection()
     {
         return flowDirection;
@@ -304,11 +348,79 @@ public class FlowPanel extends Panel
     /**
      * Sets the current flow direction of the panel.
      */
-    public void setFlowDirection(Direction flowDirection)
+    public void setFlowDirection(@Nonnull Direction flowDirection)
     {
         this.flowDirection = flowDirection;
 
         layoutContents();
+    }
+
+    /**
+     * @return the overflow direction of the panel.
+     */
+    @Nonnull
+    public Direction getOverflowDirection()
+    {
+        return overflowDirection;
+    }
+
+    /**
+     * Sets the overflow direction of the panel.
+     */
+    public void setOverflowDirection(@Nonnull Direction overflowDirection)
+    {
+        this.overflowDirection = overflowDirection;
+
+        layoutContents();
+    }
+
+    /**
+     * Whether to automatically adjust the max scroll offset to fit the overflow in both axes.
+     */
+    public boolean shouldFitMaxScrollOffsetToOverflowXY()
+    {
+        return shouldFitMaxScrollOffsetToOverflowX() && shouldFitMaxScrollOffsetToOverflowY();
+    }
+
+    /**
+     * Sets whether to automatically adjust the max scroll offset to fit the overflow in both axes.
+     */
+    public void setFitMaxScrollOffsetToOverflowXY(boolean fitMaxScrollOffsetToOverflowXY)
+    {
+        setFitMaxScrollOffsetToOverflowX(true);
+        setFitMaxScrollOffsetToOverflowY(true);
+    }
+
+    /**
+     * Whether to automatically adjust the max scroll offset to fit the overflow in the x-axis.
+     */
+    public boolean shouldFitMaxScrollOffsetToOverflowX()
+    {
+        return fitMaxScrollOffsetToOverflowX;
+    }
+
+    /**
+     * Sets whether to automatically adjust the max scroll offset to fit the overflow in the x-axis.
+     */
+    public void setFitMaxScrollOffsetToOverflowX(boolean fitMaxScrollOffsetToOverflowX)
+    {
+        this.fitMaxScrollOffsetToOverflowX = fitMaxScrollOffsetToOverflowX;
+    }
+
+    /**
+     * Whether to automatically adjust the max scroll offset to fit the overflow in the y-axis.
+     */
+    public boolean shouldFitMaxScrollOffsetToOverflowY()
+    {
+        return fitMaxScrollOffsetToOverflowY;
+    }
+
+    /**
+     * Sets whether to automatically adjust the max scroll offset to fit the overflow in the y-axis.
+     */
+    public void setFitMaxScrollOffsetToOverflowY(boolean fitMaxScrollOffsetToOverflowY)
+    {
+        this.fitMaxScrollOffsetToOverflowY = fitMaxScrollOffsetToOverflowY;
     }
 
     /**
