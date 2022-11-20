@@ -22,6 +22,8 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiConsumer;
 
+import static java.awt.SystemColor.control;
+
 /**
  * A control is an atomic component of a GUI.
  */
@@ -127,6 +129,16 @@ public class Control extends Gui
     private int height = 100;
 
     /**
+     * The max width of the control. Set to -1 to ignore.
+     */
+    private int maxWidth = Integer.MAX_VALUE;
+
+    /**
+     * The max height of the control. Set to -1 to ignore.
+     */
+    private int maxHeight = Integer.MAX_VALUE;
+
+    /**
      * Called when the control's size changes.
      */
     @Nonnull
@@ -186,6 +198,16 @@ public class Control extends Gui
      */
     @Nonnull
     public final EventHandler<InnerScaleChangedEvent> onInnerScaleChanged = new EventHandler<>();
+
+    /**
+     * Whether to stretch the control's size to fit its contents in the x-axis.
+     */
+    private boolean fitToContentsX = false;
+
+    /**
+     * Whether to stretch the control's size to fit its contents in the y-axis.
+     */
+    private boolean fitToContentsY = false;
 
     /**
      * Resizes the hitbox automatically when the size of the control changes.
@@ -296,6 +318,79 @@ public class Control extends Gui
         {
             margins.put(side, 0);
             padding.put(side, 0);
+        }
+
+        EventHandler.Handler<SizeChangedEvent> onSizeChanged = (e) -> tryFitToContents();
+        EventHandler.Handler<MarginsChangedEvent> onMarginsChanged = (e) -> tryFitToContents();
+
+        onChildAdded.subscribe((e) ->
+        {
+            e.childAdded.onSizeChanged.subscribe(onSizeChanged);
+            e.childAdded.onMarginsChanged.subscribe(onMarginsChanged);
+        });
+        onChildRemoved.subscribe((e) ->
+        {
+            e.childRemoved.onSizeChanged.unsubscribe(onSizeChanged);
+            e.childRemoved.onMarginsChanged.unsubscribe(onMarginsChanged);
+        });
+    }
+
+    /**
+     * Tries to resize the control to fit its contents. Will reposition all controls if any have negative
+     * coordinates, and it will remove any unnecessary max scroll offsets.
+     */
+    public void tryFitToContents()
+    {
+        tryFitToContents(false);
+    }
+
+    /**
+     * Tries to resize the control to fit its contents. Will reposition all controls if any have negative
+     * coordinates, and it will remove any unnecessary max scroll offsets.
+     *
+     * @param ignoreTopLeftPadding used when the children already include the top left padding.
+     */
+    public void tryFitToContents(boolean ignoreTopLeftPadding)
+    {
+        if (shouldFitToContentsX() || shouldFitToContentsY())
+        {
+            int minX = 0;
+            int minY = 0;
+            int maxX = 0;
+            int maxY = 0;
+
+            for (Control control : getChildren())
+            {
+                int controlMinX = control.getX() - control.getMargin(Side.LEFT);
+                int controlMinY = control.getY() - control.getMargin(Side.TOP);
+                int controlMaxX = control.getX() - control.getMargin(Side.LEFT) + control.getEffectiveWidth();
+                int controlMaxY = control.getY() - control.getMargin(Side.TOP) + control.getEffectiveHeight();
+
+                minX = Math.min(minX, controlMinX);
+                minY = Math.min(minY, controlMinY);
+                maxX = Math.max(maxX, controlMaxX);
+                maxY = Math.max(maxY, controlMaxY);
+            }
+
+            if (shouldFitToContentsX())
+            {
+                int oldWidth = getWidth();
+                int desiredWidth = maxX - minX + (ignoreTopLeftPadding ? 0 : getPadding(Side.LEFT)) + getPadding(Side.RIGHT);
+                int finalMinX = minX;
+                setWidth((int) (desiredWidth * getInnerScale()));
+                getChildren().forEach(control -> control.setX(control.getX() - finalMinX));
+                setMaxScrollOffsetX(getMaxScrollOffsetX() - Math.max(0, desiredWidth - oldWidth));
+            }
+
+            if (shouldFitToContentsY())
+            {
+                int oldHeight = getHeight();
+                int desiredHeight = maxY - minY + (ignoreTopLeftPadding ? 0 : getPadding(Side.TOP)) + getPadding(Side.BOTTOM);
+                int finalMinY = minY;
+                setHeight((int) (desiredHeight * getInnerScale()));
+                getChildren().forEach(control -> control.setY(control.getY() - finalMinY));
+                setMaxScrollOffsetY(getMaxScrollOffsetY() - Math.max(0, desiredHeight - oldHeight));
+            }
         }
     }
 
@@ -579,7 +674,7 @@ public class Control extends Gui
             mousePosEvent.mouseX = toLocalX(mousePosEvent.mousePixelX);
             mousePosEvent.mouseY = toLocalY(mousePosEvent.mousePixelY);
 
-            if (isPressed() && (isDraggableX() || isDraggableY()))
+            if (isPressed() && (isDraggableX() || isDraggableY())) // TODO: Or child is pressed?
             {
                 int pixelDragDifX = mousePosEvent.mousePixelX - getScreen().getPressedStartPixelX();
                 int pixelDragDifY = mousePosEvent.mousePixelY - getScreen().getPressedStartPixelY();
@@ -1356,9 +1451,15 @@ public class Control extends Gui
      */
     public void setWidth(int width)
     {
+        if (width == this.width)
+        {
+            return;
+        }
+
         int oldWidth = this.width;
 
         width = Math.max(0, width);
+        width = getMaxWidth() >= 0 ? Math.min(width, getMaxWidth()) : width;
 
         if (autoSizeHitbox)
         {
@@ -1393,9 +1494,15 @@ public class Control extends Gui
      */
     public void setHeight(int height)
     {
+        if (height == this.height)
+        {
+            return;
+        }
+
         int oldHeight = this.height;
 
         height = Math.max(0, height);
+        height = getMaxHeight() >= 0 ? Math.min(height, getMaxHeight()) : height;
 
         if (autoSizeHitbox)
         {
@@ -1407,6 +1514,42 @@ public class Control extends Gui
         recalcPixelHeight();
 
         onSizeChanged.handle(new SizeChangedEvent(this, oldHeight, getHeight()));
+    }
+
+    /**
+     * @return the max width of the control.
+     */
+    public int getMaxWidth()
+    {
+        return maxWidth;
+    }
+
+    /**
+     * Sets the max width of the control. Set to -1 to ignore.
+     */
+    public void setMaxWidth(int maxWidth)
+    {
+        this.maxWidth = maxWidth < 0 ? Integer.MAX_VALUE : maxWidth;
+
+        tryFitToContents();
+    }
+
+    /**
+     * @return the max height of the control.
+     */
+    public int getMaxHeight()
+    {
+        return maxHeight;
+    }
+
+    /**
+     * Sets the max height of the control. Set to -1 to ignore.
+     */
+    public void setMaxHeight(int maxHeight)
+    {
+        this.maxHeight = maxHeight < 0 ? Integer.MAX_VALUE : maxHeight;
+
+        tryFitToContents();
     }
 
     /**
@@ -1605,6 +1748,59 @@ public class Control extends Gui
     public int toLocalY(int pixelY)
     {
         return (int) ((pixelY - getPixelY()) / (getCumulativeScale() * GuiUtil.getInstance().getGuiScale()));
+    }
+
+    /**
+     * @return whether the control is automatically sized to fit its contents in both axes.
+     */
+    public boolean shouldFitToContentsXY()
+    {
+        return shouldFitToContentsX() && shouldFitToContentsY();
+    }
+
+    /**
+     * Sets whether the control is automatically sized to fit its contents in both axes.
+     */
+    public void setFitToContentsXY(boolean fitToContentsXY)
+    {
+        setFitToContentsX(fitToContentsXY);
+        setFitToContentsY(fitToContentsXY);
+    }
+
+    /**
+     * @return whether the control is automatically sized to fit its contents in the x-axis.
+     */
+    public boolean shouldFitToContentsX()
+    {
+        return fitToContentsX;
+    }
+
+    /**
+     * Sets whether the control is automatically sized to fit its contents in the x-axis.
+     */
+    public void setFitToContentsX(boolean fitToContentsX)
+    {
+        this.fitToContentsX = fitToContentsX;
+
+        tryFitToContents();
+    }
+
+    /**
+     * @return whether the control is automatically sized to fit its contents in the y-axis.
+     */
+    public boolean shouldFitToContentsY()
+    {
+        return fitToContentsY;
+    }
+
+    /**
+     * Sets whether the control is automatically sized to fit its contents in the y-axis.
+     */
+    public void setFitToContentsY(boolean fitToContentsY)
+    {
+        this.fitToContentsY = fitToContentsY;
+
+        tryFitToContents();
     }
 
     /**

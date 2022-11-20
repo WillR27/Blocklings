@@ -2,13 +2,12 @@ package com.willr27.blocklings.client.gui;
 
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.Direction;
-import com.willr27.blocklings.client.gui.control.controls.TestControl;
 import com.willr27.blocklings.client.gui.control.DragReorderType;
+import com.willr27.blocklings.client.gui.control.controls.TestControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
 import com.willr27.blocklings.client.gui2.Colour;
-import com.willr27.blocklings.client.gui2.controls.Orientation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -28,24 +27,32 @@ public class TestScreen extends BlocklingsScreen
 
     private void pog()
     {
+        Control control333 = new Control();
+        control333.setParent(screenControl);
+        control333.setHeight(100);
+        control333.setDraggableXY(true);
+        control333.setScrollableXY(true);
+        control333.setMaxScrollOffsetY(270);
+
         FlowPanel flowPanel = new FlowPanel();
-        flowPanel.setInnerScale(2.0f);
-        flowPanel.setParent(screenControl);
+        flowPanel.setParent(control333);
+        flowPanel.setInnerScale(0.5f);
         flowPanel.setWidth(300);
         flowPanel.setHeight(200);
         flowPanel.setPadding(3, 2, 5, 7);
         flowPanel.setBackgroundColour(new Colour(1.0f, 0.0f, 0.0f));
         flowPanel.setBlocksDrag(true);
-        flowPanel.setDraggableXY(true);
+//        flowPanel.setDraggableXY(true);
         flowPanel.setScrollableXY(true);
         flowPanel.setFlowDirection(Direction.TOP_TO_BOTTOM);
         flowPanel.setOverflowDirection(Direction.LEFT_TO_RIGHT);
         flowPanel.setDragReorderType(DragReorderType.INSERT_ON_RELEASE);
+        flowPanel.setFitToContentsXY(true);
         flowPanel.setItemGapX(1);
         flowPanel.setItemGapY(1);
 
         Random random = new Random();
-        for (int i = 0; i < 99; i++)
+        for (int i = 0; i < 14; i++)
         {
             Control control = new Control()
             {
@@ -76,6 +83,8 @@ public class TestScreen extends BlocklingsScreen
             control.setMargins(5, 2, 1, 3);
             control.setBackgroundColour(new Colour(random.nextFloat(), random.nextFloat(), random.nextFloat()));
         }
+
+        int i = 0;
     }
 
     private void egg()

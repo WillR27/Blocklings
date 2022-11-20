@@ -71,6 +71,9 @@ public class FlowPanel extends Panel
         int maxSoFarX = 0;
         int maxSoFarY = 0;
 
+        int width = shouldFitToContentsX() ? getMaxWidth() : getWidth();
+        int height = shouldFitToContentsY() ? getMaxHeight() : getHeight();
+
         rowOrColumnBoundsCoords.clear();
         rowOrColumnBoundsCoords.add(0);
 
@@ -88,7 +91,7 @@ public class FlowPanel extends Panel
             // Wrap if the control is going to overlap the edge of the panel.
             if (getFlowDirection() == Direction.LEFT_TO_RIGHT)
             {
-                if (getOverflowDirection() != Direction.LEFT_TO_RIGHT && controlX + control.getEffectiveWidth() > (getWidth() - getPadding(Side.RIGHT)) / getInnerScale())
+                if (getOverflowDirection() != Direction.LEFT_TO_RIGHT && controlX + control.getEffectiveWidth() > (width - getPadding(Side.RIGHT)) / getInnerScale())
                 {
                     controlX = getPadding(Side.LEFT);
                     rowY = maxSoFarY + getItemGapY();
@@ -98,7 +101,7 @@ public class FlowPanel extends Panel
             }
             else
             {
-                if (getOverflowDirection() != Direction.TOP_TO_BOTTOM && controlY + control.getEffectiveWidth() > (getHeight() - getPadding(Side.BOTTOM)) / getInnerScale())
+                if (getOverflowDirection() != Direction.TOP_TO_BOTTOM && controlY + control.getEffectiveWidth() > (height - getPadding(Side.BOTTOM)) / getInnerScale())
                 {
                     controlY = getPadding(Side.TOP);
                     colX = maxSoFarX + getItemGapX();
@@ -144,6 +147,8 @@ public class FlowPanel extends Panel
         {
             setMaxScrollOffsetY((int) (maxSoFarY - (getHeight() / getInnerScale())));
         }
+
+        tryFitToContents();
     }
 
     @Override

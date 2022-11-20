@@ -28,6 +28,7 @@ public abstract class Panel extends Control
         onChildAdded.subscribe((e) -> layoutContents());
         onChildRemoved.subscribe((e) -> layoutContents());
         onChildrenReordered.subscribe((e) -> layoutContents());
+        onSizeChanged.subscribe((e) -> layoutContents());
 
         EventHandler.Handler<DragEndEvent> onDragEnd = (e) ->
         {
@@ -82,28 +83,18 @@ public abstract class Panel extends Control
     protected abstract void updateDraggedControl(@Nonnull Control draggedChild);
 
     @Override
+    public void tryFitToContents()
+    {
+        tryFitToContents(true);
+    }
+
+    @Override
     protected void onRenderUpdate(@Nonnull RenderArgs renderArgs)
     {
         if (getScreen().getDraggedControl() != null && getScreen().getDraggedControl().getParent() == this)
         {
             updateDraggedControl(getScreen().getDraggedControl());
         }
-    }
-
-    @Override
-    public void setWidth(int width)
-    {
-        super.setWidth(width);
-
-        layoutContents();
-    }
-
-    @Override
-    public void setHeight(int height)
-    {
-        super.setHeight(height);
-
-        layoutContents();
     }
 
     /**
