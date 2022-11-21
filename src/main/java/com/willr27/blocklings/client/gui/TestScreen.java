@@ -3,6 +3,7 @@ package com.willr27.blocklings.client.gui;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.Direction;
 import com.willr27.blocklings.client.gui.control.DragReorderType;
+import com.willr27.blocklings.client.gui.control.Side;
 import com.willr27.blocklings.client.gui.control.controls.TestControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
@@ -12,6 +13,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import java.util.EnumSet;
 import java.util.Random;
 
 @OnlyIn(Dist.CLIENT)
@@ -22,7 +24,36 @@ public class TestScreen extends BlocklingsScreen
     {
         super.init();
 
-        pog();
+        wog();
+    }
+
+    private void wog()
+    {
+        Control control1 = new Control()
+        {
+            @Override
+            protected void onMouseClicked(@Nonnull MouseButtonEvent mouseButtonEvent)
+            {
+                setWidth(90 * mouseButtonEvent.mouseButton);
+                setHeight(50 * mouseButtonEvent.mouseButton);
+
+                super.onMouseClicked(mouseButtonEvent);
+            }
+        };
+        control1.setParent(screenControl);
+        control1.setWidth(300);
+        control1.setHeight(200);
+        control1.setInnerScale(2.0f);
+        control1.setBackgroundColour(new Colour(255, 0, 255));
+
+        Control anchorControl = new Control();
+        anchorControl.setWidth(100);
+        anchorControl.setHeight(75);
+        anchorControl.setX(25);
+        anchorControl.setY(10);
+        anchorControl.setParent(control1);
+        anchorControl.setAnchor(EnumSet.of(Side.RIGHT));
+        anchorControl.setBackgroundColour(new Colour(0, 255, 120));
     }
 
     private void pog()

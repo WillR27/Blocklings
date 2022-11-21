@@ -22,8 +22,6 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiConsumer;
 
-import static java.awt.SystemColor.control;
-
 /**
  * A control is an atomic component of a GUI.
  */
@@ -171,8 +169,8 @@ public class Control extends Gui
     /**
      * How the control is position/sized relative to its parent.
      */
-    @Nonnull
-    private Optional<EnumSet<Side>> anchor = Optional.empty();
+    @Nullable
+    private EnumSet<Side> anchor = null;
 
     /**
      * Occurs when the control's anchor changes.
@@ -333,6 +331,47 @@ public class Control extends Gui
             e.childRemoved.onSizeChanged.unsubscribe(onSizeChanged);
             e.childRemoved.onMarginsChanged.unsubscribe(onMarginsChanged);
         });
+    }
+
+    /**
+     * Transforms the control based on its anchor property and the given changes in parent size.
+     */
+    private void tryTransformFromAnchorWhenParentResized(int newParentWidth, int newParentHeight)
+    {
+        if (getAnchor() == null)
+        {
+            return;
+        }
+
+        if (getAnchor().contains(Side.LEFT) && getAnchor().contains(Side.RIGHT))
+        {
+            int oldRightSideOfControl = getX() + getEffectiveWidth();
+            int oldRightSideOfParent = (int) ((getParent().getWidth() / getParent().getInnerScale()) - getParent().getPadding(Side.RIGHT));
+            int oldMarginWidth = oldRightSideOfParent - oldRightSideOfControl;
+            int newRightSideOfParent = (int) ((newParentWidth / getParent().getInnerScale()) - getParent().getPadding(Side.RIGHT));
+            int newMarginWidth = newRightSideOfParent - oldRightSideOfControl;
+
+            setWidth(getWidth() + (newMarginWidth - oldMarginWidth));
+        }
+        else if (getAnchor().contains(Side.RIGHT))
+        {
+            setX((int) (getX() + (newParentWidth - getParent().getWidth()) / getParent().getInnerScale()));
+        }
+
+        if (getAnchor().contains(Side.TOP) && getAnchor().contains(Side.BOTTOM))
+        {
+            int oldBottomSideOfControl = getY() + getEffectiveHeight();
+            int oldBottomSideOfParent = (int) ((getParent().getHeight() / getParent().getInnerScale()) - getParent().getPadding(Side.BOTTOM));
+            int oldMarginHeight = oldBottomSideOfParent - oldBottomSideOfControl;
+            int newBottomSideOfParent = (int) ((newParentHeight / getParent().getInnerScale()) - getParent().getPadding(Side.BOTTOM));
+            int newMarginHeight = newBottomSideOfParent - oldBottomSideOfControl;
+
+            setHeight(getHeight() + (newMarginHeight - oldMarginHeight));
+        }
+        else if (getAnchor().contains(Side.BOTTOM))
+        {
+            setY((int) (getY() + (newParentHeight - getParent().getHeight()) / getParent().getInnerScale()));
+        }
     }
 
     /**
@@ -674,7 +713,7 @@ public class Control extends Gui
             mousePosEvent.mouseX = toLocalX(mousePosEvent.mousePixelX);
             mousePosEvent.mouseY = toLocalY(mousePosEvent.mousePixelY);
 
-            if (isPressed() && (isDraggableX() || isDraggableY())) // TODO: Or child is pressed?
+            if ((isPressed() || hasDescendant(getScreen().getPressedControl())) && (isDraggableX() || isDraggableY()))
             {
                 int pixelDragDifX = mousePosEvent.mousePixelX - getScreen().getPressedStartPixelX();
                 int pixelDragDifY = mousePosEvent.mousePixelY - getScreen().getPressedStartPixelY();
@@ -1271,6 +1310,19 @@ public class Control extends Gui
     }
 
     /**
+     * @return whether the given control is a descendant.
+     */
+    public final boolean hasDescendant(@Nullable Control control)
+    {
+        if (control == null)
+        {
+            return false;
+        }
+
+        return getChildren().contains(control) || getChildren().stream().anyMatch(child -> child.hasDescendant(control));
+    }
+
+    /**
      * @return the x pixel position of the top left of the control on the screen.
      */
     public final int getPixelX()
@@ -1466,6 +1518,9 @@ public class Control extends Gui
             hitbox.resize(this.width, width, height, height);
         }
 
+        int finalWidth = width;
+        getChildren().forEach(child -> child.tryTransformFromAnchorWhenParentResized(finalWidth, getHeight()));
+
         this.width = width;
 
         recalcPixelWidth();
@@ -1508,6 +1563,9 @@ public class Control extends Gui
         {
             hitbox.resize(width, width, this.height, height);
         }
+
+        int finalHeight = height;
+        getChildren().forEach(child -> child.tryTransformFromAnchorWhenParentResized(getWidth(), finalHeight));
 
         this.height = height;
 
@@ -1645,8 +1703,8 @@ public class Control extends Gui
     /**
      * @return the anchor for the control.
      */
-    @Nonnull
-    public Optional<EnumSet<Side>> getAnchor()
+    @Nullable
+    public EnumSet<Side> getAnchor()
     {
         return anchor;
     }
@@ -1654,7 +1712,7 @@ public class Control extends Gui
     /**
      * Sets the anchor for the control.
      */
-    public void setAnchor(@Nonnull Optional<EnumSet<Side>> anchor)
+    public void setAnchor(@Nullable EnumSet<Side> anchor)
     {
         AnchorChangedEvent event = onAnchorChanged.handle(new AnchorChangedEvent(this, anchor));
 
