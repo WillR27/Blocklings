@@ -83,7 +83,7 @@ public class TestScreen extends BlocklingsScreen
         flowPanel.setItemGapY(1);
 
         Random random = new Random();
-        for (int i = 0; i < 100 ; i++)
+        for (int i = 0; i < 400 ; i++)
         {
             Control control = new Control()
             {

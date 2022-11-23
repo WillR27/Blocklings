@@ -82,7 +82,7 @@ public abstract class BlocklingsScreen extends Screen implements IScreen
                 mousePosEvent.mouseX = Math.round(getDraggedControl().toLocalX(mousePosEvent.mousePixelX));
                 mousePosEvent.mouseY = Math.round(getDraggedControl().toLocalY(mousePosEvent.mousePixelY));
 
-                getDraggedControl().onDrag(mousePosEvent);
+                getDraggedControl().onDrag(mousePosEvent, partialTicks);
             }
         }
 

@@ -13,8 +13,10 @@ import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.util.event.EventHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jline.utils.Log;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
@@ -280,7 +282,7 @@ public class Control extends Gui
     /**
      * The multiplier used to adjust the amount scrolled.
      */
-    private float scrollSpeed = 10.0f;
+    private float scrollSpeed = 15.0f;
 
     /**
      * The scroll offset in the x-axis.
@@ -777,7 +779,7 @@ public class Control extends Gui
     /**
      * Occurs when a control is being dragged.
      */
-    public void onDrag(@Nonnull MousePosEvent mousePosEvent)
+    public void onDrag(@Nonnull MousePosEvent mousePosEvent, float partialTicks)
     {
         if (isDraggableX())
         {
@@ -790,7 +792,7 @@ public class Control extends Gui
         }
 
         List<Side> atParentBounds = getParentBoundsAt();
-        float scrollAmount = (getParent().getScrollSpeed() / (getParent().getCumulativeScale() * getParent().getCumulativeScale())) / 2.0f;
+        float scrollAmount = getParent().getScrollSpeed() * partialTicks;
 
         if (isDraggableX())
         {
