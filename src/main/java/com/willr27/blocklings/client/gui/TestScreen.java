@@ -24,7 +24,7 @@ public class TestScreen extends BlocklingsScreen
     {
         super.init();
 
-        wog();
+        pog();
     }
 
     private void wog()
@@ -59,31 +59,31 @@ public class TestScreen extends BlocklingsScreen
     private void pog()
     {
         Control control333 = new Control();
-        control333.setParent(screenControl);
+//        control333.setParent(screenControl);
         control333.setHeight(100);
         control333.setDraggableXY(true);
         control333.setScrollableXY(true);
         control333.setMaxScrollOffsetY(270);
 
         FlowPanel flowPanel = new FlowPanel();
-        flowPanel.setParent(control333);
-        flowPanel.setInnerScale(0.5f);
+        flowPanel.setParent(screenControl);
+        flowPanel.setInnerScale(2.0f);
         flowPanel.setWidth(300);
         flowPanel.setHeight(200);
         flowPanel.setPadding(3, 2, 5, 7);
         flowPanel.setBackgroundColour(new Colour(1.0f, 0.0f, 0.0f));
         flowPanel.setBlocksDrag(true);
-//        flowPanel.setDraggableXY(true);
+        flowPanel.setDraggableXY(true);
         flowPanel.setScrollableXY(true);
-        flowPanel.setFlowDirection(Direction.TOP_TO_BOTTOM);
-        flowPanel.setOverflowDirection(Direction.LEFT_TO_RIGHT);
+        flowPanel.setFlowDirection(Direction.LEFT_TO_RIGHT);
+        flowPanel.setOverflowDirection(Direction.TOP_TO_BOTTOM);
         flowPanel.setDragReorderType(DragReorderType.INSERT_ON_RELEASE);
-        flowPanel.setFitToContentsXY(true);
+        flowPanel.setFitToContentsXY(false);
         flowPanel.setItemGapX(1);
         flowPanel.setItemGapY(1);
 
         Random random = new Random();
-        for (int i = 0; i < 14; i++)
+        for (int i = 0; i < 100 ; i++)
         {
             Control control = new Control()
             {

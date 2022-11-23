@@ -3,7 +3,6 @@ package com.willr27.blocklings.client.gui;
 import com.willr27.blocklings.client.gui2.GuiUtil;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.lwjgl.system.CallbackI;
 
 import javax.annotation.Nonnull;
 import java.util.Stack;

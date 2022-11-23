@@ -81,16 +81,16 @@ public class ScreenControl extends Control implements IScreen
         {
             if (hoveredControl != null)
             {
-                mousePosEvent.mouseX = hoveredControl.toLocalX(mousePosEvent.mousePixelX);
-                mousePosEvent.mouseY = hoveredControl.toLocalY(mousePosEvent.mousePixelY);
+                mousePosEvent.mouseX = Math.round(hoveredControl.toLocalX(mousePosEvent.mousePixelX));
+                mousePosEvent.mouseY = Math.round(hoveredControl.toLocalY(mousePosEvent.mousePixelY));
 
                 hoveredControl.onHoverExit(mousePosEvent);
             }
 
             if (control != null)
             {
-                mousePosEvent.mouseX = control.toLocalX(mousePosEvent.mousePixelX);
-                mousePosEvent.mouseY = control.toLocalY(mousePosEvent.mousePixelY);
+                mousePosEvent.mouseX = Math.round(control.toLocalX(mousePosEvent.mousePixelX));
+                mousePosEvent.mouseY = Math.round(control.toLocalY(mousePosEvent.mousePixelY));
 
                 control.onHoverEnter(mousePosEvent);
             }
@@ -113,8 +113,8 @@ public class ScreenControl extends Control implements IScreen
         {
             if (pressedControl != null)
             {
-                mouseButtonEvent.mouseX = pressedControl.toLocalX(mouseButtonEvent.mousePixelX);
-                mouseButtonEvent.mouseY = pressedControl.toLocalY(mouseButtonEvent.mousePixelY);
+                mouseButtonEvent.mouseX = Math.round(pressedControl.toLocalX(mouseButtonEvent.mousePixelX));
+                mouseButtonEvent.mouseY = Math.round(pressedControl.toLocalY(mouseButtonEvent.mousePixelY));
 
                 pressedControl.onReleased(mouseButtonEvent);
             }
@@ -124,8 +124,8 @@ public class ScreenControl extends Control implements IScreen
                 pressedStartPixelX = mouseButtonEvent.mousePixelX;
                 pressedStartPixelY = mouseButtonEvent.mousePixelY;
 
-                mouseButtonEvent.mouseX = control.toLocalX(mouseButtonEvent.mousePixelX);
-                mouseButtonEvent.mouseY = control.toLocalY(mouseButtonEvent.mousePixelY);
+                mouseButtonEvent.mouseX = Math.round(control.toLocalX(mouseButtonEvent.mousePixelX));
+                mouseButtonEvent.mouseY = Math.round(control.toLocalY(mouseButtonEvent.mousePixelY));
 
                 control.onPressed(mouseButtonEvent);
             }
@@ -160,16 +160,16 @@ public class ScreenControl extends Control implements IScreen
         {
             if (focusedControl != null)
             {
-                mouseButtonEvent.mouseX = focusedControl.toLocalX(mouseButtonEvent.mousePixelX);
-                mouseButtonEvent.mouseY = focusedControl.toLocalY(mouseButtonEvent.mousePixelY);
+                mouseButtonEvent.mouseX = Math.round(focusedControl.toLocalX(mouseButtonEvent.mousePixelX));
+                mouseButtonEvent.mouseY = Math.round(focusedControl.toLocalY(mouseButtonEvent.mousePixelY));
 
                 focusedControl.onUnfocused(mouseButtonEvent);
             }
 
             if (control != null)
             {
-                mouseButtonEvent.mouseX = control.toLocalX(mouseButtonEvent.mousePixelX);
-                mouseButtonEvent.mouseY = control.toLocalY(mouseButtonEvent.mousePixelY);
+                mouseButtonEvent.mouseX = Math.round(control.toLocalX(mouseButtonEvent.mousePixelX));
+                mouseButtonEvent.mouseY = Math.round(control.toLocalY(mouseButtonEvent.mousePixelY));
 
                 control.onFocused(mouseButtonEvent);
             }
@@ -192,8 +192,8 @@ public class ScreenControl extends Control implements IScreen
         {
             if (draggedControl != null)
             {
-                mousePosEvent.mouseX = draggedControl.toLocalX(mousePosEvent.mousePixelX);
-                mousePosEvent.mouseY = draggedControl.toLocalY(mousePosEvent.mousePixelY);
+                mousePosEvent.mouseX = Math.round(draggedControl.toLocalX(mousePosEvent.mousePixelX));
+                mousePosEvent.mouseY = Math.round(draggedControl.toLocalY(mousePosEvent.mousePixelY));
 
                 draggedControl.onDragEnd.handle(new DragEndEvent(draggedControl));
                 draggedControl.onDragEnd(mousePosEvent);
@@ -201,8 +201,8 @@ public class ScreenControl extends Control implements IScreen
 
             if (control != null)
             {
-                mousePosEvent.mouseX = control.toLocalX(mousePosEvent.mousePixelX);
-                mousePosEvent.mouseY = control.toLocalY(mousePosEvent.mousePixelY);
+                mousePosEvent.mouseX = Math.round(control.toLocalX(mousePosEvent.mousePixelX));
+                mousePosEvent.mouseY = Math.round(control.toLocalY(mousePosEvent.mousePixelY));
 
                 control.onDragStart.handle(new DragStartEvent(control));
                 control.onDragStart(mousePosEvent);

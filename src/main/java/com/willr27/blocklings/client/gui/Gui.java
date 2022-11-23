@@ -9,7 +9,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
-import java.util.Map;
 
 /**
  * A facade for the underlying {@link AbstractGui}. This makes using {@link Control} easier.

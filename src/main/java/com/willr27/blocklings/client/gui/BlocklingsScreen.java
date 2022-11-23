@@ -59,7 +59,7 @@ public abstract class BlocklingsScreen extends Screen implements IScreen
         int pixelMouseY = GuiUtil.getInstance().getPixelMouseY();
 
         {
-            MousePosEvent mousePosEvent = new MousePosEvent(screenControl.toLocalX(pixelMouseX), screenControl.toLocalY(pixelMouseY), pixelMouseX, pixelMouseY);
+            MousePosEvent mousePosEvent = new MousePosEvent(Math.round(screenControl.toLocalX(pixelMouseX)), Math.round(screenControl.toLocalY(pixelMouseY)), pixelMouseX, pixelMouseY);
 
             screenControl.forwardHover(mousePosEvent);
 
@@ -73,14 +73,14 @@ public abstract class BlocklingsScreen extends Screen implements IScreen
         }
 
         {
-            MousePosEvent mousePosEvent = new MousePosEvent(screenControl.toLocalX(pixelMouseX), screenControl.toLocalY(pixelMouseY), pixelMouseX, pixelMouseY);
+            MousePosEvent mousePosEvent = new MousePosEvent(Math.round(screenControl.toLocalX(pixelMouseX)), Math.round(screenControl.toLocalY(pixelMouseY)), pixelMouseX, pixelMouseY);
 
             screenControl.forwardTryDrag(mousePosEvent);
 
             if (getDraggedControl() != null)
             {
-                mousePosEvent.mouseX = getDraggedControl().toLocalX(mousePosEvent.mousePixelX);
-                mousePosEvent.mouseY = getDraggedControl().toLocalY(mousePosEvent.mousePixelY);
+                mousePosEvent.mouseX = Math.round(getDraggedControl().toLocalX(mousePosEvent.mousePixelX));
+                mousePosEvent.mouseY = Math.round(getDraggedControl().toLocalY(mousePosEvent.mousePixelY));
 
                 getDraggedControl().onDrag(mousePosEvent);
             }
@@ -102,7 +102,7 @@ public abstract class BlocklingsScreen extends Screen implements IScreen
         int pixelMouseX = GuiUtil.getInstance().getPixelMouseX();
         int pixelMouseY = GuiUtil.getInstance().getPixelMouseY();
 
-        MouseButtonEvent mouseButtonEvent = new MouseButtonEvent(screenControl.toLocalX(pixelMouseX), screenControl.toLocalY(pixelMouseY), pixelMouseX, pixelMouseY, mouseButton);
+        MouseButtonEvent mouseButtonEvent = new MouseButtonEvent(Math.round(screenControl.toLocalX(pixelMouseX)), Math.round(screenControl.toLocalY(pixelMouseY)), pixelMouseX, pixelMouseY, mouseButton);
 
         screenControl.forwardGlobalMouseClicked(mouseButtonEvent);
         screenControl.forwardMouseClicked(mouseButtonEvent);
@@ -128,7 +128,7 @@ public abstract class BlocklingsScreen extends Screen implements IScreen
         int pixelMouseX = GuiUtil.getInstance().getPixelMouseX();
         int pixelMouseY = GuiUtil.getInstance().getPixelMouseY();
 
-        MouseButtonEvent mouseButtonEvent = new MouseButtonEvent(screenControl.toLocalX(pixelMouseX), screenControl.toLocalY(pixelMouseY), pixelMouseX, pixelMouseY, mouseButton);
+        MouseButtonEvent mouseButtonEvent = new MouseButtonEvent(Math.round(screenControl.toLocalX(pixelMouseX)), Math.round(screenControl.toLocalY(pixelMouseY)), pixelMouseX, pixelMouseY, mouseButton);
 
         screenControl.forwardGlobalMouseReleased(mouseButtonEvent);
         screenControl.forwardMouseReleased(mouseButtonEvent);
@@ -147,7 +147,7 @@ public abstract class BlocklingsScreen extends Screen implements IScreen
         int pixelMouseX = GuiUtil.getInstance().getPixelMouseX();
         int pixelMouseY = GuiUtil.getInstance().getPixelMouseY();
 
-        MouseScrollEvent mouseScrollEvent = new MouseScrollEvent(screenControl.toLocalX(pixelMouseX), screenControl.toLocalY(pixelMouseY), pixelMouseX, pixelMouseY, scrollAmount);
+        MouseScrollEvent mouseScrollEvent = new MouseScrollEvent(Math.round(screenControl.toLocalX(pixelMouseX)), Math.round(screenControl.toLocalY(pixelMouseY)), pixelMouseX, pixelMouseY, scrollAmount);
 
         screenControl.forwardGlobalMouseScrolled(mouseScrollEvent);
         screenControl.forwardMouseScrolled(mouseScrollEvent);

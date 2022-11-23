@@ -371,14 +371,14 @@ public class GuiUtil
         }
     }
 
-    public static void scissor(int x, int y, int width, int height)
+    public static void scissor(float x, float y, int width, int height)
     {
         scissor(x, y, width, height, false);
     }
 
     public static boolean useGuiScaleForScissor = false;
 
-    public static void scissor(int x, int y, int width, int height, boolean useMaxBounds)
+    public static void scissor(float x, float y, int width, int height, boolean useMaxBounds)
     {
         MainWindow window = Minecraft.getInstance().getWindow();
         float scale = useGuiScaleForScissor ? (int) window.getGuiScale() : 1.0f;

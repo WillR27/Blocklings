@@ -54,28 +54,28 @@ public class FlowPanel extends Panel
      * columns, not just start coordinate of each row or column.
      */
     @Nonnull
-    private List<Integer> rowOrColumnBoundsCoords = new ArrayList<>();
+    private List<Float> rowOrColumnBoundsCoords = new ArrayList<>();
 
     @Override
     public void layoutContents(boolean setDraggedPosition)
     {
         // The current positions to use for the next control.
-        int controlX = getPadding(Side.LEFT);
-        int controlY = getPadding(Side.TOP);
-        int rowY = controlY;
-        int colX = controlX;
+        float controlX = getPadding(Side.LEFT);
+        float controlY = getPadding(Side.TOP);
+        float rowY = controlY;
+        float colX = controlX;
 
         // The current max coords reached in each direction. This is needed to work out where to put a
         // control when wrapping. If there are 2 controls with different heights on one row then if the
         // next control wraps it needs to use the max y position reached.
-        int maxSoFarX = 0;
-        int maxSoFarY = 0;
+        float maxSoFarX = 0;
+        float maxSoFarY = 0;
 
-        int width = shouldFitToContentsX() ? getMaxWidth() : getWidth();
-        int height = shouldFitToContentsY() ? getMaxHeight() : getHeight();
+        float width = shouldFitToContentsX() ? getMaxWidth() : getWidth();
+        float height = shouldFitToContentsY() ? getMaxHeight() : getHeight();
 
         rowOrColumnBoundsCoords.clear();
-        rowOrColumnBoundsCoords.add(0);
+        rowOrColumnBoundsCoords.add(0.0f);
 
         for (Control control : getChildren())
         {
@@ -176,16 +176,16 @@ public class FlowPanel extends Panel
      */
     protected void reorderFromDrag(@Nonnull Control draggedControl)
     {
-        int draggedMidX = draggedControl.getMidX();
-        int draggedMidY = draggedControl.getMidY();
+        float draggedMidX = draggedControl.getMidX();
+        float draggedMidY = draggedControl.getMidY();
 
         Control closestControl = draggedControl;
-        int closestDifX = Integer.MAX_VALUE;
-        int closestDifY = Integer.MAX_VALUE;
-        int rowOrColumnLowerBound = 0;
-        int rowOrColumnUpperBound = 0;
+        float closestDifX = Integer.MAX_VALUE;
+        float closestDifY = Integer.MAX_VALUE;
+        float rowOrColumnLowerBound = 0;
+        float rowOrColumnUpperBound = 0;
 
-        List<Integer> rowOrColumnBoundsCoordsWithScrollOffset = rowOrColumnBoundsCoords.stream().map(i -> i - (getFlowDirection() == Direction.LEFT_TO_RIGHT ? getScrollOffsetY() : getScrollOffsetX())).collect(Collectors.toList());
+        List<Float> rowOrColumnBoundsCoordsWithScrollOffset = rowOrColumnBoundsCoords.stream().map(i -> i - (getFlowDirection() == Direction.LEFT_TO_RIGHT ? getScrollOffsetY() : getScrollOffsetX())).collect(Collectors.toList());
 
         if (getFlowDirection() == Direction.LEFT_TO_RIGHT)
         {
@@ -233,7 +233,7 @@ public class FlowPanel extends Panel
 
                 controlsInRow.add(control);
 
-                int difX = draggedMidX - control.getMidX();
+                float difX = draggedMidX - control.getMidX();
 
                 if (Math.abs(difX) < Math.abs(closestDifX))
                 {
@@ -309,7 +309,7 @@ public class FlowPanel extends Panel
 
                 controlsInColumn.add(control);
 
-                int difY = draggedMidY - control.getMidY();
+                float difY = draggedMidY - control.getMidY();
 
                 if (Math.abs(difY) < Math.abs(closestDifY))
                 {

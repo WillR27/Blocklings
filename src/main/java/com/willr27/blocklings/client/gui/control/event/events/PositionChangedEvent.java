@@ -13,29 +13,29 @@ public class PositionChangedEvent extends HandleableControlEvent
     /**
      * The new scaled local x position.
      */
-    public final int newX;
+    public final float newX;
 
     /**
      * The new scaled local y position.
      */
-    public final int newY;
+    public final float newY;
 
     /**
      * The change in the x position.
      */
-    public final int dX;
+    public final float dX;
 
     /**
      * The change in the y position.
      */
-    public final int dY;
+    public final float dY;
 
     /**
      * @param control the control to update the position of.
      * @param newX the new scaled local x position.
      * @param newY the new scaled local y position.
      */
-    public PositionChangedEvent(@Nonnull Control control, int newX, int newY)
+    public PositionChangedEvent(@Nonnull Control control, float newX, float newY)
     {
         super(control);
         this.newX = newX;

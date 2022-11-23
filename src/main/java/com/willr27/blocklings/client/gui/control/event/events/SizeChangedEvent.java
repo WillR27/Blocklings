@@ -13,29 +13,29 @@ public class SizeChangedEvent extends ControlEvent
     /**
      * The previous scaled width.
      */
-    public final int prevWidth;
+    public final float prevWidth;
 
     /**
      * The previous scaled height.
      */
-    public final int prevHeight;
+    public final float prevHeight;
 
     /**
      * The change in the width.
      */
-    public final int dWidth;
+    public final float dWidth;
 
     /**
      * The change in the height.
      */
-    public final int dHeight;
+    public final float dHeight;
 
     /**
      * @param control the control to change the size of.
      * @param prevWidth the previous scaled width.
      * @param prevHeight the previous scaled height.
      */
-    public SizeChangedEvent(@Nonnull Control control, int prevWidth, int prevHeight)
+    public SizeChangedEvent(@Nonnull Control control, float prevWidth, float prevHeight)
     {
         super(control);
         this.prevWidth = prevWidth;

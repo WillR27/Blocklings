@@ -90,13 +90,13 @@ public class Control extends Gui
      * The scaled local x position of the control relative to the parent, i.e. (0, 0) would be the top left corner
      * of the parent control regardless of where the parent is on the screen.
      */
-    private int x = 0;
+    private float x = 0;
 
     /**
      * The scaled local y position of the control relative to the parent, i.e. (0, 0) would be the top left corner
      * of the parent control regardless of where the parent is on the screen.
      */
-    private int y = 0;
+    private float y = 0;
 
     /**
      * Called when the control's position changes.
@@ -118,13 +118,13 @@ public class Control extends Gui
      * The scaled width of the control relative to the parent, i.e. 100 x 100 would be 200 x 200 pixels if the
      * cumulative product of the parent control's inner scale was 2.0f.
      */
-    private int width = 100;
+    private float width = 100;
 
     /**
      * The scaled height of the control relative to the parent, i.e. 100 x 100 would be 200 x 200 pixels if the
      * cumulative product of the parent control's inner scale was 2.0f.
      */
-    private int height = 100;
+    private float height = 100;
 
     /**
      * The max width of the control. Set to -1 to ignore.
@@ -285,12 +285,12 @@ public class Control extends Gui
     /**
      * The scroll offset in the x-axis.
      */
-    private int scrollOffsetX = 0;
+    private float scrollOffsetX = 0;
 
     /**
      * The scroll offset in the y-axis.
      */
-    private int scrollOffsetY = 0;
+    private float scrollOffsetY = 0;
 
     /**
      * The max scroll offset in the x-axis.
@@ -336,7 +336,7 @@ public class Control extends Gui
     /**
      * Transforms the control based on its anchor property and the given changes in parent size.
      */
-    private void tryTransformFromAnchorWhenParentResized(int newParentWidth, int newParentHeight)
+    private void tryTransformFromAnchorWhenParentResized(float newParentWidth, float newParentHeight)
     {
         if (getAnchor() == null)
         {
@@ -345,53 +345,53 @@ public class Control extends Gui
 
         if (getAnchor().isEmpty())
         {
-            int dWidthScaled = (int) ((newParentWidth - getParent().getWidth()) / getParent().getInnerScale());
-            int dHeightScaled = (int) ((newParentHeight - getParent().getHeight()) / getParent().getInnerScale());
+            float dWidthScaled = (newParentWidth - getParent().getWidth()) / getParent().getInnerScale();
+            float dHeightScaled = (newParentHeight - getParent().getHeight()) / getParent().getInnerScale();
 
-            int parentLeft = getParent().getPadding(Side.LEFT);
-            int controlLeft = getX() - getMargin(Side.LEFT);
-            int parentRight = (int) ((getParent().getWidth() / getParent().getInnerScale()) - getPadding(Side.RIGHT));
-            int totalWidth = (parentRight - parentLeft - getEffectiveWidth());
-            float leftPercent = (float) (controlLeft - parentLeft) / totalWidth;
+            float parentLeft = getParent().getPadding(Side.LEFT);
+            float controlLeft = getX() - getMargin(Side.LEFT);
+            float parentRight = (getParent().getWidth() / getParent().getInnerScale()) - getPadding(Side.RIGHT);
+            float totalWidth = (parentRight - parentLeft - getEffectiveWidth());
+            float leftPercent = (controlLeft - parentLeft) / totalWidth;
 
-            int parentTop = getParent().getPadding(Side.TOP);
-            int controlTop = getY() - getMargin(Side.TOP);
-            int parentBottom = (int) ((getParent().getHeight() / getParent().getInnerScale()) - getPadding(Side.BOTTOM));
-            int totalHeight = (parentBottom - parentTop - getEffectiveHeight());
-            float topPercent = (float) (controlTop - parentTop) / totalHeight;
+            float parentTop = getParent().getPadding(Side.TOP);
+            float controlTop = getY() - getMargin(Side.TOP);
+            float parentBottom = (getParent().getHeight() / getParent().getInnerScale()) - getPadding(Side.BOTTOM);
+            float totalHeight = (parentBottom - parentTop - getEffectiveHeight());
+            float topPercent = (controlTop - parentTop) / totalHeight;
 
-            setX((int) (getX() + dWidthScaled * leftPercent));
-            setY((int) (getY() + dHeightScaled * topPercent));
+            setX(getX() + dWidthScaled * leftPercent);
+            setY(getY() + dHeightScaled * topPercent);
         }
 
         if (getAnchor().contains(Side.LEFT) && getAnchor().contains(Side.RIGHT))
         {
-            int oldRightSideOfControl = getX() + getEffectiveWidth();
-            int oldRightSideOfParent = (int) ((getParent().getWidth() / getParent().getInnerScale()) - getParent().getPadding(Side.RIGHT));
-            int oldMarginWidth = oldRightSideOfParent - oldRightSideOfControl;
-            int newRightSideOfParent = (int) ((newParentWidth / getParent().getInnerScale()) - getParent().getPadding(Side.RIGHT));
-            int newMarginWidth = newRightSideOfParent - oldRightSideOfControl;
+            float oldRightSideOfControl = getX() + getEffectiveWidth();
+            float oldRightSideOfParent = (getParent().getWidth() / getParent().getInnerScale()) - getParent().getPadding(Side.RIGHT);
+            float oldMarginWidth = oldRightSideOfParent - oldRightSideOfControl;
+            float newRightSideOfParent = (newParentWidth / getParent().getInnerScale()) - getParent().getPadding(Side.RIGHT);
+            float newMarginWidth = newRightSideOfParent - oldRightSideOfControl;
 
             setWidth(getWidth() + (newMarginWidth - oldMarginWidth));
         }
         else if (getAnchor().contains(Side.RIGHT))
         {
-            setX((int) (getX() + (newParentWidth - getParent().getWidth()) / getParent().getInnerScale()));
+            setX(getX() + (newParentWidth - getParent().getWidth()) / getParent().getInnerScale());
         }
 
         if (getAnchor().contains(Side.TOP) && getAnchor().contains(Side.BOTTOM))
         {
-            int oldBottomSideOfControl = getY() + getEffectiveHeight();
-            int oldBottomSideOfParent = (int) ((getParent().getHeight() / getParent().getInnerScale()) - getParent().getPadding(Side.BOTTOM));
-            int oldMarginHeight = oldBottomSideOfParent - oldBottomSideOfControl;
-            int newBottomSideOfParent = (int) ((newParentHeight / getParent().getInnerScale()) - getParent().getPadding(Side.BOTTOM));
-            int newMarginHeight = newBottomSideOfParent - oldBottomSideOfControl;
+            float oldBottomSideOfControl = getY() + getEffectiveHeight();
+            float oldBottomSideOfParent = (getParent().getHeight() / getParent().getInnerScale()) - getParent().getPadding(Side.BOTTOM);
+            float oldMarginHeight = oldBottomSideOfParent - oldBottomSideOfControl;
+            float newBottomSideOfParent = (newParentHeight / getParent().getInnerScale()) - getParent().getPadding(Side.BOTTOM);
+            float newMarginHeight = newBottomSideOfParent - oldBottomSideOfControl;
 
             setHeight(getHeight() + (newMarginHeight - oldMarginHeight));
         }
         else if (getAnchor().contains(Side.BOTTOM))
         {
-            setY((int) (getY() + (newParentHeight - getParent().getHeight()) / getParent().getInnerScale()));
+            setY(getY() + (newParentHeight - getParent().getHeight()) / getParent().getInnerScale());
         }
     }
 
@@ -414,17 +414,17 @@ public class Control extends Gui
     {
         if (shouldFitToContentsX() || shouldFitToContentsY())
         {
-            int minX = 0;
-            int minY = 0;
-            int maxX = 0;
-            int maxY = 0;
+            float minX = 0;
+            float minY = 0;
+            float maxX = 0;
+            float maxY = 0;
 
             for (Control control : getChildren())
             {
-                int controlMinX = control.getX() - control.getMargin(Side.LEFT);
-                int controlMinY = control.getY() - control.getMargin(Side.TOP);
-                int controlMaxX = control.getX() - control.getMargin(Side.LEFT) + control.getEffectiveWidth();
-                int controlMaxY = control.getY() - control.getMargin(Side.TOP) + control.getEffectiveHeight();
+                float controlMinX = control.getX() - control.getMargin(Side.LEFT);
+                float controlMinY = control.getY() - control.getMargin(Side.TOP);
+                float controlMaxX = control.getX() - control.getMargin(Side.LEFT) + control.getEffectiveWidth();
+                float controlMaxY = control.getY() - control.getMargin(Side.TOP) + control.getEffectiveHeight();
 
                 minX = Math.min(minX, controlMinX);
                 minY = Math.min(minY, controlMinY);
@@ -434,22 +434,22 @@ public class Control extends Gui
 
             if (shouldFitToContentsX())
             {
-                int oldWidth = getWidth();
-                int desiredWidth = maxX - minX + (ignoreTopLeftPadding ? 0 : getPadding(Side.LEFT)) + getPadding(Side.RIGHT);
-                int finalMinX = minX;
-                setWidth((int) (desiredWidth * getInnerScale()));
+                float oldWidth = getWidth();
+                float desiredWidth = maxX - minX + (ignoreTopLeftPadding ? 0 : getPadding(Side.LEFT)) + getPadding(Side.RIGHT);
+                float finalMinX = minX;
+                setWidth(desiredWidth * getInnerScale());
                 getChildren().forEach(control -> control.setX(control.getX() - finalMinX));
-                setMaxScrollOffsetX(getMaxScrollOffsetX() - Math.max(0, desiredWidth - oldWidth));
+                setMaxScrollOffsetX(Math.round(getMaxScrollOffsetX() - Math.max(0, desiredWidth - oldWidth)));
             }
 
             if (shouldFitToContentsY())
             {
-                int oldHeight = getHeight();
-                int desiredHeight = maxY - minY + (ignoreTopLeftPadding ? 0 : getPadding(Side.TOP)) + getPadding(Side.BOTTOM);
-                int finalMinY = minY;
-                setHeight((int) (desiredHeight * getInnerScale()));
+                float oldHeight = getHeight();
+                float desiredHeight = maxY - minY + (ignoreTopLeftPadding ? 0 : getPadding(Side.TOP)) + getPadding(Side.BOTTOM);
+                float finalMinY = minY;
+                setHeight(desiredHeight * getInnerScale());
                 getChildren().forEach(control -> control.setY(control.getY() - finalMinY));
-                setMaxScrollOffsetY(getMaxScrollOffsetY() - Math.max(0, desiredHeight - oldHeight));
+                setMaxScrollOffsetY(Math.round(getMaxScrollOffsetY() - Math.max(0, desiredHeight - oldHeight)));
             }
         }
     }
@@ -621,7 +621,7 @@ public class Control extends Gui
      */
     public void renderRectangle(@Nonnull MatrixStack matrixStack, int colour)
     {
-        fill(matrixStack, getPixelX(), getPixelY(), getPixelX() + getWidth(), getPixelY() + getHeight(), colour);
+        fill(matrixStack, getPixelX(), getPixelY(), Math.round(getPixelX() + getWidth()), Math.round(getPixelY() + getHeight()), colour);
     }
 
     /**
@@ -666,8 +666,8 @@ public class Control extends Gui
 
         if (!mousePosEvent.isHandled())
         {
-            mousePosEvent.mouseX = toLocalX(mousePosEvent.mousePixelX);
-            mousePosEvent.mouseY = toLocalY(mousePosEvent.mousePixelY);
+            mousePosEvent.mouseX = Math.round(toLocalX(mousePosEvent.mousePixelX));
+            mousePosEvent.mouseY = Math.round(toLocalY(mousePosEvent.mousePixelY));
 
             onHover(mousePosEvent);
 
@@ -731,22 +731,32 @@ public class Control extends Gui
 
         if (!mousePosEvent.isHandled())
         {
-            mousePosEvent.mouseX = toLocalX(mousePosEvent.mousePixelX);
-            mousePosEvent.mouseY = toLocalY(mousePosEvent.mousePixelY);
+            mousePosEvent.mouseX = Math.round(toLocalX(mousePosEvent.mousePixelX));
+            mousePosEvent.mouseY = Math.round(toLocalY(mousePosEvent.mousePixelY));
 
-            if ((isPressed() || hasDescendant(getScreen().getPressedControl())) && (isDraggableX() || isDraggableY()))
+            Control pressedControl = getScreen().getPressedControl();
+
+            if ((isPressed() || hasDescendant(pressedControl)) && (isDraggableX() || isDraggableY()))
             {
                 int pixelDragDifX = mousePosEvent.mousePixelX - getScreen().getPressedStartPixelX();
                 int pixelDragDifY = mousePosEvent.mousePixelY - getScreen().getPressedStartPixelY();
-                int localDragDifX = (int) ((pixelDragDifX / getCumulativeScale()) / GuiUtil.getInstance().getGuiScale());
-                int localDragDifY = (int) ((pixelDragDifY / getCumulativeScale()) / GuiUtil.getInstance().getGuiScale());
+                int localDragDifX = Math.round((pixelDragDifX / getCumulativeScale()) / GuiUtil.getInstance().getGuiScale());
+                int localDragDifY = Math.round((pixelDragDifY / getCumulativeScale()) / GuiUtil.getInstance().getGuiScale());
                 int absLocalDragDifX = Math.abs(localDragDifX);
                 int absLocalDragDifY = Math.abs(localDragDifY);
 
                 boolean isDraggedX = absLocalDragDifX >= getDragThreshold();
                 boolean isDraggedY = absLocalDragDifY >= getDragThreshold();
 
-                if ((isDraggableX() && isDraggedX) || (isDraggableY() && isDraggedY) || ((isDraggedX || isDraggedY) && isDraggableXY()))
+                // If we can drag but a pressed child can't then start dragging the child to prevent the parent dragging slightly then the child.
+                if (pressedControl != this && ((pressedControl.isDraggableX() && isDraggedX) || (pressedControl.isDraggableY() && isDraggedY) || ((isDraggedX || isDraggedY) && pressedControl.isDraggableXY())))
+                {
+                    getScreen().setDraggedControl(pressedControl, mousePosEvent);
+
+                    mousePosEvent.setIsHandled(true);
+                }
+                // Otherwise just drag this control as normal.
+                else if ((isDraggableX() && isDraggedX) || (isDraggableY() && isDraggedY) || ((isDraggedX || isDraggedY) && isDraggableXY()))
                 {
                     getScreen().setDraggedControl(this, mousePosEvent);
 
@@ -771,16 +781,16 @@ public class Control extends Gui
     {
         if (isDraggableX())
         {
-            setX((int) ((getParent().toLocalX(mousePosEvent.mousePixelX) / getParent().getInnerScale()) - getWidth() / 2));
+            setX((getParent().toLocalX(mousePosEvent.mousePixelX) / getParent().getInnerScale()) - getWidth() / 2);
         }
 
         if (isDraggableY())
         {
-            setY((int) ((getParent().toLocalY(mousePosEvent.mousePixelY) / getParent().getInnerScale()) - getHeight() / 2));
+            setY((getParent().toLocalY(mousePosEvent.mousePixelY) / getParent().getInnerScale()) - getHeight() / 2);
         }
 
         List<Side> atParentBounds = getParentBoundsAt();
-        int scrollAmount = (int) ((getParent().getScrollSpeed() / (getParent().getCumulativeScale() * getParent().getCumulativeScale())) / 2.0f);
+        float scrollAmount = (getParent().getScrollSpeed() / (getParent().getCumulativeScale() * getParent().getCumulativeScale())) / 2.0f;
 
         if (isDraggableX())
         {
@@ -805,7 +815,7 @@ public class Control extends Gui
 
                 if (getParent().blocksDrag())
                 {
-                    setX((int) ((getParent().toLocalX(getParent().getPixelX() + getParent().getPixelWidth()) / getParent().getInnerScale()) - getWidth()));
+                    setX((getParent().toLocalX(getParent().getPixelX() + getParent().getPixelWidth()) / getParent().getInnerScale()) - getWidth());
                 }
             }
         }
@@ -833,7 +843,7 @@ public class Control extends Gui
 
                 if (getParent().blocksDrag())
                 {
-                    setY((int) ((getParent().toLocalY(getParent().getPixelY() + getParent().getPixelHeight()) / getParent().getInnerScale()) - getHeight()));
+                    setY((getParent().toLocalY(getParent().getPixelY() + getParent().getPixelHeight()) / getParent().getInnerScale()) - getHeight());
                 }
             }
         }
@@ -893,8 +903,8 @@ public class Control extends Gui
 
         if (!mouseButtonEvent.isHandled())
         {
-            mouseButtonEvent.mouseX = toLocalX(mouseButtonEvent.mousePixelX);
-            mouseButtonEvent.mouseY = toLocalY(mouseButtonEvent.mousePixelY);
+            mouseButtonEvent.mouseX = Math.round(toLocalX(mouseButtonEvent.mousePixelX));
+            mouseButtonEvent.mouseY = Math.round(toLocalY(mouseButtonEvent.mousePixelY));
 
             onGlobalMouseClicked(mouseButtonEvent);
         }
@@ -933,8 +943,8 @@ public class Control extends Gui
 
         if (!mouseButtonEvent.isHandled())
         {
-            mouseButtonEvent.mouseX = toLocalX(mouseButtonEvent.mousePixelX);
-            mouseButtonEvent.mouseY = toLocalY(mouseButtonEvent.mousePixelY);
+            mouseButtonEvent.mouseX = Math.round(toLocalX(mouseButtonEvent.mousePixelX));
+            mouseButtonEvent.mouseY = Math.round(toLocalY(mouseButtonEvent.mousePixelY));
 
             onMouseClicked(mouseButtonEvent);
 
@@ -978,8 +988,8 @@ public class Control extends Gui
 
         if (!mouseButtonEvent.isHandled())
         {
-            mouseButtonEvent.mouseX = toLocalX(mouseButtonEvent.mousePixelX);
-            mouseButtonEvent.mouseY = toLocalY(mouseButtonEvent.mousePixelY);
+            mouseButtonEvent.mouseX = Math.round(toLocalX(mouseButtonEvent.mousePixelX));
+            mouseButtonEvent.mouseY = Math.round(toLocalY(mouseButtonEvent.mousePixelY));
 
             onGlobalMouseReleased(mouseButtonEvent);
         }
@@ -1018,8 +1028,8 @@ public class Control extends Gui
 
         if (!mouseButtonEvent.isHandled())
         {
-            mouseButtonEvent.mouseX = toLocalX(mouseButtonEvent.mousePixelX);
-            mouseButtonEvent.mouseY = toLocalY(mouseButtonEvent.mousePixelY);
+            mouseButtonEvent.mouseX = Math.round(toLocalX(mouseButtonEvent.mousePixelX));
+            mouseButtonEvent.mouseY = Math.round(toLocalY(mouseButtonEvent.mousePixelY));
 
             onMouseReleased(mouseButtonEvent);
 
@@ -1094,8 +1104,8 @@ public class Control extends Gui
 
         if (!mouseScrollEvent.isHandled())
         {
-            mouseScrollEvent.mouseX = toLocalX(mouseScrollEvent.mousePixelX);
-            mouseScrollEvent.mouseY = toLocalY(mouseScrollEvent.mousePixelY);
+            mouseScrollEvent.mouseX = Math.round(toLocalX(mouseScrollEvent.mousePixelX));
+            mouseScrollEvent.mouseY = Math.round(toLocalY(mouseScrollEvent.mousePixelY));
 
             onGlobalMouseScrolled(mouseScrollEvent);
         }
@@ -1134,8 +1144,8 @@ public class Control extends Gui
 
         if (!mouseScrollEvent.isHandled())
         {
-            mouseScrollEvent.mouseX = toLocalX(mouseScrollEvent.mousePixelX);
-            mouseScrollEvent.mouseY = toLocalY(mouseScrollEvent.mousePixelY);
+            mouseScrollEvent.mouseX = Math.round(toLocalX(mouseScrollEvent.mousePixelX));
+            mouseScrollEvent.mouseY = Math.round(toLocalY(mouseScrollEvent.mousePixelY));
 
             onMouseScrolled(mouseScrollEvent);
         }
@@ -1156,7 +1166,7 @@ public class Control extends Gui
      */
     protected void scrollControl(@Nonnull MouseScrollEvent mouseScrollEvent)
     {
-        int scrollAmount = (int) ((getScrollSpeed() / (getCumulativeScale() * getCumulativeScale())) * -1.0f * mouseScrollEvent.scrollAmount);
+        float scrollAmount = (float) ((getScrollSpeed() / (getCumulativeScale() * getCumulativeScale())) * -1.0f * mouseScrollEvent.scrollAmount);
 
         if (GuiUtil.getInstance().isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL) || GuiUtil.getInstance().isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL))
         {
@@ -1358,11 +1368,11 @@ public class Control extends Gui
     {
         if (getParent() != null)
         {
-            pixelX = (int) (getParent().getPixelX() + (getX() * getParent().getCumulativeInnerScale() * GuiUtil.getInstance().getGuiScale()));
+            pixelX = Math.round(getParent().getPixelX() + (getX() * getParent().getCumulativeInnerScale() * GuiUtil.getInstance().getGuiScale()));
         }
         else
         {
-            pixelX = getX();
+            pixelX = Math.round(getX());
         }
 
         children.forEach(Control::recalcPixelX);
@@ -1383,11 +1393,11 @@ public class Control extends Gui
     {
         if (getParent() != null)
         {
-            pixelY = (int) (getParent().getPixelY() + (getY() * getParent().getCumulativeInnerScale() * GuiUtil.getInstance().getGuiScale()));
+            pixelY = Math.round(getParent().getPixelY() + (getY() * getParent().getCumulativeInnerScale() * GuiUtil.getInstance().getGuiScale()));
         }
         else
         {
-            pixelY = getY();
+            pixelY = Math.round(getY());
         }
 
         children.forEach(Control::recalcPixelY);
@@ -1396,7 +1406,7 @@ public class Control extends Gui
     /**
      * @return the x position of the middle of the control, including margins.
      */
-    public final int getMidX()
+    public final float getMidX()
     {
         return getX() + getEffectiveWidth() / 2;
     }
@@ -1404,7 +1414,7 @@ public class Control extends Gui
     /**
      * @return the scaled local x position of the control.
      */
-    public int getX()
+    public float getX()
     {
         return x;
     }
@@ -1412,7 +1422,7 @@ public class Control extends Gui
     /**
      * Sets the scaled local x position of the control.
      */
-    public void setX(int x)
+    public void setX(float x)
     {
         PositionChangedEvent event = onPositionChanged.handle(new PositionChangedEvent(this, x, getY()));
 
@@ -1427,7 +1437,7 @@ public class Control extends Gui
     /**
      * @return the y position of the middle of the control, including margins.
      */
-    public final int getMidY()
+    public final float getMidY()
     {
         return getY() + getEffectiveHeight() / 2;
     }
@@ -1435,7 +1445,7 @@ public class Control extends Gui
     /**
      * @return the scaled local y position of the control.
      */
-    public int getY()
+    public float getY()
     {
         return y;
     }
@@ -1443,7 +1453,7 @@ public class Control extends Gui
     /**
      * Sets the scaled local y position of the control.
      */
-    public void setY(int y)
+    public void setY(float y)
     {
         PositionChangedEvent event = onPositionChanged.handle(new PositionChangedEvent(this, getX(), y));
 
@@ -1460,7 +1470,7 @@ public class Control extends Gui
      */
     public int getEffectivePixelWidth()
     {
-        return (int) ((getWidth() + getMargin(Side.LEFT) + getMargin(Side.RIGHT)) * getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
+        return Math.round((getWidth() + getMargin(Side.LEFT) + getMargin(Side.RIGHT)) * getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
     }
 
     /**
@@ -1476,7 +1486,7 @@ public class Control extends Gui
      */
     public final void recalcPixelWidth()
     {
-        pixelWidth = (int) (getWidth() * getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
+        pixelWidth = Math.round(getWidth() * getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
     }
 
     /**
@@ -1484,7 +1494,7 @@ public class Control extends Gui
      */
     public int getEffectivePixelHeight()
     {
-        return (int) ((getHeight() + getMargin(Side.TOP) + getMargin(Side.BOTTOM)) * getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
+        return Math.round((getHeight() + getMargin(Side.TOP) + getMargin(Side.BOTTOM)) * getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
     }
 
     /**
@@ -1500,13 +1510,13 @@ public class Control extends Gui
      */
     public final void recalcPixelHeight()
     {
-        pixelHeight = (int) (getHeight() * getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
+        pixelHeight = Math.round(getHeight() * getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
     }
 
     /**
      * @return the width of the control including margins.
      */
-    public int getEffectiveWidth()
+    public float getEffectiveWidth()
     {
         return getWidth() + getMargin(Side.LEFT) + getMargin(Side.RIGHT);
     }
@@ -1514,7 +1524,7 @@ public class Control extends Gui
     /**
      * @return the scaled width of the control.
      */
-    public int getWidth()
+    public float getWidth()
     {
         return width;
     }
@@ -1522,14 +1532,14 @@ public class Control extends Gui
     /**
      * Sets the scaled width of the control.
      */
-    public void setWidth(int width)
+    public void setWidth(float width)
     {
         if (width == this.width)
         {
             return;
         }
 
-        int oldWidth = this.width;
+        float oldWidth = this.width;
 
         width = Math.max(0, width);
         width = getMaxWidth() >= 0 ? Math.min(width, getMaxWidth()) : width;
@@ -1539,7 +1549,7 @@ public class Control extends Gui
             hitbox.resize(this.width, width, height, height);
         }
 
-        int finalWidth = width;
+        float finalWidth = width;
         getChildren().forEach(child -> child.tryTransformFromAnchorWhenParentResized(finalWidth, getHeight()));
 
         this.width = width;
@@ -1552,7 +1562,7 @@ public class Control extends Gui
     /**
      * @return the height of the control including margins.
      */
-    public int getEffectiveHeight()
+    public float getEffectiveHeight()
     {
         return getHeight() + getMargin(Side.TOP) + getMargin(Side.BOTTOM);
     }
@@ -1560,7 +1570,7 @@ public class Control extends Gui
     /**
      * @return the scaled height of the control.
      */
-    public int getHeight()
+    public float getHeight()
     {
         return height;
     }
@@ -1568,14 +1578,14 @@ public class Control extends Gui
     /**
      * Sets the scaled with of the control.
      */
-    public void setHeight(int height)
+    public void setHeight(float height)
     {
         if (height == this.height)
         {
             return;
         }
 
-        int oldHeight = this.height;
+        float oldHeight = this.height;
 
         height = Math.max(0, height);
         height = getMaxHeight() >= 0 ? Math.min(height, getMaxHeight()) : height;
@@ -1585,7 +1595,7 @@ public class Control extends Gui
             hitbox.resize(width, width, this.height, height);
         }
 
-        int finalHeight = height;
+        float finalHeight = height;
         getChildren().forEach(child -> child.tryTransformFromAnchorWhenParentResized(getWidth(), finalHeight));
 
         this.height = height;
@@ -1816,17 +1826,17 @@ public class Control extends Gui
     /**
      * @return converts a pixel x coordinate into a local x coordinate.
      */
-    public int toLocalX(int pixelX)
+    public float toLocalX(float pixelX)
     {
-        return (int) ((pixelX - getPixelX()) / (getCumulativeScale() * GuiUtil.getInstance().getGuiScale()));
+        return (pixelX - getPixelX()) / (getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
     }
 
     /**
      * @return converts a pixel y coordinate into a local y coordinate.
      */
-    public int toLocalY(int pixelY)
+    public float toLocalY(float pixelY)
     {
-        return (int) ((pixelY - getPixelY()) / (getCumulativeScale() * GuiUtil.getInstance().getGuiScale()));
+        return (pixelY - getPixelY()) / (getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
     }
 
     /**
@@ -2109,7 +2119,7 @@ public class Control extends Gui
     /**
      * @return the scroll offset in the x-axis.
      */
-    public int getScrollOffsetX()
+    public float getScrollOffsetX()
     {
         return scrollOffsetX;
     }
@@ -2119,7 +2129,7 @@ public class Control extends Gui
      *
      * @return the amount actually scrolled.
      */
-    public int scrollX(int scrollAmount)
+    public float scrollX(float scrollAmount)
     {
         return setScrollOffsetX(getScrollOffsetX() + scrollAmount);
     }
@@ -2129,13 +2139,13 @@ public class Control extends Gui
      *
      * @return the amount scrolled.
      */
-    public int setScrollOffsetX(int scrollOffsetX)
+    public float setScrollOffsetX(float scrollOffsetX)
     {
-        int prevOffset = this.scrollOffsetX;
+        float prevOffset = this.scrollOffsetX;
 
         this.scrollOffsetX = Math.max(0, Math.min(getMaxScrollOffsetX(), scrollOffsetX));
 
-        int amountScrolled = this.scrollOffsetX - prevOffset;
+        float amountScrolled = this.scrollOffsetX - prevOffset;
 
         getChildrenCopy().forEach(control -> control.setX(control.getX() - amountScrolled));
 
@@ -2145,7 +2155,7 @@ public class Control extends Gui
     /**
      * @return the scroll offset in the y-axis.
      */
-    public int getScrollOffsetY()
+    public float getScrollOffsetY()
     {
         return scrollOffsetY;
     }
@@ -2155,7 +2165,7 @@ public class Control extends Gui
      *
      * @return the amount actually scrolled.
      */
-    public int scrollY(int scrollAmount)
+    public float scrollY(float scrollAmount)
     {
         return setScrollOffsetY(getScrollOffsetY() + scrollAmount);
     }
@@ -2165,13 +2175,13 @@ public class Control extends Gui
      *
      * @return the amount scrolled.
      */
-    public int setScrollOffsetY(int scrollOffsetY)
+    public float setScrollOffsetY(float scrollOffsetY)
     {
-        int prevOffset = this.scrollOffsetY;
+        float prevOffset = this.scrollOffsetY;
 
         this.scrollOffsetY = Math.max(0, Math.min(getMaxScrollOffsetY(), scrollOffsetY));
 
-        int amountScrolled = this.scrollOffsetY - prevOffset;
+        float amountScrolled = this.scrollOffsetY - prevOffset;
 
         getChildrenCopy().forEach(control -> control.setY(control.getY() - amountScrolled));
 

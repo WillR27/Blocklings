@@ -7,7 +7,6 @@ import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEven
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrollEvent;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.client.gui2.GuiTextures;
-import com.willr27.blocklings.client.gui2.GuiUtil;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jline.utils.Log;

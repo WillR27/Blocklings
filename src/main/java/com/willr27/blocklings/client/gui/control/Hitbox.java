@@ -19,7 +19,7 @@ public abstract class Hitbox
      * @param oldHeight the old height of the control.
      * @param newHeight the new height of the control.
      */
-    public abstract void resize(int oldWidth, int newWidth, int oldHeight, int newHeight);
+    public abstract void resize(float oldWidth, float newWidth, float oldHeight, float newHeight);
 
     /**
      * @param control the control to test against.
@@ -27,7 +27,7 @@ public abstract class Hitbox
      * @param pixelY the y pixel coordinate to test against.
      * @return whether the position collides with the hitbox.
      */
-    public abstract boolean collidesWith(@Nonnull Control control, int pixelX, int pixelY);
+    public abstract boolean collidesWith(@Nonnull Control control, float pixelX, float pixelY);
 
     @Override
     public abstract boolean equals(Object object);
@@ -50,12 +50,12 @@ public abstract class Hitbox
         /**
          * The width of the hitbox.
          */
-        private int width;
+        private float width;
 
         /**
          * The height of the hitbox.
          */
-        private int height;
+        private float height;
 
         /**
          * @param x the relative x coordinate of the hitbox in relation to the top left corner of the control.
@@ -63,7 +63,7 @@ public abstract class Hitbox
          * @param width the width of the hitbox.
          * @param height the height of the hitbox.
          */
-        public RectangleHitbox(int x, int y, int width, int height)
+        public RectangleHitbox(int x, int y, float width, float height)
         {
             this.x = x;
             this.y = y;
@@ -72,10 +72,10 @@ public abstract class Hitbox
         }
 
         @Override
-        public void resize(int oldWidth, int newWidth, int oldHeight, int newHeight)
+        public void resize(float oldWidth, float newWidth, float oldHeight, float newHeight)
         {
-            int dWidth = newWidth - oldWidth;
-            int dHeight = newHeight - oldHeight;
+            float dWidth = newWidth - oldWidth;
+            float dHeight = newHeight - oldHeight;
 
             width += dWidth;
             height += dHeight;
@@ -85,7 +85,7 @@ public abstract class Hitbox
         }
 
         @Override
-        public boolean collidesWith(@Nonnull Control control, int pixelX, int pixelY)
+        public boolean collidesWith(@Nonnull Control control, float pixelX, float pixelY)
         {
             return pixelX >= control.getPixelX() &&
                    pixelX <  control.getPixelX() + control.getPixelWidth() &&
