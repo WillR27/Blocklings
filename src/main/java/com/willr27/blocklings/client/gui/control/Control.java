@@ -343,6 +343,27 @@ public class Control extends Gui
             return;
         }
 
+        if (getAnchor().isEmpty())
+        {
+            int dWidthScaled = (int) ((newParentWidth - getParent().getWidth()) / getParent().getInnerScale());
+            int dHeightScaled = (int) ((newParentHeight - getParent().getHeight()) / getParent().getInnerScale());
+
+            int parentLeft = getParent().getPadding(Side.LEFT);
+            int controlLeft = getX() - getMargin(Side.LEFT);
+            int parentRight = (int) ((getParent().getWidth() / getParent().getInnerScale()) - getPadding(Side.RIGHT));
+            int totalWidth = (parentRight - parentLeft - getEffectiveWidth());
+            float leftPercent = (float) (controlLeft - parentLeft) / totalWidth;
+
+            int parentTop = getParent().getPadding(Side.TOP);
+            int controlTop = getY() - getMargin(Side.TOP);
+            int parentBottom = (int) ((getParent().getHeight() / getParent().getInnerScale()) - getPadding(Side.BOTTOM));
+            int totalHeight = (parentBottom - parentTop - getEffectiveHeight());
+            float topPercent = (float) (controlTop - parentTop) / totalHeight;
+
+            setX((int) (getX() + dWidthScaled * leftPercent));
+            setY((int) (getY() + dHeightScaled * topPercent));
+        }
+
         if (getAnchor().contains(Side.LEFT) && getAnchor().contains(Side.RIGHT))
         {
             int oldRightSideOfControl = getX() + getEffectiveWidth();

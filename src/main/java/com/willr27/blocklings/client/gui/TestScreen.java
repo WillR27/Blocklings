@@ -47,12 +47,12 @@ public class TestScreen extends BlocklingsScreen
         control1.setBackgroundColour(new Colour(255, 0, 255));
 
         Control anchorControl = new Control();
-        anchorControl.setWidth(100);
-        anchorControl.setHeight(75);
-        anchorControl.setX(25);
-        anchorControl.setY(10);
+        anchorControl.setWidth(30);
+        anchorControl.setHeight(20);
+        anchorControl.setX(100);
+        anchorControl.setY(50);
         anchorControl.setParent(control1);
-        anchorControl.setAnchor(EnumSet.of(Side.RIGHT));
+        anchorControl.setAnchor(EnumSet.noneOf(Side.class));
         anchorControl.setBackgroundColour(new Colour(0, 255, 120));
     }
 
