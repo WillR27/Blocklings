@@ -1,4 +1,4 @@
-package com.willr27.blocklings.client.gui;
+package com.willr27.blocklings.client.gui.screen;
 
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;

@@ -1,6 +1,6 @@
 package com.willr27.blocklings.client.gui.control;
 
-import com.willr27.blocklings.client.gui.IScreen;
+import com.willr27.blocklings.client.gui.screen.IScreen;
 import com.willr27.blocklings.client.gui.control.event.events.DragEndEvent;
 import com.willr27.blocklings.client.gui.control.event.events.DragStartEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;

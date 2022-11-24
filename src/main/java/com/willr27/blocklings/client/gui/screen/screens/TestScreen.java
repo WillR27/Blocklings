@@ -1,4 +1,4 @@
-package com.willr27.blocklings.client.gui;
+package com.willr27.blocklings.client.gui.screen.screens;
 
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.Direction;
@@ -8,6 +8,7 @@ import com.willr27.blocklings.client.gui.control.controls.TestControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
+import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
 import com.willr27.blocklings.client.gui2.Colour;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

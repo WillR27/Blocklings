@@ -2,7 +2,7 @@ package com.willr27.blocklings.client.gui.control;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.Gui;
-import com.willr27.blocklings.client.gui.IScreen;
+import com.willr27.blocklings.client.gui.screen.IScreen;
 import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.ScissorBounds;
 import com.willr27.blocklings.client.gui.control.event.events.*;
@@ -13,7 +13,6 @@ import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.util.event.EventHandler;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jline.utils.Log;
@@ -172,7 +171,7 @@ public class Control extends Gui
      * How the control is position/sized relative to its parent.
      */
     @Nullable
-    private EnumSet<Side> anchor = null;
+    private EnumSet<Side> anchor = EnumSet.of(Side.TOP, Side.LEFT);
 
     /**
      * Occurs when the control's anchor changes.
@@ -1424,7 +1423,7 @@ public class Control extends Gui
     /**
      * Sets the scaled local x position of the control.
      */
-    public void setX(float x)
+    public final void setX(float x)
     {
         PositionChangedEvent event = onPositionChanged.handle(new PositionChangedEvent(this, x, getY()));
 
@@ -1433,6 +1432,28 @@ public class Control extends Gui
             this.x = x;
 
             recalcPixelX();
+        }
+    }
+
+    /**
+     * Moves the control by the given amount in the x-axis.
+     */
+    public final void moveX(float dx)
+    {
+        setX(getX() + dx);
+    }
+
+    /**
+     * Aligns the control horizontally within the parent the given percentage respecting padding and
+     * margins. So 0.5f would be the center of the control, 0.1f would be 10% from the left.
+     */
+    public final void setPercentX(float percent)
+    {
+        percent = Math.min(1.0f, Math.max(0.0f, percent));
+
+        if (getParent() != null)
+        {
+            setX(getParent().getPadding(Side.LEFT) + (((getParent().getWidth() / getParent().getInnerScale()) - getParent().getPadding(Side.LEFT) - getParent().getPadding(Side.RIGHT) - getEffectiveWidth()) * percent));
         }
     }
 
@@ -1447,7 +1468,7 @@ public class Control extends Gui
     /**
      * @return the scaled local y position of the control.
      */
-    public float getY()
+    public final float getY()
     {
         return y;
     }
@@ -1455,7 +1476,7 @@ public class Control extends Gui
     /**
      * Sets the scaled local y position of the control.
      */
-    public void setY(float y)
+    public final void setY(float y)
     {
         PositionChangedEvent event = onPositionChanged.handle(new PositionChangedEvent(this, getX(), y));
 
@@ -1464,6 +1485,28 @@ public class Control extends Gui
             this.y = y;
 
             recalcPixelY();
+        }
+    }
+
+    /**
+     * Moves the control by the given amount in the y-axis.
+     */
+    public final void moveY(float dy)
+    {
+        setY(getY() + dy);
+    }
+
+    /**
+     * Aligns the control vertically within the parent the given percentage respecting padding and
+     * margins. So 0.5f would be the center of the control, 0.1f would be 10% from the top.
+     */
+    public final void setPercentY(float percent)
+    {
+        percent = Math.min(1.0f, Math.max(0.0f, percent));
+
+        if (getParent() != null)
+        {
+            setY(getParent().getPadding(Side.TOP) + (((getParent().getHeight() / getParent().getInnerScale()) - getParent().getPadding(Side.TOP) - getParent().getPadding(Side.BOTTOM) - getEffectiveHeight()) * percent));
         }
     }
 
