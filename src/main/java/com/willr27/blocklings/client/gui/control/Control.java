@@ -1,6 +1,7 @@
 package com.willr27.blocklings.client.gui.control;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.client.gui.Gui;
 import com.willr27.blocklings.client.gui.screen.IScreen;
 import com.willr27.blocklings.client.gui.RenderArgs;
@@ -39,7 +40,7 @@ public class Control extends Gui
      * The screen the control is part of.
      */
     @Nullable
-    protected IScreen screen;
+    private IScreen screen;
 
     /**
      * The optional parent control.
@@ -496,6 +497,26 @@ public class Control extends Gui
     }
 
     /**
+     * Applies any render system related operations like depth test or enabling blend.
+     */
+    protected void applyRenderSystemOperations(@Nonnull RenderArgs renderArgs)
+    {
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.defaultAlphaFunc();
+        RenderSystem.enableDepthTest();
+    }
+
+    /**
+     * Undoes any render system related operations like depth test or enabling blend.
+     */
+    protected void undoRenderSystemOperations(@Nonnull RenderArgs renderArgs)
+    {
+        RenderSystem.disableBlend();
+        RenderSystem.disableDepthTest();
+    }
+
+    /**
      * Forwards the call to {@link #onRender(RenderArgs)} to the control's children after rendering
      * itself.
      *
@@ -511,9 +532,11 @@ public class Control extends Gui
         applyPreRenderTransformations(renderArgs);
         applyPreRenderOperations(renderArgs);
         applyScissor(renderArgs);
+        applyRenderSystemOperations(renderArgs);
         onRenderUpdate(renderArgs);
         onRenderBackground(renderArgs);
         onRender(renderArgs);
+        undoRenderSystemOperations(renderArgs);
         applyPostRenderOperations(renderArgs);
         applyPostRenderTransformations(renderArgs);
 
@@ -1195,9 +1218,22 @@ public class Control extends Gui
      * @return the screen the control is a part of.
      */
     @Nullable
-    public IScreen getScreen()
+    public final IScreen getScreen()
     {
         return screen;
+    }
+
+    /**
+     * Sets the screen the control is on and all its children,
+     */
+    protected final void setScreen(@Nullable IScreen screen)
+    {
+        this.screen = screen;
+
+        for (Control control : getChildren())
+        {
+            control.setScreen(screen);
+        }
     }
 
     /**
@@ -1227,7 +1263,7 @@ public class Control extends Gui
         {
             oldParent.children.remove(this);
 
-            this.screen = null;
+            setScreen(null);
 
             oldParent.onChildRemoved.handle(new ChildRemovedEvent(oldParent, this));
         }
@@ -1236,7 +1272,7 @@ public class Control extends Gui
         {
             this.parent.children.add(this);
 
-            screen = this.parent.getScreen();
+            setScreen(this.parent.getScreen());
 
             this.parent.onChildAdded.handle(new ChildAddedEvent(this.parent, this));
         }
@@ -1373,7 +1409,7 @@ public class Control extends Gui
         }
         else
         {
-            pixelX = Math.round(getX());
+            pixelX = Math.round(getX() * GuiUtil.getInstance().getGuiScale());
         }
 
         children.forEach(Control::recalcPixelX);
@@ -1398,7 +1434,7 @@ public class Control extends Gui
         }
         else
         {
-            pixelY = Math.round(getY());
+            pixelY = Math.round(getY() * GuiUtil.getInstance().getGuiScale());
         }
 
         children.forEach(Control::recalcPixelY);

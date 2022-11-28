@@ -10,6 +10,7 @@ import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonE
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
 import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
 import com.willr27.blocklings.client.gui2.Colour;
+import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -20,6 +21,11 @@ import java.util.Random;
 @OnlyIn(Dist.CLIENT)
 public class TestScreen extends BlocklingsScreen
 {
+    public TestScreen(@Nonnull BlocklingEntity blockling)
+    {
+        super(blockling);
+    }
+
     @Override
     protected void init()
     {

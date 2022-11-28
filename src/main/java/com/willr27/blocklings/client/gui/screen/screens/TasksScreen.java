@@ -8,17 +8,17 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nonnull;
 
 /**
- * A screen to display the blockling's stats.
+ * A screen to display the blockling's tasks.
  */
 @OnlyIn(Dist.CLIENT)
-public class StatsScreen extends TabbedScreen
+public class TasksScreen extends TabbedScreen
 {
     /**
      * @param blockling the blockling.
      */
-    public StatsScreen(@Nonnull BlocklingEntity blockling)
+    public TasksScreen(@Nonnull BlocklingEntity blockling)
     {
-        super(blockling, TabbedControl.Tab.STATS);
+        super(blockling, TabbedControl.Tab.TASKS);
     }
 
     @Override

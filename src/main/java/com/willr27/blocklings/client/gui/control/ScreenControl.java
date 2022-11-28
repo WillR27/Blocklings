@@ -1,10 +1,15 @@
 package com.willr27.blocklings.client.gui.control;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.willr27.blocklings.client.gui.RenderArgs;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrollEvent;
 import com.willr27.blocklings.client.gui.screen.IScreen;
 import com.willr27.blocklings.client.gui.control.event.events.DragEndEvent;
 import com.willr27.blocklings.client.gui.control.event.events.DragStartEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -17,6 +22,12 @@ import javax.annotation.Nullable;
 @OnlyIn(Dist.CLIENT)
 public class ScreenControl extends Control implements IScreen
 {
+    /**
+     * Used to prevent a mouse released event from triggering when a mouse clicked event never occurred.
+     * Useful for when the UI first opens to prevent a mouse released event from triggering by itself.
+     */
+    private boolean wasMouseClickedBeforeRelease = false;
+
     /**
      * The currently hovered control.
      */
@@ -55,7 +66,135 @@ public class ScreenControl extends Control implements IScreen
      */
     public ScreenControl()
     {
-        this.screen = this;
+        setScreen(this);
+    }
+
+    /**
+     * Mimics {@link Screen#init()}.
+     */
+    public void init(int screenWidth, int screenHeight)
+    {
+        setInnerScale(getInnerScale());
+        getChildrenCopy().forEach(control -> removeChild(control));
+        setWidth(screenWidth);
+        setHeight(screenHeight);
+    }
+
+    /**
+     * Mimics {@link net.minecraft.client.gui.screen.Screen#render(MatrixStack, int, int, float)}.
+     */
+    public void render(@Nonnull MatrixStack matrixStack, int screenMouseX, int screenMouseY, float partialTicks)
+    {
+        float guiScale = GuiUtil.getInstance().getGuiScale();
+        int pixelMouseX = GuiUtil.getInstance().getPixelMouseX();
+        int pixelMouseY = GuiUtil.getInstance().getPixelMouseY();
+
+        {
+            MousePosEvent mousePosEvent = new MousePosEvent(Math.round(toLocalX(pixelMouseX)), Math.round(toLocalY(pixelMouseY)), pixelMouseX, pixelMouseY);
+
+            forwardHover(mousePosEvent);
+
+            if (!mousePosEvent.isHandled())
+            {
+                // This probably isn't necessary, but we can set it back to unhandled anyway.
+                mousePosEvent.setIsHandled(false);
+
+                setHoveredControl(null, mousePosEvent);
+            }
+        }
+
+        {
+            MousePosEvent mousePosEvent = new MousePosEvent(Math.round(toLocalX(pixelMouseX)), Math.round(toLocalY(pixelMouseY)), pixelMouseX, pixelMouseY);
+
+            forwardTryDrag(mousePosEvent);
+
+            if (getDraggedControl() != null)
+            {
+                mousePosEvent.mouseX = Math.round(getDraggedControl().toLocalX(mousePosEvent.mousePixelX));
+                mousePosEvent.mouseY = Math.round(getDraggedControl().toLocalY(mousePosEvent.mousePixelY));
+
+                getDraggedControl().onDrag(mousePosEvent, partialTicks);
+            }
+        }
+
+        matrixStack.pushPose();
+        matrixStack.scale(1.0f / guiScale, 1.0f / guiScale, 1.0f);
+
+        forwardRender(new RenderArgs(matrixStack, pixelMouseX, pixelMouseY, partialTicks));
+
+        matrixStack.popPose();
+    }
+
+    /**
+     * Mimics {@link net.minecraft.client.gui.screen.Screen#mouseClicked(double, double, int)}.
+     */
+    public boolean mouseClicked(double screenMouseX, double screenMouseY, int mouseButton)
+    {
+        wasMouseClickedBeforeRelease = true;
+
+        int pixelMouseX = GuiUtil.getInstance().getPixelMouseX();
+        int pixelMouseY = GuiUtil.getInstance().getPixelMouseY();
+
+        MouseButtonEvent mouseButtonEvent = new MouseButtonEvent(Math.round(toLocalX(pixelMouseX)), Math.round(toLocalY(pixelMouseY)), pixelMouseX, pixelMouseY, mouseButton);
+
+        forwardGlobalMouseClicked(mouseButtonEvent);
+        forwardMouseClicked(mouseButtonEvent);
+
+        if (mouseButtonEvent.isHandled())
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Mimics {@link net.minecraft.client.gui.screen.Screen#mouseReleased(double, double, int)}.
+     */
+    public boolean mouseReleased(double screenMouseX, double screenMouseY, int mouseButton)
+    {
+        if (!wasMouseClickedBeforeRelease)
+        {
+            return true;
+        }
+
+        wasMouseClickedBeforeRelease = false;
+
+        int pixelMouseX = GuiUtil.getInstance().getPixelMouseX();
+        int pixelMouseY = GuiUtil.getInstance().getPixelMouseY();
+
+        MouseButtonEvent mouseButtonEvent = new MouseButtonEvent(Math.round(toLocalX(pixelMouseX)), Math.round(toLocalY(pixelMouseY)), pixelMouseX, pixelMouseY, mouseButton);
+
+        forwardGlobalMouseReleased(mouseButtonEvent);
+        forwardMouseReleased(mouseButtonEvent);
+
+        if (mouseButtonEvent.isHandled())
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Mimics {@link net.minecraft.client.gui.screen.Screen#mouseScrolled(double, double, double)}.
+     */
+    public boolean mouseScrolled(double screenMouseX, double screenMouseY, double scrollAmount)
+    {
+        int pixelMouseX = GuiUtil.getInstance().getPixelMouseX();
+        int pixelMouseY = GuiUtil.getInstance().getPixelMouseY();
+
+        MouseScrollEvent mouseScrollEvent = new MouseScrollEvent(Math.round(toLocalX(pixelMouseX)), Math.round(toLocalY(pixelMouseY)), pixelMouseX, pixelMouseY, scrollAmount);
+
+        forwardGlobalMouseScrolled(mouseScrollEvent);
+        forwardMouseScrolled(mouseScrollEvent);
+
+        if (mouseScrollEvent.isHandled())
+        {
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -65,6 +204,18 @@ public class ScreenControl extends Control implements IScreen
 
         setPressedControl(null, mouseButtonEvent);
         setDraggedControl(null, mouseButtonEvent);
+    }
+
+    @Override
+    protected void onMouseClicked(@Nonnull MouseButtonEvent mouseButtonEvent)
+    {
+
+    }
+
+    @Override
+    protected void onMouseReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
+    {
+
     }
 
     @Override
