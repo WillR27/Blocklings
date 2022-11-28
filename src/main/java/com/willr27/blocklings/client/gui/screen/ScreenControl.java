@@ -1,7 +1,9 @@
-package com.willr27.blocklings.client.gui.control;
+package com.willr27.blocklings.client.gui.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.client.gui.RenderArgs;
+import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrollEvent;
 import com.willr27.blocklings.client.gui.screen.IScreen;
 import com.willr27.blocklings.client.gui.control.event.events.DragEndEvent;
@@ -9,6 +11,7 @@ import com.willr27.blocklings.client.gui.control.event.events.DragStartEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -123,6 +126,17 @@ public class ScreenControl extends Control implements IScreen
         forwardRender(new RenderArgs(matrixStack, pixelMouseX, pixelMouseY, partialTicks));
 
         matrixStack.popPose();
+
+        if (getHoveredControl() != null)
+        {
+            matrixStack.pushPose();
+            matrixStack.scale(getHoveredControl().getCumulativeScale(), getHoveredControl().getCumulativeScale(), 1.0f);
+
+            RenderSystem.enableDepthTest();
+            getHoveredControl().onRenderTooltip(new RenderArgs(matrixStack, pixelMouseX, pixelMouseY, partialTicks));
+
+            matrixStack.popPose();
+        }
     }
 
     /**

@@ -14,6 +14,10 @@ import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.util.event.EventHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jline.utils.Log;
@@ -585,6 +589,16 @@ public class Control extends Gui
     }
 
     /**
+     * Renders the tooltip on the control.
+     *
+     * @param renderArgs the render args.
+     */
+    public void onRenderTooltip(@Nonnull RenderArgs renderArgs)
+    {
+
+    }
+
+    /**
      * Applies any post render operations added via {@link #addRenderOperation(RenderOperation)} in reverse order.
      *
      * @param renderArgs the render args.
@@ -661,6 +675,30 @@ public class Control extends Gui
     public void renderRectangle(@Nonnull MatrixStack matrixStack, int x, int y, int width, int height, int colour)
     {
         fill(matrixStack, getPixelX() + x, getPixelY() + y, getPixelX() + x + width, getPixelY() + y + height, colour);
+    }
+
+    /**
+     * Renders a tooltip at the mouse position.
+     *
+     * @param renderArgs the render args.
+     * @param tooltip the tooltip to render.
+     */
+    public void renderTooltip(@Nonnull RenderArgs renderArgs, @Nonnull ITextComponent tooltip)
+    {
+        List<IReorderingProcessor> tooltip2 = new ArrayList<>();
+        tooltip2.add(tooltip.getVisualOrderText());
+        renderTooltip(renderArgs, tooltip2);
+    }
+
+    /**
+     * Renders a tooltip at the mouse position.
+     *
+     * @param renderArgs the render args.
+     * @param tooltip the tooltip to render.
+     */
+    public void renderTooltip(@Nonnull RenderArgs renderArgs, @Nonnull List<IReorderingProcessor> tooltip)
+    {
+        Minecraft.getInstance().screen.renderTooltip(renderArgs.matrixStack, tooltip, (int) (renderArgs.pixelMouseX / (GuiUtil.getInstance().getGuiScale() * getCumulativeScale())), (int) (renderArgs.pixelMouseY / (GuiUtil.getInstance().getGuiScale() * getCumulativeScale())));
     }
 
      /**

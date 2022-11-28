@@ -2,7 +2,6 @@ package com.willr27.blocklings.client.gui.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.client.gui.control.ScreenControl;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.StringTextComponent;

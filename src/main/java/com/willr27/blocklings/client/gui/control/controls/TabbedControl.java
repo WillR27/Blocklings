@@ -14,6 +14,7 @@ import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -156,6 +157,12 @@ public class TabbedControl extends Control
                 renderTexture(matrixStack, tab.left ? 4 : 3, 0, unselectedBackgroundTexture);
                 renderTexture(matrixStack, tab.left ? 7 : 3, 3, tab.iconTexture);
             }
+        }
+
+        @Override
+        public void onRenderTooltip(@Nonnull RenderArgs renderArgs)
+        {
+            renderTooltip(renderArgs, tab.name);
         }
 
         @Override
