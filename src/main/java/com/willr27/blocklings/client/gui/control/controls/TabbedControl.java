@@ -5,16 +5,13 @@ import com.willr27.blocklings.client.gui.GuiTextures;
 import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.Side;
-import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
-import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
 import com.willr27.blocklings.client.gui2.BlocklingGuiHandler;
 import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -57,6 +54,14 @@ public class TabbedControl extends Control
         setHeight(166);
         setAnchor(EnumSet.noneOf(Side.class));
         setBackgroundColour(new Colour(1.0f, 0.0f, 0.0f));
+    }
+
+    /**
+     * Resets the {@link TabbedControl} children.
+     */
+    public void resetChildren()
+    {
+        getChildrenCopy().forEach(child -> removeChild(child));
 
         for (Tab tab : Tab.values())
         {

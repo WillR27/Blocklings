@@ -3,13 +3,11 @@ package com.willr27.blocklings.client.gui.control;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.client.gui.Gui;
+import com.willr27.blocklings.client.gui.control.event.events.input.*;
 import com.willr27.blocklings.client.gui.screen.IScreen;
 import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.ScissorBounds;
 import com.willr27.blocklings.client.gui.control.event.events.*;
-import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
-import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
-import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrollEvent;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.client.gui2.GuiTexture;
@@ -488,7 +486,7 @@ public class Control extends Gui
     protected void applyScissor(@Nonnull RenderArgs renderArgs)
     {
         renderArgs.scissorStack.push(new ScissorBounds(getPixelX(), getPixelY(), getPixelWidth(), getPixelHeight()));
-        renderArgs.scissorStack.enable();
+//        renderArgs.scissorStack.enable();
     }
 
     /**
@@ -518,6 +516,24 @@ public class Control extends Gui
     {
         RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();
+    }
+
+    /**
+     * Forwards the call to {@link #onTick()} to the control's children before ticking itself.
+     */
+    public final void forwardTick()
+    {
+        getChildrenCopy().forEach(control -> control.forwardTick());
+
+        onTick();
+    }
+
+    /**
+     * Called each tick.
+     */
+    protected void onTick()
+    {
+
     }
 
     /**
@@ -1014,14 +1030,10 @@ public class Control extends Gui
             {
                 if (getScreen() != null)
                 {
-                    // This probably isn't necessary, but we can set it back to unhandled anyway.
-                    mouseButtonEvent.setIsHandled(false);
+                    mouseButtonEvent.setIsHandled(true);
 
                     getScreen().setFocusedControl(this, mouseButtonEvent);
                     getScreen().setPressedControl(this, mouseButtonEvent);
-
-                    // Set back to handled so that the screen can detect if a control handled the mouse clicked event.
-                    mouseButtonEvent.setIsHandled(true);
                 }
             }
         }
@@ -1253,6 +1265,111 @@ public class Control extends Gui
     }
 
     /**
+     * Occurs when a key is pressed and the control is focused.
+     */
+    public void onKeyPressed(@Nonnull KeyEvent keyEvent)
+    {
+        
+    }
+
+     /**
+     * Forwards the call to {@link #onGlobalKeyPressed(KeyEvent)} to the child controls before itself.
+     */
+    public void forwardGlobalKeyPressed(@Nonnull KeyEvent keyEvent)
+    {
+        for (Control control : getChildrenCopy())
+        {
+            if (!keyEvent.isHandled())
+            {
+                control.forwardGlobalKeyPressed(keyEvent);
+            }
+        }
+
+        if (!keyEvent.isHandled())
+        {
+            onGlobalKeyPressed(keyEvent);
+        }
+    }
+
+    /**
+     * Occurs when a key is pressed.
+     */
+    protected void onGlobalKeyPressed(@Nonnull KeyEvent keyEvent)
+    {
+
+    }
+
+    /**
+     * Occurs when a key is released and the control is focused.
+     */
+    public void onKeyReleased(@Nonnull KeyEvent keyEvent)
+    {
+        
+    }
+
+     /**
+     * Forwards the call to {@link #onGlobalKeyReleased(KeyEvent)} to the child controls before itself.
+     */
+    public void forwardGlobalKeyReleased(@Nonnull KeyEvent keyEvent)
+    {
+        for (Control control : getChildrenCopy())
+        {
+            if (!keyEvent.isHandled())
+            {
+                control.forwardGlobalKeyReleased(keyEvent);
+            }
+        }
+
+        if (!keyEvent.isHandled())
+        {
+            onGlobalKeyReleased(keyEvent);
+        }
+    }
+
+    /**
+     * Occurs when a key is released.
+     */
+    protected void onGlobalKeyReleased(@Nonnull KeyEvent keyEvent)
+    {
+
+    }
+    
+    /**
+     * Occurs when a character is typed and the control is focused.
+     */
+    public void onCharTyped(@Nonnull CharEvent charEvent)
+    {
+        
+    }
+
+     /**
+     * Forwards the call to {@link #onGlobalCharTyped(CharEvent)} to the child controls before itself.
+     */
+    public void forwardGlobalCharTyped(@Nonnull CharEvent charEvent)
+    {
+        for (Control control : getChildrenCopy())
+        {
+            if (!charEvent.isHandled())
+            {
+                control.forwardGlobalCharTyped(charEvent);
+            }
+        }
+
+        if (!charEvent.isHandled())
+        {
+            onGlobalCharTyped(charEvent);
+        }
+    }
+
+    /**
+     * Occurs when a character is typed.
+     */
+    protected void onGlobalCharTyped(@Nonnull CharEvent charEvent)
+    {
+
+    }
+
+    /**
      * @return the screen the control is a part of.
      */
     @Nullable
@@ -1429,6 +1546,14 @@ public class Control extends Gui
     }
 
     /**
+     * @return the x position of the control on the screen.
+     */
+    public final int getScreenX()
+    {
+        return (int) (getPixelX() / GuiUtil.getInstance().getGuiScale());
+    }
+
+    /**
      * @return the x pixel position of the top left of the control on the screen.
      */
     public final int getPixelX()
@@ -1451,6 +1576,14 @@ public class Control extends Gui
         }
 
         children.forEach(Control::recalcPixelX);
+    }
+
+    /**
+     * @return the y position of the control on the screen.
+     */
+    public final int getScreenY()
+    {
+        return (int) (getPixelY() / GuiUtil.getInstance().getGuiScale());
     }
 
     /**
@@ -1499,14 +1632,11 @@ public class Control extends Gui
      */
     public final void setX(float x)
     {
-        PositionChangedEvent event = onPositionChanged.handle(new PositionChangedEvent(this, x, getY()));
+        this.x = x;
 
-        if (!event.isHandled())
-        {
-            this.x = x;
+        recalcPixelX();
 
-            recalcPixelX();
-        }
+        onPositionChanged.handle(new PositionChangedEvent(this, x, getY()));
     }
 
     /**
@@ -1552,14 +1682,11 @@ public class Control extends Gui
      */
     public final void setY(float y)
     {
-        PositionChangedEvent event = onPositionChanged.handle(new PositionChangedEvent(this, getX(), y));
+        this.y = y;
 
-        if (!event.isHandled())
-        {
-            this.y = y;
+        recalcPixelY();
 
-            recalcPixelY();
-        }
+        onPositionChanged.handle(new PositionChangedEvent(this, getX(), y));
     }
 
     /**
@@ -1585,6 +1712,14 @@ public class Control extends Gui
     }
 
     /**
+     * @return the width of the control on the screen.
+     */
+    public int getScreenWidth()
+    {
+        return (int) (getPixelWidth() / GuiUtil.getInstance().getGuiScale());
+    }
+
+    /**
      * @return the pixel width of the control including margins.
      */
     public int getEffectivePixelWidth()
@@ -1606,6 +1741,14 @@ public class Control extends Gui
     public final void recalcPixelWidth()
     {
         pixelWidth = Math.round(getWidth() * getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
+    }
+
+    /**
+     * @return the height of the control on the screen.
+     */
+    public int getScreenHeight()
+    {
+        return (int) (getPixelHeight() / GuiUtil.getInstance().getGuiScale());
     }
 
     /**
@@ -1956,6 +2099,22 @@ public class Control extends Gui
     public float toLocalY(float pixelY)
     {
         return (pixelY - getPixelY()) / (getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
+    }
+
+    /**
+     * @return converts a pixel x coordinate into a screen x coordinate.
+     */
+    public static int toScreenX(int pixelX)
+    {
+        return (int) (pixelX / GuiUtil.getInstance().getGuiScale());
+    }
+
+    /**
+     * @return converts a pixel y coordinate into a screen x coordinate.
+     */
+    public static int toScreenY(int pixelY)
+    {
+        return (int) (pixelY / GuiUtil.getInstance().getGuiScale());
     }
 
     /**

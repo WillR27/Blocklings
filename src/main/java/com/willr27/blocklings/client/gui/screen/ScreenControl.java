@@ -1,15 +1,14 @@
 package com.willr27.blocklings.client.gui.screen;
 
+import com.ibm.icu.impl.CharTrie;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrollEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.*;
 import com.willr27.blocklings.client.gui.screen.IScreen;
 import com.willr27.blocklings.client.gui.control.event.events.DragEndEvent;
 import com.willr27.blocklings.client.gui.control.event.events.DragStartEvent;
-import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
-import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -73,7 +72,7 @@ public class ScreenControl extends Control implements IScreen
     }
 
     /**
-     * Mimics {@link Screen#init()}.
+     * Mimics {@link Screen#init(Minecraft, int, int)}.
      */
     public void init(int screenWidth, int screenHeight)
     {
@@ -84,7 +83,15 @@ public class ScreenControl extends Control implements IScreen
     }
 
     /**
-     * Mimics {@link net.minecraft.client.gui.screen.Screen#render(MatrixStack, int, int, float)}.
+     * Mimics {@link Screen#tick()}.
+     */
+    public void tick()
+    {
+        forwardTick();
+    }
+
+    /**
+     * Mimics {@link Screen#render(MatrixStack, int, int, float)}.
      */
     public void render(@Nonnull MatrixStack matrixStack, int screenMouseX, int screenMouseY, float partialTicks)
     {
@@ -140,7 +147,7 @@ public class ScreenControl extends Control implements IScreen
     }
 
     /**
-     * Mimics {@link net.minecraft.client.gui.screen.Screen#mouseClicked(double, double, int)}.
+     * Mimics {@link Screen#mouseClicked(double, double, int)}.
      */
     public boolean mouseClicked(double screenMouseX, double screenMouseY, int mouseButton)
     {
@@ -158,12 +165,16 @@ public class ScreenControl extends Control implements IScreen
         {
             return true;
         }
+        else
+        {
+            setFocusedControl(null, mouseButtonEvent);
+        }
 
         return false;
     }
 
     /**
-     * Mimics {@link net.minecraft.client.gui.screen.Screen#mouseReleased(double, double, int)}.
+     * Mimics {@link Screen#mouseReleased(double, double, int)}.
      */
     public boolean mouseReleased(double screenMouseX, double screenMouseY, int mouseButton)
     {
@@ -191,7 +202,7 @@ public class ScreenControl extends Control implements IScreen
     }
 
     /**
-     * Mimics {@link net.minecraft.client.gui.screen.Screen#mouseScrolled(double, double, double)}.
+     * Mimics {@link Screen#mouseScrolled(double, double, double)}.
      */
     public boolean mouseScrolled(double screenMouseX, double screenMouseY, double scrollAmount)
     {
@@ -230,6 +241,57 @@ public class ScreenControl extends Control implements IScreen
     protected void onMouseReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
     {
 
+    }
+
+    /**
+     * Mimics {@link Screen#keyPressed(int, int, int)}.
+     */
+    public final boolean keyPressed(int keyCode, int scanCode, int mods)
+    {
+        KeyEvent keyEvent = new KeyEvent(keyCode, scanCode, mods);
+
+        forwardGlobalKeyPressed(keyEvent);
+
+        if (!keyEvent.isHandled() && getFocusedControl() != null)
+        {
+            getFocusedControl().onKeyPressed(keyEvent);
+        }
+
+        return keyEvent.isHandled();
+    }
+
+    /**
+     * Mimics {@link Screen#keyReleased(int, int, int)}.
+     */
+    public final boolean keyReleased(int keyCode, int scanCode, int mods)
+    {
+        KeyEvent keyEvent = new KeyEvent(keyCode, scanCode, mods);
+
+        forwardGlobalKeyReleased(keyEvent);
+
+        if (!keyEvent.isHandled() && getFocusedControl() != null)
+        {
+            getFocusedControl().onKeyReleased(keyEvent);
+        }
+
+        return keyEvent.isHandled();
+    }
+
+    /**
+     * Mimics {@link Screen#charTyped(char, int)}.
+     */
+    public final boolean charTyped(char character, int keyCode)
+    {
+        CharEvent charEvent = new CharEvent(character, keyCode);
+
+        forwardGlobalCharTyped(charEvent);
+
+        if (!charEvent.isHandled() && getFocusedControl() != null)
+        {
+            getFocusedControl().onCharTyped(charEvent);
+        }
+
+        return charEvent.isHandled();
     }
 
     @Override

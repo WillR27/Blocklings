@@ -46,6 +46,12 @@ public abstract class BlocklingsScreen extends Screen
     }
 
     @Override
+    public void tick()
+    {
+        screenControl.tick();
+    }
+
+    @Override
     public void render(@Nonnull MatrixStack matrixStack, int screenMouseX, int screenMouseY, float partialTicks)
     {
         screenControl.render(matrixStack, screenMouseX, screenMouseY, partialTicks);
@@ -82,5 +88,38 @@ public abstract class BlocklingsScreen extends Screen
         }
 
         return super.mouseScrolled(screenMouseX, screenMouseY, scrollAmount);
+    }
+
+    @Override
+    public final boolean keyPressed(int keyCode, int scanCode, int mods)
+    {
+        if (screenControl.keyPressed(keyCode, scanCode, mods))
+        {
+            return true;
+        }
+
+        return super.keyPressed(keyCode, scanCode, mods);
+    }
+
+    @Override
+    public final boolean keyReleased(int keyCode, int scanCode, int mods)
+    {
+        if (screenControl.keyReleased(keyCode, scanCode, mods))
+        {
+            return true;
+        }
+
+        return super.keyReleased(keyCode, scanCode, mods);
+    }
+
+    @Override
+    public final boolean charTyped(char character, int keyCode)
+    {
+        if (screenControl.charTyped(character, keyCode))
+        {
+            return true;
+        }
+
+        return super.charTyped(character, keyCode);
     }
 }

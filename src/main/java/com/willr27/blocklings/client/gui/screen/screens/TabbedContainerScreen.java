@@ -41,6 +41,7 @@ public class TabbedContainerScreen<T extends Container> extends BlocklingsContai
     {
         super.init();
 
+        tabbedControl.resetChildren();
         tabbedControl.setParent(screenControl);
         tabbedControl.setPercentX(0.5f);
         tabbedControl.setPercentY(0.5f);
