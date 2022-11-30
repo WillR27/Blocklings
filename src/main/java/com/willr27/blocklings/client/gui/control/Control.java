@@ -15,10 +15,8 @@ import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.jline.utils.Log;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
@@ -79,6 +77,11 @@ public class Control extends Gui
      */
     @Nonnull
     public final EventHandler<ChildRemovedEvent> onChildRemoved = new EventHandler<>();
+
+    /**
+     * Whether to apply the control's scissor bounds when rendering.
+     */
+    private boolean shouldScissor = true;
 
     /**
      * The x pixel position of the top left of the control on the screen.
@@ -485,8 +488,11 @@ public class Control extends Gui
      */
     protected void applyScissor(@Nonnull RenderArgs renderArgs)
     {
-        renderArgs.scissorStack.push(new ScissorBounds(getPixelX(), getPixelY(), getPixelWidth(), getPixelHeight()));
-//        renderArgs.scissorStack.enable();
+        if (shouldScissor())
+        {
+            renderArgs.scissorStack.push(new ScissorBounds(getPixelX(), getPixelY(), getPixelWidth(), getPixelHeight()));
+            renderArgs.scissorStack.enable();
+        }
     }
 
     /**
@@ -494,8 +500,11 @@ public class Control extends Gui
      */
     protected void undoScissor(@Nonnull RenderArgs renderArgs)
     {
-        renderArgs.scissorStack.pop();
-        renderArgs.scissorStack.disable();
+        if (shouldScissor())
+        {
+            renderArgs.scissorStack.pop();
+            renderArgs.scissorStack.disable();
+        }
     }
 
     /**
@@ -734,7 +743,7 @@ public class Control extends Gui
             return;
         }
 
-        for (Control control : getChildrenCopy())
+        for (Control control : getReverseChildrenCopy())
         {
             if (!mousePosEvent.isHandled())
             {
@@ -799,7 +808,7 @@ public class Control extends Gui
             return;
         }
 
-        for (Control control : getChildrenCopy())
+        for (Control control : getReverseChildrenCopy())
         {
             if (!mousePosEvent.isHandled())
             {
@@ -971,7 +980,7 @@ public class Control extends Gui
      */
     public void forwardGlobalMouseClicked(@Nonnull MouseButtonEvent mouseButtonEvent)
     {
-        for (Control control : getChildrenCopy())
+        for (Control control : getReverseChildrenCopy())
         {
             if (!mouseButtonEvent.isHandled())
             {
@@ -1011,7 +1020,7 @@ public class Control extends Gui
             return;
         }
 
-        for (Control control : getChildrenCopy())
+        for (Control control : getReverseChildrenCopy())
         {
             if (!mouseButtonEvent.isHandled())
             {
@@ -1052,7 +1061,7 @@ public class Control extends Gui
      */
     public void forwardGlobalMouseReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
     {
-        for (Control control : getChildrenCopy())
+        for (Control control : getReverseChildrenCopy())
         {
             if (!mouseButtonEvent.isHandled())
             {
@@ -1092,7 +1101,7 @@ public class Control extends Gui
             return;
         }
 
-        for (Control control : getChildrenCopy())
+        for (Control control : getReverseChildrenCopy())
         {
             if (!mouseButtonEvent.isHandled())
             {
@@ -1168,7 +1177,7 @@ public class Control extends Gui
      */
     public void forwardGlobalMouseScrolled(@Nonnull MouseScrollEvent mouseScrollEvent)
     {
-        for (Control control : getChildrenCopy())
+        for (Control control : getReverseChildrenCopy())
         {
             if (!mouseScrollEvent.isHandled())
             {
@@ -1208,7 +1217,7 @@ public class Control extends Gui
             return;
         }
 
-        for (Control control : getChildrenCopy())
+        for (Control control : getReverseChildrenCopy())
         {
             if (!mouseScrollEvent.isHandled())
             {
@@ -1277,7 +1286,7 @@ public class Control extends Gui
      */
     public void forwardGlobalKeyPressed(@Nonnull KeyEvent keyEvent)
     {
-        for (Control control : getChildrenCopy())
+        for (Control control : getReverseChildrenCopy())
         {
             if (!keyEvent.isHandled())
             {
@@ -1312,7 +1321,7 @@ public class Control extends Gui
      */
     public void forwardGlobalKeyReleased(@Nonnull KeyEvent keyEvent)
     {
-        for (Control control : getChildrenCopy())
+        for (Control control : getReverseChildrenCopy())
         {
             if (!keyEvent.isHandled())
             {
@@ -1347,7 +1356,7 @@ public class Control extends Gui
      */
     public void forwardGlobalCharTyped(@Nonnull CharEvent charEvent)
     {
-        for (Control control : getChildrenCopy())
+        for (Control control : getReverseChildrenCopy())
         {
             if (!charEvent.isHandled())
             {
@@ -1459,6 +1468,18 @@ public class Control extends Gui
     }
 
     /**
+     * @return a reversed copy of the list of children.
+     */
+    @Nonnull
+    public final List<Control> getReverseChildrenCopy()
+    {
+        List<Control> childrenCopy = getChildrenCopy();
+        Collections.reverse(childrenCopy);
+
+        return childrenCopy;
+    }
+
+    /**
      * Inserts the given control before the given child control in the list of children.
      *
      * @param controlToInsert the control to insert (can be an existing child).
@@ -1543,6 +1564,23 @@ public class Control extends Gui
         }
 
         return getChildren().contains(control) || getChildren().stream().anyMatch(child -> child.hasDescendant(control));
+    }
+
+    /**
+     * @return whether to apply the control's scissor bounds when rendering.
+     */
+    public boolean shouldScissor()
+    {
+        return shouldScissor;
+    }
+
+    /**
+     * Sets whether to apply the control's scissor bounds when rendering. Don't set this in a
+     * render method.
+     */
+    public void setShouldScissor(boolean shouldScissor)
+    {
+        this.shouldScissor = shouldScissor;
     }
 
     /**

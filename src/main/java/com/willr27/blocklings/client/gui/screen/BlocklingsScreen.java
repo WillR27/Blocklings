@@ -3,7 +3,9 @@ package com.willr27.blocklings.client.gui.screen;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.InputMappings;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -95,6 +97,15 @@ public abstract class BlocklingsScreen extends Screen
     {
         if (screenControl.keyPressed(keyCode, scanCode, mods))
         {
+            return true;
+        }
+
+        InputMappings.Input key = InputMappings.getKey(keyCode, scanCode);
+
+        if (Minecraft.getInstance().options.keyInventory.isActiveAndMatches(key))
+        {
+            onClose();
+
             return true;
         }
 
