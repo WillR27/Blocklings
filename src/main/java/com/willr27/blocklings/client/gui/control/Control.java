@@ -13,6 +13,7 @@ import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -30,6 +31,9 @@ import java.util.function.BiConsumer;
 @OnlyIn(Dist.CLIENT)
 public class Control extends Gui
 {
+    @Nonnull
+    public final FontRenderer font = Minecraft.getInstance().font;
+
     /**
      * The list of operations to apply to the control before/after rendering.
      */
@@ -314,6 +318,12 @@ public class Control extends Gui
      */
     @Nonnull
     private Colour backgroundColour = new Colour(0, 0, 0, 0);
+
+    /**
+     * Occurs when the control's focus is changed.
+     */
+    @Nonnull
+    public final EventHandler<FocusChangedEvent> focusChanged = new EventHandler<>();
 
     /**
      */
@@ -1041,7 +1051,7 @@ public class Control extends Gui
                 {
                     mouseButtonEvent.setIsHandled(true);
 
-                    getScreen().setFocusedControl(this, mouseButtonEvent);
+                    getScreen().setFocusedControl(this);
                     getScreen().setPressedControl(this, mouseButtonEvent);
                 }
             }
@@ -1123,7 +1133,7 @@ public class Control extends Gui
                     // This probably isn't necessary, but we can set it back to unhandled anyway.
                     mouseButtonEvent.setIsHandled(false);
 
-                    getScreen().setFocusedControl(this, mouseButtonEvent);
+                    getScreen().setFocusedControl(this);
 
                     // Set back to handled so that the screen can detect if a control handled the mouse released event.
                     mouseButtonEvent.setIsHandled(true);
@@ -1159,7 +1169,7 @@ public class Control extends Gui
     /**
      * Occurs when the control is focused from a mouse click.
      */
-    public void onFocused(@Nonnull MouseButtonEvent mouseButtonEvent)
+    public void onFocused()
     {
 
     }
@@ -1167,7 +1177,7 @@ public class Control extends Gui
     /**
      * Occurs when the control is unfocused from a mouse click.
      */
-    public void onUnfocused(@Nonnull MouseButtonEvent mouseButtonEvent)
+    public void onUnfocused()
     {
 
     }

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.control.Control;
+import com.willr27.blocklings.client.gui.control.event.events.FocusChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.*;
 import com.willr27.blocklings.client.gui.screen.IScreen;
 import com.willr27.blocklings.client.gui.control.event.events.DragEndEvent;
@@ -167,7 +168,7 @@ public class ScreenControl extends Control implements IScreen
         }
         else
         {
-            setFocusedControl(null, mouseButtonEvent);
+            setFocusedControl(null);
         }
 
         return false;
@@ -381,28 +382,28 @@ public class ScreenControl extends Control implements IScreen
     }
 
     @Override
-    public void setFocusedControl(@Nullable Control control, @Nonnull MouseButtonEvent mouseButtonEvent)
+    public void setFocusedControl(@Nullable Control control)
     {
         if (focusedControl != control)
         {
             if (focusedControl != null)
             {
-                mouseButtonEvent.mouseX = Math.round(focusedControl.toLocalX(mouseButtonEvent.mousePixelX));
-                mouseButtonEvent.mouseY = Math.round(focusedControl.toLocalY(mouseButtonEvent.mousePixelY));
-
-                focusedControl.onUnfocused(mouseButtonEvent);
+                focusedControl.onUnfocused();
+                focusedControl.focusChanged.handle(new FocusChangedEvent(focusedControl, true));
             }
 
             if (control != null)
             {
-                mouseButtonEvent.mouseX = Math.round(control.toLocalX(mouseButtonEvent.mousePixelX));
-                mouseButtonEvent.mouseY = Math.round(control.toLocalY(mouseButtonEvent.mousePixelY));
-
-                control.onFocused(mouseButtonEvent);
+                control.onFocused();
             }
         }
 
         focusedControl = control;
+
+        if (focusedControl != null)
+        {
+            focusedControl.focusChanged.handle(new FocusChangedEvent(focusedControl, false));
+        }
     }
 
     @Nullable

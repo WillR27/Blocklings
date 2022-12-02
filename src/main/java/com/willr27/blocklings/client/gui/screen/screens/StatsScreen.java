@@ -9,6 +9,8 @@ import com.willr27.blocklings.client.gui.control.controls.TextFieldControl;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
+import com.willr27.blocklings.item.BlocklingsItems;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -41,23 +43,32 @@ public class StatsScreen extends TabbedScreen
         textFieldControl.setY(0);
         textFieldControl.setWidth(contentControl.getWidth());
         textFieldControl.setAnchor(EnumSet.of(Side.LEFT, Side.RIGHT));
-        textFieldControl.setHeight(20);
-        textFieldControl.setText("HELLO");
-
-        Control control = new Control();
-        control.setParent(contentControl);
-        control.setBackgroundColour(new Colour(0.0f, 0.0f, 1.0f));
-        control.setFitToContentsXY(true);
-        control.setInnerScale(2.0f);
+        textFieldControl.setMaxTextLength(25);
+        textFieldControl.setText(blockling.getCustomName().getString());
+        textFieldControl.focusChanged.subscribe((e) ->
+        {
+            if (!textFieldControl.getText().trim().isEmpty())
+            {
+                blockling.setCustomName(new StringTextComponent(textFieldControl.getText()), true);
+            }
+            else
+            {
+                ITextComponent name = BlocklingsItems.BLOCKLING.get().getName(BlocklingsItems.BLOCKLING.get().getDefaultInstance());
+                blockling.setCustomName(new StringTextComponent(name.getString()), true);
+                textFieldControl.setText(name.getString());
+            }
+        });
 
         EntityControl entityControl = new EntityControl();
-        entityControl.setParent(control);
+        entityControl.setParent(contentControl);
         entityControl.setEntity(blockling);
-        entityControl.setWidth(32);
-        entityControl.setHeight(64);
+        entityControl.setWidth(48);
+        entityControl.setHeight(48);
         entityControl.setScaleToBoundingBox(true);
-        entityControl.setEntityScale(0.8f);
-        entityControl.setOffsetY(-1.0f);
+        entityControl.setEntityScale(1.0f);
+        entityControl.setOffsetY(0.0f);
         entityControl.setShouldScissor(false);
+        entityControl.setPercentX(0.5f);
+        entityControl.setPercentY(0.3f);
     }
 }

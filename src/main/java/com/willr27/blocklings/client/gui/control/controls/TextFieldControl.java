@@ -3,14 +3,17 @@ package com.willr27.blocklings.client.gui.control.controls;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.control.Control;
+import com.willr27.blocklings.client.gui.control.Side;
+import com.willr27.blocklings.client.gui.control.VerticalAlignment;
 import com.willr27.blocklings.client.gui.control.event.events.input.CharEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.KeyEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
-import net.minecraft.client.Minecraft;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 
@@ -24,28 +27,59 @@ public class TextFieldControl extends Control
      * The underlying {@link TextFieldWidget};
      */
     @Nonnull
-    private final TextFieldWidget textFieldWidget = new TextFieldWidget(Minecraft.getInstance().font, 0, 0, 100, 20, new StringTextComponent("message?"));
+    private final TextFieldWidget textFieldWidget = new TextFieldWidget(font, 0, 0, 100, 20, new StringTextComponent("message?"));
+
+    /**
+     * The vertical alignment of the text.
+     */
+    @Nonnull
+    private VerticalAlignment verticalAlignment = VerticalAlignment.MIDDLE;
 
     /**
      */
     public TextFieldControl()
     {
+        textFieldWidget.setBordered(false);
+        textFieldWidget.setHeight(font.lineHeight);
+
         onPositionChanged.subscribe((e) ->
         {
-            textFieldWidget.x = getScreenX();
-            textFieldWidget.y = getScreenY();
+            recalcTextFieldPosition();
         });
 
         onSizeChanged.subscribe((e) ->
         {
-            textFieldWidget.setWidth(getScreenWidth());
-            textFieldWidget.setHeight(getScreenHeight());
+            textFieldWidget.setWidth((int) (getScreenWidth() - ((getPadding(Side.LEFT) + getPadding(Side.RIGHT)) * getCumulativeScale())));
+
+            recalcTextFieldPosition();
         });
 
         setX(getX());
         setY(getY());
         setWidth(getWidth());
-        setHeight(getHeight());
+        setHeight(20);
+        setPadding(6, 3, 6, 3);
+        setVerticalAlignment(VerticalAlignment.MIDDLE);
+    }
+
+    /**
+     * Applies the vertical alignment of the text to the text field.
+     */
+    private void recalcTextFieldPosition()
+    {
+        textFieldWidget.x = (int) (getScreenX() + (getPadding(Side.LEFT) * getCumulativeScale()));
+
+        switch (verticalAlignment)
+        {
+            case TOP:
+                textFieldWidget.y = (int) (getScreenY() + (getPadding(Side.TOP) * getCumulativeScale()));
+                break;
+            case MIDDLE:
+                textFieldWidget.y = getScreenY() + (getScreenHeight() / 2) - (font.lineHeight / 2);
+                break;
+            case BOTTOM:
+                textFieldWidget.y = (int) (getScreenY() + (getScreenHeight() - font.lineHeight) - (getPadding(Side.BOTTOM) * getCumulativeScale()));
+        }
     }
 
     @Override
@@ -79,7 +113,16 @@ public class TextFieldControl extends Control
     @Override
     public void onKeyPressed(@Nonnull KeyEvent keyEvent)
     {
-        keyEvent.setIsHandled(textFieldWidget.keyPressed(keyEvent.keyCode, keyEvent.scanCode, keyEvent.modifiers));
+        if (keyEvent.keyCode == GLFW.GLFW_KEY_ENTER || keyEvent.keyCode == GLFW.GLFW_KEY_ESCAPE)
+        {
+            getScreen().setFocusedControl(null);
+
+            keyEvent.setIsHandled(true);
+        }
+        else
+        {
+            keyEvent.setIsHandled(textFieldWidget.keyPressed(keyEvent.keyCode, keyEvent.scanCode, keyEvent.modifiers));
+        }
     }
 
     @Override
@@ -95,15 +138,24 @@ public class TextFieldControl extends Control
     }
 
     @Override
-    public void onFocused(@Nonnull MouseButtonEvent mouseButtonEvent)
+    public void onFocused()
     {
         textFieldWidget.setFocus(true);
     }
 
     @Override
-    public void onUnfocused(@Nonnull MouseButtonEvent mouseButtonEvent)
+    public void onUnfocused()
     {
         textFieldWidget.setFocus(false);
+    }
+
+    /**
+     * @return the text inside the text field.
+     */
+    @Nonnull
+    public String getText()
+    {
+        return textFieldWidget.getValue();
     }
 
     /**
@@ -112,5 +164,32 @@ public class TextFieldControl extends Control
     public void setText(@Nonnull String text)
     {
         textFieldWidget.setValue(text);
+    }
+
+    /**
+     * Sets the max text length for the text field.
+     */
+    public void setMaxTextLength(int maxTextLength)
+    {
+        textFieldWidget.setMaxLength(maxTextLength);
+    }
+
+    /**
+     * @return the vertical alignment of the text.
+     */
+    @Nonnull
+    public VerticalAlignment getVerticalAlignment()
+    {
+        return verticalAlignment;
+    }
+
+    /**
+     * Sets the vertical alignment of the text.
+     */
+    public void setVerticalAlignment(@Nonnull VerticalAlignment verticalAlignment)
+    {
+        this.verticalAlignment = verticalAlignment;
+
+        recalcTextFieldPosition();
     }
 }

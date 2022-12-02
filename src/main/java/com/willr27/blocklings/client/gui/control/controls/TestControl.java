@@ -71,13 +71,13 @@ public class TestControl extends Control
     }
 
     @Override
-    public void onFocused(@Nonnull MouseButtonEvent mouseButtonEvent)
+    public void onFocused()
     {
         texture = GuiTextures.DROPDOWN_DOWN_ARROW;
     }
 
     @Override
-    public void onUnfocused(@Nonnull MouseButtonEvent mouseButtonEvent)
+    public void onUnfocused()
     {
         texture = GuiTextures.FLAT_BAR;
     }

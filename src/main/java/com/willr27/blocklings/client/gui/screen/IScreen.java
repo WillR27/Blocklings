@@ -63,9 +63,8 @@ public interface IScreen
      * Sets the currently focused control.
      *
      * @param control the new focused control.
-     * @param mouseButtonEvent the mouse button event to pass on to {@link Control#onFocused(MouseButtonEvent)} and {@link Control#onUnfocused(MouseButtonEvent)}.
      */
-    void setFocusedControl(@Nullable Control control, @Nonnull MouseButtonEvent mouseButtonEvent);
+    void setFocusedControl(@Nullable Control control);
 
     /**
      * @return the currently dragged control.
