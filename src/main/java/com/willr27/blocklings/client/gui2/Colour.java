@@ -39,6 +39,14 @@ public class Colour
     }
 
     /**
+     * @param colour the argb colour.
+     */
+    public Colour(int colour)
+    {
+        this((colour >> 16) & 0x000000ff, (colour >> 8) & 0x000000ff, colour & 0x000000ff, (colour >> 24) & 0x000000ff);
+    }
+
+    /**
      * @param r the red value.
      * @param g the green value.
      * @param b the blue value.
@@ -219,7 +227,7 @@ public class Colour
     /**
      * @return the colour as an integer.
      */
-    public int rgba()
+    public int argb()
     {
         return (a() << 24) + (r() << 16) + (g() << 8) + (b());
     }

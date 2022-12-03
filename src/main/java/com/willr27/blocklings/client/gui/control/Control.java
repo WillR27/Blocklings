@@ -610,7 +610,7 @@ public class Control extends Gui
      */
     protected void onRenderBackground(@Nonnull RenderArgs renderArgs)
     {
-        renderRectangle(renderArgs.matrixStack, backgroundColour.rgba());
+        renderRectangle(renderArgs.matrixStack, backgroundColour.argb());
     }
 
     /**
@@ -2588,7 +2588,7 @@ public class Control extends Gui
      */
     public boolean isHovered()
     {
-        return getScreen().getHoveredControl() == this;
+        return getScreen() != null && getScreen().getHoveredControl() == this;
     }
 
     /**
@@ -2596,7 +2596,7 @@ public class Control extends Gui
      */
     public boolean isPressed()
     {
-        return getScreen().getPressedControl() == this;
+        return getScreen() != null && getScreen().getPressedControl() == this;
     }
 
     /**
@@ -2604,7 +2604,7 @@ public class Control extends Gui
      */
     public boolean isFocused()
     {
-        return getScreen().getFocusedControl() == this;
+        return getScreen() != null && getScreen().getFocusedControl() == this;
     }
 
     /**
@@ -2612,7 +2612,7 @@ public class Control extends Gui
      */
     public boolean isDragging()
     {
-        return getScreen().getDraggedControl() == this;
+        return getScreen() != null && getScreen().getDraggedControl() == this;
     }
 
     /**

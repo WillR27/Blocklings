@@ -9,6 +9,7 @@ import org.lwjgl.glfw.GLFW;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Enumerates a list of controls in place of each other.
@@ -21,6 +22,12 @@ public class EnumeratingControl extends Control
      */
     @Nonnull
     private final List<Control> controls = new ArrayList<>();
+
+    /**
+     * The corresponding list of display conditions for each control.
+     */
+    @Nonnull
+    private final List<Supplier<Boolean>> displayConditions = new ArrayList<>();
 
     /**
      * The number of ticks between switching to the next control.
@@ -66,9 +73,17 @@ public class EnumeratingControl extends Control
 
         clearChildren();
 
-        int indexOfNewChild = (indexOfCurrentChild + (forwards ? 1 : -1)) % controls.size();
+        for (int i = indexOfCurrentChild; i < indexOfCurrentChild + controls.size(); i++)
+        {
+            int indexOfNewChild = (indexOfCurrentChild + (forwards ? i : -i)) % controls.size();
 
-        addChild(controls.get(indexOfNewChild));
+            if (displayConditions.get(indexOfNewChild).get())
+            {
+                addChild(controls.get(indexOfNewChild));
+
+                break;
+            }
+        }
 
         tickCount = 0;
     }
@@ -101,7 +116,16 @@ public class EnumeratingControl extends Control
      */
     public void addControl(@Nonnull Control control)
     {
+        addControl(control, () -> true);
+    }
+
+    /**
+     * Adds the given control to the list of control to be enumerated.
+     */
+    public void addControl(@Nonnull Control control, @Nonnull Supplier<Boolean> displayCondition)
+    {
         controls.add(control);
+        displayConditions.add(displayCondition);
 
         if (controls.size() == 1)
         {
@@ -120,6 +144,7 @@ public class EnumeratingControl extends Control
             switchToControl(true);
         }
 
+        displayConditions.remove(controls.indexOf(control));
         controls.remove(control);
     }
 

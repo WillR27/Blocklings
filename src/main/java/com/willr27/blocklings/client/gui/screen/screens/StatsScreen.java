@@ -7,16 +7,19 @@ import com.willr27.blocklings.client.gui.control.HorizontalAlignment;
 import com.willr27.blocklings.client.gui.control.Side;
 import com.willr27.blocklings.client.gui.control.VerticalAlignment;
 import com.willr27.blocklings.client.gui.control.controls.*;
+import com.willr27.blocklings.client.gui.control.controls.stats.StatControl;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.item.BlocklingsItems;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.EnumSet;
 
 /**
@@ -73,21 +76,17 @@ public class StatsScreen extends TabbedScreen
         entityControl.setPercentX(0.5f);
         entityControl.setPercentY(0.3f);
 
+        Control statsControl = new Control();
+        statsControl.setParent(contentControl);
+        statsControl.setWidth(contentControl.getWidth());
+        statsControl.setHeight(contentControl.getHeight());
+
         EnumeratingControl enumeratingControl = new EnumeratingControl();
         enumeratingControl.setParent(contentControl);
-        enumeratingControl.addControl(new TexturedControl(GuiTextures.Tabs.EQUIPMENT));
-        enumeratingControl.addControl(new TexturedControl(GuiTextures.Tabs.COMBAT));
-        enumeratingControl.addControl(new TexturedControl(GuiTextures.Tabs.FARMING));
+        enumeratingControl.setX(10);
+        enumeratingControl.setY(40);
 
-        TextBlockControl textBlockControl = new TextBlockControl();
-        textBlockControl.setParent(contentControl);
-        textBlockControl.setX(0);
-        textBlockControl.setY(40);
-        textBlockControl.setWidth(100);
-        textBlockControl.setHeight(40);
-        textBlockControl.setBackgroundColour(new Colour(0.5f, 0.2f, 1.0f));
-        textBlockControl.setText("Helloy");
-        textBlockControl.setHorizontalAlignment(HorizontalAlignment.MIDDLE);
-        textBlockControl.setVerticalAlignment(VerticalAlignment.TOP);
+        StatControl statControl = new StatControl(GuiTextures.Stats.ATTACK_DAMAGE_MAIN, () -> "10", () -> new ArrayList<>(), false);
+        statControl.setParent(enumeratingControl);
     }
 }

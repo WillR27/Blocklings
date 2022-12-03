@@ -6,6 +6,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import javax.annotation.Nonnull;
+
 /**
  * A collection of textures.
  */
@@ -35,6 +37,16 @@ public class GuiTextures
     {
         public static final ResourceLocation STATS = new BlocklingsResourceLocation("textures/gui/stats.png");
         public static final GuiTexture BACKGROUND = new GuiTexture(STATS, 0, 0, 176, 166);
+
+        public static final GuiTexture ATTACK_DAMAGE_MAIN = new StatIconTexture(110, 166);
+
+        private static class StatIconTexture extends GuiTexture
+        {
+            public StatIconTexture(int x, int y)
+            {
+                super(STATS, x, y, 11, 11);
+            }
+        }
     }
 
     public static class Tasks
