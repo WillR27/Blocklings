@@ -68,6 +68,8 @@ public class EnumeratingControl extends Control
 
         int indexOfNewChild = (indexOfCurrentChild + (forwards ? 1 : -1)) % controls.size();
 
+        addChild(controls.get(indexOfNewChild));
+
         tickCount = 0;
     }
 
