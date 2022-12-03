@@ -66,28 +66,7 @@ public class EnumeratingControl extends Control
 
         clearChildren();
 
-        if (forwards)
-        {
-            if (indexOfCurrentChild <= -1 || (indexOfCurrentChild + 1) >= controls.size())
-            {
-                addChild(controls.get(0));
-            }
-            else
-            {
-                addChild(controls.get(indexOfCurrentChild + 1));
-            }
-        }
-        else
-        {
-            if (indexOfCurrentChild <= -1 || indexOfCurrentChild <= 0)
-            {
-                addChild(controls.get(controls.size() - 1));
-            }
-            else
-            {
-                addChild(controls.get(indexOfCurrentChild - 1));
-            }
-        }
+        int indexOfNewChild = (indexOfCurrentChild + (forwards ? 1 : -1)) % controls.size();
 
         tickCount = 0;
     }
