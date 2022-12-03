@@ -1,11 +1,12 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.willr27.blocklings.client.gui.GuiTextures;
 import com.willr27.blocklings.client.gui.control.Control;
+import com.willr27.blocklings.client.gui.control.HorizontalAlignment;
 import com.willr27.blocklings.client.gui.control.Side;
-import com.willr27.blocklings.client.gui.control.controls.EntityControl;
-import com.willr27.blocklings.client.gui.control.controls.TabbedControl;
-import com.willr27.blocklings.client.gui.control.controls.TextFieldControl;
+import com.willr27.blocklings.client.gui.control.VerticalAlignment;
+import com.willr27.blocklings.client.gui.control.controls.*;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
@@ -43,6 +44,7 @@ public class StatsScreen extends TabbedScreen
         textFieldControl.setY(0);
         textFieldControl.setWidth(contentControl.getWidth());
         textFieldControl.setAnchor(EnumSet.of(Side.LEFT, Side.RIGHT));
+        textFieldControl.setHorizontalAlignment(HorizontalAlignment.MIDDLE);
         textFieldControl.setMaxTextLength(25);
         textFieldControl.setText(blockling.getCustomName().getString());
         textFieldControl.focusChanged.subscribe((e) ->
@@ -70,5 +72,22 @@ public class StatsScreen extends TabbedScreen
         entityControl.setShouldScissor(false);
         entityControl.setPercentX(0.5f);
         entityControl.setPercentY(0.3f);
+
+        EnumeratingControl enumeratingControl = new EnumeratingControl();
+        enumeratingControl.setParent(contentControl);
+        enumeratingControl.addControl(new TexturedControl(GuiTextures.Tabs.EQUIPMENT));
+        enumeratingControl.addControl(new TexturedControl(GuiTextures.Tabs.COMBAT));
+        enumeratingControl.addControl(new TexturedControl(GuiTextures.Tabs.FARMING));
+
+        TextBlockControl textBlockControl = new TextBlockControl();
+        textBlockControl.setParent(contentControl);
+        textBlockControl.setX(0);
+        textBlockControl.setY(40);
+        textBlockControl.setWidth(100);
+        textBlockControl.setHeight(40);
+        textBlockControl.setBackgroundColour(new Colour(0.5f, 0.2f, 1.0f));
+        textBlockControl.setText("Helloy");
+        textBlockControl.setHorizontalAlignment(HorizontalAlignment.MIDDLE);
+        textBlockControl.setVerticalAlignment(VerticalAlignment.TOP);
     }
 }

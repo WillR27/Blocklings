@@ -1440,6 +1440,7 @@ public class Control extends Gui
             setScreen(null);
 
             oldParent.onChildRemoved.handle(new ChildRemovedEvent(oldParent, this));
+            oldParent.tryFitToContents();
         }
 
         if (this.parent != null)
@@ -1449,6 +1450,7 @@ public class Control extends Gui
             setScreen(this.parent.getScreen());
 
             this.parent.onChildAdded.handle(new ChildAddedEvent(this.parent, this));
+            this.parent.tryFitToContents();
         }
 
         recalcPixelX();
@@ -1553,6 +1555,14 @@ public class Control extends Gui
     public final void addChild(@Nonnull Control control)
     {
         control.setParent(this);
+    }
+
+    /**
+     * Removes all the children from the control.
+     */
+    public final void clearChildren()
+    {
+        getChildrenCopy().forEach(child -> removeChild(child));
     }
 
     /**
