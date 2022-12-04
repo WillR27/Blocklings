@@ -178,10 +178,28 @@ public class Control extends Gui
     public final EventHandler<PaddingChangedEvent> onPaddingChanged = new EventHandler<>();
 
     /**
+     * How the control is docked.
+     */
+    @Nonnull
+    private Dock dock = Dock.NONE;
+
+    /**
      * How the control is position/sized relative to its parent.
      */
     @Nullable
     private EnumSet<Side> anchor = EnumSet.of(Side.TOP, Side.LEFT);
+
+    /**
+     * How the control is positioned within its parent in the x-axis.
+     */
+    @Nullable
+    private Alignment alignmentX = null;
+
+    /**
+     * How the control is positioned within its parent in the y-axis.
+     */
+    @Nullable
+    private Alignment alignmentY = null;
 
     /**
      * Occurs when the control's anchor changes.
@@ -342,12 +360,117 @@ public class Control extends Gui
         {
             e.childAdded.onSizeChanged.subscribe(onSizeChanged);
             e.childAdded.onMarginsChanged.subscribe(onMarginsChanged);
+
+            tryFitToContents();
+            layoutDockedContents();
         });
+
         onChildRemoved.subscribe((e) ->
         {
             e.childRemoved.onSizeChanged.unsubscribe(onSizeChanged);
             e.childRemoved.onMarginsChanged.unsubscribe(onMarginsChanged);
+
+            tryFitToContents();
+            layoutDockedContents();
         });
+
+        onParentChanged.subscribe((e) ->
+        {
+            EventHandler.Handler<SizeChangedEvent> onParentSizeChanged = (e2) -> tryApplyAlignment();
+
+            if (e.oldParent != null)
+            {
+                e.oldParent.onSizeChanged.unsubscribe(onParentSizeChanged);
+            }
+
+            if (getParent() != null)
+            {
+                getParent().onSizeChanged.subscribe(onParentSizeChanged);
+            }
+        });
+
+        this.onSizeChanged.subscribe((e) -> tryApplyAlignment());
+    }
+
+    /**
+     * Transforms any docked child controls.
+     */
+    protected void layoutDockedContents()
+    {
+        float availableAreaX = getPadding(Side.LEFT);
+        float availableAreaY = getPadding(Side.TOP);
+        float availableAreaWidth = (getWidth() / getInnerScale()) - getPadding(Side.RIGHT);
+        float availableAreaHeight = (getHeight() / getInnerScale()) - getPadding(Side.BOTTOM);
+
+        for (Control control : getChildren())
+        {
+            if (control.getDock() != Dock.NONE)
+            {
+                if (availableAreaWidth == 0)
+                {
+                    control.setWidth(0);
+                }
+
+                if (availableAreaHeight == 0)
+                {
+                    control.setHeight(0);
+                }
+            }
+
+            switch (control.getDock())
+            {
+                case NONE:
+                    continue;
+                case LEFT:
+                    control.setX(availableAreaX);
+                    control.setY(availableAreaY);
+                    control.setWidth(Math.min(control.getWidth(), availableAreaWidth));
+                    control.setHeight(availableAreaHeight);
+                    availableAreaX += control.getWidth();
+                    availableAreaWidth = Math.max(0, availableAreaWidth - control.getWidth());
+                    break;
+                case TOP:
+                    control.setX(availableAreaX);
+                    control.setY(availableAreaY);
+                    control.setWidth(availableAreaWidth);
+                    control.setHeight(Math.min(control.getHeight(), availableAreaHeight));
+                    availableAreaY += control.getHeight();
+                    availableAreaHeight = Math.max(0 , availableAreaHeight - control.getHeight());
+                    break;
+                case RIGHT:
+                    float desiredX = availableAreaX + availableAreaWidth - control.getWidth();
+                    float excessX = desiredX - availableAreaX;
+                    float correctedX = excessX < 0 ? desiredX - excessX : desiredX;
+                    float correctedWidth = excessX < 0 ? control.getWidth() - excessX : control.getWidth();
+                    control.setX(correctedX);
+                    control.setY(availableAreaY);
+                    control.setWidth(correctedWidth);
+                    control.setHeight(availableAreaHeight);
+                    availableAreaWidth = Math.max(0, availableAreaWidth - control.getWidth());
+                    break;
+                case BOTTOM:
+                    float desiredY = availableAreaY + availableAreaHeight - control.getHeight();
+                    float excessY = desiredY - availableAreaY;
+                    float correctedY = excessY < 0 ? desiredY - excessY : desiredY;
+                    float correctedHeight = excessY < 0 ? control.getHeight() - excessY : control.getHeight();
+                    control.setX(availableAreaX);
+                    control.setY(correctedY);
+                    control.setWidth(availableAreaWidth);
+                    control.setHeight(correctedHeight);
+                    availableAreaHeight = Math.max(0, availableAreaHeight - control.getHeight());
+                    break;
+                case FILL:
+                    control.setX(availableAreaX);
+                    control.setY(availableAreaY);
+                    control.setWidth(availableAreaWidth);
+                    control.setHeight(availableAreaHeight);
+                    availableAreaWidth = Math.max(0, availableAreaWidth - control.getWidth());
+                    availableAreaHeight = Math.max(0, availableAreaHeight - control.getHeight());
+                    availableAreaX += availableAreaWidth;
+                    availableAreaY += availableAreaHeight;
+                    break;
+            }
+        }
     }
 
     /**
@@ -409,6 +532,22 @@ public class Control extends Gui
         else if (getAnchor().contains(Side.BOTTOM))
         {
             setY(getY() + (newParentHeight - getParent().getHeight()) / getParent().getInnerScale());
+        }
+    }
+
+    /**
+     * Tries to position the control based on the {@link Control#alignmentX} and {@link Control#alignmentY}.
+     */
+    protected void tryApplyAlignment()
+    {
+        if (getAlignmentX() != null)
+        {
+            setPercentX(getAlignmentX().percent);
+        }
+
+        if (getAlignmentY() != null)
+        {
+            setPercentY(getAlignmentY().percent);
         }
     }
 
@@ -1440,7 +1579,6 @@ public class Control extends Gui
             setScreen(null);
 
             oldParent.onChildRemoved.handle(new ChildRemovedEvent(oldParent, this));
-            oldParent.tryFitToContents();
         }
 
         if (this.parent != null)
@@ -1450,7 +1588,6 @@ public class Control extends Gui
             setScreen(this.parent.getScreen());
 
             this.parent.onChildAdded.handle(new ChildAddedEvent(this.parent, this));
-            this.parent.tryFitToContents();
         }
 
         recalcPixelX();
@@ -1606,9 +1743,9 @@ public class Control extends Gui
     /**
      * @return the x position of the control on the screen.
      */
-    public final int getScreenX()
+    public final float getScreenX()
     {
-        return (int) (getPixelX() / GuiUtil.getInstance().getGuiScale());
+        return getPixelX() / GuiUtil.getInstance().getGuiScale();
     }
 
     /**
@@ -1639,9 +1776,9 @@ public class Control extends Gui
     /**
      * @return the y position of the control on the screen.
      */
-    public final int getScreenY()
+    public final float getScreenY()
     {
-        return (int) (getPixelY() / GuiUtil.getInstance().getGuiScale());
+        return getPixelY() / GuiUtil.getInstance().getGuiScale();
     }
 
     /**
@@ -1772,9 +1909,9 @@ public class Control extends Gui
     /**
      * @return the width of the control on the screen.
      */
-    public int getScreenWidth()
+    public float getScreenWidth()
     {
-        return (int) (getPixelWidth() / GuiUtil.getInstance().getGuiScale());
+        return getPixelWidth() / GuiUtil.getInstance().getGuiScale();
     }
 
     /**
@@ -1804,9 +1941,9 @@ public class Control extends Gui
     /**
      * @return the height of the control on the screen.
      */
-    public int getScreenHeight()
+    public float getScreenHeight()
     {
-        return (int) (getPixelHeight() / GuiUtil.getInstance().getGuiScale());
+        return getPixelHeight() / GuiUtil.getInstance().getGuiScale();
     }
 
     /**
@@ -1847,6 +1984,19 @@ public class Control extends Gui
     public float getWidth()
     {
         return width;
+    }
+
+    /**
+     * Sets the width of the control to a percentage of the parent's width.
+     */
+    public void setPercentWidth(float percent)
+    {
+        if (getParent() == null)
+        {
+            return;
+        }
+
+        setWidth(getParent().getWidth() / getParent().getInnerScale() * percent);
     }
 
     /**
@@ -1896,6 +2046,19 @@ public class Control extends Gui
     }
 
     /**
+     * Sets the height of the control to a percentage of the parent's height.
+     */
+    public void setPercentHeight(float percent)
+    {
+        if (getParent() == null)
+        {
+            return;
+        }
+
+        setHeight(getParent().getHeight() / getParent().getInnerScale() * percent);
+    }
+
+    /**
      * Sets the scaled with of the control.
      */
     public void setHeight(float height)
@@ -1941,6 +2104,11 @@ public class Control extends Gui
         this.maxWidth = maxWidth < 0 ? Integer.MAX_VALUE : maxWidth;
 
         tryFitToContents();
+
+        if (getParent() != null)
+        {
+            getParent().layoutDockedContents();
+        }
     }
 
     /**
@@ -1959,6 +2127,11 @@ public class Control extends Gui
         this.maxHeight = maxHeight < 0 ? Integer.MAX_VALUE : maxHeight;
 
         tryFitToContents();
+
+        if (getParent() != null)
+        {
+            getParent().layoutDockedContents();
+        }
     }
 
     /**
@@ -2052,6 +2225,28 @@ public class Control extends Gui
     }
 
     /**
+     * @return how the control is currently docked.
+     */
+    @Nonnull
+    public Dock getDock()
+    {
+        return dock;
+    }
+
+    /**
+     * Sets how the control is currently docked.
+     */
+    public void setDock(@Nonnull Dock dock)
+    {
+        this.dock = dock;
+
+        if (getParent() != null)
+        {
+            getParent().layoutDockedContents();
+        }
+    }
+
+    /**
      * @return the anchor for the control.
      */
     @Nullable
@@ -2071,6 +2266,44 @@ public class Control extends Gui
         {
             this.anchor = anchor;
         }
+    }
+
+    /**
+     * @return the current x-axis alignment.
+     */
+    @Nullable
+    public Alignment getAlignmentX()
+    {
+        return alignmentX;
+    }
+
+    /**
+     * Sets the current x-axis alignment.
+     */
+    public void setAlignmentX(@Nullable Alignment alignmentX)
+    {
+        this.alignmentX = alignmentX;
+
+        tryApplyAlignment();
+    }
+
+    /**
+     * @return the current y-axis alignment.
+     */
+    @Nullable
+    public Alignment getAlignmentY()
+    {
+        return alignmentY;
+    }
+
+    /**
+     * Sets the current y-axis alignment.
+     */
+    public void setAlignmentY(@Nullable Alignment alignmentY)
+    {
+        this.alignmentY = alignmentY;
+
+        tryApplyAlignment();
     }
 
     /**
@@ -2208,6 +2441,11 @@ public class Control extends Gui
         this.fitToContentsX = fitToContentsX;
 
         tryFitToContents();
+
+        if (getParent() != null)
+        {
+            getParent().layoutDockedContents();
+        }
     }
 
     /**
@@ -2226,6 +2464,11 @@ public class Control extends Gui
         this.fitToContentsY = fitToContentsY;
 
         tryFitToContents();
+
+        if (getParent() != null)
+        {
+            getParent().layoutDockedContents();
+        }
     }
 
     /**

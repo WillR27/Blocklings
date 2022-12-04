@@ -1,8 +1,8 @@
 package com.willr27.blocklings.client.gui.control.controls.stats;
 
-import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.client.gui.control.Direction;
+import com.willr27.blocklings.client.gui.control.Side;
+import com.willr27.blocklings.client.gui.control.VerticalAlignment;
 import com.willr27.blocklings.client.gui.control.controls.TextBlockControl;
 import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
@@ -10,7 +10,6 @@ import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -42,6 +41,12 @@ public class StatControl extends Control
     private final boolean renderValueToLeftOfIcon;
 
     /**
+     * The icon control.
+     */
+    @Nonnull
+    private final TexturedControl iconControl;
+
+    /**
      * The value text control.
      */
     @Nonnull
@@ -60,30 +65,33 @@ public class StatControl extends Control
         this.tooltipSupplier = tooltipSupplier;
         this.renderValueToLeftOfIcon = renderValueToLeftOfIcon;
 
+        setFitToContentsXY(true);
+
         FlowPanel flowPanel = new FlowPanel();
         flowPanel.setParent(this);
-        flowPanel.setFlowDirection(Direction.LEFT_TO_RIGHT);
         flowPanel.setItemGapX(6);
-        flowPanel.setItemGapY(0);
         flowPanel.setFitToContentsXY(true);
-        flowPanel.setPadding(0, 0, 0, 0);
 
-        TexturedControl iconControl = new TexturedControl(iconTexture);
+        iconControl = new TexturedControl(iconTexture);
+        iconControl.setBackgroundColour(new Colour(0xffff00ff));
 
         valueControl = new TextBlockControl();
         valueControl.setMargins(0, 1, 0, 0);
         valueControl.setFitToContentsXY(true);
         valueControl.setTextColour(new Colour(0xffffe100));
+        valueControl.setVerticalAlignment(VerticalAlignment.TOP);
+        valueControl.setMargin(Side.TOP, 1);
+        valueControl.setBackgroundColour(new Colour(0xffaffaff));
 
         if (renderValueToLeftOfIcon)
         {
-            flowPanel.addChild(valueControl);
-            flowPanel.addChild(iconControl);
+            valueControl.setParent(flowPanel);
+            iconControl.setParent(flowPanel);
         }
         else
         {
-            flowPanel.addChild(iconControl);
-            flowPanel.addChild(valueControl);
+            iconControl.setParent(flowPanel);
+            valueControl.setParent(flowPanel);
         }
     }
 

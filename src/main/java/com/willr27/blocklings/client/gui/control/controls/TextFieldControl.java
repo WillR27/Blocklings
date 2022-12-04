@@ -64,7 +64,7 @@ public class TextFieldControl extends TextControl
                 textFieldWidget.x = (int) (getScreenX() + (getPadding(Side.LEFT) * getCumulativeScale()));
                 break;
             case MIDDLE:
-                textFieldWidget.x = getScreenX() + (getScreenWidth() / 2) - (font.width(getText()) / 2);
+                textFieldWidget.x = (int) (getScreenX() + (getScreenWidth() / 2) - (font.width(getText()) / 2));
                 break;
             case RIGHT:
                 textFieldWidget.x = (int) (getScreenX() + getScreenWidth() - font.width(getText()) - (getPadding(Side.RIGHT) * getCumulativeScale()));
@@ -77,7 +77,7 @@ public class TextFieldControl extends TextControl
                 textFieldWidget.y = (int) (getScreenY() + (getPadding(Side.TOP) * getCumulativeScale()));
                 break;
             case MIDDLE:
-                textFieldWidget.y = getScreenY() + (getScreenHeight() / 2) - (font.lineHeight / 2);
+                textFieldWidget.y = (int) (getScreenY() + (getScreenHeight() / 2) - (font.lineHeight / 2));
                 break;
             case BOTTOM:
                 textFieldWidget.y = (int) (getScreenY() + (getScreenHeight() - font.lineHeight) - (getPadding(Side.BOTTOM) * getCumulativeScale()));

@@ -152,6 +152,12 @@ public class FlowPanel extends Panel
     }
 
     @Override
+    protected void layoutDockedContents()
+    {
+        // Flow panels do not support docked content.
+    }
+
+    @Override
     protected void updateDraggedControlOnRelease(@Nonnull Control draggedChild)
     {
         if (getDragReorderType() == DragReorderType.INSERT_ON_RELEASE)

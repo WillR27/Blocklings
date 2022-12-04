@@ -65,20 +65,28 @@ public class TextBlockControl extends TextControl
                 break;
         }
 
-        textScreenX = Math.round(textScreenX);
-        textScreenY = Math.round(textScreenY);
+//        textScreenX = Math.round(textScreenX);
+//        textScreenY = Math.round(textScreenY);
     }
 
     @Override
     public void tryFitToContents(boolean ignoreTopLeftPadding)
     {
-        float textWidth = font.width(getText()) / getCumulativeScale();
-        float paddingWidth = getPadding(Side.LEFT) + getPadding(Side.RIGHT);
-        float textHeight = font.lineHeight / getCumulativeScale();
-        float paddingHeight = getPadding(Side.TOP) + getPadding(Side.BOTTOM);
+        if (shouldFitToContentsX())
+        {
+            float textWidth = font.width(getText()) / getCumulativeScale();
+            float paddingWidth = getPadding(Side.LEFT) + getPadding(Side.RIGHT);
 
-        setWidth(textWidth + paddingWidth);
-        setHeight(textHeight + paddingHeight);
+            setWidth(textWidth + paddingWidth);
+        }
+
+        if (shouldFitToContentsY())
+        {
+            float textHeight = font.lineHeight / getCumulativeScale();
+            float paddingHeight = getPadding(Side.TOP) + getPadding(Side.BOTTOM);
+
+            setHeight(textHeight + paddingHeight);
+        }
     }
 
     @Override

@@ -38,6 +38,8 @@ public class GuiTextures
         public static final ResourceLocation STATS = new BlocklingsResourceLocation("textures/gui/stats.png");
         public static final GuiTexture BACKGROUND = new GuiTexture(STATS, 0, 0, 176, 166);
 
+        public static final GuiTexture HEALTH_BAR = new GuiTexture(STATS, 0, 228, 134, 5);
+
         public static final GuiTexture ATTACK_DAMAGE_MAIN = new StatIconTexture(110, 166);
 
         private static class StatIconTexture extends GuiTexture

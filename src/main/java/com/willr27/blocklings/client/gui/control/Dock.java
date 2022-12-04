@@ -4,13 +4,15 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
- * Represents the side of a {@link Control}.
+ * The available docking options for a control.
  */
 @OnlyIn(Dist.CLIENT)
-public enum Side
+public enum Dock
 {
+    NONE,
     LEFT,
     TOP,
     RIGHT,
     BOTTOM,
+    FILL,
 }
