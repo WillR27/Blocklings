@@ -93,7 +93,7 @@ public class TestControl extends Control
     }
 
     @Override
-    protected void onRender(@Nonnull RenderArgs renderArgs)
+    public void onRender(@Nonnull RenderArgs renderArgs)
     {
 //        renderTexture(renderArgs.matrixStack, texture);
     }

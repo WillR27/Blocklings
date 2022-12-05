@@ -27,13 +27,13 @@ public class StatControl extends Control
      * Supplies the stat's value string to display.
      */
     @Nonnull
-    private final Supplier<String> valueSupplier;
+    public final Supplier<String> valueSupplier;
 
     /**
      * Supplies the stat's tooltip to display.
      */
     @Nonnull
-    private final Supplier<List<ITextComponent>> tooltipSupplier;
+    public final Supplier<List<ITextComponent>> tooltipSupplier;
 
     /**
      * Whether to render the value on the left of the icon or the right.
@@ -66,6 +66,7 @@ public class StatControl extends Control
         this.renderValueToLeftOfIcon = renderValueToLeftOfIcon;
 
         setFitToContentsXY(true);
+        setInteractive(false);
 
         FlowPanel flowPanel = new FlowPanel();
         flowPanel.setParent(this);
@@ -73,15 +74,13 @@ public class StatControl extends Control
         flowPanel.setFitToContentsXY(true);
 
         iconControl = new TexturedControl(iconTexture);
-        iconControl.setBackgroundColour(new Colour(0xffff00ff));
-
         valueControl = new TextBlockControl();
         valueControl.setMargins(0, 1, 0, 0);
         valueControl.setFitToContentsXY(true);
         valueControl.setTextColour(new Colour(0xffffe100));
         valueControl.setVerticalAlignment(VerticalAlignment.TOP);
         valueControl.setMargin(Side.TOP, 1);
-        valueControl.setBackgroundColour(new Colour(0xffaffaff));
+        valueControl.setText(new StringTextComponent(valueSupplier.get()));
 
         if (renderValueToLeftOfIcon)
         {
@@ -96,7 +95,7 @@ public class StatControl extends Control
     }
 
     @Override
-    protected void onTick()
+    public void onTick()
     {
         valueControl.setText(new StringTextComponent(valueSupplier.get()));
     }

@@ -30,6 +30,12 @@ public abstract class TextControl extends Control
     private VerticalAlignment verticalAlignment = VerticalAlignment.MIDDLE;
 
     /**
+     * The line height to use to position the text. Useful for centering text that doesn't
+     * contain any characters with descenders.
+     */
+    private int lineHeight = font.lineHeight;
+
+    /**
      */
     public TextControl()
     {
@@ -42,6 +48,22 @@ public abstract class TextControl extends Control
         {
             recalcTextPosition();
         });
+    }
+
+    @Override
+    public void recalcPixelX()
+    {
+        super.recalcPixelX();
+
+        recalcTextPosition();
+    }
+
+    @Override
+    public void recalcPixelY()
+    {
+        super.recalcPixelY();
+
+        recalcTextPosition();
     }
 
     /**
@@ -104,5 +126,31 @@ public abstract class TextControl extends Control
         this.verticalAlignment = verticalAlignment;
 
         recalcTextPosition();
+    }
+
+    /**
+     * @return the line height.
+     */
+    public int getLineHeight()
+    {
+        return lineHeight;
+    }
+
+    /**
+     * Sets the line height.
+     */
+    public void setLineHeight(int lineHeight)
+    {
+        this.lineHeight = lineHeight;
+
+        recalcTextPosition();
+    }
+
+    /**
+     * Sets the line height to fit text that doesn't have descenders. Useful for number only text.
+     */
+    public void useDescenderlessLineHeight()
+    {
+        setLineHeight(8);
     }
 }

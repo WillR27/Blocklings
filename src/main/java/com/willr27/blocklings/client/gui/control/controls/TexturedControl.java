@@ -18,7 +18,7 @@ public class TexturedControl extends Control
      * The background texture.
      */
     @Nonnull
-    protected final GuiTexture texture;
+    public final GuiTexture texture;
 
     /**
      * @param texture the texture to use for the background.
@@ -33,7 +33,7 @@ public class TexturedControl extends Control
     }
 
     @Override
-    protected void onRenderBackground(@Nonnull RenderArgs renderArgs)
+    public void onRenderBackground(@Nonnull RenderArgs renderArgs)
     {
         super.onRenderBackground(renderArgs);
 

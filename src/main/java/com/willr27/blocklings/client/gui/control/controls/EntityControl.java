@@ -46,7 +46,7 @@ public class EntityControl extends Control
     private boolean scaleToBoundingBox = true;
 
     @Override
-    protected void onRender(@Nonnull RenderArgs renderArgs)
+    public void onRender(@Nonnull RenderArgs renderArgs)
     {
         float minDimension = Math.min(getWidth(), getHeight());
         float scale = getEntityScale() * getCumulativeScale() * minDimension / 16.0f;

@@ -22,10 +22,16 @@ public class FlowPanel extends Panel
     private Direction flowDirection = Direction.LEFT_TO_RIGHT;
 
     /**
-     * The direction the panel will lay out contents that don't fit within the panel's bounds.
+     * The orientation the panel will lay out contents that don't fit within the panel's bounds.
      */
     @Nonnull
-    private Direction overflowDirection = Direction.TOP_TO_BOTTOM;
+    private Orientation overflowOrientation = Orientation.VERTICAL;
+
+    /**
+     * Whether to distribute the contents in a grid like pattern using the largest child control
+     * as the division size.
+     */
+    private boolean shouldDistributeEvenly = false;
 
     /**
      * Whether to automatically adjust the max scroll offset to fit any overflow in the x-axis. So if the items
@@ -59,6 +65,21 @@ public class FlowPanel extends Panel
     @Override
     public void layoutContents(boolean setDraggedPosition)
     {
+        if (shouldDistributeEvenly())
+        {
+            layoutContentsEvenly(setDraggedPosition);
+        }
+        else
+        {
+            layoutContentsUnevenly(setDraggedPosition);
+        }
+    }
+
+    /**
+     * Lays out the contents of the panel unevenly.
+     */
+    private void layoutContentsUnevenly(boolean setDraggedPosition)
+    {
         // The current positions to use for the next control.
         float controlX = getPadding(Side.LEFT);
         float controlY = getPadding(Side.TOP);
@@ -91,7 +112,7 @@ public class FlowPanel extends Panel
             // Wrap if the control is going to overlap the edge of the panel.
             if (getFlowDirection() == Direction.LEFT_TO_RIGHT)
             {
-                if (getOverflowDirection() != Direction.LEFT_TO_RIGHT && controlX + control.getEffectiveWidth() > (width - getPadding(Side.RIGHT)) / getInnerScale())
+                if (getOverflowOrientation() != Orientation.HORIZONTAL && controlX + control.getEffectiveWidth() > (width - getPadding(Side.RIGHT)) / getInnerScale())
                 {
                     controlX = getPadding(Side.LEFT);
                     rowY = maxSoFarY + getItemGapY();
@@ -101,7 +122,7 @@ public class FlowPanel extends Panel
             }
             else
             {
-                if (getOverflowDirection() != Direction.TOP_TO_BOTTOM && controlY + control.getEffectiveWidth() > (height - getPadding(Side.BOTTOM)) / getInnerScale())
+                if (getOverflowOrientation() != Orientation.VERTICAL && controlY + control.getEffectiveWidth() > (height - getPadding(Side.BOTTOM)) / getInnerScale())
                 {
                     controlY = getPadding(Side.TOP);
                     colX = maxSoFarX + getItemGapX();
@@ -139,11 +160,108 @@ public class FlowPanel extends Panel
 
         rowOrColumnBoundsCoords.add(getFlowDirection() == Direction.LEFT_TO_RIGHT ? maxSoFarY : maxSoFarX);
 
-        if (shouldFitMaxScrollOffsetToOverflowX() && getOverflowDirection() == Direction.LEFT_TO_RIGHT)
+        if (shouldFitMaxScrollOffsetToOverflowX() && getOverflowOrientation() == Orientation.HORIZONTAL)
         {
             setMaxScrollOffsetX((int) (maxSoFarX - (getWidth() / getInnerScale())));
         }
-        else if (shouldFitMaxScrollOffsetToOverflowY() && getOverflowDirection() == Direction.TOP_TO_BOTTOM)
+        else if (shouldFitMaxScrollOffsetToOverflowY() && getOverflowOrientation() == Orientation.VERTICAL)
+        {
+            setMaxScrollOffsetY((int) (maxSoFarY - (getHeight() / getInnerScale())));
+        }
+
+        tryFitToContents();
+    }
+
+    /**
+     * Lays out the contents of the panel evenly.
+     */
+    private void layoutContentsEvenly(boolean setDraggedPosition)
+    {
+        // The current positions to use for the next control.
+        float controlX = getPadding(Side.LEFT);
+        float controlY = getPadding(Side.TOP);
+        float rowY = controlY;
+        float colX = controlX;
+
+        // The current max coords reached in each direction. This is needed to work out where to put a
+        // control when wrapping. If there are 2 controls with different heights on one row then if the
+        // next control wraps it needs to use the max y position reached.
+        float maxSoFarX = 0;
+        float maxSoFarY = 0;
+
+        float width = shouldFitToContentsX() ? getMaxWidth() : getWidth();
+        float height = shouldFitToContentsY() ? getMaxHeight() : getHeight();
+
+        rowOrColumnBoundsCoords.clear();
+        rowOrColumnBoundsCoords.add(0.0f);
+
+        float maxControlWidth = getChildren().stream().map(control -> control.getEffectiveWidth()).max(Float::compareTo).get();
+        float maxControlHeight = getChildren().stream().map(control -> control.getEffectiveHeight()).max(Float::compareTo).get();
+
+        for (Control control : getChildren())
+        {
+            if (getFlowDirection() == Direction.LEFT_TO_RIGHT)
+            {
+                controlY = rowY;
+            }
+            else
+            {
+                controlX = colX;
+            }
+
+            // Wrap if the control is going to overlap the edge of the panel.
+            if (getFlowDirection() == Direction.LEFT_TO_RIGHT)
+            {
+                if (getOverflowOrientation() != Orientation.HORIZONTAL && controlX + maxControlWidth > (width - getPadding(Side.RIGHT)) / getInnerScale())
+                {
+                    controlX = getPadding(Side.LEFT);
+                    rowY = maxSoFarY + getItemGapY();
+                    controlY = rowY;
+                    rowOrColumnBoundsCoords.add((controlY - getItemGapY() / 2));
+                }
+            }
+            else
+            {
+                if (getOverflowOrientation() != Orientation.VERTICAL && controlY + maxControlHeight > (height - getPadding(Side.BOTTOM)) / getInnerScale())
+                {
+                    controlY = getPadding(Side.TOP);
+                    colX = maxSoFarX + getItemGapX();
+                    controlX = colX;
+                    rowOrColumnBoundsCoords.add((controlX - getItemGapX() / 2));
+                }
+            }
+
+            // Set the position on the control.
+            if (!control.isDragging() || setDraggedPosition)
+            {
+                control.setX(controlX + control.getMargin(Side.LEFT) - getScrollOffsetX());
+                control.setY(controlY + control.getMargin(Side.TOP) - getScrollOffsetY());
+            }
+
+            maxSoFarX = Math.max(maxSoFarX, controlX + maxControlWidth);
+            maxSoFarY = Math.max(maxSoFarY, controlY + maxControlHeight);
+
+            // Update the values for the next control.
+            if (getFlowDirection() == Direction.LEFT_TO_RIGHT)
+            {
+                controlX += maxControlWidth + getItemGapX();
+            }
+            else
+            {
+                controlY += maxControlHeight + getItemGapY();
+            }
+        }
+
+        maxSoFarX += getPadding(Side.RIGHT);
+        maxSoFarY += getPadding(Side.BOTTOM);
+
+        rowOrColumnBoundsCoords.add(getFlowDirection() == Direction.LEFT_TO_RIGHT ? maxSoFarY : maxSoFarX);
+
+        if (shouldFitMaxScrollOffsetToOverflowX() && getOverflowOrientation() == Orientation.HORIZONTAL)
+        {
+            setMaxScrollOffsetX((int) (maxSoFarX - (getWidth() / getInnerScale())));
+        }
+        else if (shouldFitMaxScrollOffsetToOverflowY() && getOverflowOrientation() == Orientation.VERTICAL)
         {
             setMaxScrollOffsetY((int) (maxSoFarY - (getHeight() / getInnerScale())));
         }
@@ -152,7 +270,7 @@ public class FlowPanel extends Panel
     }
 
     @Override
-    protected void layoutDockedContents()
+    public void layoutDockedContents()
     {
         // Flow panels do not support docked content.
     }
@@ -370,17 +488,35 @@ public class FlowPanel extends Panel
      * @return the overflow direction of the panel.
      */
     @Nonnull
-    public Direction getOverflowDirection()
+    public Orientation getOverflowOrientation()
     {
-        return overflowDirection;
+        return overflowOrientation;
     }
 
     /**
      * Sets the overflow direction of the panel.
      */
-    public void setOverflowDirection(@Nonnull Direction overflowDirection)
+    public void setOverflowOrientation(@Nonnull Orientation overflowOrientation)
     {
-        this.overflowDirection = overflowDirection;
+        this.overflowOrientation = overflowOrientation;
+
+        layoutContents();
+    }
+
+    /**
+     * @return whether to distribute the contents evenly.
+     */
+    public boolean shouldDistributeEvenly()
+    {
+        return shouldDistributeEvenly;
+    }
+
+    /**
+     * Sets whether to distribute the contents evenly.
+     */
+    public void setShouldDistributeEvenly(boolean shouldDistributeEvenly)
+    {
+        this.shouldDistributeEvenly = shouldDistributeEvenly;
 
         layoutContents();
     }

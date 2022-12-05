@@ -1,5 +1,8 @@
 package com.willr27.blocklings.entity.blockling.attribute;
 
+import com.willr27.blocklings.client.gui.GuiTextures;
+import com.willr27.blocklings.client.gui2.Colour;
+import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.BlocklingHand;
 import com.willr27.blocklings.entity.blockling.BlocklingType;
@@ -16,8 +19,11 @@ import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -744,5 +750,76 @@ public class BlocklingAttributes implements IReadWriteNBT
          * The maximum value a level can be.
          */
         public static final int MAX = 100;
+
+        /**
+         * @return the background texture for the level's xp bar.
+         */
+        @Nonnull
+        @OnlyIn(Dist.CLIENT)
+        public GuiTexture getXpBarBackgroundTexture()
+        {
+            switch (this)
+            {
+                case COMBAT: return GuiTextures.Stats.COMBAT_BAR_BACKGROUND;
+                case MINING: return GuiTextures.Stats.MINING_BAR_BACKGROUND;
+                case WOODCUTTING: return GuiTextures.Stats.WOODCUTTING_BAR_BACKGROUND;
+                case FARMING: return GuiTextures.Stats.FARMING_BAR_BACKGROUND;
+            }
+
+            return GuiTextures.Stats.COMBAT_BAR_BACKGROUND;
+        }
+
+        /**
+         * @return the foreground texture for the level's xp bar.
+         */
+        @Nonnull
+        @OnlyIn(Dist.CLIENT)
+        public GuiTexture getXpBarForegroundTexture()
+        {
+            switch (this)
+            {
+                case COMBAT: return GuiTextures.Stats.COMBAT_BAR_FOREGROUND;
+                case MINING: return GuiTextures.Stats.MINING_BAR_FOREGROUND;
+                case WOODCUTTING: return GuiTextures.Stats.WOODCUTTING_BAR_FOREGROUND;
+                case FARMING: return GuiTextures.Stats.FARMING_BAR_FOREGROUND;
+            }
+
+            return GuiTextures.Stats.COMBAT_BAR_FOREGROUND;
+        }
+
+        /**
+         * @return the level icons texture for the level.
+         */
+        @Nonnull
+        @OnlyIn(Dist.CLIENT)
+        public GuiTexture getLevelIconsTexture()
+        {
+            switch (this)
+            {
+                case COMBAT: return GuiTextures.Stats.COMBAT_LEVEL_ICONS;
+                case MINING: return GuiTextures.Stats.MINING_LEVEL_ICONS;
+                case WOODCUTTING: return GuiTextures.Stats.WOODCUTTING_LEVEL_ICONS;
+                case FARMING: return GuiTextures.Stats.FARMING_LEVEL_ICONS;
+            }
+
+            return GuiTextures.Stats.COMBAT_LEVEL_ICONS;
+        }
+
+        /**
+         * @return the level's colour.
+         */
+        @Nonnull
+        public Colour getLevelColour()
+        {
+            switch (this)
+            {
+                case COMBAT: return Colour.fromRGBInt(0xe03434);
+                case MINING: return Colour.fromRGBInt(0x4870d4);
+                case WOODCUTTING: return Colour.fromRGBInt(0x4db83d);
+                case FARMING: return Colour.fromRGBInt(0xedcf24);
+            }
+
+            return new Colour(0xffffffff);
+        }
     }
 }

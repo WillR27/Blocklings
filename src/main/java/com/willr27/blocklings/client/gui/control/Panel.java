@@ -89,7 +89,7 @@ public abstract class Panel extends Control
     }
 
     @Override
-    protected void onRenderUpdate(@Nonnull RenderArgs renderArgs)
+    public void onRenderUpdate(@Nonnull RenderArgs renderArgs)
     {
         if (getScreen().getDraggedControl() != null && getScreen().getDraggedControl().getParent() == this)
         {

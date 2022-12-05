@@ -35,7 +35,7 @@ public class TextFieldControl extends TextControl
         super();
 
         textFieldWidget.setBordered(false);
-        textFieldWidget.setHeight(font.lineHeight);
+        textFieldWidget.setHeight(getLineHeight());
 
         textFieldWidget.setResponder((text) ->
         {
@@ -77,22 +77,22 @@ public class TextFieldControl extends TextControl
                 textFieldWidget.y = (int) (getScreenY() + (getPadding(Side.TOP) * getCumulativeScale()));
                 break;
             case MIDDLE:
-                textFieldWidget.y = (int) (getScreenY() + (getScreenHeight() / 2) - (font.lineHeight / 2));
+                textFieldWidget.y = (int) (getScreenY() + (getScreenHeight() / 2) - (getLineHeight() / 2));
                 break;
             case BOTTOM:
-                textFieldWidget.y = (int) (getScreenY() + (getScreenHeight() - font.lineHeight) - (getPadding(Side.BOTTOM) * getCumulativeScale()));
+                textFieldWidget.y = (int) (getScreenY() + (getScreenHeight() - getLineHeight()) - (getPadding(Side.BOTTOM) * getCumulativeScale()));
                 break;
         }
     }
 
     @Override
-    protected void onTick()
+    public void onTick()
     {
         textFieldWidget.tick();
     }
 
     @Override
-    protected void onRender(@Nonnull RenderArgs renderArgs)
+    public void onRender(@Nonnull RenderArgs renderArgs)
     {
         textFieldWidget.renderButton(new MatrixStack(), renderArgs.pixelMouseX, renderArgs.pixelMouseY, renderArgs.partialTicks);
     }
@@ -174,5 +174,13 @@ public class TextFieldControl extends TextControl
     public void setMaxTextLength(int maxTextLength)
     {
         textFieldWidget.setMaxLength(maxTextLength);
+    }
+
+    @Override
+    public void setLineHeight(int lineHeight)
+    {
+        super.setLineHeight(lineHeight);
+
+        textFieldWidget.setHeight(getLineHeight());
     }
 }

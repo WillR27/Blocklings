@@ -1,9 +1,6 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
-import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.client.gui.control.Direction;
-import com.willr27.blocklings.client.gui.control.DragReorderType;
-import com.willr27.blocklings.client.gui.control.Side;
+import com.willr27.blocklings.client.gui.control.*;
 import com.willr27.blocklings.client.gui.control.controls.TestControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
@@ -83,7 +80,7 @@ public class TestScreen extends BlocklingsScreen
         flowPanel.setDraggableXY(true);
         flowPanel.setScrollableXY(true);
         flowPanel.setFlowDirection(Direction.LEFT_TO_RIGHT);
-        flowPanel.setOverflowDirection(Direction.TOP_TO_BOTTOM);
+        flowPanel.setOverflowOrientation(Orientation.VERTICAL);
         flowPanel.setDragReorderType(DragReorderType.INSERT_ON_RELEASE);
         flowPanel.setFitToContentsXY(false);
         flowPanel.setItemGapX(1);

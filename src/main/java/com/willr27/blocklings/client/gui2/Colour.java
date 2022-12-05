@@ -51,7 +51,7 @@ public class Colour
      */
     public static Colour fromRGBInt(int rgb)
     {
-        return new Colour(0xffffffff & rgb);
+        return new Colour(0xff000000 + rgb);
     }
 
     /**

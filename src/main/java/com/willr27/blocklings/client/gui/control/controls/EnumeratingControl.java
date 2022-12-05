@@ -15,19 +15,19 @@ import java.util.function.Supplier;
  * Enumerates a list of controls in place of each other.
  */
 @OnlyIn(Dist.CLIENT)
-public class EnumeratingControl extends Control
+public class EnumeratingControl<T extends Control> extends Control
 {
     /**
      * The controls to enumerate.
      */
     @Nonnull
-    private final List<Control> controls = new ArrayList<>();
+    protected final List<T> controls = new ArrayList<>();
 
     /**
      * The corresponding list of display conditions for each control.
      */
     @Nonnull
-    private final List<Supplier<Boolean>> displayConditions = new ArrayList<>();
+    protected final List<Supplier<Boolean>> displayConditions = new ArrayList<>();
 
     /**
      * The number of ticks between switching to the next control.
@@ -47,7 +47,7 @@ public class EnumeratingControl extends Control
     }
 
     @Override
-    protected void onTick()
+    public void onTick()
     {
         tickCount++;
 
@@ -64,28 +64,35 @@ public class EnumeratingControl extends Control
      */
     private void switchToControl(boolean forwards)
     {
+        tickCount = 0;
+
         if (controls.isEmpty())
         {
             return;
         }
 
-        int indexOfCurrentChild = getChildren().isEmpty() ? -1 : controls.indexOf(getChildren().get(0));
+        int indexOfCurrentChild = getIndexOfCurrentChild();
 
-        clearChildren();
-
-        for (int i = indexOfCurrentChild; i < indexOfCurrentChild + controls.size(); i++)
+        for (int i = 1; i <= controls.size(); i++)
         {
-            int indexOfNewChild = (indexOfCurrentChild + (forwards ? i : -i)) % controls.size();
+            int indexOfNewChild = (indexOfCurrentChild + (forwards ? i : -i) + controls.size()) % controls.size();
 
             if (displayConditions.get(indexOfNewChild).get())
             {
+                clearChildren();
                 addChild(controls.get(indexOfNewChild));
 
                 break;
             }
         }
+    }
 
-        tickCount = 0;
+    /**
+     * @return the index of the currently displayed child.
+     */
+    protected int getIndexOfCurrentChild()
+    {
+        return getChildren().isEmpty() ? -1 : controls.indexOf(getChildren().get(0));
     }
 
     @Override
@@ -106,7 +113,7 @@ public class EnumeratingControl extends Control
     /**
      * @return whether the control is part of the enumeration.
      */
-    public boolean contains(@Nonnull Control control)
+    public boolean contains(@Nonnull T control)
     {
         return controls.contains(control);
     }
@@ -114,7 +121,7 @@ public class EnumeratingControl extends Control
     /**
      * Adds the given control to the list of control to be enumerated.
      */
-    public void addControl(@Nonnull Control control)
+    public void addControl(@Nonnull T control)
     {
         addControl(control, () -> true);
     }
@@ -122,12 +129,26 @@ public class EnumeratingControl extends Control
     /**
      * Adds the given control to the list of control to be enumerated.
      */
-    public void addControl(@Nonnull Control control, @Nonnull Supplier<Boolean> displayCondition)
+    public void addControl(@Nonnull T control, @Nonnull Supplier<Boolean> displayCondition)
     {
         controls.add(control);
         displayConditions.add(displayCondition);
 
-        if (controls.size() == 1)
+        if (!getChildren().isEmpty())
+        {
+            Control current = getChildren().get(0);
+            clearChildren();
+            addChild(control);
+            clearChildren();
+            addChild(current);
+        }
+        else
+        {
+            addChild(control);
+            clearChildren();
+        }
+
+        if (getIndexOfCurrentChild() == -1)
         {
             switchToControl(true);
         }
@@ -136,7 +157,7 @@ public class EnumeratingControl extends Control
     /**
      * Removes the given control from the list of control to be enumerated.
      */
-    public void removeControl(@Nonnull Control control)
+    public void removeControl(@Nonnull T control)
     {
         // If we are removing the displayed control, switch to a new one.
         if (!getChildren().isEmpty() && getChildren().get(0) == control)

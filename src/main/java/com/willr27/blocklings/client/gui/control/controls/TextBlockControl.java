@@ -58,10 +58,10 @@ public class TextBlockControl extends TextControl
                 textScreenY = (getScreenY() + (getPadding(Side.TOP) * getCumulativeScale()));
                 break;
             case MIDDLE:
-                textScreenY = (getScreenY() + (getScreenHeight() / 2) - (font.lineHeight * getCumulativeScale() / 2));
+                textScreenY = (getScreenY() + (getScreenHeight() / 2) - (getLineHeight() * getCumulativeScale() / 2));
                 break;
             case BOTTOM:
-                textScreenY = (getScreenY() + (getScreenHeight() - font.lineHeight * getCumulativeScale()) - (getPadding(Side.BOTTOM) * getCumulativeScale()));
+                textScreenY = (getScreenY() + (getScreenHeight() - getLineHeight() * getCumulativeScale()) - (getPadding(Side.BOTTOM) * getCumulativeScale()));
                 break;
         }
 
@@ -82,7 +82,7 @@ public class TextBlockControl extends TextControl
 
         if (shouldFitToContentsY())
         {
-            float textHeight = font.lineHeight / getCumulativeScale();
+            float textHeight = getLineHeight() / getCumulativeScale();
             float paddingHeight = getPadding(Side.TOP) + getPadding(Side.BOTTOM);
 
             setHeight(textHeight + paddingHeight);
@@ -90,7 +90,7 @@ public class TextBlockControl extends TextControl
     }
 
     @Override
-    protected void onRender(@Nonnull RenderArgs renderArgs)
+    public void onRender(@Nonnull RenderArgs renderArgs)
     {
         MatrixStack matrixStack = new MatrixStack();
         matrixStack.translate(textScreenX, textScreenY, 0.0);

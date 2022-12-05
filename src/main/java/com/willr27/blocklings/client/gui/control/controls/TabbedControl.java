@@ -146,7 +146,7 @@ public class TabbedControl extends Control
         }
 
         @Override
-        protected void onRenderBackground(@Nonnull RenderArgs renderArgs)
+        public void onRenderBackground(@Nonnull RenderArgs renderArgs)
         {
             MatrixStack matrixStack = renderArgs.matrixStack;
 

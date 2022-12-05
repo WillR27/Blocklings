@@ -353,8 +353,8 @@ public class Control extends Gui
             padding.put(side, 0);
         }
 
-        EventHandler.Handler<SizeChangedEvent> onSizeChanged = (e) -> tryFitToContents();
-        EventHandler.Handler<MarginsChangedEvent> onMarginsChanged = (e) -> tryFitToContents();
+        EventHandler.Handler<SizeChangedEvent> onSizeChanged = (e) -> { tryFitToContents(); layoutDockedContents(); };
+        EventHandler.Handler<MarginsChangedEvent> onMarginsChanged = (e) -> { tryFitToContents(); layoutDockedContents(); };
 
         onChildAdded.subscribe((e) ->
         {
@@ -389,13 +389,13 @@ public class Control extends Gui
             }
         });
 
-        this.onSizeChanged.subscribe((e) -> tryApplyAlignment());
+        this.onSizeChanged.subscribe((e) -> { tryApplyAlignment(); layoutDockedContents(); });
     }
 
     /**
      * Transforms any docked child controls.
      */
-    protected void layoutDockedContents()
+    public void layoutDockedContents()
     {
         float availableAreaX = getPadding(Side.LEFT);
         float availableAreaY = getPadding(Side.TOP);
@@ -689,7 +689,7 @@ public class Control extends Gui
     /**
      * Called each tick.
      */
-    protected void onTick()
+    public void onTick()
     {
 
     }
@@ -737,7 +737,7 @@ public class Control extends Gui
      *
      * @param renderArgs the render args.
      */
-    protected void onRenderUpdate(@Nonnull RenderArgs renderArgs)
+    public void onRenderUpdate(@Nonnull RenderArgs renderArgs)
     {
 
     }
@@ -747,7 +747,7 @@ public class Control extends Gui
      *
      * @param renderArgs the render args.
      */
-    protected void onRenderBackground(@Nonnull RenderArgs renderArgs)
+    public void onRenderBackground(@Nonnull RenderArgs renderArgs)
     {
         renderRectangle(renderArgs.matrixStack, backgroundColour.argb());
     }
@@ -757,7 +757,7 @@ public class Control extends Gui
      *
      * @param renderArgs the render args.
      */
-    protected void onRender(@Nonnull RenderArgs renderArgs)
+    public void onRender(@Nonnull RenderArgs renderArgs)
     {
 
     }
@@ -807,7 +807,7 @@ public class Control extends Gui
      * @param matrixStack the matrix stack.
      * @param texture the texture to render.
      */
-    protected void renderTexture(@Nonnull MatrixStack matrixStack, @Nonnull GuiTexture texture)
+    public void renderTexture(@Nonnull MatrixStack matrixStack, @Nonnull GuiTexture texture)
     {
         renderTexture(matrixStack, 0, 0, texture);
     }
@@ -820,7 +820,7 @@ public class Control extends Gui
      * @param dy the y offset.
      * @param texture the texture to render.
      */
-    protected void renderTexture(@Nonnull MatrixStack matrixStack, int dx, int dy, @Nonnull GuiTexture texture)
+    public void renderTexture(@Nonnull MatrixStack matrixStack, int dx, int dy, @Nonnull GuiTexture texture)
     {
         renderTexture(matrixStack, texture, getPixelX() + dx, getPixelY() + dy);
     }
