@@ -55,6 +55,14 @@ public class Colour
     }
 
     /**
+     * @return returns a {@link Colour} from an int colour code.
+     */
+    public static Colour fromARGBInt(int argb)
+    {
+        return new Colour(argb);
+    }
+
+    /**
      * @param r the red value.
      * @param g the green value.
      * @param b the blue value.

@@ -58,7 +58,7 @@ public class TabbedScreen extends BlocklingsScreen
         tabbedControl.setX((int) tabbedControl.getX());
         tabbedControl.setY((int) tabbedControl.getY());
         tabbedControl.moveY(-5);
-        contentControl.getChildrenCopy().forEach(child -> contentControl.removeChild(child));
+        contentControl.clearChildren();
         contentControl.setParent(tabbedControl);
         contentControl.setPercentX(0.5f);
         contentControl.setPercentY(0.5f);

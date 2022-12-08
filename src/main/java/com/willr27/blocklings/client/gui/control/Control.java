@@ -118,24 +118,24 @@ public class Control extends Gui
     /**
      * The pixel width of the control on the screen.
      */
-    private int pixelWidth = 100;
+    private int pixelWidth = 0;
 
     /**
      * The pixel height of the control on the screen.
      */
-    private int pixelHeight = 100;
+    private int pixelHeight = 0;
 
     /**
      * The scaled width of the control relative to the parent, i.e. 100 x 100 would be 200 x 200 pixels if the
      * cumulative product of the parent control's inner scale was 2.0f.
      */
-    private float width = 100;
+    private float width = 0;
 
     /**
      * The scaled height of the control relative to the parent, i.e. 100 x 100 would be 200 x 200 pixels if the
      * cumulative product of the parent control's inner scale was 2.0f.
      */
-    private float height = 100;
+    private float height = 0;
 
     /**
      * The max width of the control. Set to -1 to ignore.
@@ -200,6 +200,18 @@ public class Control extends Gui
      */
     @Nullable
     private Alignment alignmentY = null;
+
+    /**
+     * The width of the control relative to its parent.
+     */
+    @Nullable
+    private Fill fillWidth = null;
+
+    /**
+     * The height of the control relative to its parent.
+     */
+    @Nullable
+    private Fill fillHeight = null;
 
     /**
      * Occurs when the control's anchor changes.
@@ -353,13 +365,13 @@ public class Control extends Gui
             padding.put(side, 0);
         }
 
-        EventHandler.Handler<SizeChangedEvent> onSizeChanged = (e) -> { tryFitToContents(); layoutDockedContents(); };
-        EventHandler.Handler<MarginsChangedEvent> onMarginsChanged = (e) -> { tryFitToContents(); layoutDockedContents(); };
+        EventHandler.Handler<SizeChangedEvent> onChildSizeChanged = (e) -> { tryFitToContents(); layoutDockedContents(); };
+        EventHandler.Handler<MarginsChangedEvent> onChildMarginsChanged = (e) -> { tryFitToContents(); layoutDockedContents(); };
 
         onChildAdded.subscribe((e) ->
         {
-            e.childAdded.onSizeChanged.subscribe(onSizeChanged);
-            e.childAdded.onMarginsChanged.subscribe(onMarginsChanged);
+            e.childAdded.onSizeChanged.subscribe(onChildSizeChanged);
+            e.childAdded.onMarginsChanged.subscribe(onChildMarginsChanged);
 
             tryFitToContents();
             layoutDockedContents();
@@ -367,8 +379,8 @@ public class Control extends Gui
 
         onChildRemoved.subscribe((e) ->
         {
-            e.childRemoved.onSizeChanged.unsubscribe(onSizeChanged);
-            e.childRemoved.onMarginsChanged.unsubscribe(onMarginsChanged);
+            e.childRemoved.onSizeChanged.unsubscribe(onChildSizeChanged);
+            e.childRemoved.onMarginsChanged.unsubscribe(onChildMarginsChanged);
 
             tryFitToContents();
             layoutDockedContents();
@@ -376,7 +388,7 @@ public class Control extends Gui
 
         onParentChanged.subscribe((e) ->
         {
-            EventHandler.Handler<SizeChangedEvent> onParentSizeChanged = (e2) -> tryApplyAlignment();
+            EventHandler.Handler<SizeChangedEvent> onParentSizeChanged = (e2) -> { tryApplyFill(); tryApplyAlignment(); };
 
             if (e.oldParent != null)
             {
@@ -538,7 +550,7 @@ public class Control extends Gui
     /**
      * Tries to position the control based on the {@link Control#alignmentX} and {@link Control#alignmentY}.
      */
-    protected void tryApplyAlignment()
+    public void tryApplyAlignment()
     {
         if (getAlignmentX() != null)
         {
@@ -548,6 +560,22 @@ public class Control extends Gui
         if (getAlignmentY() != null)
         {
             setPercentY(getAlignmentY().percent);
+        }
+    }
+
+    /**
+     * Tries to resize the control based on the {@link Control#fillWidth} and {@link Control#fillHeight}.
+     */
+    public void tryApplyFill()
+    {
+        if (getFillWidth() != null)
+        {
+            setPercentWidth(getFillWidth().percent);
+        }
+
+        if (getFillHeight() != null)
+        {
+            setPercentHeight(getFillHeight().percent);
         }
     }
 
@@ -1987,7 +2015,7 @@ public class Control extends Gui
     }
 
     /**
-     * Sets the width of the control to a percentage of the parent's width.
+     * Sets the width of the control to a percentage of the parent's width, excluding padding.
      */
     public void setPercentWidth(float percent)
     {
@@ -1996,7 +2024,7 @@ public class Control extends Gui
             return;
         }
 
-        setWidth(getParent().getWidth() / getParent().getInnerScale() * percent);
+        setWidth(getParent().getWidth() / getParent().getInnerScale() * percent - getParent().getPadding(Side.LEFT) - getParent().getPadding(Side.RIGHT));
     }
 
     /**
@@ -2046,7 +2074,7 @@ public class Control extends Gui
     }
 
     /**
-     * Sets the height of the control to a percentage of the parent's height.
+     * Sets the height of the control to a percentage of the parent's height, excluding padding.
      */
     public void setPercentHeight(float percent)
     {
@@ -2055,7 +2083,7 @@ public class Control extends Gui
             return;
         }
 
-        setHeight(getParent().getHeight() / getParent().getInnerScale() * percent);
+        setHeight(getParent().getHeight() / getParent().getInnerScale() * percent - getParent().getPadding(Side.TOP) - getParent().getPadding(Side.BOTTOM));
     }
 
     /**
@@ -2304,6 +2332,44 @@ public class Control extends Gui
         this.alignmentY = alignmentY;
 
         tryApplyAlignment();
+    }
+
+    /**
+     * @return the current fill width.
+     */
+    @Nullable
+    public Fill getFillWidth()
+    {
+        return fillWidth;
+    }
+
+    /**
+     * Sets the current fill width.
+     */
+    public void setWidth(@Nullable Fill fillWidth)
+    {
+        this.fillWidth = fillWidth;
+
+        tryApplyFill();
+    }
+
+    /**
+     * @return the current fill height.
+     */
+    @Nullable
+    public Fill getFillHeight()
+    {
+        return fillHeight;
+    }
+
+    /**
+     * Sets the current fill height.
+     */
+    public void setHeight(@Nullable Fill fillHeight)
+    {
+        this.fillHeight = fillHeight;
+
+        tryApplyFill();
     }
 
     /**

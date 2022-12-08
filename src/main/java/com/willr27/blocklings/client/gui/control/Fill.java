@@ -4,20 +4,20 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
- * Specifies how a control is positioned within its parent.
+ * Specifies how a control is sized relative to its parent.
  */
 @OnlyIn(Dist.CLIENT)
-public class Alignment
+public class Fill
 {
     /**
-     * The current alignment percentage.
+     * The current fill percentage.
      */
     public final float percent;
 
     /**
-     * @param percent the alignment percentage.
+     * @param percent the fill percentage.
      */
-    public Alignment(float percent)
+    public Fill(float percent)
     {
         this.percent = percent;
     }

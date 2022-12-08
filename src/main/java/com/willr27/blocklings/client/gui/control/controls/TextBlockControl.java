@@ -64,9 +64,6 @@ public class TextBlockControl extends TextControl
                 textScreenY = (getScreenY() + (getScreenHeight() - getLineHeight() * getCumulativeScale()) - (getPadding(Side.BOTTOM) * getCumulativeScale()));
                 break;
         }
-
-//        textScreenX = Math.round(textScreenX);
-//        textScreenY = Math.round(textScreenY);
     }
 
     @Override

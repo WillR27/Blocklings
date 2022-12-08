@@ -2,10 +2,7 @@ package com.willr27.blocklings.client.gui2;
 
 import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.client.gui.control.controls.TabbedControl;
-import com.willr27.blocklings.client.gui.screen.screens.EquipmentScreen;
-import com.willr27.blocklings.client.gui.screen.screens.SkillsScreen;
-import com.willr27.blocklings.client.gui.screen.screens.StatsScreen;
-import com.willr27.blocklings.client.gui.screen.screens.TasksScreen;
+import com.willr27.blocklings.client.gui.screen.screens.*;
 import com.willr27.blocklings.client.gui2.containers.EquipmentContainer;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.skill.BlocklingSkills;
@@ -196,7 +193,7 @@ public class BlocklingGuiHandler
     {
         switch (guiId)
         {
-            case STATS_ID: return new StatsScreen(blockling);
+            case STATS_ID: return new TestScreen(blockling);
             case TASKS_ID: return new TasksScreen(blockling);
             case EQUIPMENT_ID: return new EquipmentScreen(blockling, (EquipmentContainer) container);
             case GENERAL_ID: return new SkillsScreen(blockling, TabbedControl.Tab.GENERAL, BlocklingSkills.Groups.GENERAL);

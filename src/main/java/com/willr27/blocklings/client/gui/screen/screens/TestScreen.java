@@ -1,6 +1,7 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
 import com.willr27.blocklings.client.gui.control.*;
+import com.willr27.blocklings.client.gui.control.controls.GridControl;
 import com.willr27.blocklings.client.gui.control.controls.TestControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
@@ -15,6 +16,8 @@ import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.Random;
 
+import static java.awt.SystemColor.control;
+
 @OnlyIn(Dist.CLIENT)
 public class TestScreen extends BlocklingsScreen
 {
@@ -28,7 +31,67 @@ public class TestScreen extends BlocklingsScreen
     {
         super.init();
 
-        pog();
+        ing();
+    }
+
+    private void ing()
+    {
+        GridControl gridControl = new GridControl.Builder()
+                .addRow(GridControl.SizeType.AUTO, 1.0f)
+                .addRow(GridControl.SizeType.PERCENT, 1.0f)
+                .addRow(GridControl.SizeType.AUTO, 1.0f)
+                .addCol(GridControl.SizeType.PERCENT, 0.6f)
+                .addCol(GridControl.SizeType.AUTO, 200)
+                .addCol(GridControl.SizeType.PERCENT, 0.4f)
+                .addCol(GridControl.SizeType.AUTO, 100)
+                .build();
+        gridControl.setParent(screenControl);
+        gridControl.setFitToContentsXY(true);
+        gridControl.setWidth(new Fill(1.0f));
+        gridControl.setHeight(new Fill(1.0f));
+        gridControl.setBackgroundColour(Colour.fromRGBInt(0xffffff));
+        gridControl.rebuildGrid();
+Random random = new Random();
+        Control control1 = new Control()
+        {
+            @Override
+            protected void onMouseClicked(@Nonnull MouseButtonEvent mouseButtonEvent)
+            {
+                super.onMouseClicked(mouseButtonEvent);
+                gridControl.setWidth(new Fill(random.nextFloat()));
+                gridControl.setHeight(new Fill(random.nextFloat()));
+            }
+        };
+        gridControl.addControl(control1, 0, 1);
+        control1.setHeight(10.0f);
+        control1.setWidth(10);
+        control1.setBackgroundColour(Colour.fromRGBInt(0x000000));
+
+        Control control2 = new Control();
+        gridControl.addControl(control2, 1, 2);
+        control2.setX(10);
+        control2.setAlignmentY(new Alignment(0.5f));
+        control2.setWidth(20);
+        control2.setHeight(30);
+        control2.setBackgroundColour(Colour.fromRGBInt(0x0000ff));
+
+        Control control3 = new Control();
+        control3.setHeight(0);
+        gridControl.addControl(control3, 1, 2);
+        control3.setWidth(new Fill(0.5f));
+        control3.setHeight(new Fill(0.9f));
+        control3.setX(10);
+        control3.setAlignmentX(new Alignment(0.5f));
+        control3.setAlignmentY(new Alignment(0.5f));
+        control3.setBackgroundColour(Colour.fromRGBInt(0xff00ff));
+
+        Control control4 = new Control();
+        gridControl.addControl(control4, 3, 0);
+        control4.setX(10);
+        control4.setAlignmentY(new Alignment(0.5f));
+        control4.setWidth(20);
+        control4.setHeight(60);
+        control4.setBackgroundColour(Colour.fromRGBInt(0x000000));
     }
 
     private void wog()

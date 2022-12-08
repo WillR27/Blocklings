@@ -44,6 +44,14 @@ public class EventHandler<T extends IEvent>
     }
 
     /**
+     * Subscribes an event handler and assigns it the highest priority.
+     */
+    public void subscribeFirst(@Nonnull Handler<T> handler)
+    {
+        this.handlers.add(0, handler);
+    }
+
+    /**
      * Unsubscribes an event handler.
      */
     public void unsubscribe(@Nonnull Handler<T> handler)
