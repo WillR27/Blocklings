@@ -36,22 +36,21 @@ public class TestScreen extends BlocklingsScreen
 
     private void ing()
     {
-        GridControl gridControl = new GridControl.Builder()
-                .addRow(GridControl.SizeType.AUTO, 1.0f)
-                .addRow(GridControl.SizeType.PERCENT, 1.0f)
-                .addRow(GridControl.SizeType.AUTO, 1.0f)
-                .addCol(GridControl.SizeType.PERCENT, 0.6f)
-                .addCol(GridControl.SizeType.AUTO, 200)
-                .addCol(GridControl.SizeType.PERCENT, 0.4f)
-                .addCol(GridControl.SizeType.AUTO, 100)
-                .build();
+        GridControl gridControl = new GridControl(new GridControl.GridDefinition()
+                .addRow(new GridControl.Auto())
+                .addRow(new GridControl.Fill(1.0f))
+                .addRow(new GridControl.Auto())
+                .addCol(new GridControl.Fill(0.6f))
+                .addCol(new GridControl.Auto())
+                .addCol(new GridControl.Fill(0.4f))
+                .addCol(new GridControl.Auto()));
         gridControl.setParent(screenControl);
-        gridControl.setFitToContentsXY(true);
+//        gridControl.setFitToContentsXY(true);
         gridControl.setWidth(new Fill(1.0f));
         gridControl.setHeight(new Fill(1.0f));
         gridControl.setBackgroundColour(Colour.fromRGBInt(0xffffff));
         gridControl.rebuildGrid();
-Random random = new Random();
+        Random random = new Random();
         Control control1 = new Control()
         {
             @Override

@@ -98,6 +98,8 @@ public class GuiTextures
     {
         public static final ResourceLocation TASKS = new BlocklingsResourceLocation("textures/gui/tasks.png");
         public static final GuiTexture BACKGROUND = new GuiTexture(TASKS, 0, 0, 176, 166);
+
+        public static final GuiTexture TASK_ICON_BACKGROUND_RAISED = new GuiTexture(TASKS, 0, 166, 20, 20);
     }
 
     public static class Equipment

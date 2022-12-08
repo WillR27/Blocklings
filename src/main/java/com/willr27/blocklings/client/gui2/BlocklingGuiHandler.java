@@ -193,7 +193,7 @@ public class BlocklingGuiHandler
     {
         switch (guiId)
         {
-            case STATS_ID: return new TestScreen(blockling);
+            case STATS_ID: return new TasksScreen(blockling);
             case TASKS_ID: return new TasksScreen(blockling);
             case EQUIPMENT_ID: return new EquipmentScreen(blockling, (EquipmentContainer) container);
             case GENERAL_ID: return new SkillsScreen(blockling, TabbedControl.Tab.GENERAL, BlocklingSkills.Groups.GENERAL);

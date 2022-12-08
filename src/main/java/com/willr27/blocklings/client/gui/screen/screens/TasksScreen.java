@@ -1,16 +1,21 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
-import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.client.gui.control.Direction;
-import com.willr27.blocklings.client.gui.control.Orientation;
+import com.willr27.blocklings.client.gui.GuiTextures;
+import com.willr27.blocklings.client.gui.control.*;
+import com.willr27.blocklings.client.gui.control.controls.GridControl;
 import com.willr27.blocklings.client.gui.control.controls.TabbedControl;
+import com.willr27.blocklings.client.gui.control.controls.TextBlockControl;
+import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
 import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
+import com.willr27.blocklings.entity.blockling.task.Task;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A screen to display the blockling's tasks.
@@ -39,24 +44,23 @@ public class TasksScreen extends TabbedScreen
 
         FlowPanel taskListControl = new FlowPanel();
         taskListControl.setParent(taskListContainerControl);
+        taskListControl.setDragReorderType(DragReorderType.INSERT_ON_MOVE);
         taskListControl.setWidth(140);
         taskListControl.setPercentHeight(1.0f);
         taskListControl.setBackgroundColour(Colour.fromRGBInt(0xa7b9e1));
         taskListControl.setScrollableY(true);
         taskListControl.setFlowDirection(Direction.TOP_TO_BOTTOM);
         taskListControl.setOverflowOrientation(Orientation.VERTICAL);
-        taskListControl.setItemGapY(2);
+        taskListControl.setItemGapY(4);
         taskListControl.setPadding(4, 4, 4, 4);
 
         for (int i = 0; i < 10; i++)
         {
-            Control control = new Control();
-            control.setDraggableY(true);
-            control.setParent(taskListControl);
-            control.setWidth(10);
-            control.setHeight(30);
-            control.setBackgroundColour(Colour.fromRGBInt(0xff0011));
+            TaskControl taskControl = new TaskControl(taskListControl, null);
+            taskControl.setDraggableY(true);
         }
+
+        TaskControl addTaskControl = new TaskControl(taskListControl, null);
 
         Control scrollbarControl = new Control();
         scrollbarControl.setParent(taskListContainerControl);
@@ -64,5 +68,44 @@ public class TasksScreen extends TabbedScreen
         scrollbarControl.setPercentHeight(1.0f);
         scrollbarControl.setPercentX(1.0f);
         scrollbarControl.setBackgroundColour(Colour.fromRGBInt(0x134934));
+    }
+
+    /**
+     * Represents a task.
+     */
+    private static class TaskControl extends Control
+    {
+        /**
+         * The associated task (null if used to add a task).
+         */
+        @Nullable
+        private final Task task;
+
+        public TaskControl(@Nonnull FlowPanel taskListControl, @Nullable Task task)
+        {
+            this.task = task;
+
+            setParent(taskListControl);
+            setWidth(new Fill(1.0f));
+            setFitToContentsY(true);
+
+            GridControl gridControl = new GridControl(new GridControl.GridDefinition()
+                    .addCol(new GridControl.Auto())
+                    .addCol(new GridControl.Fill(1.0f)));
+            gridControl.setParent(this);
+            gridControl.setWidth(new Fill(1.0f));
+            gridControl.setFitToContentsY(true);
+            gridControl.setBackgroundColour(Colour.fromRGBInt(0xff0011));
+
+            Control iconControl = new TexturedControl(GuiTextures.Tasks.TASK_ICON_BACKGROUND_RAISED);
+            gridControl.addControl(iconControl, 0, 0);
+
+            TextBlockControl taskNameControl = new TextBlockControl();
+            gridControl.addControl(taskNameControl, 1, 0);
+            taskNameControl.setText("TASK NAME");
+            taskNameControl.setVerticalAlignment(VerticalAlignment.MIDDLE);
+            taskNameControl.setWidth(new Fill(1.0f));
+            taskNameControl.setHeight(new Fill(1.0f));
+        }
     }
 }

@@ -8,11 +8,10 @@ import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static java.awt.SystemColor.control;
 
 /**
  * A control used to split available space into a grid.
@@ -20,53 +19,55 @@ import static java.awt.SystemColor.control;
 @OnlyIn(Dist.CLIENT)
 public class GridControl extends Control
 {
-    private final List<SizeType> rowSizeTypes = new ArrayList<>();
-    private final List<Float> rowSizeValues = new ArrayList<>();
-    private final List<SizeType> colSizeTypes = new ArrayList<>();
-    private final List<Float> colSizeValues = new ArrayList<>();
+    /**
+     * The grid definition.
+     */
+    @Nonnull
+    private final GridDefinition gridDefinition;
 
     /**
-     * Private constructor to prevent instantiation.
+     * @param gridDefinition the grid definition.
      */
-    private GridControl()
+    public GridControl(@Nonnull GridDefinition gridDefinition)
     {
+        this.gridDefinition = gridDefinition;
+
+        if (gridDefinition.rows.isEmpty())
+        {
+            gridDefinition.rows.add(new Auto());
+        }
+
+        if (gridDefinition.cols.isEmpty())
+        {
+            gridDefinition.cols.add(new Auto());
+        }
+
+        rebuildGrid();
+
         onSizeChanged.subscribe((e) -> rebuildGrid());
     }
 
     public void rebuildGrid()
     {
-        if (rowSizeTypes.isEmpty())
-        {
-            rowSizeTypes.add(SizeType.AUTO);
-            rowSizeValues.add(0.0f);
-        }
-
-        if (colSizeTypes.isEmpty())
-        {
-            colSizeTypes.add(SizeType.AUTO);
-            colSizeValues.add(0.0f);
-        }
-
         float availableHeight = getHeight();
 
         if (shouldFitToContentsY())
         {
             availableHeight = 0.0f;
 
-            for (int i = 0; i < rowSizeTypes.size(); i++)
+            for (int i = 0; i < gridDefinition.rows.size(); i++)
             {
-                SizeType sizeType = rowSizeTypes.get(i);
-                float value = rowSizeValues.get(i);
+                IDefinition definition = gridDefinition.rows.get(i);
 
-                if (sizeType == SizeType.FIXED)
+                if (definition instanceof Fixed)
                 {
-                    availableHeight += value;
+                    availableHeight += ((Fixed) definition).size;
                 }
-                else if (sizeType == SizeType.AUTO)
+                else if (definition instanceof Auto)
                 {
                     float maxHeight = 0.0f;
 
-                    for (int x = 0; x < colSizeTypes.size(); x++)
+                    for (int x = 0; x < gridDefinition.cols.size(); x++)
                     {
                         Control cellControl = getControl(x, i);
 
@@ -93,24 +94,23 @@ public class GridControl extends Control
             }
         }
 
-        float[] heights = new float[rowSizeTypes.size()];
+        float[] heights = new float[gridDefinition.rows.size()];
 
-        for (int i = 0; i < rowSizeTypes.size(); i++)
+        for (int i = 0; i < gridDefinition.rows.size(); i++)
         {
             heights[i] = 0.0f;
 
-            SizeType sizeType = rowSizeTypes.get(i);
-            float value = rowSizeValues.get(i);
+            IDefinition definition = gridDefinition.rows.get(i);
 
-            if (sizeType == SizeType.FIXED)
+            if (definition instanceof Fixed)
             {
-                float adjustedHeight = Math.min(value, availableHeight);
+                float adjustedHeight = Math.min(((Fixed) definition).size, availableHeight);
 
                 heights[i] = adjustedHeight;
 
                 availableHeight -= adjustedHeight;
             }
-            else if (sizeType == SizeType.AUTO)
+            else if (definition instanceof Auto)
             {
                 if (getChildren().isEmpty())
                 {
@@ -119,7 +119,7 @@ public class GridControl extends Control
 
                 float maxHeight = 0.0f;
 
-                for (int x = 0; x < colSizeTypes.size(); x++)
+                for (int x = 0; x < gridDefinition.cols.size(); x++)
                 {
                     Control cellControl = getControl(x, i);
 
@@ -151,14 +151,13 @@ public class GridControl extends Control
 
         if (availableHeight > 0.0f)
         {
-            for (int i = 0; i < rowSizeTypes.size(); i++)
+            for (int i = 0; i < gridDefinition.rows.size(); i++)
             {
-                SizeType sizeType = rowSizeTypes.get(i);
-                float value = rowSizeValues.get(i);
+                IDefinition definition = gridDefinition.rows.get(i);
 
-                if (sizeType == SizeType.PERCENT)
+                if (definition instanceof Fill)
                 {
-                    heights[i] = availableHeight * value;
+                    heights[i] = availableHeight * ((Fill) definition).percent;
                 }
             }
         }
@@ -169,22 +168,21 @@ public class GridControl extends Control
         {
             availableWidth = 0.0f;
 
-            for (int i = 0; i < colSizeTypes.size(); i++)
+            for (int i = 0; i < gridDefinition.cols.size(); i++)
             {
-                SizeType sizeType = colSizeTypes.get(i);
-                float value = colSizeValues.get(i);
+                IDefinition definition = gridDefinition.cols.get(i);
 
-                if (sizeType == SizeType.FIXED)
+                if (definition instanceof Fixed)
                 {
-                    availableWidth += value;
+                    availableWidth += ((Fixed) definition).size;
                 }
-                else if (sizeType == SizeType.AUTO)
+                else if (definition instanceof Auto)
                 {
                     float maxWidth = 0.0f;
 
-                    for (int y = 0; y < rowSizeTypes.size(); y++)
+                    for (int y = 0; y < gridDefinition.rows.size(); y++)
                     {
-                        Control cellControl = getControl(i, y);
+                        CellControl cellControl = getControl(i, y);
 
                         for (Control control : cellControl.getChildren())
                         {
@@ -209,24 +207,23 @@ public class GridControl extends Control
             }
         }
 
-        float[] widths = new float[colSizeTypes.size()];
+        float[] widths = new float[gridDefinition.cols.size()];
 
-        for (int i = 0; i < colSizeTypes.size(); i++)
+        for (int i = 0; i < gridDefinition.cols.size(); i++)
         {
             widths[i] = 0.0f;
 
-            SizeType sizeType = colSizeTypes.get(i);
-            float value = colSizeValues.get(i);
+            IDefinition definition = gridDefinition.cols.get(i);
 
-            if (sizeType == SizeType.FIXED)
+            if (definition instanceof Fixed)
             {
-                float adjustedWidth = Math.min(value, availableWidth);
+                float adjustedWidth = Math.min(((Fixed) definition).size, availableWidth);
 
                 widths[i] = adjustedWidth;
 
                 availableWidth -= adjustedWidth;
             }
-            else if (sizeType == SizeType.AUTO)
+            else if (definition instanceof Auto)
             {
                 if (getChildren().isEmpty())
                 {
@@ -235,9 +232,9 @@ public class GridControl extends Control
 
                 float maxWidth = 0.0f;
 
-                for (int y = 0; y < rowSizeTypes.size(); y++)
+                for (int y = 0; y < gridDefinition.rows.size(); y++)
                 {
-                    Control cellControl = getControl(i, y);
+                    CellControl cellControl = getControl(i, y);
 
                     for (Control control : cellControl.getChildren())
                     {
@@ -267,14 +264,13 @@ public class GridControl extends Control
 
         if (availableWidth > 0.0f)
         {
-            for (int i = 0; i < colSizeTypes.size(); i++)
+            for (int i = 0; i < gridDefinition.cols.size(); i++)
             {
-                SizeType sizeType = colSizeTypes.get(i);
-                float value = colSizeValues.get(i);
+                IDefinition definition = gridDefinition.cols.get(i);
 
-                if (sizeType == SizeType.PERCENT)
+                if (definition instanceof Fill)
                 {
-                    widths[i] = availableWidth * value;
+                    widths[i] = availableWidth * ((Fill) definition).percent;
                 }
             }
         }
@@ -283,46 +279,39 @@ public class GridControl extends Control
         if (getChildren().size() == 0)
         {
             Random random = new Random();
-            for (int i = 0; i < rowSizeTypes.size() * colSizeTypes.size(); i++)
+            for (int i = 0; i < gridDefinition.rows.size() * gridDefinition.cols.size(); i++)
             {
-                Control control = new Control();
-                control.setParent(this);
-                control.setBackgroundColour(Colour.fromRGBInt(random.nextInt()));
+                CellControl cellControl = new CellControl();
+                cellControl.setParent(this);
+                cellControl.setBackgroundColour(Colour.fromRGBInt(random.nextInt()));
 
                 EventHandler.Handler<SizeChangedEvent> onChildSizeChanged = (e1) -> rebuildGrid();
 
-                control.onChildAdded.subscribe((e) ->
+                cellControl.onChildAdded.subscribe((e) ->
                 {
                     e.childAdded.onSizeChanged.subscribeFirst(onChildSizeChanged);
 
-                    if (rowSizeTypes.get(getControlRow(control)) == SizeType.AUTO || colSizeTypes.get(getControlCol(control)) == SizeType.AUTO)
+                    if (gridDefinition.rows.get(getControlRow(cellControl)) instanceof Auto || gridDefinition.cols.get(getControlCol(cellControl)) instanceof Auto)
                     {
                         rebuildGrid();
                     }
                 });
-                control.onChildRemoved.subscribe((e) ->
+                cellControl.onChildRemoved.subscribe((e) ->
                 {
                     e.childRemoved.onSizeChanged.unsubscribe(onChildSizeChanged);
 
-                    if (rowSizeTypes.get(getControlRow(control)) == SizeType.AUTO || colSizeTypes.get(getControlCol(control)) == SizeType.AUTO)
+                    if (gridDefinition.rows.get(getControlRow(cellControl)) instanceof Auto || gridDefinition.cols.get(getControlCol(cellControl)) instanceof Auto)
                     {
                         rebuildGrid();
                     }
                 });
-//                control.onSizeChanged.subscribe((e) ->
-//                {
-//                    if (rowSizeTypes.get(getControlRow(control)) == SizeType.AUTO || colSizeTypes.get(getControlCol(control)) == SizeType.AUTO)
-//                    {
-//                        rebuildGrid();
-//                    }
-//                });
             }
         }
 
-        for (int y = 0; y < rowSizeTypes.size(); y++)
+        for (int y = 0; y < gridDefinition.rows.size(); y++)
         {
             float currentX = 0;
-            for (int x = 0; x < colSizeTypes.size(); x++)
+            for (int x = 0; x < gridDefinition.cols.size(); x++)
             {
                 Control control = getControl(x, y);
                 control.setWidth(widths[x]);
@@ -331,10 +320,10 @@ public class GridControl extends Control
             }
         }
 
-        for (int x = 0; x < colSizeTypes.size(); x++)
+        for (int x = 0; x < gridDefinition.cols.size(); x++)
         {
             float currentY = 0;
-            for (int y = 0; y < rowSizeTypes.size(); y++)
+            for (int y = 0; y < gridDefinition.rows.size(); y++)
             {
                 Control control = getControl(x, y);
                 control.setHeight(heights[y]);
@@ -344,81 +333,199 @@ public class GridControl extends Control
         }
     }
 
-    public void addControl(Control control, int x, int y)
+    /**
+     * Adds a control to the given cell.
+     *
+     * @param control the control to add.
+     * @param x the column index.
+     * @param y the row index.
+     */
+    public void addControl(@Nonnull Control control, int x, int y)
     {
         getControl(x, y).addChild(control);
     }
 
-    private int getControlRow(Control control)
+    /**
+     * Removes a control from the given cell if it exists.
+     *
+     * @param control the control to remove.
+     * @param x the column index.
+     * @param y the row index.
+     */
+    public void removeControl(@Nonnull Control control, int x, int y)
     {
-        return getControlRow(getChildren().indexOf(control));
+        getControl(x, y).removeChild(control);
     }
 
-    private int getControlCol(Control control)
+    /**
+     * Gets the row index of the {@link CellControl}.
+     *
+     * @param cellControl the cell control.
+     * @return the row index.
+     */
+    private int getControlRow(Control cellControl)
     {
-        return getControlCol(getChildren().indexOf(control));
+        return getControlRow(getChildren().indexOf(cellControl));
     }
 
+    /**
+     * Gets the column index of the {@link CellControl}.
+     *
+     * @param cellControl the cell control.
+     * @return the column index.
+     */
+    private int getControlCol(@Nonnull Control cellControl)
+    {
+        return getControlCol(getChildren().indexOf(cellControl));
+    }
+
+    /**
+     * Gets the row index of the given child index.
+     *
+     * @param index the child index.
+     * @return the row index.
+     */
     private int getControlRow(int index)
     {
-        return index / colSizeTypes.size();
+        return index / gridDefinition.cols.size();
     }
 
+    /**
+     * Gets the column index of the given child index.
+     *
+     * @param index the child index.
+     * @return the column index.
+     */
     private int getControlCol(int index)
     {
-        return index % colSizeTypes.size();
+        return index % gridDefinition.cols.size();
     }
 
+    /**
+     * Gets the index of the {@link CellControl} at the given cell in {@link #getChildren()}.
+     *
+     * @param x the column index.
+     * @param y the row index.
+     * @return the index.
+     */
     private int getControlIndex(int x, int y)
     {
-        return x + y * colSizeTypes.size();
+        return x + y * gridDefinition.cols.size();
     }
 
-    private Control getControl(int x, int y)
+    /**
+     * Gets the {@link CellControl} at the given cell.
+     *
+     * @param x the column index.
+     * @param y the row index.
+     * @return the cell control.
+     */
+    @Nonnull
+    private CellControl getControl(int x, int y)
     {
-        return getChildren().get(getControlIndex(x, y));
+        return (CellControl) getChildren().get(getControlIndex(x, y));
     }
 
-    public static class Builder
+    /**
+     * A control that contains all the contents of a single cell.
+     */
+    public static class CellControl extends Control
     {
-        private GridControl gridControl;
 
-        public Builder()
+    }
+
+    /**
+     * Defines the rows and columns of a grid.
+     */
+    public static class GridDefinition
+    {
+        /**
+         * The row definitions.
+         */
+        @Nonnull
+        private final List<IDefinition> rows = new ArrayList<>();
+
+        /**
+         * The column definitions.
+         */
+        @Nonnull
+        private final List<IDefinition> cols = new ArrayList<>();
+
+        /**
+         * Adds the given row definition.
+         */
+        public GridDefinition addRow(@Nonnull IDefinition definition)
         {
-            gridControl = new GridControl();
-        }
-
-        public GridControl build()
-        {
-            gridControl.rebuildGrid();
-
-            return gridControl;
-        }
-
-        public Builder addRow(SizeType sizeType, float value)
-        {
-            gridControl.rowSizeTypes.add(sizeType);
-            gridControl.rowSizeValues.add(value);
+            rows.add(definition);
 
             return this;
         }
 
-        public Builder addCol(SizeType sizeType, float value)
+        /**
+         * Adds the given column definition.
+         */
+        public GridDefinition addCol(@Nonnull IDefinition definition)
         {
-            gridControl.colSizeTypes.add(sizeType);
-            gridControl.colSizeValues.add(value);
+            cols.add(definition);
 
             return this;
         }
     }
 
     /**
-     * Represents each type of sizing for a grid row/col.
+     * Defines a fixed sized row/column.
      */
-    public enum SizeType
+    public static class Fixed implements IDefinition
     {
-        FIXED,
-        AUTO,
-        PERCENT,
+        /**
+         * The absolute width/height of the row/col.
+         */
+        private final float size;
+
+        /**
+         * @param size the absolute width/height of the row/col.
+         */
+        public Fixed(float size)
+        {
+            this.size = size;
+        }
     }
+
+    /**
+     * Defines a row/col that fills the available remaining space the given percent.
+     */
+    public static class Fill implements IDefinition
+    {
+        /**
+         * The percent of the remaining space the row/col should fill.
+         */
+        private final float percent;
+
+        /**
+         * @param percent the percent of the remaining space the row/col should full.
+         */
+        public Fill(float percent)
+        {
+            this.percent = percent;
+        }
+    }
+
+    /**
+     * Defines a row/col that sizes to fit its contents.
+     */
+    public static class Auto implements IDefinition
+    {
+        /**
+         * Empty constructor.
+         */
+        public Auto()
+        {
+
+        }
+    }
+
+    /**
+     * Common interface for the grid definition types.
+     */
+    public interface IDefinition { }
 }
