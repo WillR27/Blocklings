@@ -2,6 +2,7 @@ package com.willr27.blocklings.client.gui.control.controls;
 
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.Side;
+import com.willr27.blocklings.client.gui.control.event.events.MarginsChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.SizeChangedEvent;
 import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.util.event.EventHandler;
@@ -69,7 +70,7 @@ public class GridControl extends Control
 
                     for (int x = 0; x < gridDefinition.cols.size(); x++)
                     {
-                        Control cellControl = getControl(x, i);
+                        Control cellControl = getCellControl(x, i);
 
                         for (Control control : cellControl.getChildren())
                         {
@@ -121,7 +122,7 @@ public class GridControl extends Control
 
                 for (int x = 0; x < gridDefinition.cols.size(); x++)
                 {
-                    Control cellControl = getControl(x, i);
+                    Control cellControl = getCellControl(x, i);
 
                     for (Control control : cellControl.getChildren())
                     {
@@ -182,7 +183,7 @@ public class GridControl extends Control
 
                     for (int y = 0; y < gridDefinition.rows.size(); y++)
                     {
-                        CellControl cellControl = getControl(i, y);
+                        CellControl cellControl = getCellControl(i, y);
 
                         for (Control control : cellControl.getChildren())
                         {
@@ -234,7 +235,7 @@ public class GridControl extends Control
 
                 for (int y = 0; y < gridDefinition.rows.size(); y++)
                 {
-                    CellControl cellControl = getControl(i, y);
+                    CellControl cellControl = getCellControl(i, y);
 
                     for (Control control : cellControl.getChildren())
                     {
@@ -283,15 +284,16 @@ public class GridControl extends Control
             {
                 CellControl cellControl = new CellControl();
                 cellControl.setParent(this);
-                cellControl.setBackgroundColour(Colour.fromRGBInt(random.nextInt()));
 
                 EventHandler.Handler<SizeChangedEvent> onChildSizeChanged = (e1) -> rebuildGrid();
+                EventHandler.Handler<MarginsChangedEvent> onChildMarginsChanged = (e1) -> rebuildGrid();
 
                 cellControl.onChildAdded.subscribe((e) ->
                 {
                     e.childAdded.onSizeChanged.subscribeFirst(onChildSizeChanged);
+                    e.childAdded.onMarginsChanged.subscribeFirst(onChildMarginsChanged);
 
-                    if (gridDefinition.rows.get(getControlRow(cellControl)) instanceof Auto || gridDefinition.cols.get(getControlCol(cellControl)) instanceof Auto)
+                    if (gridDefinition.rows.get(getCellControlRow(cellControl)) instanceof Auto || gridDefinition.cols.get(getCellControlCol(cellControl)) instanceof Auto)
                     {
                         rebuildGrid();
                     }
@@ -299,8 +301,9 @@ public class GridControl extends Control
                 cellControl.onChildRemoved.subscribe((e) ->
                 {
                     e.childRemoved.onSizeChanged.unsubscribe(onChildSizeChanged);
+                    e.childRemoved.onMarginsChanged.unsubscribe(onChildMarginsChanged);
 
-                    if (gridDefinition.rows.get(getControlRow(cellControl)) instanceof Auto || gridDefinition.cols.get(getControlCol(cellControl)) instanceof Auto)
+                    if (gridDefinition.rows.get(getCellControlRow(cellControl)) instanceof Auto || gridDefinition.cols.get(getCellControlCol(cellControl)) instanceof Auto)
                     {
                         rebuildGrid();
                     }
@@ -313,10 +316,10 @@ public class GridControl extends Control
             float currentX = 0;
             for (int x = 0; x < gridDefinition.cols.size(); x++)
             {
-                Control control = getControl(x, y);
-                control.setWidth(widths[x]);
-                control.setX(currentX);
-                currentX += control.getWidth();
+                CellControl cellControl = getCellControl(x, y);
+                cellControl.setWidth(widths[x]);
+                cellControl.setX(currentX);
+                currentX += cellControl.getWidth();
             }
         }
 
@@ -325,10 +328,10 @@ public class GridControl extends Control
             float currentY = 0;
             for (int y = 0; y < gridDefinition.rows.size(); y++)
             {
-                Control control = getControl(x, y);
-                control.setHeight(heights[y]);
-                control.setY(currentY);
-                currentY += control.getHeight();
+                CellControl cellControl = getCellControl(x, y);
+                cellControl.setHeight(heights[y]);
+                cellControl.setY(currentY);
+                currentY += cellControl.getHeight();
             }
         }
     }
@@ -342,7 +345,7 @@ public class GridControl extends Control
      */
     public void addControl(@Nonnull Control control, int x, int y)
     {
-        getControl(x, y).addChild(control);
+        getCellControl(x, y).addChild(control);
     }
 
     /**
@@ -354,7 +357,7 @@ public class GridControl extends Control
      */
     public void removeControl(@Nonnull Control control, int x, int y)
     {
-        getControl(x, y).removeChild(control);
+        getCellControl(x, y).removeChild(control);
     }
 
     /**
@@ -363,9 +366,9 @@ public class GridControl extends Control
      * @param cellControl the cell control.
      * @return the row index.
      */
-    private int getControlRow(Control cellControl)
+    public int getCellControlRow(Control cellControl)
     {
-        return getControlRow(getChildren().indexOf(cellControl));
+        return getCellControlRow(getChildren().indexOf(cellControl));
     }
 
     /**
@@ -374,9 +377,9 @@ public class GridControl extends Control
      * @param cellControl the cell control.
      * @return the column index.
      */
-    private int getControlCol(@Nonnull Control cellControl)
+    public int getCellControlCol(@Nonnull Control cellControl)
     {
-        return getControlCol(getChildren().indexOf(cellControl));
+        return getCellControlCol(getChildren().indexOf(cellControl));
     }
 
     /**
@@ -385,7 +388,7 @@ public class GridControl extends Control
      * @param index the child index.
      * @return the row index.
      */
-    private int getControlRow(int index)
+    public int getCellControlRow(int index)
     {
         return index / gridDefinition.cols.size();
     }
@@ -396,7 +399,7 @@ public class GridControl extends Control
      * @param index the child index.
      * @return the column index.
      */
-    private int getControlCol(int index)
+    public int getCellControlCol(int index)
     {
         return index % gridDefinition.cols.size();
     }
@@ -408,7 +411,7 @@ public class GridControl extends Control
      * @param y the row index.
      * @return the index.
      */
-    private int getControlIndex(int x, int y)
+    public int getCellControlIndex(int x, int y)
     {
         return x + y * gridDefinition.cols.size();
     }
@@ -421,9 +424,9 @@ public class GridControl extends Control
      * @return the cell control.
      */
     @Nonnull
-    private CellControl getControl(int x, int y)
+    public CellControl getCellControl(int x, int y)
     {
-        return (CellControl) getChildren().get(getControlIndex(x, y));
+        return (CellControl) getChildren().get(getCellControlIndex(x, y));
     }
 
     /**

@@ -2029,7 +2029,7 @@ public class Control extends Gui
             return;
         }
 
-        setWidth(getParent().getWidth() / getParent().getInnerScale() * percent - getParent().getPadding(Side.LEFT) - getParent().getPadding(Side.RIGHT));
+        setWidth(getParent().getWidth() / getParent().getInnerScale() * percent - getParent().getPadding(Side.LEFT) - getParent().getPadding(Side.RIGHT) - getMargin(Side.LEFT) - getMargin(Side.RIGHT));
     }
 
     /**
@@ -2088,7 +2088,7 @@ public class Control extends Gui
             return;
         }
 
-        setHeight(getParent().getHeight() / getParent().getInnerScale() * percent - getParent().getPadding(Side.TOP) - getParent().getPadding(Side.BOTTOM));
+        setHeight(getParent().getHeight() / getParent().getInnerScale() * percent - getParent().getPadding(Side.TOP) - getParent().getPadding(Side.BOTTOM) - getMargin(Side.TOP) - getMargin(Side.BOTTOM));
     }
 
     /**

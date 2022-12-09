@@ -4,11 +4,12 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.control.Side;
 import com.willr27.blocklings.client.gui2.Colour;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import javax.annotation.Nonnull;
 
@@ -89,10 +90,23 @@ public class TextBlockControl extends TextControl
     @Override
     public void onRender(@Nonnull RenderArgs renderArgs)
     {
+        float z = isDraggingOrAncestorIsDragging() ? 100.0f : 0.0f;
+
+        try
+        {
+            // For some reason we can't just access the values in the matrix.
+            // So we have to get the z translation via reflection. Nice.
+            z = ObfuscationReflectionHelper.getPrivateValue(Matrix4f.class, renderArgs.matrixStack.last().pose(), "m23");
+        }
+        catch (Exception ex)
+        {
+//            Blocklings.LOGGER.warn(ex.toString());
+        }
+
         MatrixStack matrixStack = new MatrixStack();
-        matrixStack.translate(textScreenX, textScreenY, 0.0);
+        matrixStack.translate(textScreenX, textScreenY, z);
         matrixStack.scale(getCumulativeScale(), getCumulativeScale(), 1.0f);
-        Screen.drawString(matrixStack, font, text, 0, 0, getTextColour().argb());
+        renderShadowedText(matrixStack, text, getTextColour().argb());
     }
 
     @Override

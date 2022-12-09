@@ -1,15 +1,18 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
 import com.willr27.blocklings.client.gui.GuiTextures;
+import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.control.*;
 import com.willr27.blocklings.client.gui.control.controls.GridControl;
 import com.willr27.blocklings.client.gui.control.controls.TabbedControl;
 import com.willr27.blocklings.client.gui.control.controls.TextBlockControl;
 import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
 import com.willr27.blocklings.client.gui2.Colour;
+import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
-import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.task.Task;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -40,14 +43,12 @@ public class TasksScreen extends TabbedScreen
         taskListContainerControl.setParent(contentControl);
         taskListContainerControl.setPercentWidth(1.0f);
         taskListContainerControl.setPercentHeight(1.0f);
-        taskListContainerControl.setBackgroundColour(Colour.fromRGBInt(0xffff00));
 
         FlowPanel taskListControl = new FlowPanel();
         taskListControl.setParent(taskListContainerControl);
         taskListControl.setDragReorderType(DragReorderType.INSERT_ON_MOVE);
         taskListControl.setWidth(140);
         taskListControl.setPercentHeight(1.0f);
-        taskListControl.setBackgroundColour(Colour.fromRGBInt(0xa7b9e1));
         taskListControl.setScrollableY(true);
         taskListControl.setFlowDirection(Direction.TOP_TO_BOTTOM);
         taskListControl.setOverflowOrientation(Orientation.VERTICAL);
@@ -66,7 +67,6 @@ public class TasksScreen extends TabbedScreen
         scrollbarControl.setWidth(12);
         scrollbarControl.setPercentHeight(1.0f);
         scrollbarControl.setPercentX(1.0f);
-        scrollbarControl.setBackgroundColour(Colour.fromRGBInt(0x134934));
     }
 
     /**
@@ -96,21 +96,71 @@ public class TasksScreen extends TabbedScreen
 
             GridControl gridControl = new GridControl(new GridControl.GridDefinition()
                     .addCol(new GridControl.Auto())
-                    .addCol(new GridControl.Fill(1.0f)));
+                    .addCol(new GridControl.Fill(1.0f))
+                    .addCol(new GridControl.Auto()));
             gridControl.setParent(this);
             gridControl.setWidth(new Fill(1.0f));
             gridControl.setFitToContentsY(true);
-            gridControl.setBackgroundColour(Colour.fromRGBInt(0xff0011));
 
-            Control iconControl = new TexturedControl(GuiTextures.Tasks.TASK_ICON_BACKGROUND_RAISED);
-            gridControl.addControl(iconControl, 0, 0);
+            Control iconBackgroundControl = new TexturedControl(GuiTextures.Tasks.TASK_ICON_BACKGROUND_RAISED, GuiTextures.Tasks.TASK_ICON_BACKGROUND_PRESSED);
+            gridControl.addControl(iconBackgroundControl, 0, 0);
+
+            Control iconControl = new TexturedControl(task != null ? task.getType().texture : GuiTextures.Tasks.TASK_CONFIG_ICON)
+            {
+                /**
+                 * The icon texture.
+                 */
+                @Nonnull
+                private GuiTexture iconTexture = texture;
+
+                @Override
+                public void onHoverEnter(@Nonnull MousePosEvent mousePosEvent)
+                {
+                    iconTexture = GuiTextures.Tasks.TASK_CONFIG_ICON;
+                }
+
+                @Override
+                public void onHoverExit(@Nonnull MousePosEvent mousePosEvent)
+                {
+                    iconTexture = task != null ? task.getType().texture : GuiTextures.Tasks.TASK_CONFIG_ICON;
+                }
+
+                @Override
+                public void onRenderBackground(@Nonnull RenderArgs renderArgs)
+                {
+                    renderTexture(renderArgs.matrixStack, iconTexture);
+                }
+
+                @Override
+                protected void onMouseClicked(@Nonnull MouseButtonEvent mouseButtonEvent)
+                {
+
+                }
+
+                @Override
+                protected void onMouseReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
+                {
+
+                }
+            };
+            iconControl.setParent(iconBackgroundControl);
+
+            Control taskNameBackgroundControl = new TexturedControl(GuiTextures.Tasks.TASK_NAME_BACKGROUND);
+            gridControl.addControl(taskNameBackgroundControl, 1, 0);
+            taskNameBackgroundControl.setWidth(new Fill(1.0f));
+            taskNameBackgroundControl.setHeight(new Fill(1.0f));
+            taskNameBackgroundControl.setPadding(5, 0, 5, 0);
 
             TextBlockControl taskNameControl = new TextBlockControl();
-            gridControl.addControl(taskNameControl, 1, 0);
+            taskNameControl.setParent(taskNameBackgroundControl);
             taskNameControl.setText(task == null ? "OOGA" : task.getCustomName());
             taskNameControl.setVerticalAlignment(VerticalAlignment.MIDDLE);
             taskNameControl.setWidth(new Fill(1.0f));
             taskNameControl.setHeight(new Fill(1.0f));
+            taskNameControl.setAlignmentX(new Alignment(0.5f));
+
+            Control addRemoveControl = new TexturedControl(task == null ? GuiTextures.Tasks.TASK_ADD_ICON : GuiTextures.Tasks.TASK_REMOVE_ICON);
+            gridControl.addControl(addRemoveControl, 2, 0);
         }
     }
 }

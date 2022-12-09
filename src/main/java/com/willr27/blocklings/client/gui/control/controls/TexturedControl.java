@@ -7,6 +7,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A control with a texture for the background that is initially sized to fit that texture.
@@ -21,12 +22,28 @@ public class TexturedControl extends Control
     public final GuiTexture texture;
 
     /**
+     * The pressed background texture.
+     */
+    @Nullable
+    public final GuiTexture pressedTexture;
+
+    /**
      * @param texture the texture to use for the background.
      */
     public TexturedControl(@Nonnull GuiTexture texture)
     {
+        this(texture, null);
+    }
+
+    /**
+     * @param texture the texture to use for the background.
+     * @param pressedTexture the texture to use for the background when pressed.
+     */
+    public TexturedControl(@Nonnull GuiTexture texture, @Nullable GuiTexture pressedTexture)
+    {
         super();
         this.texture = texture;
+        this.pressedTexture = pressedTexture;
 
         setWidth(texture.width);
         setHeight(texture.height);
@@ -37,6 +54,6 @@ public class TexturedControl extends Control
     {
         super.onRenderBackground(renderArgs);
 
-        renderTexture(renderArgs.matrixStack, texture);
+        renderTexture(renderArgs.matrixStack, isPressed() && !(isDraggingOrAncestorIsDragging() && !isDragging()) ? pressedTexture : texture);
     }
 }
