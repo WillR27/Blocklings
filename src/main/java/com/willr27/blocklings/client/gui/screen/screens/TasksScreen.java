@@ -54,10 +54,9 @@ public class TasksScreen extends TabbedScreen
         taskListControl.setItemGapY(4);
         taskListControl.setPadding(4, 4, 4, 4);
 
-        for (int i = 0; i < 10; i++)
+        for (Task task : blockling.getTasks().getPrioritisedTasks())
         {
-            TaskControl taskControl = new TaskControl(taskListControl, null);
-            taskControl.setDraggableY(true);
+            TaskControl taskControl = new TaskControl(taskListControl, task);
         }
 
         TaskControl addTaskControl = new TaskControl(taskListControl, null);
@@ -81,6 +80,10 @@ public class TasksScreen extends TabbedScreen
         @Nullable
         private final Task task;
 
+        /**
+         * @param taskListControl the list of task controls.
+         * @param task the associated task.
+         */
         public TaskControl(@Nonnull FlowPanel taskListControl, @Nullable Task task)
         {
             this.task = task;
@@ -88,6 +91,8 @@ public class TasksScreen extends TabbedScreen
             setParent(taskListControl);
             setWidth(new Fill(1.0f));
             setFitToContentsY(true);
+            setDraggableY(task != null);
+            setReorderable(task != null);
 
             GridControl gridControl = new GridControl(new GridControl.GridDefinition()
                     .addCol(new GridControl.Auto())
@@ -102,7 +107,7 @@ public class TasksScreen extends TabbedScreen
 
             TextBlockControl taskNameControl = new TextBlockControl();
             gridControl.addControl(taskNameControl, 1, 0);
-            taskNameControl.setText("TASK NAME");
+            taskNameControl.setText(task == null ? "OOGA" : task.getCustomName());
             taskNameControl.setVerticalAlignment(VerticalAlignment.MIDDLE);
             taskNameControl.setWidth(new Fill(1.0f));
             taskNameControl.setHeight(new Fill(1.0f));

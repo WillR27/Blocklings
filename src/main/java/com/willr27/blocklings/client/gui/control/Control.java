@@ -344,6 +344,11 @@ public class Control extends Gui
     private int maxScrollOffsetY = 0;
 
     /**
+     * Whether the control can be reordered.
+     */
+    private boolean isReorderable = false;
+
+    /**
      * The background colour of the control.
      */
     @Nonnull
@@ -2890,6 +2895,22 @@ public class Control extends Gui
     public void setBackgroundColour(@Nonnull Colour backgroundColour)
     {
         this.backgroundColour = backgroundColour;
+    }
+
+    /**
+     * @return whether the control is reorderable.
+     */
+    public boolean isReorderable()
+    {
+        return isReorderable;
+    }
+
+    /**
+     * Sets whether the control is reorderable.
+     */
+    public void setReorderable(boolean reorderable)
+    {
+        isReorderable = reorderable;
     }
 
     /**

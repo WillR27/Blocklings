@@ -375,7 +375,7 @@ public class FlowPanel extends Panel
                     insertChildAfter(draggedControl, lastControl);
                 }
             }
-            else if (closestControl != draggedControl)
+            else if (closestControl != draggedControl && closestControl.isReorderable())
             {
                 if (closestDifX < 0)
                 {
@@ -451,7 +451,7 @@ public class FlowPanel extends Panel
                     insertChildAfter(draggedControl, lastControl);
                 }
             }
-            else if (closestControl != draggedControl)
+            else if (closestControl != draggedControl && closestControl.isReorderable())
             {
                 if (closestDifY < 0)
                 {
