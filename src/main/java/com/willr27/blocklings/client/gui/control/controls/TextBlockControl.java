@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.control.Side;
 import com.willr27.blocklings.client.gui2.Colour;
+import com.willr27.blocklings.client.gui2.GuiUtil;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -24,6 +25,11 @@ public class TextBlockControl extends TextControl
      */
     @Nonnull
     private ITextComponent text = new StringTextComponent("");
+
+    /**
+     * Whether to trim the text to fit the width of the control.
+     */
+    private boolean shouldTrimText = true;
 
     private Colour textColour = new Colour(0xffffffff);
 
@@ -106,7 +112,15 @@ public class TextBlockControl extends TextControl
         MatrixStack matrixStack = new MatrixStack();
         matrixStack.translate(textScreenX, textScreenY, z);
         matrixStack.scale(getCumulativeScale(), getCumulativeScale(), 1.0f);
-        renderShadowedText(matrixStack, text, getTextColour().argb());
+
+        ITextComponent textToRender = text;
+
+        if (shouldTrimText())
+        {
+            textToRender = new StringTextComponent(GuiUtil.trimWithEllipses(font, getText(), Math.round(getWidth())));
+        }
+
+        renderShadowedText(matrixStack, textToRender, getTextColour().argb());
     }
 
     @Override
@@ -123,6 +137,22 @@ public class TextBlockControl extends TextControl
 
         recalcTextPosition();
         tryFitToContents();
+    }
+
+    /**
+     * @return whether to trim the text to fit the width of the control.
+     */
+    public boolean shouldTrimText()
+    {
+        return shouldTrimText;
+    }
+
+    /**
+     * Sets whether to trim the text to fit the width of the control.
+     */
+    public void setShouldTrimText(boolean shouldTrimText)
+    {
+        this.shouldTrimText = shouldTrimText;
     }
 
     /**

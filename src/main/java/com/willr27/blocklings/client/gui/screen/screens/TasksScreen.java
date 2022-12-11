@@ -12,6 +12,7 @@ import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonE
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
 import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.client.gui2.GuiTexture;
+import com.willr27.blocklings.client.gui2.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.task.Task;
 import net.minecraftforge.api.distmarker.Dist;
@@ -153,11 +154,11 @@ public class TasksScreen extends TabbedScreen
 
             TextBlockControl taskNameControl = new TextBlockControl();
             taskNameControl.setParent(taskNameBackgroundControl);
-            taskNameControl.setText(task == null ? "OOGA" : task.getCustomName());
             taskNameControl.setVerticalAlignment(VerticalAlignment.MIDDLE);
             taskNameControl.setWidth(new Fill(1.0f));
             taskNameControl.setHeight(new Fill(1.0f));
             taskNameControl.setAlignmentX(new Alignment(0.5f));
+            taskNameControl.setText(task == null ? "OOGA" : task.getCustomName());
 
             Control addRemoveControl = new TexturedControl(task == null ? GuiTextures.Tasks.TASK_ADD_ICON : GuiTextures.Tasks.TASK_REMOVE_ICON);
             gridControl.addControl(addRemoveControl, 2, 0);
