@@ -393,7 +393,14 @@ public class Control extends Gui
 
         onParentChanged.subscribe((e) ->
         {
-            EventHandler.Handler<SizeChangedEvent> onParentSizeChanged = (e2) -> { tryApplyFill(); tryApplyAlignment(); };
+            tryApplyFill();
+            tryApplyAlignment();
+
+            EventHandler.Handler<SizeChangedEvent> onParentSizeChanged = (e2) ->
+            {
+                tryApplyFill();
+                tryApplyAlignment();
+            };
 
             if (e.oldParent != null)
             {
@@ -406,7 +413,11 @@ public class Control extends Gui
             }
         });
 
-        this.onSizeChanged.subscribe((e) -> { tryApplyAlignment(); layoutDockedContents(); });
+        this.onSizeChanged.subscribe((e) ->
+        {
+            tryApplyAlignment();
+            layoutDockedContents();
+        });
     }
 
     /**
@@ -1667,7 +1678,7 @@ public class Control extends Gui
      * @param controlToInsert the control to insert (can be an existing child).
      * @param childToInsertBefore the child to insert the control before.
      */
-    public final void insertChildBefore(@Nonnull Control controlToInsert, @Nonnull Control childToInsertBefore)
+    public void insertChildBefore(@Nonnull Control controlToInsert, @Nonnull Control childToInsertBefore)
     {
         if (childToInsertBefore.getParent() != this)
         {
@@ -1696,7 +1707,7 @@ public class Control extends Gui
      * @param controlToInsert the control to insert (can be an existing child).
      * @param childToInsertAfter the child to insert the control after.
      */
-    public final void insertChildAfter(@Nonnull Control controlToInsert, @Nonnull Control childToInsertAfter)
+    public void insertChildAfter(@Nonnull Control controlToInsert, @Nonnull Control childToInsertAfter)
     {
         if (childToInsertAfter.getParent() != this)
         {
@@ -1722,7 +1733,7 @@ public class Control extends Gui
     /**
      * Adds the given control as a child. This will change the parent of the given control too.
      */
-    public final void addChild(@Nonnull Control control)
+    public void addChild(@Nonnull Control control)
     {
         control.setParent(this);
     }
@@ -1730,7 +1741,7 @@ public class Control extends Gui
     /**
      * Removes all the children from the control.
      */
-    public final void clearChildren()
+    public void clearChildren()
     {
         getChildrenCopy().forEach(child -> removeChild(child));
     }
@@ -1738,7 +1749,7 @@ public class Control extends Gui
     /**
      * Removes the given control as a child. This will remove the parent from the given control too.
      */
-    public final void removeChild(@Nonnull Control control)
+    public void removeChild(@Nonnull Control control)
     {
         control.setParent(null);
     }
@@ -1746,7 +1757,7 @@ public class Control extends Gui
     /**
      * @return whether the given control is a descendant.
      */
-    public final boolean hasDescendant(@Nullable Control control)
+    public boolean hasDescendant(@Nullable Control control)
     {
         if (control == null)
         {

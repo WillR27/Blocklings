@@ -54,6 +54,6 @@ public class TexturedControl extends Control
     {
         super.onRenderBackground(renderArgs);
 
-        renderTexture(renderArgs.matrixStack, isPressed() && !(isDraggingOrAncestorIsDragging() && !isDragging()) ? pressedTexture : texture);
+        renderTexture(renderArgs.matrixStack, pressedTexture != null && isPressed() && !(isDraggingOrAncestorIsDragging() && !isDragging()) ? pressedTexture : texture);
     }
 }

@@ -102,6 +102,7 @@ public class GuiTextures
         public static final GuiTexture TASK_ICON_BACKGROUND_RAISED = new GuiTexture(TASKS, 0, 166, 20, 20);
         public static final GuiTexture TASK_ICON_BACKGROUND_PRESSED = new GuiTexture(TASKS, 20, 166, 20, 20);
         public static final GuiTexture TASK_NAME_BACKGROUND = new GuiTexture(TASKS, 41, 166, 96, 20);
+        public static final GuiTexture TASK_ADD_ICON_BACKGROUND = new GuiTexture(TASKS, 176, 0, 20, 20);
         public static final GuiTexture TASK_ADD_ICON = new GuiTexture(TASKS, 136, 166, 17, 20);
         public static final GuiTexture TASK_REMOVE_ICON = new GuiTexture(TASKS, 156, 166, 17, 20);
         public static final GuiTexture TASK_CONFIG_ICON = new GuiTexture(TASKS, 176, 166, 20, 20);

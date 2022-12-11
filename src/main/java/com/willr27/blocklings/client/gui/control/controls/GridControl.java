@@ -4,6 +4,8 @@ import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.Side;
 import com.willr27.blocklings.client.gui.control.event.events.MarginsChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.SizeChangedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
 import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraftforge.api.distmarker.Dist;
@@ -434,7 +436,23 @@ public class GridControl extends Control
      */
     public static class CellControl extends Control
     {
+        @Override
+        public void onHover(@Nonnull MousePosEvent mousePosEvent)
+        {
 
+        }
+
+        @Override
+        protected void onMouseClicked(@Nonnull MouseButtonEvent mouseButtonEvent)
+        {
+
+        }
+
+        @Override
+        protected void onMouseReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
+        {
+
+        }
     }
 
     /**

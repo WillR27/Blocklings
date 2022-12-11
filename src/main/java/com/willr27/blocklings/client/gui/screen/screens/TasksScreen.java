@@ -14,12 +14,22 @@ import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.client.gui2.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.task.Task;
+import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A screen to display the blockling's tasks.
@@ -58,10 +68,31 @@ public class TasksScreen extends TabbedScreen
 
         for (Task task : blockling.getTasks().getPrioritisedTasks())
         {
-            TaskControl taskControl = new TaskControl(taskListControl, task);
+            TaskControl taskControl = new TaskControl(task);
+            taskListControl.addChild(taskControl);
         }
 
-        TaskControl addTaskControl = new TaskControl(taskListControl, null);
+        TaskControl addTaskControl = new TaskControl(null);
+        taskListControl.addChild(addTaskControl);
+
+        blockling.getTasks().onCreateTask.subscribe((e) ->
+        {
+            TaskControl taskControl = new TaskControl(e.task);
+            taskListControl.insertChildBefore(taskControl, addTaskControl);
+        });
+
+        blockling.getTasks().onRemoveTask.subscribe((e) ->
+        {
+            for (Control control : taskListControl.getChildrenCopy())
+            {
+                TaskControl taskControl = (TaskControl) control;
+
+                if (e.task.equals(taskControl.task))
+                {
+                    taskListControl.removeChild(control);
+                }
+            }
+        });
 
         Control scrollbarControl = new Control();
         scrollbarControl.setParent(taskListContainerControl);
@@ -73,7 +104,7 @@ public class TasksScreen extends TabbedScreen
     /**
      * Represents a task.
      */
-    private static class TaskControl extends Control
+    private class TaskControl extends Control
     {
         /**
          * The associated task (null if used to add a task).
@@ -82,14 +113,12 @@ public class TasksScreen extends TabbedScreen
         private final Task task;
 
         /**
-         * @param taskListControl the list of task controls.
          * @param task the associated task.
          */
-        public TaskControl(@Nonnull FlowPanel taskListControl, @Nullable Task task)
+        public TaskControl(@Nullable Task task)
         {
             this.task = task;
 
-            setParent(taskListControl);
             setWidth(new Fill(1.0f));
             setFitToContentsY(true);
             setDraggableY(task != null);
@@ -98,12 +127,19 @@ public class TasksScreen extends TabbedScreen
             GridControl gridControl = new GridControl(new GridControl.GridDefinition()
                     .addCol(new GridControl.Auto())
                     .addCol(new GridControl.Fill(1.0f))
-                    .addCol(new GridControl.Auto()));
+                    .addCol(new GridControl.Auto()))
+            {
+                @Override
+                public void onHover(@Nonnull MousePosEvent mousePosEvent)
+                {
+
+                }
+            };
             gridControl.setParent(this);
             gridControl.setWidth(new Fill(1.0f));
             gridControl.setFitToContentsY(true);
 
-            Control iconBackgroundControl = new TexturedControl(GuiTextures.Tasks.TASK_ICON_BACKGROUND_RAISED, GuiTextures.Tasks.TASK_ICON_BACKGROUND_PRESSED);
+            Control iconBackgroundControl = task != null ? new TexturedControl(GuiTextures.Tasks.TASK_ICON_BACKGROUND_RAISED, GuiTextures.Tasks.TASK_ICON_BACKGROUND_PRESSED) : new TexturedControl(GuiTextures.Tasks.TASK_ADD_ICON_BACKGROUND);
             gridControl.addControl(iconBackgroundControl, 0, 0);
 
             Control iconControl = new TexturedControl(task != null ? task.getType().texture : GuiTextures.Tasks.TASK_CONFIG_ICON)
@@ -133,6 +169,15 @@ public class TasksScreen extends TabbedScreen
                 }
 
                 @Override
+                public void onRenderTooltip(@Nonnull RenderArgs renderArgs)
+                {
+                    if (task != null)
+                    {
+                        renderTooltip(renderArgs, new BlocklingsTranslationTextComponent("task.ui.configure"));
+                    }
+                }
+
+                @Override
                 protected void onMouseClicked(@Nonnull MouseButtonEvent mouseButtonEvent)
                 {
 
@@ -146,22 +191,73 @@ public class TasksScreen extends TabbedScreen
             };
             iconControl.setParent(iconBackgroundControl);
 
-            Control taskNameBackgroundControl = new TexturedControl(GuiTextures.Tasks.TASK_NAME_BACKGROUND);
+            Control taskNameBackgroundControl = new TexturedControl(GuiTextures.Tasks.TASK_NAME_BACKGROUND)
+            {
+                @Override
+                public void onHover(@Nonnull MousePosEvent mousePosEvent)
+                {
+
+                }
+            };
             gridControl.addControl(taskNameBackgroundControl, 1, 0);
             taskNameBackgroundControl.setWidth(new Fill(1.0f));
             taskNameBackgroundControl.setHeight(new Fill(1.0f));
             taskNameBackgroundControl.setPadding(5, 0, 5, 0);
 
-            TextBlockControl taskNameControl = new TextBlockControl();
+            TextBlockControl taskNameControl = new TextBlockControl()
+            {
+                @Override
+                public void onHover(@Nonnull MousePosEvent mousePosEvent)
+                {
+
+                }
+            };
             taskNameControl.setParent(taskNameBackgroundControl);
             taskNameControl.setVerticalAlignment(VerticalAlignment.MIDDLE);
             taskNameControl.setWidth(new Fill(1.0f));
             taskNameControl.setHeight(new Fill(1.0f));
             taskNameControl.setAlignmentX(new Alignment(0.5f));
-            taskNameControl.setText(task == null ? "OOGA" : task.getCustomName());
+            taskNameControl.setText(task == null ? BlocklingTasks.NULL.name : new StringTextComponent(task.getCustomName()));
 
-            Control addRemoveControl = new TexturedControl(task == null ? GuiTextures.Tasks.TASK_ADD_ICON : GuiTextures.Tasks.TASK_REMOVE_ICON);
+            Control addRemoveControl = new TexturedControl(task == null ? GuiTextures.Tasks.TASK_ADD_ICON : GuiTextures.Tasks.TASK_REMOVE_ICON)
+            {
+                @Override
+                public void onRenderTooltip(@Nonnull RenderArgs renderArgs)
+                {
+                    renderTooltip(renderArgs, new BlocklingsTranslationTextComponent(task == null ? "task.ui.add" : "task.ui.remove"));
+                }
+
+                @Override
+                protected void onMouseReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
+                {
+                    if (isPressed())
+                    {
+                        if (task == null)
+                        {
+                            blockling.getTasks().createTask(BlocklingTasks.NULL);
+                        }
+                        else
+                        {
+                            getParent().removeChild(this);
+                            task.blockling.getTasks().removeTask(task);
+                        }
+                    }
+                }
+            };
             gridControl.addControl(addRemoveControl, 2, 0);
+        }
+
+        @Override
+        public void onRenderTooltip(@Nonnull RenderArgs renderArgs)
+        {
+            if (task != null)
+            {
+                List<IReorderingProcessor> tooltip = new ArrayList<>();
+                tooltip.add(new StringTextComponent(TextFormatting.GOLD + task.getCustomName()).getVisualOrderText());
+                tooltip.addAll(GuiUtil.splitText(font, task.getType().desc, 200).stream().map(s -> s.getVisualOrderText()).collect(Collectors.toList()));
+
+                renderTooltip(renderArgs, tooltip);
+            }
         }
     }
 }
