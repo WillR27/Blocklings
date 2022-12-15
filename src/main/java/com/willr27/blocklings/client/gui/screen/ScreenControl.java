@@ -18,6 +18,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Random;
 
 /**
  * The root control for each screen.
@@ -25,6 +26,12 @@ import javax.annotation.Nullable;
 @OnlyIn(Dist.CLIENT)
 public class ScreenControl extends Control implements IScreen
 {
+    /**
+     * The instance of {@link Random} to use.
+     */
+    @Nonnull
+    private final Random random = new Random();
+
     /**
      * Used to prevent a mouse released event from triggering when a mouse clicked event never occurred.
      * Useful for when the UI first opens to prevent a mouse released event from triggering by itself.
@@ -438,5 +445,12 @@ public class ScreenControl extends Control implements IScreen
         }
 
         draggedControl = control;
+    }
+
+    @Nonnull
+    @Override
+    public Random getRandom()
+    {
+        return random;
     }
 }

@@ -3,14 +3,10 @@ package com.willr27.blocklings.client.gui.screen.screens;
 import com.willr27.blocklings.client.gui.GuiTextures;
 import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.control.*;
-import com.willr27.blocklings.client.gui.control.controls.GridControl;
-import com.willr27.blocklings.client.gui.control.controls.TabbedControl;
-import com.willr27.blocklings.client.gui.control.controls.TextBlockControl;
-import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
+import com.willr27.blocklings.client.gui.control.controls.*;
 import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
-import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.client.gui2.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
@@ -18,9 +14,7 @@ import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.task.Task;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -42,7 +36,7 @@ public class TasksScreen extends TabbedScreen
      */
     public TasksScreen(@Nonnull BlocklingEntity blockling)
     {
-        super(blockling, TabbedControl.Tab.TASKS);
+        super(blockling, TabbedUIControl.Tab.TASKS);
     }
 
     @Override
@@ -55,8 +49,17 @@ public class TasksScreen extends TabbedScreen
         taskListContainerControl.setPercentWidth(1.0f);
         taskListContainerControl.setPercentHeight(1.0f);
 
+        TabbedControl tabbedControl = new TabbedControl(taskListContainerControl);
+        tabbedControl.setWidth(new Fill(1.0f));
+        tabbedControl.setHeight(new Fill(1.0f));
+        tabbedControl.addTab("Hello");
+        tabbedControl.addTab("Hello234");
+        tabbedControl.addTab("Hlyo334");
+        tabbedControl.addTab("Hello555");
+        tabbedControl.addTab("Hello");
+
         FlowPanel taskListControl = new FlowPanel();
-        taskListControl.setParent(taskListContainerControl);
+//        taskListControl.setParent(taskListContainerControl);
         taskListControl.setDragReorderType(DragReorderType.INSERT_ON_MOVE);
         taskListControl.setWidth(140);
         taskListControl.setPercentHeight(1.0f);
@@ -125,9 +128,9 @@ public class TasksScreen extends TabbedScreen
             setReorderable(task != null);
 
             GridControl gridControl = new GridControl(new GridControl.GridDefinition()
-                    .addCol(new GridControl.Auto())
-                    .addCol(new GridControl.Fill(1.0f))
-                    .addCol(new GridControl.Auto()))
+                    .addCol(new GridControl.GridDefinition.Auto())
+                    .addCol(new GridControl.GridDefinition.Fill(1.0f))
+                    .addCol(new GridControl.GridDefinition.Auto()))
             {
                 @Override
                 public void onHover(@Nonnull MousePosEvent mousePosEvent)

@@ -14,10 +14,10 @@ import java.util.Map;
 public class PaddingChangedEvent extends HandleableControlEvent
 {
     /**
-     * The new padding for each side of the control.
+     * The old padding for each side of the control.
      */
     @Nonnull
-    private final Map<Side, Integer> newPadding = new HashMap<>();
+    private final Map<Side, Integer> oldPadding = new HashMap<>();
 
     /**
      * The change in the padding for each side of the control.
@@ -27,31 +27,31 @@ public class PaddingChangedEvent extends HandleableControlEvent
 
     /**
      * @param control the control the padding are changing for.
-     * @param left the left padding.
-     * @param top the top padding.
-     * @param right the right padding.
-     * @param bottom the bottom padding.
+     * @param oldLeft the oldLeft padding.
+     * @param oldTop the oldTop padding.
+     * @param oldRight the oldRight padding.
+     * @param oldBottom the oldBottom padding.
      */
-    public PaddingChangedEvent(@Nonnull Control control, int left, int top, int right, int bottom)
+    public PaddingChangedEvent(@Nonnull Control control, int oldLeft, int oldTop, int oldRight, int oldBottom)
     {
         super(control);
-        newPadding.put(Side.LEFT, left);
-        newPadding.put(Side.TOP, top);
-        newPadding.put(Side.RIGHT, right);
-        newPadding.put(Side.BOTTOM, bottom);
-        dPadding.put(Side.LEFT, left - control.getPadding().get(Side.LEFT));
-        dPadding.put(Side.TOP, top - control.getPadding().get(Side.TOP));
-        dPadding.put(Side.RIGHT, right - control.getPadding().get(Side.RIGHT));
-        dPadding.put(Side.BOTTOM, bottom - control.getPadding().get(Side.BOTTOM));
+        oldPadding.put(Side.LEFT, oldLeft);
+        oldPadding.put(Side.TOP, oldTop);
+        oldPadding.put(Side.RIGHT, oldRight);
+        oldPadding.put(Side.BOTTOM, oldBottom);
+        dPadding.put(Side.LEFT, control.getPadding().get(Side.LEFT) - oldLeft);
+        dPadding.put(Side.TOP, control.getPadding().get(Side.TOP) - oldTop);
+        dPadding.put(Side.RIGHT, control.getPadding().get(Side.RIGHT) - oldRight);
+        dPadding.put(Side.BOTTOM, control.getPadding().get(Side.BOTTOM) - oldBottom);
     }
 
     /**
-     * @return the new padding for the control.
+     * @return the old padding for the control.
      */
     @Nonnull
-    public Map<Side, Integer> getNewPadding()
+    public Map<Side, Integer> getOldPadding()
     {
-        return new HashMap<>(newPadding);
+        return new HashMap<>(oldPadding);
     }
 
     /**

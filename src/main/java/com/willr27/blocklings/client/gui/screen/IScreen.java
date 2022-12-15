@@ -8,6 +8,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Random;
 
 /**
  * Represents a blocklings screen. Includes functionality shared by regular screens and container screens.
@@ -79,4 +80,10 @@ public interface IScreen
      * @param mousePosEvent the mouse button event to pass on to {@link Control#onDragStart(MousePosEvent)} and {@link Control#onDragEnd(MousePosEvent)}.
      */
     void setDraggedControl(@Nullable Control control, @Nonnull MousePosEvent mousePosEvent);
+
+    /**
+     * @return returns an instance of {@link java.util.Random}.
+     */
+    @Nonnull
+    Random getRandom();
 }

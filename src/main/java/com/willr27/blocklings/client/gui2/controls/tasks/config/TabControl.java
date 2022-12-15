@@ -118,10 +118,10 @@ public class TabControl extends Control
             }
 
             GuiTexture unselectedLeft = new GuiTexture(GuiTextures.COMMON_WIDGETS, UNSELECTED_LEFT.x, UNSELECTED_LEFT.y, tab.width - UNSELECTED_RIGHT.width, UNSELECTED_HEIGHT);
-            unselectedLeft = i == 0 ? unselectedLeft.shift(4, 0).resize(-edgePadding, 0) : unselectedLeft;
+            unselectedLeft = i == 0 ? unselectedLeft.shift(4, 0).adjust(-edgePadding, 0) : unselectedLeft;
             renderTexture(matrixStack, unselectedLeft, tab.x + (i == 0 ? edgePadding : 0), screenY);
 
-            GuiTexture unselectedRight = i == tabs.size() - 1 ? UNSELECTED_RIGHT.shift(-4, 0).resize(-edgePadding - 1, 0) : UNSELECTED_RIGHT;
+            GuiTexture unselectedRight = i == tabs.size() - 1 ? UNSELECTED_RIGHT.shift(-4, 0).adjust(-edgePadding - 1, 0) : UNSELECTED_RIGHT;
             renderTexture(matrixStack, unselectedRight, tab.x + tab.width - unselectedRight.width - (i == tabs.size() - 1 ? edgePadding + 1 : 0), screenY);
 
             String name = GuiUtil.trimWithEllipses(font, tab.name, tab.width - 10);
@@ -131,10 +131,10 @@ public class TabControl extends Control
         Tab tab = tabs.get(selectedTabIndex);
 
         GuiTexture selectedLeft = new GuiTexture(GuiTextures.COMMON_WIDGETS, SELECTED_LEFT.x, SELECTED_LEFT.y, tab.width - SELECTED_RIGHT.width, SELECTED_HEIGHT);
-        selectedLeft = selectedTabIndex == 0 ? selectedLeft.shift(4, 0).resize(-edgePadding + 1, 0) : selectedLeft;
+        selectedLeft = selectedTabIndex == 0 ? selectedLeft.shift(4, 0).adjust(-edgePadding + 1, 0) : selectedLeft;
         renderTexture(matrixStack, selectedLeft, selectedTabIndex == 0 ? tab.x + edgePadding - 1 : tab.x, screenY - 1);
 
-        GuiTexture selectedRight = selectedTabIndex == tabs.size() - 1 ? SELECTED_RIGHT.shift(-5, 0).resize(-edgePadding, 0) : SELECTED_RIGHT;
+        GuiTexture selectedRight = selectedTabIndex == tabs.size() - 1 ? SELECTED_RIGHT.shift(-5, 0).adjust(-edgePadding, 0) : SELECTED_RIGHT;
         renderTexture(matrixStack, selectedRight, tab.x + tab.width - selectedRight.width - (selectedTabIndex == tabs.size() - 1 ? edgePadding : 0), screenY - 1);
 
         String name = GuiUtil.trimWithEllipses(font, tab.name, tab.width - 10);

@@ -31,6 +31,14 @@ public class TextBlockControl extends TextControl
      */
     private boolean shouldTrimText = true;
 
+    /**
+     * Whether to draw shadowed text or not.
+     */
+    private boolean shouldRenderShadow = true;
+
+    /**
+     * The text colour.
+     */
     private Colour textColour = new Colour(0xffffffff);
 
     /**
@@ -52,10 +60,10 @@ public class TextBlockControl extends TextControl
                 textScreenX = (getScreenX() + (getPadding(Side.LEFT) * getCumulativeScale()));
                 break;
             case MIDDLE:
-                textScreenX = (getScreenX() + (getScreenWidth() / 2) - (font.width(text) * getCumulativeScale() / 2));
+                textScreenX = (getScreenX() + (getScreenWidth() / 2) - (font.width(getTextToRender()) * getCumulativeScale() / 2));
                 break;
             case RIGHT:
-                textScreenX = (getScreenX() + getScreenWidth() - font.width(text) * getCumulativeScale() - (getPadding(Side.RIGHT) * getCumulativeScale()));
+                textScreenX = (getScreenX() + getScreenWidth() - font.width(getTextToRender()) * getCumulativeScale() - (getPadding(Side.RIGHT) * getCumulativeScale()));
                 break;
         }
 
@@ -110,9 +118,24 @@ public class TextBlockControl extends TextControl
         }
 
         MatrixStack matrixStack = new MatrixStack();
-        matrixStack.translate(textScreenX, textScreenY, z);
+        matrixStack.translate(Math.round(textScreenX), Math.round(textScreenY), z);
         matrixStack.scale(getCumulativeScale(), getCumulativeScale(), 1.0f);
 
+        if (shouldRenderShadow())
+        {
+            renderShadowedText(matrixStack, getTextToRender(), getTextColour().argb());
+        }
+        else
+        {
+            renderText(matrixStack, getTextToRender(), getTextColour().argb());
+        }
+    }
+
+    /**
+     * @return gets the text to render (e.g. might be trimmed to fit).
+     */
+    public ITextComponent getTextToRender()
+    {
         ITextComponent textToRender = text;
 
         if (shouldTrimText())
@@ -120,7 +143,7 @@ public class TextBlockControl extends TextControl
             textToRender = new StringTextComponent(GuiUtil.trimWithEllipses(font, getText(), Math.round(getWidth())));
         }
 
-        renderShadowedText(matrixStack, textToRender, getTextColour().argb());
+        return textToRender;
     }
 
     @Override
@@ -153,6 +176,22 @@ public class TextBlockControl extends TextControl
     public void setShouldTrimText(boolean shouldTrimText)
     {
         this.shouldTrimText = shouldTrimText;
+    }
+
+    /**
+     * @return whether to render shadowed text.
+     */
+    public boolean shouldRenderShadow()
+    {
+        return shouldRenderShadow;
+    }
+
+    /**
+     * Sets whether to render shadowed text.
+     */
+    public void setShouldRenderShadow(boolean shouldRenderShadow)
+    {
+        this.shouldRenderShadow = shouldRenderShadow;
     }
 
     /**

@@ -9,7 +9,6 @@ import com.willr27.blocklings.client.gui.control.controls.stats.EnumeratingStatC
 import com.willr27.blocklings.client.gui.control.controls.stats.HealthBarControl;
 import com.willr27.blocklings.client.gui.control.controls.stats.StatControl;
 import com.willr27.blocklings.client.gui.control.controls.stats.XpBarControl;
-import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.client.gui2.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.BlocklingHand;
@@ -46,7 +45,7 @@ public class StatsScreen extends TabbedScreen
      */
     public StatsScreen(@Nonnull BlocklingEntity blockling)
     {
-        super(blockling, TabbedControl.Tab.STATS);
+        super(blockling, TabbedUIControl.Tab.STATS);
     }
 
     @Override

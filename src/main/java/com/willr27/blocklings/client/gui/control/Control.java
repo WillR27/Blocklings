@@ -13,7 +13,6 @@ import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -31,8 +30,11 @@ import java.util.function.BiConsumer;
 @OnlyIn(Dist.CLIENT)
 public class Control extends Gui
 {
+    /**
+     * The random to use in place of the screen random.
+     */
     @Nonnull
-    public final FontRenderer font = Minecraft.getInstance().font;
+    public final Random random = new Random();
 
     /**
      * The list of operations to apply to the control before/after rendering.
@@ -402,14 +404,22 @@ public class Control extends Gui
                 tryApplyAlignment();
             };
 
+            EventHandler.Handler<PaddingChangedEvent> onParentPaddingChanged = (e2) ->
+            {
+                tryApplyFill();
+                tryApplyAlignment();
+            };
+
             if (e.oldParent != null)
             {
                 e.oldParent.onSizeChanged.unsubscribe(onParentSizeChanged);
+                e.oldParent.onPaddingChanged.unsubscribe(onParentPaddingChanged);
             }
 
             if (getParent() != null)
             {
                 getParent().onSizeChanged.subscribe(onParentSizeChanged);
+                getParent().onPaddingChanged.subscribe(onParentPaddingChanged);
             }
         });
 
@@ -744,7 +754,7 @@ public class Control extends Gui
      *
      * @param renderArgs the render args.
      */
-    public final void forwardRender(@Nonnull RenderArgs renderArgs)
+    public void forwardRender(@Nonnull RenderArgs renderArgs)
     {
         if (!isVisible())
         {
@@ -762,7 +772,8 @@ public class Control extends Gui
         applyPostRenderOperations(renderArgs);
         applyPostRenderTransformations(renderArgs);
 
-        getChildrenCopy().forEach(control -> control.forwardRender(renderArgs));
+        getRenderChildrenCopy().forEach(control -> control.forwardRender(renderArgs));
+
         undoScissor(renderArgs);
     }
 
@@ -771,7 +782,7 @@ public class Control extends Gui
      *
      * @param renderArgs the render args.
      */
-    private void applyPreRenderOperations(@Nonnull RenderArgs renderArgs)
+    protected void applyPreRenderOperations(@Nonnull RenderArgs renderArgs)
     {
         renderOperations.forEach(renderOperation -> renderOperation.preRenderOperation.accept(this, renderArgs));
     }
@@ -821,7 +832,7 @@ public class Control extends Gui
      *
      * @param renderArgs the render args.
      */
-    private void applyPostRenderOperations(@Nonnull RenderArgs renderArgs)
+    protected void applyPostRenderOperations(@Nonnull RenderArgs renderArgs)
     {
         List<RenderOperation> renderOperationsReversed = new ArrayList<>(renderOperations);
         Collections.reverse(renderOperations);
@@ -936,7 +947,7 @@ public class Control extends Gui
             return;
         }
 
-        for (Control control : getReverseChildrenCopy())
+        for (Control control : getReverseRenderChildrenCopy())
         {
             if (!mousePosEvent.isHandled())
             {
@@ -1001,7 +1012,7 @@ public class Control extends Gui
             return;
         }
 
-        for (Control control : getReverseChildrenCopy())
+        for (Control control : getReverseRenderChildrenCopy())
         {
             if (!mousePosEvent.isHandled())
             {
@@ -1173,7 +1184,7 @@ public class Control extends Gui
      */
     public void forwardGlobalMouseClicked(@Nonnull MouseButtonEvent mouseButtonEvent)
     {
-        for (Control control : getReverseChildrenCopy())
+        for (Control control : getReverseRenderChildrenCopy())
         {
             if (!mouseButtonEvent.isHandled())
             {
@@ -1254,7 +1265,7 @@ public class Control extends Gui
      */
     public void forwardGlobalMouseReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
     {
-        for (Control control : getReverseChildrenCopy())
+        for (Control control : getReverseRenderChildrenCopy())
         {
             if (!mouseButtonEvent.isHandled())
             {
@@ -1294,7 +1305,7 @@ public class Control extends Gui
             return;
         }
 
-        for (Control control : getReverseChildrenCopy())
+        for (Control control : getReverseRenderChildrenCopy())
         {
             if (!mouseButtonEvent.isHandled())
             {
@@ -1370,7 +1381,7 @@ public class Control extends Gui
      */
     public void forwardGlobalMouseScrolled(@Nonnull MouseScrollEvent mouseScrollEvent)
     {
-        for (Control control : getReverseChildrenCopy())
+        for (Control control : getReverseRenderChildrenCopy())
         {
             if (!mouseScrollEvent.isHandled())
             {
@@ -1410,7 +1421,7 @@ public class Control extends Gui
             return;
         }
 
-        for (Control control : getReverseChildrenCopy())
+        for (Control control : getReverseRenderChildrenCopy())
         {
             if (!mouseScrollEvent.isHandled())
             {
@@ -1479,7 +1490,7 @@ public class Control extends Gui
      */
     public void forwardGlobalKeyPressed(@Nonnull KeyEvent keyEvent)
     {
-        for (Control control : getReverseChildrenCopy())
+        for (Control control : getReverseRenderChildrenCopy())
         {
             if (!keyEvent.isHandled())
             {
@@ -1514,7 +1525,7 @@ public class Control extends Gui
      */
     public void forwardGlobalKeyReleased(@Nonnull KeyEvent keyEvent)
     {
-        for (Control control : getReverseChildrenCopy())
+        for (Control control : getReverseRenderChildrenCopy())
         {
             if (!keyEvent.isHandled())
             {
@@ -1549,7 +1560,7 @@ public class Control extends Gui
      */
     public void forwardGlobalCharTyped(@Nonnull CharEvent charEvent)
     {
-        for (Control control : getReverseChildrenCopy())
+        for (Control control : getReverseRenderChildrenCopy())
         {
             if (!charEvent.isHandled())
             {
@@ -1591,6 +1602,11 @@ public class Control extends Gui
         {
             control.setScreen(screen);
         }
+    }
+
+    public Random getRandom()
+    {
+        return getScreen() != null ? getScreen().getRandom() : random;
     }
 
     /**
@@ -1646,7 +1662,7 @@ public class Control extends Gui
      * @return the list of children (be careful of concurrent modification).
      */
     @Nonnull
-    public final List<Control> getChildren()
+    public List<Control> getChildren()
     {
         return children;
     }
@@ -1655,21 +1671,51 @@ public class Control extends Gui
      * @return a copy of the list of children.
      */
     @Nonnull
-    public final List<Control> getChildrenCopy()
+    public List<Control> getChildrenCopy()
     {
-        return new ArrayList<>(children);
+        return new ArrayList<>(getChildren());
     }
 
     /**
      * @return a reversed copy of the list of children.
      */
     @Nonnull
-    public final List<Control> getReverseChildrenCopy()
+    public List<Control> getReverseChildrenCopy()
     {
         List<Control> childrenCopy = getChildrenCopy();
         Collections.reverse(childrenCopy);
 
         return childrenCopy;
+    }
+
+    /**
+     * @return the list of children in render order.
+     */
+    @Nonnull
+    public List<Control> getRenderChildren()
+    {
+        return getChildrenCopy();
+    }
+
+    /**
+     * @return a copy of the list of children in render order.
+     */
+    @Nonnull
+    public List<Control> getRenderChildrenCopy()
+    {
+        return new ArrayList<>(getRenderChildren());
+    }
+
+    /**
+     * @return a copy of the list of children in render order reversed.
+     */
+    @Nonnull
+    public List<Control> getReverseRenderChildrenCopy()
+    {
+        List<Control> renderChildrenCopy = getRenderChildren();
+        Collections.reverse(renderChildrenCopy);
+
+        return renderChildrenCopy;
     }
 
     /**
@@ -2260,12 +2306,17 @@ public class Control extends Gui
      */
     public void setPadding(int left, int top, int right, int bottom)
     {
-        PaddingChangedEvent event = onPaddingChanged.handle(new PaddingChangedEvent(this, left, top, right, bottom));
+        int oldLeft = getPadding(Side.LEFT);
+        int oldTop = getPadding(Side.TOP);
+        int oldRight = getPadding(Side.RIGHT);
+        int oldBottom = getPadding(Side.BOTTOM);
 
-        if (!event.isHandled())
-        {
-            padding = event.getNewPadding();
-        }
+        padding.put(Side.LEFT, left);
+        padding.put(Side.TOP, top);
+        padding.put(Side.RIGHT, right);
+        padding.put(Side.BOTTOM, bottom);
+
+        onPaddingChanged.handle(new PaddingChangedEvent(this, oldLeft, oldTop, oldRight, oldBottom));
     }
 
     /**

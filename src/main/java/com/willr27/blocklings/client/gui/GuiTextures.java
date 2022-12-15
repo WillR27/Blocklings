@@ -12,6 +12,20 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class GuiTextures
 {
+    public static class Common
+    {
+        public static final ResourceLocation COMMON = new BlocklingsResourceLocation("textures/gui/common_widgets.png");
+
+        public static class Tab
+        {
+            public static final int EDGE_WIDTH = 4;
+            public static final int FULLY_OPAQUE_HEIGHT = 12;
+
+            public static final GuiTexture TAB_SELECTED_BACKGROUND = new GuiTexture(COMMON, 0, 15, 256, 18);
+            public static final GuiTexture TAB_UNSELECTED_BACKGROUND = new GuiTexture(COMMON, 0, 33, 256, 15);
+        }
+    }
+
     public static class Tabs
     {
         public static final ResourceLocation TABS = new BlocklingsResourceLocation("textures/gui/tabs.png");

@@ -1,9 +1,8 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
-import com.willr27.blocklings.client.gui.control.controls.TabbedControl;
+import com.willr27.blocklings.client.gui.control.controls.TabbedUIControl;
 import com.willr27.blocklings.client.gui2.containers.EquipmentContainer;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -21,7 +20,7 @@ public class EquipmentScreen extends TabbedContainerScreen<EquipmentContainer>
      */
     public EquipmentScreen(@Nonnull BlocklingEntity blockling, @Nonnull EquipmentContainer container)
     {
-        super(blockling, TabbedControl.Tab.EQUIPMENT, container);
+        super(blockling, TabbedUIControl.Tab.EQUIPMENT, container);
     }
 
     @Override

@@ -34,7 +34,7 @@ public class GuiTexture
         return new GuiTexture(texture, x + dx, y + dy, width, height);
     }
 
-    public GuiTexture resize(int dw, int dh)
+    public GuiTexture adjust(int dw, int dh)
     {
         return new GuiTexture(texture, x, y, width + dw, height + dh);
     }

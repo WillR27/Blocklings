@@ -1,7 +1,7 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
 import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.client.gui.control.controls.TabbedControl;
+import com.willr27.blocklings.client.gui.control.controls.TabbedUIControl;
 import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import net.minecraftforge.api.distmarker.Dist;
@@ -19,7 +19,7 @@ public class TabbedScreen extends BlocklingsScreen
      * The control that handles rendering the tabs and the content background.
      */
     @Nonnull
-    protected final TabbedControl tabbedControl;
+    protected final TabbedUIControl tabbedControl;
 
     /**
      * The control that encompasses the area that the content should be displayed.
@@ -31,11 +31,11 @@ public class TabbedScreen extends BlocklingsScreen
      * @param blockling the blockling.
      * @param tab the associated tab.
      */
-    public TabbedScreen(@Nonnull BlocklingEntity blockling, @Nonnull TabbedControl.Tab tab)
+    public TabbedScreen(@Nonnull BlocklingEntity blockling, @Nonnull TabbedUIControl.Tab tab)
     {
         super(blockling);
 
-        tabbedControl = new TabbedControl(blockling, tab);
+        tabbedControl = new TabbedUIControl(blockling, tab);
 
         contentControl = new Control();
         contentControl.setParent(tabbedControl);

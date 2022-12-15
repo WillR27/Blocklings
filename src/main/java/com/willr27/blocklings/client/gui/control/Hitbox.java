@@ -1,5 +1,6 @@
 package com.willr27.blocklings.client.gui.control;
 
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -40,22 +41,22 @@ public abstract class Hitbox
         /**
          * The relative x coordinate of the hitbox in relation to the top left corner of the control.
          */
-        private int x;
+        protected int x;
 
         /**
          * The relative y coordinate of the hitbox in relation to the top left corner of the control.
          */
-        private int y;
+        protected int y;
 
         /**
          * The width of the hitbox.
          */
-        private float width;
+        protected float width;
 
         /**
          * The height of the hitbox.
          */
-        private float height;
+        protected float height;
 
         /**
          * @param x the relative x coordinate of the hitbox in relation to the top left corner of the control.
@@ -87,10 +88,15 @@ public abstract class Hitbox
         @Override
         public boolean collidesWith(@Nonnull Control control, float pixelX, float pixelY)
         {
-            return pixelX >= control.getPixelX() &&
-                   pixelX <  control.getPixelX() + control.getPixelWidth() &&
-                   pixelY >= control.getPixelY() &&
-                   pixelY <  control.getPixelY() + control.getPixelHeight();
+            float lowX = control.getPixelX() + x * control.getCumulativeScale() * GuiUtil.getInstance().getGuiScale();
+            float highX = lowX + width * control.getCumulativeScale() * GuiUtil.getInstance().getGuiScale();
+            float lowY = control.getPixelY() + y * control.getCumulativeScale() * GuiUtil.getInstance().getGuiScale();
+            float highY = lowY + height * control.getCumulativeScale() * GuiUtil.getInstance().getGuiScale();
+
+            return pixelX >= lowX &&
+                   pixelX <  highX &&
+                   pixelY >= lowY &&
+                   pixelY <  highY;
         }
 
         @Override

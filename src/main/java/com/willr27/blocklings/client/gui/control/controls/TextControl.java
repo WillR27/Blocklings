@@ -4,6 +4,8 @@ import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.HorizontalAlignment;
 import com.willr27.blocklings.client.gui.control.Side;
 import com.willr27.blocklings.client.gui.control.VerticalAlignment;
+import com.willr27.blocklings.client.gui.control.event.events.PaddingChangedEvent;
+import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -47,6 +49,23 @@ public abstract class TextControl extends Control
         onSizeChanged.subscribe((e) ->
         {
             recalcTextPosition();
+        });
+
+        EventHandler.Handler<PaddingChangedEvent> onParentPaddingChanged = (e) -> recalcTextPosition();
+
+        onParentChanged.subscribe((e) ->
+        {
+            recalcTextPosition();
+
+            if (e.oldParent != null)
+            {
+                e.oldParent.onPaddingChanged.unsubscribe(onParentPaddingChanged);
+            }
+
+            if (getParent() != null)
+            {
+                getParent().onPaddingChanged.subscribe(onParentPaddingChanged);
+            }
         });
     }
 

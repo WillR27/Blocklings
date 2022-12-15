@@ -121,6 +121,8 @@ public class TaskConfigContainerControl extends Control
         removeChild(tabControl);
         tabControl = new TabControl(this,9, 33, 140);
         tabControl.add(new BlocklingsTranslationTextComponent("task.ui.tab.misc").getString(), () -> { removeChild(currentConfigGui); currentConfigGui = new TaskMiscConfigControl(this, task, 9, 46, 140, 112, contentScrollbarControl); currentConfigGui.setZIndex(2); currentConfigGui.setIsFocused(true); });
+        tabControl.add(new BlocklingsTranslationTextComponent("task.ui.tab.misc").getString(), () -> { removeChild(currentConfigGui); currentConfigGui = new TaskMiscConfigControl(this, task, 9, 46, 140, 112, contentScrollbarControl); currentConfigGui.setZIndex(2); currentConfigGui.setIsFocused(true); });
+        tabControl.add(new BlocklingsTranslationTextComponent("task.ui.tab.misc").getString(), () -> { removeChild(currentConfigGui); currentConfigGui = new TaskMiscConfigControl(this, task, 9, 46, 140, 112, contentScrollbarControl); currentConfigGui.setZIndex(2); currentConfigGui.setIsFocused(true); });
 
         if (task.isConfigured())
         {

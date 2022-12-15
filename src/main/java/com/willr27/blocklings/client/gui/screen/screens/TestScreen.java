@@ -37,13 +37,13 @@ public class TestScreen extends BlocklingsScreen
     private void ing()
     {
         GridControl gridControl = new GridControl(new GridControl.GridDefinition()
-                .addRow(new GridControl.Auto())
-                .addRow(new GridControl.Fill(1.0f))
-                .addRow(new GridControl.Auto())
-                .addCol(new GridControl.Fill(0.6f))
-                .addCol(new GridControl.Auto())
-                .addCol(new GridControl.Fill(0.4f))
-                .addCol(new GridControl.Auto()));
+                .addRow(new GridControl.GridDefinition.Auto())
+                .addRow(new GridControl.GridDefinition.Fill(1.0f))
+                .addRow(new GridControl.GridDefinition.Auto())
+                .addCol(new GridControl.GridDefinition.Fill(0.6f))
+                .addCol(new GridControl.GridDefinition.Auto())
+                .addCol(new GridControl.GridDefinition.Fill(0.4f))
+                .addCol(new GridControl.GridDefinition.Auto()));
         gridControl.setParent(screenControl);
 //        gridControl.setFitToContentsXY(true);
         gridControl.setWidth(new Fill(1.0f));

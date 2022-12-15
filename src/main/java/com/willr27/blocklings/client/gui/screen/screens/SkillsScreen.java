@@ -1,6 +1,6 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
-import com.willr27.blocklings.client.gui.control.controls.TabbedControl;
+import com.willr27.blocklings.client.gui.control.controls.TabbedUIControl;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.skill.SkillGroup;
 import com.willr27.blocklings.entity.blockling.skill.info.SkillGroupInfo;
@@ -26,7 +26,7 @@ public class SkillsScreen extends TabbedScreen
      * @param tab the associated tab.
      * @param skillGroupInfo the skill group info of the skill group to display.
      */
-    public SkillsScreen(@Nonnull BlocklingEntity blockling, @Nonnull TabbedControl.Tab tab, @Nonnull SkillGroupInfo skillGroupInfo)
+    public SkillsScreen(@Nonnull BlocklingEntity blockling, @Nonnull TabbedUIControl.Tab tab, @Nonnull SkillGroupInfo skillGroupInfo)
     {
         super(blockling, tab);
         this.skillGroup = blockling.getSkills().getGroup(skillGroupInfo);

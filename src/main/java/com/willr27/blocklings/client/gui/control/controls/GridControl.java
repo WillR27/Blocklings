@@ -37,12 +37,12 @@ public class GridControl extends Control
 
         if (gridDefinition.rows.isEmpty())
         {
-            gridDefinition.rows.add(new Auto());
+            gridDefinition.rows.add(new GridDefinition.Auto());
         }
 
         if (gridDefinition.cols.isEmpty())
         {
-            gridDefinition.cols.add(new Auto());
+            gridDefinition.cols.add(new GridDefinition.Auto());
         }
 
         rebuildGrid();
@@ -60,13 +60,13 @@ public class GridControl extends Control
 
             for (int i = 0; i < gridDefinition.rows.size(); i++)
             {
-                IDefinition definition = gridDefinition.rows.get(i);
+                GridDefinition.IDefinition definition = gridDefinition.rows.get(i);
 
-                if (definition instanceof Fixed)
+                if (definition instanceof GridDefinition.Fixed)
                 {
-                    availableHeight += ((Fixed) definition).size;
+                    availableHeight += ((GridDefinition.Fixed) definition).size;
                 }
-                else if (definition instanceof Auto)
+                else if (definition instanceof GridDefinition.Auto)
                 {
                     float maxHeight = 0.0f;
 
@@ -103,17 +103,17 @@ public class GridControl extends Control
         {
             heights[i] = 0.0f;
 
-            IDefinition definition = gridDefinition.rows.get(i);
+            GridDefinition.IDefinition definition = gridDefinition.rows.get(i);
 
-            if (definition instanceof Fixed)
+            if (definition instanceof GridDefinition.Fixed)
             {
-                float adjustedHeight = Math.min(((Fixed) definition).size, availableHeight);
+                float adjustedHeight = Math.min(((GridDefinition.Fixed) definition).size, availableHeight);
 
                 heights[i] = adjustedHeight;
 
                 availableHeight -= adjustedHeight;
             }
-            else if (definition instanceof Auto)
+            else if (definition instanceof GridDefinition.Auto)
             {
                 if (getChildren().isEmpty())
                 {
@@ -156,11 +156,11 @@ public class GridControl extends Control
         {
             for (int i = 0; i < gridDefinition.rows.size(); i++)
             {
-                IDefinition definition = gridDefinition.rows.get(i);
+                GridDefinition.IDefinition definition = gridDefinition.rows.get(i);
 
-                if (definition instanceof Fill)
+                if (definition instanceof GridDefinition.Fill)
                 {
-                    heights[i] = availableHeight * ((Fill) definition).percent;
+                    heights[i] = availableHeight * ((GridDefinition.Fill) definition).percent;
                 }
             }
         }
@@ -173,13 +173,13 @@ public class GridControl extends Control
 
             for (int i = 0; i < gridDefinition.cols.size(); i++)
             {
-                IDefinition definition = gridDefinition.cols.get(i);
+                GridDefinition.IDefinition definition = gridDefinition.cols.get(i);
 
-                if (definition instanceof Fixed)
+                if (definition instanceof GridDefinition.Fixed)
                 {
-                    availableWidth += ((Fixed) definition).size;
+                    availableWidth += ((GridDefinition.Fixed) definition).size;
                 }
-                else if (definition instanceof Auto)
+                else if (definition instanceof GridDefinition.Auto)
                 {
                     float maxWidth = 0.0f;
 
@@ -216,17 +216,17 @@ public class GridControl extends Control
         {
             widths[i] = 0.0f;
 
-            IDefinition definition = gridDefinition.cols.get(i);
+            GridDefinition.IDefinition definition = gridDefinition.cols.get(i);
 
-            if (definition instanceof Fixed)
+            if (definition instanceof GridDefinition.Fixed)
             {
-                float adjustedWidth = Math.min(((Fixed) definition).size, availableWidth);
+                float adjustedWidth = Math.min(((GridDefinition.Fixed) definition).size, availableWidth);
 
                 widths[i] = adjustedWidth;
 
                 availableWidth -= adjustedWidth;
             }
-            else if (definition instanceof Auto)
+            else if (definition instanceof GridDefinition.Auto)
             {
                 if (getChildren().isEmpty())
                 {
@@ -269,11 +269,11 @@ public class GridControl extends Control
         {
             for (int i = 0; i < gridDefinition.cols.size(); i++)
             {
-                IDefinition definition = gridDefinition.cols.get(i);
+                GridDefinition.IDefinition definition = gridDefinition.cols.get(i);
 
-                if (definition instanceof Fill)
+                if (definition instanceof GridDefinition.Fill)
                 {
-                    widths[i] = availableWidth * ((Fill) definition).percent;
+                    widths[i] = availableWidth * ((GridDefinition.Fill) definition).percent;
                 }
             }
         }
@@ -295,7 +295,7 @@ public class GridControl extends Control
                     e.childAdded.onSizeChanged.subscribeFirst(onChildSizeChanged);
                     e.childAdded.onMarginsChanged.subscribeFirst(onChildMarginsChanged);
 
-                    if (gridDefinition.rows.get(getCellControlRow(cellControl)) instanceof Auto || gridDefinition.cols.get(getCellControlCol(cellControl)) instanceof Auto)
+                    if (gridDefinition.rows.get(getCellControlRow(cellControl)) instanceof GridDefinition.Auto || gridDefinition.cols.get(getCellControlCol(cellControl)) instanceof GridDefinition.Auto)
                     {
                         rebuildGrid();
                     }
@@ -305,7 +305,7 @@ public class GridControl extends Control
                     e.childRemoved.onSizeChanged.unsubscribe(onChildSizeChanged);
                     e.childRemoved.onMarginsChanged.unsubscribe(onChildMarginsChanged);
 
-                    if (gridDefinition.rows.get(getCellControlRow(cellControl)) instanceof Auto || gridDefinition.cols.get(getCellControlCol(cellControl)) instanceof Auto)
+                    if (gridDefinition.rows.get(getCellControlRow(cellControl)) instanceof GridDefinition.Auto || gridDefinition.cols.get(getCellControlCol(cellControl)) instanceof GridDefinition.Auto)
                     {
                         rebuildGrid();
                     }
@@ -491,9 +491,7 @@ public class GridControl extends Control
 
             return this;
         }
-    }
-
-    /**
+        /**
      * Defines a fixed sized row/column.
      */
     public static class Fixed implements IDefinition
@@ -549,4 +547,5 @@ public class GridControl extends Control
      * Common interface for the grid definition types.
      */
     public interface IDefinition { }
+    }
 }

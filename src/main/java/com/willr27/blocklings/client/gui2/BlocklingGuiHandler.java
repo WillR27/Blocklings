@@ -1,7 +1,7 @@
 package com.willr27.blocklings.client.gui2;
 
 import com.willr27.blocklings.Blocklings;
-import com.willr27.blocklings.client.gui.control.controls.TabbedControl;
+import com.willr27.blocklings.client.gui.control.controls.TabbedUIControl;
 import com.willr27.blocklings.client.gui.screen.screens.*;
 import com.willr27.blocklings.client.gui2.containers.EquipmentContainer;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
@@ -196,11 +196,11 @@ public class BlocklingGuiHandler
             case STATS_ID: return new TasksScreen(blockling);
             case TASKS_ID: return new TasksScreen(blockling);
             case EQUIPMENT_ID: return new EquipmentScreen(blockling, (EquipmentContainer) container);
-            case GENERAL_ID: return new SkillsScreen(blockling, TabbedControl.Tab.GENERAL, BlocklingSkills.Groups.GENERAL);
-            case COMBAT_ID: return new SkillsScreen(blockling, TabbedControl.Tab.COMBAT, BlocklingSkills.Groups.COMBAT);
-            case MINING_ID: return new SkillsScreen(blockling, TabbedControl.Tab.MINING, BlocklingSkills.Groups.MINING);
-            case WOODCUTTING_ID: return new SkillsScreen(blockling, TabbedControl.Tab.WOODCUTTING, BlocklingSkills.Groups.WOODCUTTING);
-            case FARMING_ID: return new SkillsScreen(blockling, TabbedControl.Tab.FARMING, BlocklingSkills.Groups.FARMING);
+            case GENERAL_ID: return new SkillsScreen(blockling, TabbedUIControl.Tab.GENERAL, BlocklingSkills.Groups.GENERAL);
+            case COMBAT_ID: return new SkillsScreen(blockling, TabbedUIControl.Tab.COMBAT, BlocklingSkills.Groups.COMBAT);
+            case MINING_ID: return new SkillsScreen(blockling, TabbedUIControl.Tab.MINING, BlocklingSkills.Groups.MINING);
+            case WOODCUTTING_ID: return new SkillsScreen(blockling, TabbedUIControl.Tab.WOODCUTTING, BlocklingSkills.Groups.WOODCUTTING);
+            case FARMING_ID: return new SkillsScreen(blockling, TabbedUIControl.Tab.FARMING, BlocklingSkills.Groups.FARMING);
         }
 
         return null;
