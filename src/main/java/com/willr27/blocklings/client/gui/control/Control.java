@@ -631,15 +631,21 @@ public class Control extends Gui
 
             for (Control control : getChildren())
             {
-                float controlMinX = control.getX() - control.getMargin(Side.LEFT);
-                float controlMinY = control.getY() - control.getMargin(Side.TOP);
-                float controlMaxX = control.getX() - control.getMargin(Side.LEFT) + control.getEffectiveWidth();
-                float controlMaxY = control.getY() - control.getMargin(Side.TOP) + control.getEffectiveHeight();
+                if (control.getFillWidth() == null)
+                {
+                    float controlMinX = control.getX() - control.getMargin(Side.LEFT);
+                    float controlMaxX = control.getX() - control.getMargin(Side.LEFT) + control.getEffectiveWidth();
+                    minX = Math.min(minX, controlMinX);
+                    maxX = Math.max(maxX, controlMaxX);
+                }
 
-                minX = Math.min(minX, controlMinX);
-                minY = Math.min(minY, controlMinY);
-                maxX = Math.max(maxX, controlMaxX);
-                maxY = Math.max(maxY, controlMaxY);
+                if (control.getFillHeight() == null)
+                {
+                    float controlMinY = control.getY() - control.getMargin(Side.TOP);
+                    float controlMaxY = control.getY() - control.getMargin(Side.TOP) + control.getEffectiveHeight();
+                    minY = Math.min(minY, controlMinY);
+                    maxY = Math.max(maxY, controlMaxY);
+                }
             }
 
             if (shouldFitToContentsX())
@@ -875,7 +881,7 @@ public class Control extends Gui
      * @param dy the y offset.
      * @param texture the texture to render.
      */
-    public void renderTexture(@Nonnull MatrixStack matrixStack, int dx, int dy, @Nonnull GuiTexture texture)
+    public void renderTexture(@Nonnull MatrixStack matrixStack, float dx, float dy, @Nonnull GuiTexture texture)
     {
         renderTexture(matrixStack, texture, getPixelX() + dx, getPixelY() + dy);
     }
@@ -1612,6 +1618,57 @@ public class Control extends Gui
     }
 
     /**
+     * @return whether the given control is an ancestor of this control.
+     */
+    public boolean isAncestor(@Nullable Control control)
+    {
+        if (control == null)
+        {
+            return false;
+        }
+
+        if (control == this)
+        {
+            return false;
+        }
+
+        if (getParent() == null)
+        {
+            return false;
+        }
+
+        if (control == getParent())
+        {
+            return true;
+        }
+
+        return getParent().isAncestor(this);
+    }
+
+    /**
+     * @return whether the given control is a descendant of this control.
+     */
+    public boolean isDescendant(@Nullable Control control)
+    {
+        if (control == null)
+        {
+            return false;
+        }
+
+        if (control == this)
+        {
+            return false;
+        }
+
+        if (getChildren().contains(control))
+        {
+            return true;
+        }
+
+        return getChildren().stream().anyMatch(child -> child.isDescendant(control));
+    }
+
+    /**
      * @return the current parent control.
      */
     @Nullable
@@ -1721,12 +1778,27 @@ public class Control extends Gui
     }
 
     /**
+     * Inserts the given control as the first child.
+     */
+    public void insertOrMoveChildFirst(@Nonnull Control controlToInsert)
+    {
+        if (!getChildren().isEmpty())
+        {
+            insertOrMoveChildBefore(controlToInsert, getChildren().get(0));
+        }
+        else
+        {
+            addChild(controlToInsert);
+        }
+    }
+
+    /**
      * Inserts the given control before the given child control in the list of children.
      *
      * @param controlToInsert the control to insert (can be an existing child).
      * @param childToInsertBefore the child to insert the control before.
      */
-    public void insertChildBefore(@Nonnull Control controlToInsert, @Nonnull Control childToInsertBefore)
+    public void insertOrMoveChildBefore(@Nonnull Control controlToInsert, @Nonnull Control childToInsertBefore)
     {
         if (childToInsertBefore.getParent() != this)
         {
@@ -1755,7 +1827,7 @@ public class Control extends Gui
      * @param controlToInsert the control to insert (can be an existing child).
      * @param childToInsertAfter the child to insert the control after.
      */
-    public void insertChildAfter(@Nonnull Control controlToInsert, @Nonnull Control childToInsertAfter)
+    public void insertOrMoveChildAfter(@Nonnull Control controlToInsert, @Nonnull Control childToInsertAfter)
     {
         if (childToInsertAfter.getParent() != this)
         {
@@ -2312,6 +2384,11 @@ public class Control extends Gui
         int oldTop = getPadding(Side.TOP);
         int oldRight = getPadding(Side.RIGHT);
         int oldBottom = getPadding(Side.BOTTOM);
+
+        if (oldLeft == left && oldRight == right && oldTop == top && oldBottom == bottom)
+        {
+            return;
+        }
 
         padding.put(Side.LEFT, left);
         padding.put(Side.TOP, top);

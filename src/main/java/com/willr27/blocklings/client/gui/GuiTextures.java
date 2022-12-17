@@ -19,6 +19,17 @@ public class GuiTextures
         public static final GuiTexture NODE_UNPRESSED = new GuiTexture(COMMON, 46, 0, 12, 12);
         public static final GuiTexture NODE_PRESSED = new GuiTexture(COMMON, 58, 0, 12, 12);
 
+        public static class DropDown
+        {
+            public static final int BORDER_SIZE = 2;
+
+            public static final GuiTexture DOWN_ARROW = new GuiTexture(COMMON, 24, 0, 11, 7);
+            public static final GuiTexture UP_ARROW = new GuiTexture(COMMON, 35, 0, 11, 7);
+
+            public static final GuiTexture SELECTED_BACKGROUND = new GuiTexture(COMMON, 0, 48, 256, 20);
+            public static final GuiTexture UNSELECTED_BACKGROUND = new GuiTexture(COMMON, 0, 69, 256, 19);
+        }
+
         public static class Tab
         {
             public static final int EDGE_WIDTH = 4;

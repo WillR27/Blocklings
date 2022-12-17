@@ -1,11 +1,13 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.util.Pair;
 import com.willr27.blocklings.client.gui.GuiTextures;
 import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.control.*;
 import com.willr27.blocklings.client.gui.control.controls.*;
 import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
+import com.willr27.blocklings.client.gui.control.controls.tasks.MiscConfigControl;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
 import com.willr27.blocklings.client.gui2.GuiTexture;
@@ -49,7 +51,7 @@ public class TasksScreen extends TabbedScreen
      * The task config container control.
      */
     @Nonnull
-    private final Control taskConfigContainerControl = new Control();
+    private final TaskConfigContainerControl taskConfigContainerControl = new TaskConfigContainerControl();
 
     /**
      * @param blockling the blockling.
@@ -67,16 +69,11 @@ public class TasksScreen extends TabbedScreen
         // Remove children from controls we don't recreate when the window resizes.
         taskContainerControl.clearChildren();
         taskListContainerControl.clearChildren();
-        taskConfigContainerControl.clearChildren();
 
         taskContainerControl.setParent(contentControl);
         taskListContainerControl.setParent(taskContainerControl);
         taskListContainerControl.setWidth(new Fill(1.0f));
         taskListContainerControl.setHeight(new Fill(1.0f));
-        taskConfigContainerControl.setParent(taskContainerControl);
-        taskConfigContainerControl.setWidth(new Fill(1.0f));
-        taskConfigContainerControl.setHeight(new Fill(1.0f));
-        taskConfigContainerControl.setVisible(false);
 
         FlowPanel taskListControl = new FlowPanel();
         taskListControl.setParent(taskListContainerControl);
@@ -101,7 +98,7 @@ public class TasksScreen extends TabbedScreen
         blockling.getTasks().onCreateTask.subscribe((e) ->
         {
             TaskControl taskControl = new TaskControl(e.task);
-            taskListControl.insertChildBefore(taskControl, addTaskControl);
+            taskListControl.insertOrMoveChildBefore(taskControl, addTaskControl);
         });
 
         blockling.getTasks().onRemoveTask.subscribe((e) ->
@@ -122,31 +119,6 @@ public class TasksScreen extends TabbedScreen
         scrollbarControl.setWidth(12);
         scrollbarControl.setPercentHeight(1.0f);
         scrollbarControl.setPercentX(1.0f);
-
-
-
-        TextFieldControl taskNameFieldControl = new TextFieldControl();
-        taskNameFieldControl.setParent(taskConfigContainerControl);
-        taskNameFieldControl.setDock(Dock.TOP);
-        taskNameFieldControl.setText("asdsaddsa");
-
-        Control nameTabDividerControl = new Control();
-        nameTabDividerControl.setParent(taskConfigContainerControl);
-        nameTabDividerControl.setDock(Dock.TOP);
-        nameTabDividerControl.setHeight(4.0f);
-
-        Control scrollbarTabDividerControl = new Control();
-        scrollbarTabDividerControl.setParent(taskConfigContainerControl);
-        scrollbarTabDividerControl.setDock(Dock.RIGHT);
-        scrollbarTabDividerControl.setWidth(18.0f);
-
-        TabbedControl tabbedControl = new TabbedControl(taskConfigContainerControl);
-        tabbedControl.setDock(Dock.FILL);
-        tabbedControl.addTab("Hello");
-        tabbedControl.addTab("Hello234");
-        tabbedControl.addTab("Hlyo334");
-        tabbedControl.addTab("Hello555");
-        tabbedControl.addTab("Hello");
 
         // Reset the screen (important when resizing the window).
         taskContainerControl.closeConfig();
@@ -171,7 +143,7 @@ public class TasksScreen extends TabbedScreen
         public void openConfig(@Nonnull Task task)
         {
             taskListContainerControl.setVisible(false);
-            taskConfigContainerControl.setVisible(true);
+            taskConfigContainerControl.open(task);
             tabbedControl.backgroundControl.setTexture(GuiTextures.Tasks.CONFIG_BACKGROUND);
         }
 
@@ -180,9 +152,90 @@ public class TasksScreen extends TabbedScreen
          */
         public void closeConfig()
         {
-            taskConfigContainerControl.setVisible(false);
+            taskConfigContainerControl.close();
             taskListContainerControl.setVisible(true);
             tabbedControl.backgroundControl.setTexture(tabbedControl.selectedTab.backgroundTexture);
+        }
+    }
+
+    /**
+     * Contains the config for a task.
+     */
+    private class TaskConfigContainerControl extends Control
+    {
+        /**
+         * The task name field control.
+         */
+        @Nonnull
+        private TextFieldControl taskNameFieldControl;
+
+        /**
+         * The tabbed control containing each config tab.
+         */
+        @Nonnull
+        private TabbedControl tabbedControl;
+
+        /**
+         */
+        public TaskConfigContainerControl()
+        {
+            super();
+
+            setWidth(new Fill(1.0f));
+            setHeight(new Fill(1.0f));
+            setVisible(false);
+        }
+
+        /**
+         * Opens the config for the given task.
+         */
+        public void open(@Nonnull Task task)
+        {
+            clearChildren();
+            setParent(taskContainerControl);
+            setVisible(true);
+
+            taskNameFieldControl = new TextFieldControl();
+            taskNameFieldControl.setParent(this);
+            taskNameFieldControl.setDock(Dock.TOP);
+            taskNameFieldControl.setText(task.getCustomName());
+            taskNameFieldControl.focusChanged.subscribe((e) ->
+            {
+                task.setCustomName(taskNameFieldControl.getText().trim());
+                taskNameFieldControl.setText(task.getCustomName());
+            });
+
+            Control nameTabDividerControl = new Control();
+            nameTabDividerControl.setParent(this);
+            nameTabDividerControl.setDock(Dock.TOP);
+            nameTabDividerControl.setHeight(4.0f);
+
+            Control scrollbarTabDividerControl = new Control();
+            scrollbarTabDividerControl.setParent(this);
+            scrollbarTabDividerControl.setDock(Dock.RIGHT);
+            scrollbarTabDividerControl.setWidth(18.0f);
+
+            recreateTabs(task);
+        }
+
+        /**
+         * Closes the config.
+         */
+        public void close()
+        {
+            setVisible(false);
+        }
+
+        /**
+         * Recreates the tabs.
+         */
+        private void recreateTabs(@Nonnull Task task)
+        {
+            tabbedControl = new TabbedControl(this);
+            tabbedControl.setDock(Dock.FILL);
+
+            Pair<TabbedControl.TabControl, Control> miscTab = tabbedControl.addTab(new BlocklingsTranslationTextComponent("task.ui.tab.misc").getString());
+            miscTab.getSecond().addChild(new MiscConfigControl(task));
         }
     }
 
@@ -243,6 +296,12 @@ public class TasksScreen extends TabbedScreen
 
                 @Override
                 public void onHoverExit(@Nonnull MousePosEvent mousePosEvent)
+                {
+                    iconTexture = task != null ? task.getType().texture : GuiTextures.Tasks.TASK_CONFIG_ICON;
+                }
+
+                @Override
+                public void onDragStart(@Nonnull MousePosEvent mousePosEvent)
                 {
                     iconTexture = task != null ? task.getType().texture : GuiTextures.Tasks.TASK_CONFIG_ICON;
                 }

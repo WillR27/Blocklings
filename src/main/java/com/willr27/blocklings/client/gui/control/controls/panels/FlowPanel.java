@@ -372,18 +372,18 @@ public class FlowPanel extends Panel
 
                 if (lastControl != draggedControl)
                 {
-                    insertChildAfter(draggedControl, lastControl);
+                    insertOrMoveChildAfter(draggedControl, lastControl);
                 }
             }
             else if (closestControl != draggedControl && closestControl.isReorderable())
             {
                 if (closestDifX < 0)
                 {
-                    insertChildBefore(draggedControl, closestControl);
+                    insertOrMoveChildBefore(draggedControl, closestControl);
                 }
                 else
                 {
-                    insertChildAfter(draggedControl, closestControl);
+                    insertOrMoveChildAfter(draggedControl, closestControl);
                 }
             }
         }
@@ -448,18 +448,18 @@ public class FlowPanel extends Panel
 
                 if (lastControl != draggedControl)
                 {
-                    insertChildAfter(draggedControl, lastControl);
+                    insertOrMoveChildAfter(draggedControl, lastControl);
                 }
             }
             else if (closestControl != draggedControl && closestControl.isReorderable())
             {
                 if (closestDifY < 0)
                 {
-                    insertChildBefore(draggedControl, closestControl);
+                    insertOrMoveChildBefore(draggedControl, closestControl);
                 }
                 else
                 {
-                    insertChildAfter(draggedControl, closestControl);
+                    insertOrMoveChildAfter(draggedControl, closestControl);
                 }
             }
         }

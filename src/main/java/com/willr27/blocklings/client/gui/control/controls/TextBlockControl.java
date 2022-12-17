@@ -140,7 +140,7 @@ public class TextBlockControl extends TextControl
 
         if (shouldTrimText())
         {
-            textToRender = new StringTextComponent(GuiUtil.trimWithEllipses(font, getText(), Math.round(getWidth())));
+            textToRender = new StringTextComponent(GuiUtil.trimWithEllipses(font, getText(), Math.round(getWidth() - getPadding(Side.LEFT) - getPadding(Side.RIGHT))));
         }
 
         return textToRender;

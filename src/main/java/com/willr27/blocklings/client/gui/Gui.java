@@ -35,11 +35,11 @@ public class Gui extends AbstractGui
      * @param x the x position to render at.
      * @param y the y position to render at.
      */
-    protected void renderTexture(@Nonnull MatrixStack matrixStack, @Nonnull GuiTexture texture, int x, int y)
+    protected void renderTexture(@Nonnull MatrixStack matrixStack, @Nonnull GuiTexture texture, float x, float y)
     {
         GuiUtil.bindTexture(texture.texture);
 
-        blit(matrixStack, x, y, texture.x, texture.y, texture.width, texture.height);
+        blit(matrixStack, (int) x, (int) y, texture.x, texture.y, texture.width, texture.height);
     }
 
     /**
