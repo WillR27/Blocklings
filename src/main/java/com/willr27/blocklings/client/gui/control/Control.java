@@ -284,6 +284,11 @@ public class Control extends Gui
     private boolean isInteractive = true;
 
     /**
+     * Whether the control is pressable.
+     */
+    private boolean isPressable = true;
+
+    /**
      * Whether the control blocks dragging at its boundaries. So child controls that attempt
      * to be dragged outside this control will be blocked.
      */
@@ -337,9 +342,21 @@ public class Control extends Gui
     private float scrollOffsetX = 0;
 
     /**
+     * Occurs when the scroll offset is changed in the x-axis.
+     */
+    @Nonnull
+    public final EventHandler<ScrollOffsetChangedEvent> onScrollOffsetXChanged = new EventHandler<>();
+
+    /**
      * The scroll offset in the y-axis.
      */
     private float scrollOffsetY = 0;
+
+    /**
+     * Occurs when the scroll offset is changed in the y-axis.
+     */
+    @Nonnull
+    public final EventHandler<ScrollOffsetChangedEvent> onScrollOffsetYChanged = new EventHandler<>();
 
     /**
      * The max scroll offset in the x-axis.
@@ -347,9 +364,21 @@ public class Control extends Gui
     private int maxScrollOffsetX = 0;
 
     /**
+     * Occurs when the max scroll offset is changed in the x-axis.
+     */
+    @Nonnull
+    public final EventHandler<ScrollOffsetChangedEvent> onMaxScrollOffsetXChanged = new EventHandler<>();
+
+    /**
      * The max scroll offset in the y-axis.
      */
     private int maxScrollOffsetY = 0;
+
+    /**
+     * Occurs when the max scroll offset is changed in the y-axis.
+     */
+    @Nonnull
+    public final EventHandler<ScrollOffsetChangedEvent> onMaxScrollOffsetYChanged = new EventHandler<>();
 
     /**
      * Whether the control can be reordered.
@@ -1260,7 +1289,11 @@ public class Control extends Gui
                     mouseButtonEvent.setIsHandled(true);
 
                     getScreen().setFocusedControl(this);
-                    getScreen().setPressedControl(this, mouseButtonEvent);
+
+                    if (isPressable())
+                    {
+                        getScreen().setPressedControl(this, mouseButtonEvent);
+                    }
                 }
             }
         }
@@ -1995,8 +2028,13 @@ public class Control extends Gui
     /**
      * Sets the scaled local x position of the control.
      */
-    public final void setX(float x)
+    public void setX(float x)
     {
+        if (this.x == x)
+        {
+            return;
+        }
+
         this.x = x;
 
         recalcPixelX();
@@ -2007,7 +2045,7 @@ public class Control extends Gui
     /**
      * Moves the control by the given amount in the x-axis.
      */
-    public final void moveX(float dx)
+    public void moveX(float dx)
     {
         setX(getX() + dx);
     }
@@ -2016,7 +2054,7 @@ public class Control extends Gui
      * Aligns the control horizontally within the parent the given percentage respecting padding and
      * margins. So 0.5f would be the center of the control, 0.1f would be 10% from the left.
      */
-    public final void setPercentX(float percent)
+    public void setPercentX(float percent)
     {
         percent = Math.min(1.0f, Math.max(0.0f, percent));
 
@@ -2029,7 +2067,7 @@ public class Control extends Gui
     /**
      * @return the y position of the middle of the control, including margins.
      */
-    public final float getMidY()
+    public float getMidY()
     {
         return getY() + getEffectiveHeight() / 2;
     }
@@ -2037,7 +2075,7 @@ public class Control extends Gui
     /**
      * @return the scaled local y position of the control.
      */
-    public final float getY()
+    public float getY()
     {
         return y;
     }
@@ -2045,8 +2083,13 @@ public class Control extends Gui
     /**
      * Sets the scaled local y position of the control.
      */
-    public final void setY(float y)
+    public void setY(float y)
     {
+        if (this.y == y)
+        {
+            return;
+        }
+
         this.y = y;
 
         recalcPixelY();
@@ -2057,7 +2100,7 @@ public class Control extends Gui
     /**
      * Moves the control by the given amount in the y-axis.
      */
-    public final void moveY(float dy)
+    public void moveY(float dy)
     {
         setY(getY() + dy);
     }
@@ -2066,7 +2109,7 @@ public class Control extends Gui
      * Aligns the control vertically within the parent the given percentage respecting padding and
      * margins. So 0.5f would be the center of the control, 0.1f would be 10% from the top.
      */
-    public final void setPercentY(float percent)
+    public void setPercentY(float percent)
     {
         percent = Math.min(1.0f, Math.max(0.0f, percent));
 
@@ -2777,6 +2820,22 @@ public class Control extends Gui
     }
 
     /**
+     * @return whether the control is pressable.
+     */
+    public boolean isPressable()
+    {
+        return isPressable;
+    }
+
+    /**
+     * Sets whether the control is pressable.
+     */
+    public void setPressable(boolean isPressable)
+    {
+        this.isPressable = isPressable;
+    }
+
+    /**
      * @return whether this control blocks dragging of child controls.
      */
     public boolean blocksDrag()
@@ -2947,13 +3006,22 @@ public class Control extends Gui
      */
     public float setScrollOffsetX(float scrollOffsetX)
     {
+        scrollOffsetX = Math.max(0, Math.min(getMaxScrollOffsetX(), scrollOffsetX));
+
+        if (this.scrollOffsetX == scrollOffsetX)
+        {
+            return 0.0f;
+        }
+
         float prevOffset = this.scrollOffsetX;
 
-        this.scrollOffsetX = Math.max(0, Math.min(getMaxScrollOffsetX(), scrollOffsetX));
+        this.scrollOffsetX = scrollOffsetX;
 
         float amountScrolled = this.scrollOffsetX - prevOffset;
 
         getChildrenCopy().forEach(control -> control.setX(control.getX() - amountScrolled));
+
+        onScrollOffsetXChanged.handle(new ScrollOffsetChangedEvent(this, prevOffset));
 
         return amountScrolled;
     }
@@ -2983,13 +3051,22 @@ public class Control extends Gui
      */
     public float setScrollOffsetY(float scrollOffsetY)
     {
+        scrollOffsetY = Math.max(0, Math.min(getMaxScrollOffsetY(), scrollOffsetY));
+
+        if (this.scrollOffsetY == scrollOffsetY)
+        {
+            return 0.0f;
+        }
+
         float prevOffset = this.scrollOffsetY;
 
-        this.scrollOffsetY = Math.max(0, Math.min(getMaxScrollOffsetY(), scrollOffsetY));
+        this.scrollOffsetY = scrollOffsetY;
 
         float amountScrolled = this.scrollOffsetY - prevOffset;
 
         getChildrenCopy().forEach(control -> control.setY(control.getY() - amountScrolled));
+
+        onScrollOffsetYChanged.handle(new ScrollOffsetChangedEvent(this, prevOffset));
 
         return amountScrolled;
     }
@@ -3007,12 +3084,16 @@ public class Control extends Gui
      */
     public void setMaxScrollOffsetX(int maxScrollOffsetX)
     {
+        float previousMaxScrollOffsetX = this.maxScrollOffsetX;
+
         this.maxScrollOffsetX = Math.max(0, maxScrollOffsetX);
 
         if (getScrollOffsetX() > getMaxScrollOffsetX())
         {
             setScrollOffsetX(getMaxScrollOffsetX());
         }
+
+        onMaxScrollOffsetXChanged.handle(new ScrollOffsetChangedEvent(this, previousMaxScrollOffsetX));
     }
 
     /**
@@ -3028,12 +3109,16 @@ public class Control extends Gui
      */
     public void setMaxScrollOffsetY(int maxScrollOffsetY)
     {
+        float previousMaxScrollOffsetY = this.maxScrollOffsetY;
+
         this.maxScrollOffsetY = Math.max(0, maxScrollOffsetY);
 
         if (getScrollOffsetY() > getMaxScrollOffsetY())
         {
             setScrollOffsetY(getMaxScrollOffsetY());
         }
+
+        onMaxScrollOffsetYChanged.handle(new ScrollOffsetChangedEvent(this, previousMaxScrollOffsetY));
     }
 
     /**

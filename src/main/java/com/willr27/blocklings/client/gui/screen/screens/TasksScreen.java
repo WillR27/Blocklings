@@ -114,9 +114,9 @@ public class TasksScreen extends TabbedScreen
             }
         });
 
-        Control scrollbarControl = new Control();
+        ScrollbarControl scrollbarControl = new ScrollbarControl();
         scrollbarControl.setParent(taskListContainerControl);
-        scrollbarControl.setWidth(12);
+        scrollbarControl.setAssociatedControl(taskListControl);
         scrollbarControl.setPercentHeight(1.0f);
         scrollbarControl.setPercentX(1.0f);
 

@@ -19,6 +19,12 @@ public class GuiTextures
         public static final GuiTexture NODE_UNPRESSED = new GuiTexture(COMMON, 46, 0, 12, 12);
         public static final GuiTexture NODE_PRESSED = new GuiTexture(COMMON, 58, 0, 12, 12);
 
+        public static class Scrollbar
+        {
+            public static final GuiTexture GRABBER_UNPRESSED = new GuiTexture(COMMON, 0, 0, 12, 15);
+            public static final GuiTexture GRABBER_PRESSED = new GuiTexture(COMMON, 12, 0, 12, 15);
+        }
+
         public static class DropDown
         {
             public static final int BORDER_SIZE = 2;

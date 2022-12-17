@@ -8,7 +8,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nonnull;
 
 /**
- * Occurs when a control's size is changed.
+ * Occurs when a control's visibility is changed.
  */
 @OnlyIn(Dist.CLIENT)
 public class VisibilityChangedEvent extends ControlEvent
