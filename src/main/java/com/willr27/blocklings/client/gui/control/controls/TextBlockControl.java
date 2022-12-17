@@ -117,8 +117,11 @@ public class TextBlockControl extends TextControl
 //            Blocklings.LOGGER.warn(ex.toString());
         }
 
+        float x = com.willr27.blocklings.client.gui.util.GuiUtil.getInstance().getGuiScale() == 1.0f ? Math.round(textScreenX) : textScreenX;
+        float y = com.willr27.blocklings.client.gui.util.GuiUtil.getInstance().getGuiScale() == 1.0f ? Math.round(textScreenY) : textScreenY;
+
         MatrixStack matrixStack = new MatrixStack();
-        matrixStack.translate(Math.round(textScreenX), Math.round(textScreenY), z);
+        matrixStack.translate(x, y, z);
         matrixStack.scale(getCumulativeScale(), getCumulativeScale(), 1.0f);
 
         if (shouldRenderShadow())
