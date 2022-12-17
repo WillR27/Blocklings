@@ -31,13 +31,19 @@ public class TabbedUIControl extends Control
      * The blockling.
      */
     @Nonnull
-    private final BlocklingEntity blockling;
+    public final BlocklingEntity blockling;
 
     /**
      * The selected tab.
      */
     @Nonnull
-    private final Tab selectedTab;
+    public final Tab selectedTab;
+
+    /**
+     * The background texture control.
+     */
+    @Nonnull
+    public final TexturedControl backgroundControl;
 
     /**
      * @param blockling the blockling.
@@ -48,6 +54,8 @@ public class TabbedUIControl extends Control
         super();
         this.blockling = blockling;
         this.selectedTab = selectedTab;
+
+        backgroundControl = new TexturedControl(selectedTab.backgroundTexture);
 
         // The main area the UI + tabs are within.
         setWidth(234);
@@ -68,7 +76,6 @@ public class TabbedUIControl extends Control
             new TabControl(tab, blockling, this);
         }
 
-        Control backgroundControl = new TexturedControl(selectedTab.backgroundTexture);
         backgroundControl.setParent(this);
         backgroundControl.setPercentX(0.5f);
         backgroundControl.setPercentY(0.5f);

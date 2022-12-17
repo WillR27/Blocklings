@@ -761,19 +761,19 @@ public class Control extends Gui
             return;
         }
 
-        applyPreRenderTransformations(renderArgs);
         applyPreRenderOperations(renderArgs);
+        applyPreRenderTransformations(renderArgs);
         applyScissor(renderArgs);
         applyRenderSystemOperations(renderArgs);
         onRenderUpdate(renderArgs);
         onRenderBackground(renderArgs);
         onRender(renderArgs);
         undoRenderSystemOperations(renderArgs);
-        applyPostRenderOperations(renderArgs);
         applyPostRenderTransformations(renderArgs);
 
         getRenderChildrenCopy().forEach(control -> control.forwardRender(renderArgs));
 
+        applyPostRenderOperations(renderArgs);
         undoScissor(renderArgs);
     }
 
@@ -889,6 +889,7 @@ public class Control extends Gui
     public void renderRectangle(@Nonnull MatrixStack matrixStack, int colour)
     {
         fill(matrixStack, getPixelX(), getPixelY(), Math.round(getPixelX() + getWidth()), Math.round(getPixelY() + getHeight()), colour);
+        RenderSystem.enableBlend();
     }
 
     /**
@@ -904,6 +905,7 @@ public class Control extends Gui
     public void renderRectangle(@Nonnull MatrixStack matrixStack, int x, int y, int width, int height, int colour)
     {
         fill(matrixStack, getPixelX() + x, getPixelY() + y, getPixelX() + x + width, getPixelY() + y + height, colour);
+        RenderSystem.enableBlend();
     }
 
     /**
@@ -2671,7 +2673,7 @@ public class Control extends Gui
      */
     public boolean isInteractive()
     {
-        return isInteractive;
+        return isInteractive && isVisible();
     }
 
     /**

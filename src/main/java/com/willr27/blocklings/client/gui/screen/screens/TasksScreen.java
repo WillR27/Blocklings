@@ -1,5 +1,6 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.client.gui.GuiTextures;
 import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.control.*;
@@ -7,9 +8,11 @@ import com.willr27.blocklings.client.gui.control.controls.*;
 import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
+import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.client.gui2.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.task.Task;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
@@ -32,6 +35,24 @@ import java.util.stream.Collectors;
 public class TasksScreen extends TabbedScreen
 {
     /**
+     * The container for both the task list and config containers.
+     */
+    @Nonnull
+    private final TaskContainerControl taskContainerControl = new TaskContainerControl();
+
+    /**
+     * The task list container control.
+     */
+    @Nonnull
+    private final Control taskListContainerControl = new Control();
+
+    /**
+     * The task config container control.
+     */
+    @Nonnull
+    private final Control taskConfigContainerControl = new Control();
+
+    /**
      * @param blockling the blockling.
      */
     public TasksScreen(@Nonnull BlocklingEntity blockling)
@@ -44,22 +65,22 @@ public class TasksScreen extends TabbedScreen
     {
         super.init();
 
-        Control taskListContainerControl = new Control();
-        taskListContainerControl.setParent(contentControl);
-        taskListContainerControl.setPercentWidth(1.0f);
-        taskListContainerControl.setPercentHeight(1.0f);
+        // Remove children from controls we don't recreate when the window resizes.
+        taskContainerControl.clearChildren();
+        taskListContainerControl.clearChildren();
+        taskConfigContainerControl.clearChildren();
 
-        TabbedControl tabbedControl = new TabbedControl(taskListContainerControl);
-        tabbedControl.setWidth(new Fill(1.0f));
-        tabbedControl.setHeight(new Fill(1.0f));
-        tabbedControl.addTab("Hello");
-        tabbedControl.addTab("Hello234");
-        tabbedControl.addTab("Hlyo334");
-        tabbedControl.addTab("Hello555");
-        tabbedControl.addTab("Hello");
+        taskContainerControl.setParent(contentControl);
+        taskListContainerControl.setParent(taskContainerControl);
+        taskListContainerControl.setWidth(new Fill(1.0f));
+        taskListContainerControl.setHeight(new Fill(1.0f));
+        taskConfigContainerControl.setParent(taskContainerControl);
+        taskConfigContainerControl.setWidth(new Fill(1.0f));
+        taskConfigContainerControl.setHeight(new Fill(1.0f));
+        taskConfigContainerControl.setVisible(false);
 
         FlowPanel taskListControl = new FlowPanel();
-//        taskListControl.setParent(taskListContainerControl);
+        taskListControl.setParent(taskListContainerControl);
         taskListControl.setDragReorderType(DragReorderType.INSERT_ON_MOVE);
         taskListControl.setWidth(140);
         taskListControl.setPercentHeight(1.0f);
@@ -102,6 +123,68 @@ public class TasksScreen extends TabbedScreen
         scrollbarControl.setWidth(12);
         scrollbarControl.setPercentHeight(1.0f);
         scrollbarControl.setPercentX(1.0f);
+
+
+
+        TextFieldControl taskNameFieldControl = new TextFieldControl();
+        taskNameFieldControl.setParent(taskConfigContainerControl);
+        taskNameFieldControl.setDock(Dock.TOP);
+        taskNameFieldControl.setText("asdsaddsa");
+
+        Control nameTabDividerControl = new Control();
+        nameTabDividerControl.setParent(taskConfigContainerControl);
+        nameTabDividerControl.setDock(Dock.TOP);
+        nameTabDividerControl.setHeight(4.0f);
+
+        Control scrollbarTabDividerControl = new Control();
+        scrollbarTabDividerControl.setParent(taskConfigContainerControl);
+        scrollbarTabDividerControl.setDock(Dock.RIGHT);
+        scrollbarTabDividerControl.setWidth(18.0f);
+
+        TabbedControl tabbedControl = new TabbedControl(taskConfigContainerControl);
+        tabbedControl.setDock(Dock.FILL);
+        tabbedControl.addTab("Hello");
+        tabbedControl.addTab("Hello234");
+        tabbedControl.addTab("Hlyo334");
+        tabbedControl.addTab("Hello555");
+        tabbedControl.addTab("Hello");
+
+        // Reset the screen (important when resizing the window).
+        taskContainerControl.closeConfig();
+    }
+
+    /**
+     * Contains both the task list and task config containers.
+     */
+    private class TaskContainerControl extends Control
+    {
+        /**
+         */
+        public TaskContainerControl()
+        {
+            setWidth(new Fill(1.0f));
+            setHeight(new Fill(1.0f));
+        }
+
+        /**
+         * Opens the config for the given task if it is not already.
+         */
+        public void openConfig(@Nonnull Task task)
+        {
+            taskListContainerControl.setVisible(false);
+            taskConfigContainerControl.setVisible(true);
+            tabbedControl.backgroundControl.setTexture(GuiTextures.Tasks.CONFIG_BACKGROUND);
+        }
+
+        /**
+         * Closes the config if it is open.
+         */
+        public void closeConfig()
+        {
+            taskConfigContainerControl.setVisible(false);
+            taskListContainerControl.setVisible(true);
+            tabbedControl.backgroundControl.setTexture(tabbedControl.selectedTab.backgroundTexture);
+        }
     }
 
     /**
@@ -151,12 +234,12 @@ public class TasksScreen extends TabbedScreen
                  * The icon texture.
                  */
                 @Nonnull
-                private GuiTexture iconTexture = texture;
+                private GuiTexture iconTexture = getTexture();
 
                 @Override
                 public void onHoverEnter(@Nonnull MousePosEvent mousePosEvent)
                 {
-                    iconTexture = GuiTextures.Tasks.TASK_CONFIG_ICON;
+                    iconTexture = !isDraggingOrAncestorIsDragging() ? GuiTextures.Tasks.TASK_CONFIG_ICON : iconTexture;
                 }
 
                 @Override
@@ -189,13 +272,26 @@ public class TasksScreen extends TabbedScreen
                 @Override
                 protected void onMouseReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
                 {
-
+                    if (!isDraggingOrAncestorIsDragging())
+                    {
+                        taskContainerControl.openConfig(task);
+                    }
                 }
             };
             iconControl.setParent(iconBackgroundControl);
 
-            Control taskNameBackgroundControl = new TexturedControl(GuiTextures.Tasks.TASK_NAME_BACKGROUND)
+            GridControl taskNameBackgroundControl = new GridControl(new GridControl.GridDefinition()
+                    .addRow(new GridControl.GridDefinition.Fill(1.0f))
+                    .addCol(new GridControl.GridDefinition.Fixed(4.0f))
+                    .addCol(new GridControl.GridDefinition.Fill(1.0f))
+                    .addCol(new GridControl.GridDefinition.Fixed(16.0f)))
             {
+                @Override
+                public void onRenderBackground(@Nonnull RenderArgs renderArgs)
+                {
+                    renderTexture(renderArgs.matrixStack, GuiTextures.Tasks.TASK_NAME_BACKGROUND);
+                }
+
                 @Override
                 public void onHover(@Nonnull MousePosEvent mousePosEvent)
                 {
@@ -205,22 +301,109 @@ public class TasksScreen extends TabbedScreen
             gridControl.addControl(taskNameBackgroundControl, 1, 0);
             taskNameBackgroundControl.setWidth(new Fill(1.0f));
             taskNameBackgroundControl.setHeight(new Fill(1.0f));
-            taskNameBackgroundControl.setPadding(5, 0, 5, 0);
+
+            Control stateContainerControl = new Control();
+            taskNameBackgroundControl.addControl(stateContainerControl, 2, 0);
+            stateContainerControl.setWidth(new Fill(1.0f));
+            stateContainerControl.setHeight(new Fill(1.0f));
+
+            Control stateIconControl = new TexturedControl(GuiTextures.Common.NODE_UNPRESSED, GuiTextures.Common.NODE_PRESSED)
+            {
+                @Override
+                public void onRenderBackground(@Nonnull RenderArgs renderArgs)
+                {
+                    if (task != null && task.isConfigured())
+                    {
+                        if (task.getGoal().getState() == BlocklingGoal.State.DISABLED)
+                        {
+                            RenderSystem.color3f(1.0f, 0.0f, 0.0f);
+                        }
+                        else if (task.getGoal().getState() == BlocklingGoal.State.IDLE)
+                        {
+                            RenderSystem.color3f(1.0f, 0.8f, 0.0f);
+                        }
+                        if (task.getGoal().getState() == BlocklingGoal.State.ACTIVE)
+                        {
+                            RenderSystem.color3f(0.0f, 0.7f, 0.0f);
+                        }
+                    }
+                    else
+                    {
+                        RenderSystem.color3f(0.6f, 0.6f, 0.6f);
+                    }
+
+                    if (task != null && task.isConfigured() && task.getGoal().getState() == BlocklingGoal.State.DISABLED)
+                    {
+                        renderTexture(renderArgs.matrixStack, getPressedTexture());
+                    }
+                    else
+                    {
+                        renderTexture(renderArgs.matrixStack, getTexture());
+                    }
+
+                    RenderSystem.color3f(1.0f, 1.0f, 1.0f);
+                }
+
+                @Override
+                public void onRenderTooltip(@Nonnull RenderArgs renderArgs)
+                {
+                    if (task != null && task.isConfigured())
+                    {
+                        if (task.getGoal().getState() == BlocklingGoal.State.DISABLED)
+                        {
+                            renderTooltip(renderArgs, new BlocklingsTranslationTextComponent("task.ui.enable"));
+                        }
+                        else
+                        {
+                            renderTooltip(renderArgs, new BlocklingsTranslationTextComponent("task.ui.disable"));
+                        }
+                    }
+                }
+
+                @Override
+                protected void onMouseReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
+                {
+                    if (isPressed() && !isDraggingOrAncestorIsDragging())
+                    {
+                        if (task != null && task.isConfigured())
+                        {
+                            if (task.getGoal().getState() == BlocklingGoal.State.DISABLED)
+                            {
+                                task.getGoal().setState(BlocklingGoal.State.IDLE);
+                            }
+                            else
+                            {
+                                task.getGoal().setState(BlocklingGoal.State.DISABLED);
+                            }
+                        }
+                    }
+
+                    mouseButtonEvent.setIsHandled(true);
+                }
+            };
+            stateIconControl.setParent(stateContainerControl);
+            stateIconControl.setAlignmentX(new Alignment(0.0f));
+            stateIconControl.setAlignmentY(new Alignment(0.5f));
 
             TextBlockControl taskNameControl = new TextBlockControl()
             {
+                @Override
+                public void onTick()
+                {
+                    setText(task == null ? BlocklingTasks.NULL.name : new StringTextComponent(task.getCustomName()));
+                }
+
                 @Override
                 public void onHover(@Nonnull MousePosEvent mousePosEvent)
                 {
 
                 }
             };
-            taskNameControl.setParent(taskNameBackgroundControl);
-            taskNameControl.setVerticalAlignment(VerticalAlignment.MIDDLE);
+            taskNameBackgroundControl.addControl(taskNameControl, 1, 0);
             taskNameControl.setWidth(new Fill(1.0f));
             taskNameControl.setHeight(new Fill(1.0f));
-            taskNameControl.setAlignmentX(new Alignment(0.5f));
-            taskNameControl.setText(task == null ? BlocklingTasks.NULL.name : new StringTextComponent(task.getCustomName()));
+            taskNameControl.setVerticalAlignment(VerticalAlignment.MIDDLE);
+            taskNameControl.onTick();
 
             Control addRemoveControl = new TexturedControl(task == null ? GuiTextures.Tasks.TASK_ADD_ICON : GuiTextures.Tasks.TASK_REMOVE_ICON)
             {
@@ -233,7 +416,7 @@ public class TasksScreen extends TabbedScreen
                 @Override
                 protected void onMouseReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
                 {
-                    if (isPressed())
+                    if (isPressed() && !isDraggingOrAncestorIsDragging())
                     {
                         if (task == null)
                         {

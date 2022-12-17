@@ -16,10 +16,13 @@ public class GuiTextures
     {
         public static final ResourceLocation COMMON = new BlocklingsResourceLocation("textures/gui/common_widgets.png");
 
+        public static final GuiTexture NODE_UNPRESSED = new GuiTexture(COMMON, 46, 0, 12, 12);
+        public static final GuiTexture NODE_PRESSED = new GuiTexture(COMMON, 58, 0, 12, 12);
+
         public static class Tab
         {
             public static final int EDGE_WIDTH = 4;
-            public static final int FULLY_OPAQUE_HEIGHT = 12;
+            public static final int FULLY_OPAQUE_HEIGHT = 13;
 
             public static final GuiTexture TAB_SELECTED_BACKGROUND = new GuiTexture(COMMON, 0, 15, 256, 18);
             public static final GuiTexture TAB_UNSELECTED_BACKGROUND = new GuiTexture(COMMON, 0, 33, 256, 15);
@@ -111,7 +114,9 @@ public class GuiTextures
     public static class Tasks
     {
         public static final ResourceLocation TASKS = new BlocklingsResourceLocation("textures/gui/tasks.png");
+        public static final ResourceLocation TASKS_CONFIG = new BlocklingsResourceLocation("textures/gui/task_configure.png");
         public static final GuiTexture BACKGROUND = new GuiTexture(TASKS, 0, 0, 176, 166);
+        public static final GuiTexture CONFIG_BACKGROUND = new GuiTexture(TASKS_CONFIG, 0, 0, 176, 166);
 
         public static final GuiTexture TASK_ICON_BACKGROUND_RAISED = new GuiTexture(TASKS, 0, 166, 20, 20);
         public static final GuiTexture TASK_ICON_BACKGROUND_PRESSED = new GuiTexture(TASKS, 20, 166, 20, 20);

@@ -104,7 +104,7 @@ public class TextBlockControl extends TextControl
     @Override
     public void onRender(@Nonnull RenderArgs renderArgs)
     {
-        float z = isDraggingOrAncestorIsDragging() ? 100.0f : 0.0f;
+        float z = isDraggingOrAncestorIsDragging() ? 100.0f : -1.0f;
 
         try
         {

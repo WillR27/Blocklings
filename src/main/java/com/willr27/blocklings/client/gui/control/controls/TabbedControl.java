@@ -1,14 +1,12 @@
 package com.willr27.blocklings.client.gui.control.controls;
 
+import com.mojang.datafixers.util.Pair;
 import com.willr27.blocklings.client.gui.GuiTextures;
 import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.control.*;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
 import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.client.gui2.GuiTexture;
-import com.willr27.blocklings.entity.BlocklingsEntityTypes;
-import com.willr27.blocklings.entity.blockling.BlocklingEntity;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -75,11 +73,11 @@ public class TabbedControl extends Control
     }
 
     /**
-     * Adds a tab with the given name and returns the tab container control.
+     * Adds a tab with the given name and returns the tab and container control.
      *
-     * @return the tab container control.
+     * @return the tab and container control.
      */
-    public Control addTab(@Nonnull String name)
+    public Pair<TabControl, Control> addTab(@Nonnull String name)
     {
         TabControl tabControl = new TabControl(name);
         tabControl.setParent(tabContainerControl);
@@ -89,12 +87,6 @@ public class TabbedControl extends Control
         containerControl.setWidth(new Fill(1.0f));
         containerControl.setHeight(new Fill(1.0f));
         containerControl.setBackgroundColour(Colour.fromARGBInt(getRandom().nextInt()));
-
-        EntityControl entityControl = new EntityControl();
-        entityControl.setParent(containerControl);
-        entityControl.setWidth(50.0f);
-        entityControl.setHeight(50.0f);
-        entityControl.setEntity(new BlocklingEntity(BlocklingsEntityTypes.BLOCKLING.get(), Minecraft.getInstance().level));
 
         if (selectedTab == null)
         {
@@ -109,7 +101,53 @@ public class TabbedControl extends Control
 
         tabContainerControl.getChildren().forEach(control -> ((TabControl) control).onTabsChanged());
 
-        return containerControl;
+        return new Pair<>(tabControl, containerControl);
+    }
+
+    /**
+     * Removes the given tab.
+     */
+    public void removeTab(@Nonnull TabControl tabControl)
+    {
+        int tabIndex = tabControl.getChildren().indexOf(tabControl);
+
+        if (tabIndex < 0)
+        {
+            return;
+        }
+
+        boolean wasSelected = tabControl.isSelected();
+
+        tabContainerControl.getChildren().remove(tabIndex);
+        containerContainerControl.getChildren().remove(tabIndex);
+
+        if (wasSelected)
+        {
+            if (tabContainerControl.getChildren().isEmpty())
+            {
+                setSelectedTab(null);
+            }
+            else
+            {
+                setSelectedTab((TabControl) tabContainerControl.getChildren().get(0));
+            }
+        }
+    }
+
+    /**
+     * Removes any tabs with the given name.
+     */
+    public void removeTabsWithName(@Nonnull String name)
+    {
+        for (Control control : tabContainerControl.getChildrenCopy())
+        {
+            TabControl tabControl = (TabControl) control;
+
+            if (tabControl.name.equals(name))
+            {
+                removeTab(tabControl);
+            }
+        }
     }
 
     /**
@@ -153,20 +191,26 @@ public class TabbedControl extends Control
         int tabEdgeWidth = 3;
         int totalTabs = tabContainerControl.getChildren().size();
         float controlX = 0.0f;
-        float availableWidth = getWidth() + (totalTabs > 2 ? tabEdgeWidth * 2 : 0);
-        float individualWidth = availableWidth / tabContainerControl.getChildren().size();
+        float availableWidth = getWidth();
+        float outerTabWidth = (availableWidth - (totalTabs > 2 ? (totalTabs - 2) * tabEdgeWidth : 0)) / totalTabs;
+        float innerTabWidth = (availableWidth + (totalTabs > 2 ? 2 * tabEdgeWidth : 0)) / totalTabs;
+        boolean wasPreviousTabRoundedUp = false;
 
         for (int i = 0; i < totalTabs; i++)
         {
-            int firstLastWidthReduction = totalTabs > 2 && (i == 0 || i == totalTabs - 1) ? tabEdgeWidth : 0;
-            int middleOverlapAdditionalWidth = i != 0 ? overlap : 0;
-            int controlWidth = Math.round(Math.min(availableWidth, individualWidth) + (middleOverlapAdditionalWidth) - (firstLastWidthReduction));
+            boolean isFirst = i == 0;
+            boolean isLast = i == totalTabs - 1;
+            boolean isFirstOrLast = isFirst || isLast;
+            int innerOverlapAdditionalWidth = !isFirst ? overlap : 0;
+            float controlWidthBeforeRound = Math.min(availableWidth, (isFirstOrLast ? outerTabWidth : innerTabWidth) + (wasPreviousTabRoundedUp ? -0.5f : 0.5f)) + innerOverlapAdditionalWidth;
+            int controlWidth = Math.round(controlWidthBeforeRound);
+            wasPreviousTabRoundedUp = controlWidthBeforeRound - controlWidth < 0.0f;
 
             Control control = tabContainerControl.getChildren().get(i);
             control.setX(controlX);
             control.setWidth(controlWidth);
 
-            availableWidth -= control.getWidth() - middleOverlapAdditionalWidth;
+            availableWidth -= control.getWidth() - innerOverlapAdditionalWidth;
             controlX += control.getWidth() - overlap;
         }
 
@@ -184,7 +228,7 @@ public class TabbedControl extends Control
     /**
      * An individual tab control.
      */
-    private class TabControl extends Control
+    public class TabControl extends Control
     {
         /**
          * The tab name.

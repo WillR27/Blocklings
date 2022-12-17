@@ -38,7 +38,7 @@ public class Gui extends AbstractGui
     protected void renderTexture(@Nonnull MatrixStack matrixStack, @Nonnull GuiTexture texture, int x, int y)
     {
         GuiUtil.bindTexture(texture.texture);
-        RenderSystem.disableDepthTest();
+
         blit(matrixStack, x, y, texture.x, texture.y, texture.width, texture.height);
     }
 

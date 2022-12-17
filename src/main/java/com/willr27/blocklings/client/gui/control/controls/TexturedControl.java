@@ -19,13 +19,13 @@ public class TexturedControl extends Control
      * The background texture.
      */
     @Nonnull
-    public final GuiTexture texture;
+    private GuiTexture texture;
 
     /**
      * The pressed background texture.
      */
     @Nullable
-    public final GuiTexture pressedTexture;
+    private GuiTexture pressedTexture;
 
     /**
      * @param texture the texture to use for the background.
@@ -55,5 +55,39 @@ public class TexturedControl extends Control
         super.onRenderBackground(renderArgs);
 
         renderTexture(renderArgs.matrixStack, pressedTexture != null && isPressed() && !(isDraggingOrAncestorIsDragging() && !isDragging()) ? pressedTexture : texture);
+    }
+
+    /**
+     * @return the texture.
+     */
+    @Nonnull
+    public GuiTexture getTexture()
+    {
+        return texture;
+    }
+
+    /**
+     * Sets the texture.
+     */
+    public void setTexture(@Nonnull GuiTexture texture)
+    {
+        this.texture = texture;
+    }
+
+    /**
+     * @return the pressed texture.
+     */
+    @Nullable
+    public GuiTexture getPressedTexture()
+    {
+        return pressedTexture;
+    }
+
+    /**
+     * Sets the pressed texture.
+     */
+    public void setPressedTexture(@Nullable GuiTexture pressedTexture)
+    {
+        this.pressedTexture = pressedTexture;
     }
 }

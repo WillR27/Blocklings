@@ -62,7 +62,7 @@ public class HealthBarControl extends Control
             @Override
             public void onTick()
             {
-                setWidth(texture.width * ((float) blockling.getStats().getHealth() / blockling.getStats().getMaxHealth()));
+                setWidth(getTexture().width * ((float) blockling.getStats().getHealth() / blockling.getStats().getMaxHealth()));
             }
 
             @Override

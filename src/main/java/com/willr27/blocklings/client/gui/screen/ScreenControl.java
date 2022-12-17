@@ -85,7 +85,7 @@ public class ScreenControl extends Control implements IScreen
     public void init(int screenWidth, int screenHeight)
     {
         setInnerScale(getInnerScale());
-        getChildrenCopy().forEach(control -> removeChild(control));
+        clearChildren();
         setWidth(screenWidth);
         setHeight(screenHeight);
     }
@@ -142,7 +142,7 @@ public class ScreenControl extends Control implements IScreen
 
         matrixStack.popPose();
 
-        if (getHoveredControl() != null)
+        if (getHoveredControl() != null && getDraggedControl() == null)
         {
             matrixStack.pushPose();
             matrixStack.scale(getHoveredControl().getCumulativeScale(), getHoveredControl().getCumulativeScale(), 1.0f);
