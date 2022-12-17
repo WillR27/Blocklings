@@ -1,13 +1,9 @@
 package com.willr27.blocklings.client.gui.control.controls;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.InventoryScreen;
-import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

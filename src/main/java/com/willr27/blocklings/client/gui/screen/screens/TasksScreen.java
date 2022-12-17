@@ -8,7 +8,6 @@ import com.willr27.blocklings.client.gui.control.controls.*;
 import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
-import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.client.gui2.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;

@@ -1,8 +1,6 @@
 package com.willr27.blocklings.client.gui.control.event.events.input;
 
-import com.willr27.blocklings.client.gui.control.event.ControlEvent;
 import com.willr27.blocklings.util.event.HandleableEvent;
-import com.willr27.blocklings.util.event.IEvent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 

@@ -1,12 +1,10 @@
 package com.willr27.blocklings.client.gui.util;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.vector.Quaternion;

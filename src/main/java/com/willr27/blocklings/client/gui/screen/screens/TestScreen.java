@@ -16,8 +16,6 @@ import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.Random;
 
-import static java.awt.SystemColor.control;
-
 @OnlyIn(Dist.CLIENT)
 public class TestScreen extends BlocklingsScreen
 {

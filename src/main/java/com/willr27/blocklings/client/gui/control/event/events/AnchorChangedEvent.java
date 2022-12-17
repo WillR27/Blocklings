@@ -7,7 +7,6 @@ import com.willr27.blocklings.client.gui.control.event.HandleableControlEvent;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
-import java.util.Optional;
 
 /**
  * Occurs when a control's anchor is changed.

@@ -23,7 +23,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

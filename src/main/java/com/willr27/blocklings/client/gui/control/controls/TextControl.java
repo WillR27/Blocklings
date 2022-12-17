@@ -2,7 +2,6 @@ package com.willr27.blocklings.client.gui.control.controls;
 
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.HorizontalAlignment;
-import com.willr27.blocklings.client.gui.control.Side;
 import com.willr27.blocklings.client.gui.control.VerticalAlignment;
 import com.willr27.blocklings.client.gui.control.event.events.PaddingChangedEvent;
 import com.willr27.blocklings.util.event.EventHandler;

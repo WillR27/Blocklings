@@ -4,7 +4,6 @@ import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.action.actions.AttackAction;
 import com.willr27.blocklings.entity.blockling.action.actions.KnownTargetAction;
 import com.willr27.blocklings.entity.blockling.action.actions.UnknownTargetAction;
-import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

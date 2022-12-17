@@ -6,8 +6,8 @@ import com.willr27.blocklings.client.gui2.IControl;
 import com.willr27.blocklings.client.gui2.controls.Orientation;
 import com.willr27.blocklings.client.gui2.controls.common.ScrollbarControl;
 import com.willr27.blocklings.util.event.CancelableEvent;
-import com.willr27.blocklings.util.event.HandleableEvent;
 import com.willr27.blocklings.util.event.EventHandler;
+import com.willr27.blocklings.util.event.HandleableEvent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 

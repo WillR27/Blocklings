@@ -1,12 +1,10 @@
 package com.willr27.blocklings.client.gui.util;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**

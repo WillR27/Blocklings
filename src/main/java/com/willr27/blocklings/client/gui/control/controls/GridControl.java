@@ -6,7 +6,6 @@ import com.willr27.blocklings.client.gui.control.event.events.MarginsChangedEven
 import com.willr27.blocklings.client.gui.control.event.events.SizeChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
-import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

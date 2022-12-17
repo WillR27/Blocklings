@@ -2,7 +2,6 @@ package com.willr27.blocklings.client.gui.control.event.events;
 
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.event.ControlEvent;
-import com.willr27.blocklings.client.gui.control.event.HandleableControlEvent;
 
 import javax.annotation.Nonnull;
 

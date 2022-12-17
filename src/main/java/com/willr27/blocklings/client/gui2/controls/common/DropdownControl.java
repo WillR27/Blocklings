@@ -2,8 +2,8 @@ package com.willr27.blocklings.client.gui2.controls.common;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui2.*;
-import com.willr27.blocklings.util.event.HandleableEvent;
 import com.willr27.blocklings.util.event.EventHandler;
+import com.willr27.blocklings.util.event.HandleableEvent;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;

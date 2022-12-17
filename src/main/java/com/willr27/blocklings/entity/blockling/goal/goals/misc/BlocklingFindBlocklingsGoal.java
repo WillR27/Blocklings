@@ -6,7 +6,6 @@ import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
 import javax.annotation.Nonnull;

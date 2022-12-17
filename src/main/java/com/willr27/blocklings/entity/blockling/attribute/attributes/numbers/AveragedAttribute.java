@@ -7,7 +7,6 @@ import com.willr27.blocklings.entity.blockling.attribute.Operation;
 import javax.annotation.Nonnull;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * An attribute where the final value is divided by the number of modifiers on calculation.

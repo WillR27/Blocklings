@@ -2,7 +2,9 @@ package com.willr27.blocklings.client.gui2;
 
 import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.client.gui.control.controls.TabbedUIControl;
-import com.willr27.blocklings.client.gui.screen.screens.*;
+import com.willr27.blocklings.client.gui.screen.screens.EquipmentScreen;
+import com.willr27.blocklings.client.gui.screen.screens.SkillsScreen;
+import com.willr27.blocklings.client.gui.screen.screens.TasksScreen;
 import com.willr27.blocklings.client.gui2.containers.EquipmentContainer;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.skill.BlocklingSkills;
