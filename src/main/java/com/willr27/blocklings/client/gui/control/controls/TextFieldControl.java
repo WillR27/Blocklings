@@ -2,6 +2,7 @@ package com.willr27.blocklings.client.gui.control.controls;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.RenderArgs;
+import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.Side;
 import com.willr27.blocklings.client.gui.control.VerticalAlignment;
 import com.willr27.blocklings.client.gui.control.event.events.input.CharEvent;
@@ -15,6 +16,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A wrapper around a {@link TextFieldWidget}
@@ -150,7 +152,7 @@ public class TextFieldControl extends TextControl
     }
 
     @Override
-    public void onUnfocused()
+    public void onUnfocused(@Nullable Control focusedControl)
     {
         textFieldWidget.setFocus(false);
     }

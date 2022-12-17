@@ -393,7 +393,7 @@ public class ScreenControl extends Control implements IScreen
         {
             if (focusedControl != null)
             {
-                focusedControl.onUnfocused();
+                focusedControl.onUnfocused(control);
                 focusedControl.focusChanged.handle(new FocusChangedEvent(focusedControl, true));
             }
 

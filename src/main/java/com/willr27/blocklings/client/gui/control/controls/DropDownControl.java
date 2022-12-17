@@ -236,6 +236,15 @@ public class DropDownControl extends FlowPanel
                 {
 
                 }
+
+                @Override
+                public void onUnfocused(@Nullable Control focusedControl)
+                {
+                    if (!getParent().getParent().isDescendant(focusedControl))
+                    {
+                        DropDownControl.this.collapse();
+                    }
+                }
             };
             backgroundControl.setParent(this);
             backgroundControl.setWidth(new Fill(1.0f));
@@ -337,6 +346,15 @@ public class DropDownControl extends FlowPanel
             }
 
             super.onMouseReleased(mouseButtonEvent);
+        }
+
+        @Override
+        public void onUnfocused(@Nullable Control focusedControl)
+        {
+            if (!getParent().getChildren().contains(focusedControl))
+            {
+                DropDownControl.this.collapse();
+            }
         }
 
         /**

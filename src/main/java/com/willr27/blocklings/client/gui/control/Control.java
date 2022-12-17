@@ -273,6 +273,12 @@ public class Control extends Gui
     private boolean isVisible = true;
 
     /**
+     * Occurs when the visibility changes.
+     */
+    @Nonnull
+    public final EventHandler<VisibilityChangedEvent> onVisibilityChanged = new EventHandler<>();
+
+    /**
      * Whether the control can interact with any input events.
      */
     private boolean isInteractive = true;
@@ -1379,7 +1385,7 @@ public class Control extends Gui
     /**
      * Occurs when the control is unfocused from a mouse click.
      */
-    public void onUnfocused()
+    public void onUnfocused(@Nullable Control focusedControl)
     {
 
     }
@@ -2742,7 +2748,16 @@ public class Control extends Gui
      */
     public void setVisible(boolean visible)
     {
+        if (isVisible == visible)
+        {
+            return;
+        }
+
+        boolean wasVisible = isVisible;
+
         isVisible = visible;
+
+        onVisibilityChanged.handle(new VisibilityChangedEvent(this, wasVisible));
     }
 
     /**

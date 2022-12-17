@@ -100,6 +100,11 @@ public class FlowPanel extends Panel
 
         for (Control control : getChildren())
         {
+            if (!control.isVisible())
+            {
+                continue;
+            }
+
             if (getFlowDirection() == Direction.LEFT_TO_RIGHT)
             {
                 controlY = rowY;
@@ -200,6 +205,11 @@ public class FlowPanel extends Panel
 
         for (Control control : getChildren())
         {
+            if (!control.isVisible())
+            {
+                continue;
+            }
+
             if (getFlowDirection() == Direction.LEFT_TO_RIGHT)
             {
                 controlY = rowY;
@@ -344,6 +354,11 @@ public class FlowPanel extends Panel
 
             for (Control control : getChildrenCopy())
             {
+                if (!control.isVisible())
+                {
+                    continue;
+                }
+
                 if (control == draggedControl)
                 {
                     continue;
@@ -420,6 +435,11 @@ public class FlowPanel extends Panel
 
             for (Control control : getChildrenCopy())
             {
+                if (!control.isVisible())
+                {
+                    continue;
+                }
+
                 if (control == draggedControl)
                 {
                     continue;

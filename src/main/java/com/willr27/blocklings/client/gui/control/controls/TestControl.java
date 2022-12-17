@@ -12,6 +12,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 @OnlyIn(Dist.CLIENT)
 public class TestControl extends Control
@@ -77,7 +78,7 @@ public class TestControl extends Control
     }
 
     @Override
-    public void onUnfocused()
+    public void onUnfocused(@Nullable Control focusedControl)
     {
         texture = GuiTextures.FLAT_BAR;
     }
