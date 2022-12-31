@@ -34,7 +34,7 @@ public abstract class TextControl extends Control
      * The line height to use to position the text. Useful for centering text that doesn't
      * contain any characters with descenders.
      */
-    private int lineHeight = font.lineHeight - 1;
+    private int lineHeight = font.lineHeight;
 
     /**
      */
@@ -169,6 +169,6 @@ public abstract class TextControl extends Control
      */
     public void useDescenderlessLineHeight()
     {
-        setLineHeight(8);
+        setLineHeight(9);
     }
 }
