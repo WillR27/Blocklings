@@ -466,6 +466,14 @@ public class Control extends Gui
     }
 
     /**
+     * Used to clean up anything like event handlers that might cause a control to leak.
+     */
+    public void clean()
+    {
+        getChildren().forEach(Control::clean);
+    }
+
+    /**
      * Transforms any docked child controls.
      */
     public void layoutDockedContents()

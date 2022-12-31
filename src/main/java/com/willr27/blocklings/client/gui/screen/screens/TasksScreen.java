@@ -196,6 +196,12 @@ public class TasksScreen extends TabbedScreen
         private Task currentTask;
 
         /**
+         * The config scrollbar container.
+         */
+        @Nonnull
+        private Control scrollbarContainerControl;
+
+        /**
          */
         public TaskConfigContainerControl()
         {
@@ -232,10 +238,10 @@ public class TasksScreen extends TabbedScreen
             nameTabDividerControl.setDock(Dock.TOP);
             nameTabDividerControl.setHeight(4.0f);
 
-            Control scrollbarTabDividerControl = new Control();
-            scrollbarTabDividerControl.setParent(this);
-            scrollbarTabDividerControl.setDock(Dock.RIGHT);
-            scrollbarTabDividerControl.setWidth(18.0f);
+            scrollbarContainerControl = new Control();
+            scrollbarContainerControl.setParent(this);
+            scrollbarContainerControl.setDock(Dock.RIGHT);
+            scrollbarContainerControl.setWidth(18.0f);
 
             currentTask.onTypeChanged.subscribe(this::onTaskTypeChanged);
 
@@ -281,6 +287,15 @@ public class TasksScreen extends TabbedScreen
 
             Pair<TabbedControl.TabControl, Control> miscTab = tabbedControl.addTab(new BlocklingsTranslationTextComponent("task.ui.tab.misc").getString());
             miscTab.getSecond().addChild(miscConfigControl = new MiscConfigControl(task, miscConfigControl));
+
+            scrollbarContainerControl.clearChildren();
+            scrollbarContainerControl.clean();
+
+            ScrollbarControl scrollbarControl = new ScrollbarControl();
+            scrollbarControl.setParent(scrollbarContainerControl);
+            scrollbarControl.setAssociatedControl(miscConfigControl);
+            scrollbarControl.setPercentHeight(1.0f);
+            scrollbarControl.setPercentX(1.0f);
         }
     }
 

@@ -1,7 +1,10 @@
 package com.willr27.blocklings.client.gui.control.controls.tasks;
 
 import com.willr27.blocklings.client.gui.control.Control;
+import com.willr27.blocklings.client.gui.control.Direction;
 import com.willr27.blocklings.client.gui.control.Fill;
+import com.willr27.blocklings.client.gui.control.Orientation;
+import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
 import com.willr27.blocklings.entity.blockling.task.Task;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -12,7 +15,7 @@ import javax.annotation.Nonnull;
  * Contains configuration options for a task.
  */
 @OnlyIn(Dist.CLIENT)
-public class ConfigControl extends Control
+public class ConfigControl extends FlowPanel
 {
     /**
      * The task being configured.
@@ -30,5 +33,10 @@ public class ConfigControl extends Control
 
         setWidth(new Fill(1.0f));
         setHeight(new Fill(1.0f));
+        setPadding(4, 8, 4, 4);
+        setFlowDirection(Direction.TOP_TO_BOTTOM);
+        setOverflowOrientation(Orientation.VERTICAL);
+        setFitMaxScrollOffsetToOverflowY(true);
+        setScrollableY(true);
     }
 }

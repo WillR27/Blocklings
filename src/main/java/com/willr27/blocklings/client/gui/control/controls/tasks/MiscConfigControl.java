@@ -2,6 +2,7 @@ package com.willr27.blocklings.client.gui.control.controls.tasks;
 
 import com.willr27.blocklings.client.gui.control.*;
 import com.willr27.blocklings.client.gui.control.controls.DropDownControl;
+import com.willr27.blocklings.client.gui.control.controls.ScrollbarControl;
 import com.willr27.blocklings.client.gui.control.controls.TextBlockControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
 import com.willr27.blocklings.client.gui2.IControl;
@@ -38,25 +39,15 @@ public class MiscConfigControl extends ConfigControl
     {
         super(task);
 
-        FlowPanel flowPanel = new FlowPanel();
-        flowPanel.setParent(this);
-        flowPanel.setWidth(new Fill(1.0f));
-        flowPanel.setHeight(new Fill(1.0f));
-        flowPanel.setPadding(4, 8, 4, 4);
-        flowPanel.setFlowDirection(Direction.TOP_TO_BOTTOM);
-        flowPanel.setOverflowOrientation(Orientation.VERTICAL);
-        flowPanel.setFitMaxScrollOffsetToOverflowY(true);
-        flowPanel.setScrollableY(true);
-
         TextBlockControl typeNameControl = new TextBlockControl();
-        typeNameControl.setParent(flowPanel);
+        typeNameControl.setParent(this);
         typeNameControl.setWidth(new Fill(1.0f));
         typeNameControl.setFitToContentsY(true);
         typeNameControl.setText(new BlocklingsTranslationTextComponent("task.ui.task_type").getString());
 
         boolean usePrevDropDown = (prevMiscConfigControl != null && prevMiscConfigControl.task == task);
         typeDropDownControl = usePrevDropDown ? prevMiscConfigControl.typeDropDownControl : new DropDownControl();
-        typeDropDownControl.setParent(flowPanel);
+        typeDropDownControl.setParent(this);
         typeDropDownControl.setWidth(new Fill(1.0f));
         typeDropDownControl.setMargin(Side.TOP, 4);
 

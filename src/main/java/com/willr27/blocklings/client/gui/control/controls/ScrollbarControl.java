@@ -4,11 +4,13 @@ import com.willr27.blocklings.client.gui.GuiTextures;
 import com.willr27.blocklings.client.gui.RenderArgs;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.event.events.ScrollOffsetChangedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.VisibilityChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrollEvent;
 import com.willr27.blocklings.util.event.EventHandler;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Displays a scrollbar to scroll an associated control.
@@ -28,7 +30,7 @@ public class ScrollbarControl extends Control
     /**
      * The associated control to scroll.
      */
-    @Nonnull
+    @Nullable
     private Control associatedControl;
 
     /**
@@ -77,6 +79,14 @@ public class ScrollbarControl extends Control
             float percent = grabberControl.getY() / (getHeight() - grabberControl.getHeight());
             setPercentScrolled(percent);
         });
+    }
+
+    @Override
+    public void clean()
+    {
+        super.clean();
+
+        setAssociatedControl(null);
     }
 
     @Override
@@ -184,7 +194,7 @@ public class ScrollbarControl extends Control
     /**
      * @return the associated control.
      */
-    @Nonnull
+    @Nullable
     public Control getAssociatedControl()
     {
         return associatedControl;
@@ -193,15 +203,17 @@ public class ScrollbarControl extends Control
     /**
      * Sets the associated control.
      */
-    public void setAssociatedControl(@Nonnull Control associatedControl)
+    public void setAssociatedControl(@Nullable Control associatedControl)
     {
         EventHandler.Handler<ScrollOffsetChangedEvent> onMaxScrollOffsetYChanged = (e) -> setMaxScrollAmount(e.control.getMaxScrollOffsetY());
         EventHandler.Handler<ScrollOffsetChangedEvent> onScrollOffsetYChanged = (e) -> setScrollAmount(e.control.getScrollOffsetY());
+        EventHandler.Handler<VisibilityChangedEvent> onVisibilityChanged = (e) -> setVisible(e.control.isVisible());
 
         if (this.associatedControl != null)
         {
             this.associatedControl.onMaxScrollOffsetYChanged.unsubscribe(onMaxScrollOffsetYChanged);
             this.associatedControl.onScrollOffsetYChanged.unsubscribe(onScrollOffsetYChanged);
+            this.associatedControl.onVisibilityChanged.unsubscribe(onVisibilityChanged);
         }
 
         this.associatedControl = associatedControl;
@@ -210,6 +222,7 @@ public class ScrollbarControl extends Control
         {
             this.associatedControl.onMaxScrollOffsetYChanged.subscribe(onMaxScrollOffsetYChanged);
             this.associatedControl.onScrollOffsetYChanged.subscribe(onScrollOffsetYChanged);
+            this.associatedControl.onVisibilityChanged.subscribe(onVisibilityChanged);
 
             setMaxScrollAmount(associatedControl.getMaxScrollOffsetY());
         }
