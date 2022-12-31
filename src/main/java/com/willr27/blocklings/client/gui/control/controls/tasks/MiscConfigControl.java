@@ -1,9 +1,6 @@
 package com.willr27.blocklings.client.gui.control.controls.tasks;
 
-import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.client.gui.control.Direction;
-import com.willr27.blocklings.client.gui.control.Fill;
-import com.willr27.blocklings.client.gui.control.Orientation;
+import com.willr27.blocklings.client.gui.control.*;
 import com.willr27.blocklings.client.gui.control.controls.DropDownControl;
 import com.willr27.blocklings.client.gui.control.controls.TextBlockControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
@@ -19,6 +16,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Contains all the miscellaneous configuration options.
@@ -27,9 +25,16 @@ import javax.annotation.Nonnull;
 public class MiscConfigControl extends ConfigControl
 {
     /**
-     * @param task the task being configured.
+     * The type drop down control.
      */
-    public MiscConfigControl(@Nonnull Task task)
+    @Nonnull
+    private final DropDownControl typeDropDownControl;
+
+    /**
+     * @param task the task being configured.
+     * @param prevMiscConfigControl the previous {@link MiscConfigControl}.
+     */
+    public MiscConfigControl(@Nonnull Task task, @Nullable MiscConfigControl prevMiscConfigControl)
     {
         super(task);
 
@@ -49,13 +54,25 @@ public class MiscConfigControl extends ConfigControl
         typeNameControl.setFitToContentsY(true);
         typeNameControl.setText(new BlocklingsTranslationTextComponent("task.ui.task_type").getString());
 
-        DropDownControl typeDropDownControl = new DropDownControl();
+        boolean usePrevDropDown = (prevMiscConfigControl != null && prevMiscConfigControl.task == task);
+        typeDropDownControl = usePrevDropDown ? prevMiscConfigControl.typeDropDownControl : new DropDownControl();
         typeDropDownControl.setParent(flowPanel);
         typeDropDownControl.setWidth(new Fill(1.0f));
+        typeDropDownControl.setMargin(Side.TOP, 4);
 
-        for (TaskType taskType : BlocklingTasks.TASK_TYPES)
+        if (!usePrevDropDown)
         {
-            typeDropDownControl.addItem(new TaskTypeItem(taskType));
+            for (TaskType taskType : BlocklingTasks.TASK_TYPES)
+            {
+                if (taskType == task.getType())
+                {
+                    typeDropDownControl.setSelectedItem(new TaskTypeItem(taskType));
+                }
+                else
+                {
+                    typeDropDownControl.addItem(new TaskTypeItem(taskType));
+                }
+            }
         }
 
 //        if (task.isConfigured())
@@ -95,7 +112,7 @@ public class MiscConfigControl extends ConfigControl
         @Override
         protected void onSelected()
         {
-
+            task.setType(taskType);
         }
 
         @Override

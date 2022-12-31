@@ -6,11 +6,20 @@ import com.willr27.blocklings.network.messages.TaskCustomNameMessage;
 import com.willr27.blocklings.network.messages.TaskPriorityMessage;
 import com.willr27.blocklings.network.messages.TaskSwapPriorityMessage;
 import com.willr27.blocklings.network.messages.TaskTypeMessage;
+import com.willr27.blocklings.util.event.EventHandler;
+import com.willr27.blocklings.util.event.HandleableEvent;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public class Task
 {
+    /**
+     * Invoked when the task's type changes.
+     */
+    @Nonnull
+    public final EventHandler<TypeChangedEvent> onTypeChanged = new EventHandler<>();
+
     public final UUID id;
     public final BlocklingEntity blockling;
     public final BlocklingTasks tasks;
@@ -51,6 +60,8 @@ public class Task
             return;
         }
 
+        TaskType prevType = this.type;
+
         this.type = type;
 
         goal = type.createGoal.apply(id, blockling, tasks);
@@ -61,6 +72,8 @@ public class Task
         {
             new TaskTypeMessage(blockling, id, type.id).sync();
         }
+
+        onTypeChanged.handle(new TypeChangedEvent(this, prevType));
     }
 
     public String getActualCustomName()
@@ -125,6 +138,34 @@ public class Task
         if (sync)
         {
             new TaskPriorityMessage(blockling, id, priority).sync();
+        }
+    }
+
+    /**
+     * Occurs when the task's type changes.
+     */
+    public class TypeChangedEvent extends HandleableEvent
+    {
+        /**
+         * The associated task.
+         */
+        @Nonnull
+        public final Task task;
+
+        /**
+         * The previous task type.
+         */
+        @Nonnull
+        public final TaskType prevType;
+
+        /**
+         * @param task the associated task.
+         * @param prevType the previous task type.
+         */
+        public TypeChangedEvent(@Nonnull Task task, @Nonnull TaskType prevType)
+        {
+            this.task = task;
+            this.prevType = prevType;
         }
     }
 }

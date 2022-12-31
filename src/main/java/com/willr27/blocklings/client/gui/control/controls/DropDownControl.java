@@ -107,11 +107,11 @@ public class DropDownControl extends FlowPanel
 
         if (getChildren().size() == 1)
         {
-            itemControl.onSelected();
+            itemControl.onSelected(false);
         }
         else
         {
-            itemControl.onUnselected();
+            itemControl.onUnselected(false);
             itemControl.setVisible(isExpanded());
         }
     }
@@ -130,9 +130,9 @@ public class DropDownControl extends FlowPanel
      */
     private void setSelectedItemControl(@Nonnull ItemControl itemControl)
     {
-        getSelectedItemControl().onUnselected();
+        getSelectedItemControl().onUnselected(true);
         insertOrMoveChildFirst(itemControl);
-        getSelectedItemControl().onSelected();
+        getSelectedItemControl().onSelected(true);
     }
 
     /**
@@ -359,24 +359,36 @@ public class DropDownControl extends FlowPanel
 
         /**
          * Called when the item is selected.
+         *
+         * @param forwardToItem whether to call {@link Item#onSelected}.
          */
-        private void onSelected()
+        private void onSelected(boolean forwardToItem)
         {
+            setVisible(true);
             backgroundControl.setTexture(GuiTextures.Common.DropDown.SELECTED_BACKGROUND);
             backgroundControl.setHeight(backgroundControl.getTexture().height);
 
-            item.onSelected();
+            if (forwardToItem)
+            {
+                item.onSelected();
+            }
         }
 
         /**
          * Called when the item is unselected.
+         *
+         * @param forwardToItem whether to call {@link Item#onUnselected}.
          */
-        private void onUnselected()
+        private void onUnselected(boolean forwardToItem)
         {
+            setVisible(isExpanded());
             backgroundControl.setTexture(GuiTextures.Common.DropDown.UNSELECTED_BACKGROUND);
             backgroundControl.setHeight(backgroundControl.getTexture().height);
 
-            item.onUnselected();
+            if (forwardToItem)
+            {
+                item.onUnselected();
+            }
         }
 
         /**

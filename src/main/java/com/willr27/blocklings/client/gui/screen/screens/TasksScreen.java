@@ -124,6 +124,14 @@ public class TasksScreen extends TabbedScreen
         taskContainerControl.closeConfig();
     }
 
+    @Override
+    public void onClose()
+    {
+        taskContainerControl.closeConfig();
+
+        super.onClose();
+    }
+
     /**
      * Contains both the task list and task config containers.
      */
@@ -172,8 +180,20 @@ public class TasksScreen extends TabbedScreen
         /**
          * The tabbed control containing each config tab.
          */
-        @Nonnull
+        @Nullable
         private TabbedControl tabbedControl;
+
+        /**
+         * The misc config control that all tasks have.
+         */
+        @Nullable
+        private MiscConfigControl miscConfigControl;
+
+        /**
+         * The current task being configured.
+         */
+        @Nullable
+        private Task currentTask;
 
         /**
          */
@@ -191,6 +211,8 @@ public class TasksScreen extends TabbedScreen
          */
         public void open(@Nonnull Task task)
         {
+            currentTask = task;
+
             clearChildren();
             setParent(taskContainerControl);
             setVisible(true);
@@ -198,11 +220,11 @@ public class TasksScreen extends TabbedScreen
             taskNameFieldControl = new TextFieldControl();
             taskNameFieldControl.setParent(this);
             taskNameFieldControl.setDock(Dock.TOP);
-            taskNameFieldControl.setText(task.getCustomName());
+            taskNameFieldControl.setText(currentTask.getCustomName());
             taskNameFieldControl.focusChanged.subscribe((e) ->
             {
-                task.setCustomName(taskNameFieldControl.getText().trim());
-                taskNameFieldControl.setText(task.getCustomName());
+                currentTask.setCustomName(taskNameFieldControl.getText().trim());
+                taskNameFieldControl.setText(currentTask.getCustomName());
             });
 
             Control nameTabDividerControl = new Control();
@@ -215,7 +237,9 @@ public class TasksScreen extends TabbedScreen
             scrollbarTabDividerControl.setDock(Dock.RIGHT);
             scrollbarTabDividerControl.setWidth(18.0f);
 
-            recreateTabs(task);
+            currentTask.onTypeChanged.subscribe(this::onTaskTypeChanged);
+
+            recreateTabs(this.currentTask);
         }
 
         /**
@@ -223,7 +247,23 @@ public class TasksScreen extends TabbedScreen
          */
         public void close()
         {
+            if (currentTask != null)
+            {
+                currentTask.onTypeChanged.unsubscribe(this::onTaskTypeChanged);
+                currentTask = null;
+            }
+
             setVisible(false);
+        }
+
+        /**
+         * Called when the current task's type changes.
+         */
+        private void onTaskTypeChanged(@Nonnull Task.TypeChangedEvent typeChangedEvent)
+        {
+            taskNameFieldControl.setText(typeChangedEvent.task.getCustomName());
+
+            recreateTabs(typeChangedEvent.task);
         }
 
         /**
@@ -231,11 +271,16 @@ public class TasksScreen extends TabbedScreen
          */
         private void recreateTabs(@Nonnull Task task)
         {
+            if (tabbedControl != null)
+            {
+                tabbedControl.setParent(null);
+            }
+
             tabbedControl = new TabbedControl(this);
             tabbedControl.setDock(Dock.FILL);
 
             Pair<TabbedControl.TabControl, Control> miscTab = tabbedControl.addTab(new BlocklingsTranslationTextComponent("task.ui.tab.misc").getString());
-            miscTab.getSecond().addChild(new MiscConfigControl(task));
+            miscTab.getSecond().addChild(miscConfigControl = new MiscConfigControl(task, miscConfigControl));
         }
     }
 
