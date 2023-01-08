@@ -26,6 +26,11 @@ public class DropDownControl extends FlowPanel
     private boolean isExpanded = false;
 
     /**
+     * Used as a placeholder for the selected control.
+     */
+    private final DummyControl dummyControl = new DummyControl();
+
+    /**
      */
     public DropDownControl()
     {
@@ -80,7 +85,15 @@ public class DropDownControl extends FlowPanel
      */
     public boolean containsItem(@Nonnull Item item)
     {
-        return getChildren().stream().anyMatch(control -> ((ItemControl) control).item == item);
+        return getChildren().stream().anyMatch(control ->
+            {
+                if (control instanceof ItemControl)
+                {
+                    return ((ItemControl) control).item == item;
+                }
+
+                return false;
+            });
     }
 
     /**
@@ -89,7 +102,15 @@ public class DropDownControl extends FlowPanel
     @Nonnull
     private ItemControl getItemControl(@Nonnull Item item)
     {
-        return (ItemControl) getChildren().stream().filter(control -> ((ItemControl) control).item == item).findFirst().get();
+        return (ItemControl) getChildren().stream().filter(control ->
+                {
+                    if (control instanceof ItemControl)
+                    {
+                        return ((ItemControl) control).item == item;
+                    }
+
+                    return false;
+                }).findFirst().get();
     }
 
     /**
@@ -108,6 +129,10 @@ public class DropDownControl extends FlowPanel
         if (getChildren().size() == 1)
         {
             itemControl.onSelected(false);
+
+            // Add a dummy control, so we know the place of selected item.
+            dummyControl.setParent(null);
+            dummyControl.setParent(this);
         }
         else
         {
@@ -130,7 +155,19 @@ public class DropDownControl extends FlowPanel
      */
     private void setSelectedItemControl(@Nonnull ItemControl itemControl)
     {
-        getSelectedItemControl().onUnselected(true);
+        ItemControl selectedItemControl = getSelectedItemControl();
+
+        if (selectedItemControl == itemControl)
+        {
+            return;
+        }
+
+        insertOrMoveChildAfter(selectedItemControl, dummyControl);
+
+        dummyControl.setParent(null);
+        insertOrMoveChildAfter(dummyControl, itemControl);
+
+        selectedItemControl.onUnselected(true);
         insertOrMoveChildFirst(itemControl);
         getSelectedItemControl().onSelected(true);
     }
@@ -163,6 +200,22 @@ public class DropDownControl extends FlowPanel
     public boolean isExpanded()
     {
         return isExpanded;
+    }
+
+    /**
+     * Used as a placeholder for the selected item.
+     */
+    private class DummyControl extends Control
+    {
+        /**
+         */
+        public DummyControl()
+        {
+            super();
+
+            setWidth(new Fill(1.0f));
+            setHeight(0);
+        }
     }
 
     /**
