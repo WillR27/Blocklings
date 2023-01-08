@@ -33,9 +33,8 @@ public class MiscConfigControl extends ConfigControl
 
     /**
      * @param task the task being configured.
-     * @param prevMiscConfigControl the previous {@link MiscConfigControl}.
      */
-    public MiscConfigControl(@Nonnull Task task, @Nullable MiscConfigControl prevMiscConfigControl)
+    public MiscConfigControl(@Nonnull Task task)
     {
         super(task);
 
@@ -45,24 +44,20 @@ public class MiscConfigControl extends ConfigControl
         typeNameControl.setFitToContentsY(true);
         typeNameControl.setText(new BlocklingsTranslationTextComponent("task.ui.task_type").getString());
 
-        boolean usePrevDropDown = (prevMiscConfigControl != null && prevMiscConfigControl.task == task);
-        typeDropDownControl = usePrevDropDown ? prevMiscConfigControl.typeDropDownControl : new DropDownControl();
+        typeDropDownControl = new DropDownControl();
         typeDropDownControl.setParent(this);
         typeDropDownControl.setWidth(new Fill(1.0f));
         typeDropDownControl.setMargin(Side.TOP, 4);
 
-        if (!usePrevDropDown)
+        for (TaskType taskType : BlocklingTasks.TASK_TYPES)
         {
-            for (TaskType taskType : BlocklingTasks.TASK_TYPES)
+            if (taskType == task.getType())
             {
-                if (taskType == task.getType())
-                {
-                    typeDropDownControl.setSelectedItem(new TaskTypeItem(taskType));
-                }
-                else
-                {
-                    typeDropDownControl.addItem(new TaskTypeItem(taskType));
-                }
+                typeDropDownControl.setSelectedItem(new TaskTypeItem(taskType));
+            }
+            else
+            {
+                typeDropDownControl.addItem(new TaskTypeItem(taskType));
             }
         }
 

@@ -229,8 +229,11 @@ public class TasksScreen extends TabbedScreen
             taskNameFieldControl.setText(currentTask.getCustomName());
             taskNameFieldControl.focusChanged.subscribe((e) ->
             {
-                currentTask.setCustomName(taskNameFieldControl.getText().trim());
-                taskNameFieldControl.setText(currentTask.getCustomName());
+                if (currentTask != null)
+                {
+                    currentTask.setCustomName(taskNameFieldControl.getText().trim());
+                    taskNameFieldControl.setText(currentTask.getCustomName());
+                }
             });
 
             Control nameTabDividerControl = new Control();
@@ -286,7 +289,7 @@ public class TasksScreen extends TabbedScreen
             tabbedControl.setDock(Dock.FILL);
 
             Pair<TabbedControl.TabControl, Control> miscTab = tabbedControl.addTab(new BlocklingsTranslationTextComponent("task.ui.tab.misc").getString());
-            miscTab.getSecond().addChild(miscConfigControl = new MiscConfigControl(task, miscConfigControl));
+            miscTab.getSecond().addChild(miscConfigControl = new MiscConfigControl(task));
 
             scrollbarContainerControl.clearChildren();
             scrollbarContainerControl.clean();
