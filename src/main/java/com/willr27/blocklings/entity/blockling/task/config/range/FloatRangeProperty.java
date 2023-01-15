@@ -1,9 +1,10 @@
 package com.willr27.blocklings.entity.blockling.task.config.range;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.willr27.blocklings.client.gui.control.Control;
+import com.willr27.blocklings.client.gui.control.controls.config.FloatRangeControl;
 import com.willr27.blocklings.client.gui2.GuiUtil;
 import com.willr27.blocklings.client.gui2.IControl;
-import com.willr27.blocklings.client.gui2.controls.common.range.FloatRangeControl;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.nbt.CompoundNBT;
@@ -69,30 +70,31 @@ public class FloatRangeProperty extends RangeProperty<Float>
     @OnlyIn(Dist.CLIENT)
     @Override
     @Nonnull
-    public IControl createControl(@Nonnull IControl parent)
+    public Control createControl()
     {
-        return new FloatRangeControl(parent, min, max, value, 2)
-        {
-            @Override
-            public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
-            {
-                if (!grabberControl.isPressed())
-                {
-                    List<StringTextComponent> tooltip = GuiUtil.splitText(font, desc, 200);
-                    tooltip.add(0, new StringTextComponent(""));
-                    tooltip.add(0, new StringTextComponent(TextFormatting.GOLD + name.getString()));
-
-                    screen.renderTooltip(matrixStack, GuiUtil.toReorderingProcessorList(tooltip), mouseX, mouseY);
-                }
-            }
-
-            @Override
-            public void setValue(Float value)
-            {
-                super.setValue(value);
-
-                FloatRangeProperty.this.setValue(getValue(), true);
-            }
-        };
+        return new FloatRangeControl(min, max, value);
+//        return new FloatRangeControl(parent, min, max, value, 2)
+//        {
+//            @Override
+//            public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
+//            {
+//                if (!grabberControl.isPressed())
+//                {
+//                    List<StringTextComponent> tooltip = GuiUtil.splitText(font, desc, 200);
+//                    tooltip.add(0, new StringTextComponent(""));
+//                    tooltip.add(0, new StringTextComponent(TextFormatting.GOLD + name.getString()));
+//
+//                    screen.renderTooltip(matrixStack, GuiUtil.toReorderingProcessorList(tooltip), mouseX, mouseY);
+//                }
+//            }
+//
+//            @Override
+//            public void setValue(Float value)
+//            {
+//                super.setValue(value);
+//
+//                FloatRangeProperty.this.setValue(getValue(), true);
+//            }
+//        };
     }
 }

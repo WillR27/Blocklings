@@ -86,7 +86,7 @@ public class TabbedControl extends Control
         containerControl.setParent(containerContainerControl);
         containerControl.setWidth(new Fill(1.0f));
         containerControl.setHeight(new Fill(1.0f));
-        containerControl.setBackgroundColour(Colour.fromARGBInt(getRandom().nextInt()));
+//        containerControl.setBackgroundColour(Colour.fromARGBInt(getRandom().nextInt()));
 
         if (selectedTab == null)
         {

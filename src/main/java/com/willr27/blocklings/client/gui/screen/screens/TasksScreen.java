@@ -224,6 +224,7 @@ public class TasksScreen extends TabbedScreen
             setVisible(true);
 
             taskNameFieldControl = new TextFieldControl();
+            taskNameFieldControl.setShouldRenderBackground(false);
             taskNameFieldControl.setParent(this);
             taskNameFieldControl.setDock(Dock.TOP);
             taskNameFieldControl.setText(currentTask.getCustomName());

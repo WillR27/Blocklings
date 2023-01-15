@@ -61,16 +61,23 @@ public class MiscConfigControl extends ConfigControl
             }
         }
 
-//        if (task.isConfigured())
-//        {
-//            BlocklingGoal goal = task.getGoal();
-//
-//            for (Property property : goal.properties)
-//            {
-//                new LabelControl(stackPanel, width - stackPanel.getPadding(IControl.Side.LEFT) - stackPanel.getPadding(IControl.Side.RIGHT), property.name.getString()).setMargins(0, 11, 0, 3);
-//                property.createControl(stackPanel).setMargins(0, 0, 0, 0);
-//            }
-//        }
+        if (task.isConfigured())
+        {
+            BlocklingGoal goal = task.getGoal();
+
+            for (Property property : goal.properties)
+            {
+                TextBlockControl nameControl = new TextBlockControl();
+                nameControl.setParent(this);
+                nameControl.setWidth(new Fill(1.0f));
+                nameControl.setFitToContentsY(true);
+                nameControl.setText(property.name);
+
+                Control propertyControl = property.createControl();
+                propertyControl.setParent(this);
+                propertyControl.setMargin(Side.TOP, 4);
+            }
+        }
     }
 
     /**

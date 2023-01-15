@@ -9,10 +9,12 @@ import com.willr27.blocklings.client.gui.control.event.events.input.CharEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.KeyEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
@@ -24,6 +26,11 @@ import javax.annotation.Nullable;
 @OnlyIn(Dist.CLIENT)
 public class TextFieldControl extends TextControl
 {
+    /**
+     * Whether to render the text field's background.
+     */
+    private boolean shouldRenderBackground = true;
+
     /**
      * The underlying {@link TextFieldWidget};
      */
@@ -47,6 +54,7 @@ public class TextFieldControl extends TextControl
         onSizeChanged.subscribe((e) ->
         {
             textFieldWidget.setWidth((int) (getScreenWidth() - ((getPadding(Side.LEFT) + getPadding(Side.RIGHT)) * getCumulativeScale())));
+            textFieldWidget.moveCursorToStart();
         });
 
         setX(getX());
@@ -94,9 +102,37 @@ public class TextFieldControl extends TextControl
     }
 
     @Override
+    public void onRenderBackground(@Nonnull RenderArgs renderArgs)
+    {
+        super.onRenderBackground(renderArgs);
+
+        if (shouldRenderBackground())
+        {
+            renderRectangle(renderArgs.matrixStack, isFocused() ? 0xffdddddd : 0xffaaaaaa);
+            renderRectangle(renderArgs.matrixStack, 1, 1, (int) (getWidth() - 2), (int) (getHeight() - 2), 0xff111111);
+        }
+    }
+
+    @Override
     public void onRender(@Nonnull RenderArgs renderArgs)
     {
-        textFieldWidget.renderButton(new MatrixStack(), renderArgs.pixelMouseX, renderArgs.pixelMouseY, renderArgs.partialTicks);
+        float z = isDraggingOrAncestorIsDragging() ? 100.0f : -1.0f;
+
+        try
+        {
+            // For some reason we can't just access the values in the matrix.
+            // So we have to get the z translation via reflection. Nice.
+            z = ObfuscationReflectionHelper.getPrivateValue(Matrix4f.class, renderArgs.matrixStack.last().pose(), "m23");
+        }
+        catch (Exception ex)
+        {
+//            Blocklings.LOGGER.warn(ex.toString());
+        }
+
+        MatrixStack matrixStack = new MatrixStack();
+        matrixStack.translate(0, 0, z);
+        matrixStack.scale(1.0f, 1.0f, 1.0f);
+        textFieldWidget.renderButton(matrixStack, renderArgs.pixelMouseX, renderArgs.pixelMouseY, renderArgs.partialTicks);
     }
 
     @Override
@@ -184,5 +220,21 @@ public class TextFieldControl extends TextControl
         super.setLineHeight(lineHeight);
 
         textFieldWidget.setHeight(getLineHeight());
+    }
+
+    /**
+     * @return whether to render the text field's background.
+     */
+    public boolean shouldRenderBackground()
+    {
+        return shouldRenderBackground;
+    }
+
+    /**
+     * Sets whether to render the text field's background.
+     */
+    public void setShouldRenderBackground(boolean shouldRenderBackground)
+    {
+        this.shouldRenderBackground = shouldRenderBackground;
     }
 }

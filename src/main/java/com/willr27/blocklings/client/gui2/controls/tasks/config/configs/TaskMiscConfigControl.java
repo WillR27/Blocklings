@@ -97,7 +97,7 @@ public class TaskMiscConfigControl extends ConfigControl
             for (Property property : goal.properties)
             {
                 new LabelControl(stackPanel, width - stackPanel.getPadding(Side.LEFT) - stackPanel.getPadding(Side.RIGHT), property.name.getString()).setMargins(0, 11, 0, 3);
-                property.createControl(stackPanel).setMargins(0, 0, 0, 0);
+//                property.createControl(stackPanel).setMargins(0, 0, 0, 0);
             }
         }
     }

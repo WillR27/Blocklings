@@ -24,6 +24,8 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiConsumer;
 
+import static org.antlr.v4.runtime.tree.Trees.getChildren;
+
 /**
  * A control is an atomic component of a GUI.
  */
@@ -134,10 +136,20 @@ public class Control extends Gui
     private float width = 0;
 
     /**
+     * The width the control would prefer to be, if there is enough space.
+     */
+    private float preferredWidth = width;
+
+    /**
      * The scaled height of the control relative to the parent, i.e. 100 x 100 would be 200 x 200 pixels if the
      * cumulative product of the parent control's inner scale was 2.0f.
      */
     private float height = 0;
+
+    /**
+     * The height the control would prefer to be, if there is enough space.
+     */
+    private float preferredHeight = height;
 
     /**
      * The max width of the control. Set to -1 to ignore.
@@ -489,67 +501,70 @@ public class Control extends Gui
             {
                 if (availableAreaWidth == 0)
                 {
-                    control.setWidth(0);
+                    control.setWidth(0, false);
                 }
 
                 if (availableAreaHeight == 0)
                 {
-                    control.setHeight(0);
+                    control.setHeight(0, false);
                 }
             }
 
-            switch (control.getDock())
+            if (availableAreaWidth > 0 && availableAreaHeight > 0)
             {
-                case NONE:
-                    continue;
-                case LEFT:
-                    control.setX(availableAreaX);
-                    control.setY(availableAreaY);
-                    control.setWidth(Math.min(control.getWidth(), availableAreaWidth));
-                    control.setHeight(availableAreaHeight);
-                    availableAreaX += control.getWidth();
-                    availableAreaWidth = Math.max(0, availableAreaWidth - control.getWidth());
-                    break;
-                case TOP:
-                    control.setX(availableAreaX);
-                    control.setY(availableAreaY);
-                    control.setWidth(availableAreaWidth);
-                    control.setHeight(Math.min(control.getHeight(), availableAreaHeight));
-                    availableAreaY += control.getHeight();
-                    availableAreaHeight = Math.max(0 , availableAreaHeight - control.getHeight());
-                    break;
-                case RIGHT:
-                    float desiredX = availableAreaX + availableAreaWidth - control.getWidth();
-                    float excessX = desiredX - availableAreaX;
-                    float correctedX = excessX < 0 ? desiredX - excessX : desiredX;
-                    float correctedWidth = excessX < 0 ? control.getWidth() - excessX : control.getWidth();
-                    control.setX(correctedX);
-                    control.setY(availableAreaY);
-                    control.setWidth(correctedWidth);
-                    control.setHeight(availableAreaHeight);
-                    availableAreaWidth = Math.max(0, availableAreaWidth - control.getWidth());
-                    break;
-                case BOTTOM:
-                    float desiredY = availableAreaY + availableAreaHeight - control.getHeight();
-                    float excessY = desiredY - availableAreaY;
-                    float correctedY = excessY < 0 ? desiredY - excessY : desiredY;
-                    float correctedHeight = excessY < 0 ? control.getHeight() - excessY : control.getHeight();
-                    control.setX(availableAreaX);
-                    control.setY(correctedY);
-                    control.setWidth(availableAreaWidth);
-                    control.setHeight(correctedHeight);
-                    availableAreaHeight = Math.max(0, availableAreaHeight - control.getHeight());
-                    break;
-                case FILL:
-                    control.setX(availableAreaX);
-                    control.setY(availableAreaY);
-                    control.setWidth(availableAreaWidth);
-                    control.setHeight(availableAreaHeight);
-                    availableAreaWidth = Math.max(0, availableAreaWidth - control.getWidth());
-                    availableAreaHeight = Math.max(0, availableAreaHeight - control.getHeight());
-                    availableAreaX += availableAreaWidth;
-                    availableAreaY += availableAreaHeight;
-                    break;
+                switch (control.getDock())
+                {
+                    case NONE:
+                        continue;
+                    case LEFT:
+                        control.setX(availableAreaX);
+                        control.setY(availableAreaY);
+                        control.setWidth(Math.min(control.getPreferredWidth(), availableAreaWidth), false);
+                        control.setHeight(availableAreaHeight, false);
+                        availableAreaX += control.getWidth();
+                        availableAreaWidth = Math.max(0, availableAreaWidth - control.getWidth());
+                        break;
+                    case TOP:
+                        control.setX(availableAreaX);
+                        control.setY(availableAreaY);
+                        control.setWidth(availableAreaWidth, false);
+                        control.setHeight(Math.min(control.getPreferredHeight(), availableAreaHeight), false);
+                        availableAreaY += control.getHeight();
+                        availableAreaHeight = Math.max(0, availableAreaHeight - control.getHeight());
+                        break;
+                    case RIGHT:
+                        float desiredX = availableAreaX + availableAreaWidth - control.getPreferredWidth();
+                        float excessX = desiredX - availableAreaX;
+                        float correctedX = excessX < 0 ? desiredX - excessX : desiredX;
+                        float correctedWidth = excessX < 0 ? control.getPreferredWidth() - excessX : control.getPreferredWidth();
+                        control.setX(correctedX);
+                        control.setY(availableAreaY);
+                        control.setWidth(correctedWidth, false);
+                        control.setHeight(availableAreaHeight, false);
+                        availableAreaWidth = Math.max(0, availableAreaWidth - control.getWidth());
+                        break;
+                    case BOTTOM:
+                        float desiredY = availableAreaY + availableAreaHeight - control.getPreferredHeight();
+                        float excessY = desiredY - availableAreaY;
+                        float correctedY = excessY < 0 ? desiredY - excessY : desiredY;
+                        float correctedHeight = excessY < 0 ? control.getPreferredHeight() - excessY : control.getPreferredHeight();
+                        control.setX(availableAreaX);
+                        control.setY(correctedY);
+                        control.setWidth(availableAreaWidth, false);
+                        control.setHeight(correctedHeight, false);
+                        availableAreaHeight = Math.max(0, availableAreaHeight - control.getHeight());
+                        break;
+                    case FILL:
+                        control.setX(availableAreaX);
+                        control.setY(availableAreaY);
+                        control.setWidth(availableAreaWidth, false);
+                        control.setHeight(availableAreaHeight, false);
+                        availableAreaWidth = Math.max(0, availableAreaWidth - control.getWidth());
+                        availableAreaHeight = Math.max(0, availableAreaHeight - control.getHeight());
+                        availableAreaX += availableAreaWidth;
+                        availableAreaY += availableAreaHeight;
+                        break;
+                }
             }
         }
     }
@@ -2222,9 +2237,27 @@ public class Control extends Gui
 
     /**
      * Sets the scaled width of the control.
+     *
+     * @param width the new width of the control.
      */
     public void setWidth(float width)
     {
+        setWidth(width, true);
+    }
+
+    /**
+     * Sets the scaled width of the control.
+     *
+     * @param width the new width of the control.
+     * @param isPreferred whether to also use this width as the preferred width.
+     */
+    public void setWidth(float width, boolean isPreferred)
+    {
+        if (isPreferred)
+        {
+            setPreferredWidth(width);
+        }
+
         if (width == this.width)
         {
             return;
@@ -2248,6 +2281,22 @@ public class Control extends Gui
         recalcPixelWidth();
 
         onSizeChanged.handle(new SizeChangedEvent(this, oldWidth, getHeight()));
+    }
+
+    /**
+     * @return the preferred width of the control.
+     */
+    public float getPreferredWidth()
+    {
+        return preferredWidth;
+    }
+
+    /**
+     * Sets the preferred width of the control.
+     */
+    public void setPreferredWidth(float preferredWidth)
+    {
+        this.preferredWidth = preferredWidth;
     }
 
     /**
@@ -2280,10 +2329,28 @@ public class Control extends Gui
     }
 
     /**
-     * Sets the scaled with of the control.
+     * Sets the scaled height of the control.
+     *
+     * @param height the new height of the control.
      */
     public void setHeight(float height)
     {
+        setHeight(height, true);
+    }
+
+    /**
+     * Sets the scaled with of the control.
+     *
+     * @param height the new height of the control.
+     * @param isPreferred whether to also use this height as the preferred height.
+     */
+    public void setHeight(float height, boolean isPreferred)
+    {
+        if (isPreferred)
+        {
+            setPreferredHeight(height);
+        }
+
         if (height == this.height)
         {
             return;
@@ -2307,6 +2374,22 @@ public class Control extends Gui
         recalcPixelHeight();
 
         onSizeChanged.handle(new SizeChangedEvent(this, oldHeight, getHeight()));
+    }
+
+    /**
+     * @return the preferred height of the control.
+     */
+    public float getPreferredHeight()
+    {
+        return preferredHeight;
+    }
+
+    /**
+     * Sets the preferred height of the control.
+     */
+    public void setPreferredHeight(float preferredHeight)
+    {
+        this.preferredHeight = preferredHeight;
     }
 
     /**

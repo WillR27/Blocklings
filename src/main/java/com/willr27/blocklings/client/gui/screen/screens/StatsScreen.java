@@ -58,6 +58,7 @@ public class StatsScreen extends TabbedScreen
 
         TextFieldControl textFieldControl = new TextFieldControl();
         textFieldControl.setParent(contentControl);
+        textFieldControl.setShouldRenderBackground(false);
         textFieldControl.setDock(Dock.TOP);
         textFieldControl.setHorizontalAlignment(HorizontalAlignment.MIDDLE);
         textFieldControl.setMaxTextLength(25);
