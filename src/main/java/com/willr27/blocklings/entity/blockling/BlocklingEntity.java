@@ -194,8 +194,6 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
             setNaturalBlocklingType(BlocklingType.TYPES.get(getRandom().nextInt(BlocklingType.TYPES.size())), false);
             setBlocklingType(naturalBlocklingType, false);
 
-            setScale(getRandom().nextFloat() * 0.5f + 0.45f, false);
-
             stats.init();
         }
 
