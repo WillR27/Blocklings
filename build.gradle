@@ -120,6 +120,9 @@ repositories {
         name 'DVS1 Maven FS'
         url 'https://dvs1.progwml6.com/files/maven'
     }
+    maven {
+        url 'https://cursemaven.com'
+    }
 }
 
 dependencies {

@@ -1,628 +1,661 @@
 package com.willr27.blocklings.client.gui.control.controls.panels;
 
-import com.willr27.blocklings.client.gui.control.*;
+import com.willr27.blocklings.client.gui.control.BaseControl;
+import com.willr27.blocklings.client.gui.control.Control;
+import com.willr27.blocklings.client.gui.properties.Corner;
+import com.willr27.blocklings.client.gui.properties.Direction;
+import com.willr27.blocklings.client.gui.properties.Flow;
+import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * Lays out its children from left to right, top to bottom or vice versa.
+ * A panel that stacks its children on top of each other until it needs to wrap.
  */
 @OnlyIn(Dist.CLIENT)
-public class FlowPanel extends Panel
+public class FlowPanel extends Control
 {
-    /**
-     * The direction the panel will attempt to lay out its contents.
-     */
     @Nonnull
-    private Direction flowDirection = Direction.LEFT_TO_RIGHT;
+    private Flow flow = Flow.TOP_LEFT_LEFT_TO_RIGHT;
 
-    /**
-     * The orientation the panel will lay out contents that don't fit within the panel's bounds.
-     */
-    @Nonnull
-    private Orientation overflowOrientation = Orientation.VERTICAL;
+    private double horizontalSpacing = 0.0;
 
-    /**
-     * Whether to distribute the contents in a grid like pattern using the largest child control
-     * as the division size.
-     */
-    private boolean shouldDistributeEvenly = false;
+    private double verticalSpacing = 0.0;
 
-    /**
-     * Whether to automatically adjust the max scroll offset to fit any overflow in the x-axis. So if the items
-     * overflow by 10, the max scroll offset will be set to 10.
-     */
-    private boolean fitMaxScrollOffsetToOverflowX = true;
-
-    /**
-     * Whether to automatically adjust the max scroll offset to fit any overflow in the y-axis. So if the items
-     * overflow by 10, the max scroll offset will be set to 10.
-     */
-    private boolean fitMaxScrollOffsetToOverflowY = true;
-
-    /**
-     * The horizontal gap between each item.
-     */
-    private int itemGapX = 0;
-
-    /**
-     * The vertical gap between each item.
-     */
-    private int itemGapY = 0;
-
-    /**
-     * The x or y coordinates that make up the boundaries of each row or column. This includes midpoints between rows
-     * columns, not just start coordinate of each row or column.
-     */
-    @Nonnull
-    private List<Float> rowOrColumnBoundsCoords = new ArrayList<>();
+    @Nullable
+    private Double lineAlignment = null;
 
     @Override
-    public void layoutContents(boolean setDraggedPosition)
+    protected void measureSelf(double availableWidth, double availableHeight)
     {
-        if (shouldDistributeEvenly())
+        double width = getWidth();
+        double height = getHeight();
+
+        if (getWidthPercentage() != null && DoubleUtil.isPositiveAndFinite(availableWidth))
         {
-            layoutContentsEvenly(setDraggedPosition);
+            width = availableWidth * getWidthPercentage();
         }
-        else
+        else if (shouldFitWidthToContent())
         {
-            layoutContentsUnevenly(setDraggedPosition);
-        }
-    }
+            double minX = Double.POSITIVE_INFINITY;
+            double maxX = Double.NEGATIVE_INFINITY;
 
-    /**
-     * Lays out the contents of the panel unevenly.
-     */
-    private void layoutContentsUnevenly(boolean setDraggedPosition)
-    {
-        // The current positions to use for the next control.
-        float controlX = getPadding(Side.LEFT);
-        float controlY = getPadding(Side.TOP);
-        float rowY = controlY;
-        float colX = controlX;
-
-        // The current max coords reached in each direction. This is needed to work out where to put a
-        // control when wrapping. If there are 2 controls with different heights on one row then if the
-        // next control wraps it needs to use the max y position reached.
-        float maxSoFarX = 0;
-        float maxSoFarY = 0;
-
-        float width = shouldFitToContentsX() ? getMaxWidth() : getWidth();
-        float height = shouldFitToContentsY() ? getMaxHeight() : getHeight();
-
-        rowOrColumnBoundsCoords.clear();
-        rowOrColumnBoundsCoords.add(0.0f);
-
-        for (Control control : getChildren())
-        {
-            if (!control.isVisible())
+            for (BaseControl childControl : getChildren())
             {
-                continue;
-            }
+                double childMinX = (childControl.getX() - childControl.getMargin().left) * getInnerScale().x;
+                double childMaxX = (childControl.getX() + childControl.getWidth() + childControl.getMargin().right) * getInnerScale().x;
 
-            if (getFlowDirection() == Direction.LEFT_TO_RIGHT)
-            {
-                controlY = rowY;
-            }
-            else
-            {
-                controlX = colX;
-            }
-
-            // Wrap if the control is going to overlap the edge of the panel.
-            if (getFlowDirection() == Direction.LEFT_TO_RIGHT)
-            {
-                if (getOverflowOrientation() != Orientation.HORIZONTAL && controlX + control.getEffectiveWidth() > (width - getPadding(Side.RIGHT)) / getInnerScale())
+                if (childMinX < minX)
                 {
-                    controlX = getPadding(Side.LEFT);
-                    rowY = maxSoFarY + getItemGapY();
-                    controlY = rowY;
-                    rowOrColumnBoundsCoords.add((controlY - getItemGapY() / 2));
+                    minX = childMinX;
                 }
-            }
-            else
-            {
-                if (getOverflowOrientation() != Orientation.VERTICAL && controlY + control.getEffectiveWidth() > (height - getPadding(Side.BOTTOM)) / getInnerScale())
+
+                if (childMaxX > maxX)
                 {
-                    controlY = getPadding(Side.TOP);
-                    colX = maxSoFarX + getItemGapX();
-                    controlX = colX;
-                    rowOrColumnBoundsCoords.add((controlX - getItemGapX() / 2));
+                    maxX = childMaxX;
                 }
             }
 
-            controlX += control.getMargin(Side.LEFT);
-            controlY += control.getMargin(Side.TOP);
-
-            // Set the position on the control.
-            if (!control.isDragging() || setDraggedPosition)
+            if (minX != Double.POSITIVE_INFINITY && maxX != Double.NEGATIVE_INFINITY)
             {
-                control.setX(controlX - getScrollOffsetX());
-                control.setY(controlY - getScrollOffsetY());
+                width = maxX - minX + getPaddingWidth();
             }
-
-            maxSoFarX = Math.max(maxSoFarX, controlX + control.getWidth() + control.getMargin(Side.RIGHT));
-            maxSoFarY = Math.max(maxSoFarY, controlY + control.getHeight() + control.getMargin(Side.BOTTOM));
-
-            // Update the values for the next control.
-            if (getFlowDirection() == Direction.LEFT_TO_RIGHT)
+            else if (maxX != Double.NEGATIVE_INFINITY)
             {
-                controlX += control.getWidth() + control.getMargin(Side.RIGHT) + getItemGapX();
+                width = maxX + getPaddingWidth();
             }
             else
             {
-                controlY += control.getHeight() + control.getMargin(Side.BOTTOM) + getItemGapY();
+                width = 0.0;
             }
         }
 
-        maxSoFarX += getPadding(Side.RIGHT);
-        maxSoFarY += getPadding(Side.BOTTOM);
-
-        rowOrColumnBoundsCoords.add(getFlowDirection() == Direction.LEFT_TO_RIGHT ? maxSoFarY : maxSoFarX);
-
-        if (shouldFitMaxScrollOffsetToOverflowX() && getOverflowOrientation() == Orientation.HORIZONTAL)
+        if (getHeightPercentage() != null && DoubleUtil.isPositiveAndFinite(availableHeight))
         {
-            setMaxScrollOffsetX((int) (maxSoFarX - (getWidth() / getInnerScale())));
+            height = availableHeight * getHeightPercentage();
         }
-        else if (shouldFitMaxScrollOffsetToOverflowY() && getOverflowOrientation() == Orientation.VERTICAL)
+        else if (shouldFitHeightToContent())
         {
-            setMaxScrollOffsetY((int) (maxSoFarY - (getHeight() / getInnerScale())));
-        }
+            double minY = Double.POSITIVE_INFINITY;
+            double maxY = Double.NEGATIVE_INFINITY;
 
-        tryFitToContents();
-    }
-
-    /**
-     * Lays out the contents of the panel evenly.
-     */
-    private void layoutContentsEvenly(boolean setDraggedPosition)
-    {
-        // The current positions to use for the next control.
-        float controlX = getPadding(Side.LEFT);
-        float controlY = getPadding(Side.TOP);
-        float rowY = controlY;
-        float colX = controlX;
-
-        // The current max coords reached in each direction. This is needed to work out where to put a
-        // control when wrapping. If there are 2 controls with different heights on one row then if the
-        // next control wraps it needs to use the max y position reached.
-        float maxSoFarX = 0;
-        float maxSoFarY = 0;
-
-        float width = shouldFitToContentsX() ? getMaxWidth() : getWidth();
-        float height = shouldFitToContentsY() ? getMaxHeight() : getHeight();
-
-        rowOrColumnBoundsCoords.clear();
-        rowOrColumnBoundsCoords.add(0.0f);
-
-        float maxControlWidth = getChildren().stream().map(control -> control.getEffectiveWidth()).max(Float::compareTo).get();
-        float maxControlHeight = getChildren().stream().map(control -> control.getEffectiveHeight()).max(Float::compareTo).get();
-
-        for (Control control : getChildren())
-        {
-            if (!control.isVisible())
+            for (BaseControl childControl : getChildren())
             {
-                continue;
-            }
+                double childMinY = (childControl.getY() - childControl.getMargin().top) * getInnerScale().y;
+                double childY = (childControl.getY() + childControl.getHeight() + childControl.getMargin().bottom) * getInnerScale().y;
 
-            if (getFlowDirection() == Direction.LEFT_TO_RIGHT)
-            {
-                controlY = rowY;
-            }
-            else
-            {
-                controlX = colX;
-            }
-
-            // Wrap if the control is going to overlap the edge of the panel.
-            if (getFlowDirection() == Direction.LEFT_TO_RIGHT)
-            {
-                if (getOverflowOrientation() != Orientation.HORIZONTAL && controlX + maxControlWidth > (width - getPadding(Side.RIGHT)) / getInnerScale())
+                if (childMinY < minY)
                 {
-                    controlX = getPadding(Side.LEFT);
-                    rowY = maxSoFarY + getItemGapY();
-                    controlY = rowY;
-                    rowOrColumnBoundsCoords.add((controlY - getItemGapY() / 2));
+                    minY = childMinY;
                 }
-            }
-            else
-            {
-                if (getOverflowOrientation() != Orientation.VERTICAL && controlY + maxControlHeight > (height - getPadding(Side.BOTTOM)) / getInnerScale())
+
+                if (childY > maxY)
                 {
-                    controlY = getPadding(Side.TOP);
-                    colX = maxSoFarX + getItemGapX();
-                    controlX = colX;
-                    rowOrColumnBoundsCoords.add((controlX - getItemGapX() / 2));
+                    maxY = childY;
                 }
             }
 
-            // Set the position on the control.
-            if (!control.isDragging() || setDraggedPosition)
+            if (minY != Double.POSITIVE_INFINITY && maxY != Double.NEGATIVE_INFINITY)
             {
-                control.setX(controlX + control.getMargin(Side.LEFT) - getScrollOffsetX());
-                control.setY(controlY + control.getMargin(Side.TOP) - getScrollOffsetY());
+                height = maxY - minY + getPaddingHeight();
             }
-
-            maxSoFarX = Math.max(maxSoFarX, controlX + maxControlWidth);
-            maxSoFarY = Math.max(maxSoFarY, controlY + maxControlHeight);
-
-            // Update the values for the next control.
-            if (getFlowDirection() == Direction.LEFT_TO_RIGHT)
+            else if (maxY != Double.NEGATIVE_INFINITY)
             {
-                controlX += maxControlWidth + getItemGapX();
+                height = maxY + getPaddingHeight();
             }
             else
             {
-                controlY += maxControlHeight + getItemGapY();
+                height = 0.0;
             }
         }
 
-        maxSoFarX += getPadding(Side.RIGHT);
-        maxSoFarY += getPadding(Side.BOTTOM);
-
-        rowOrColumnBoundsCoords.add(getFlowDirection() == Direction.LEFT_TO_RIGHT ? maxSoFarY : maxSoFarX);
-
-        if (shouldFitMaxScrollOffsetToOverflowX() && getOverflowOrientation() == Orientation.HORIZONTAL)
-        {
-            setMaxScrollOffsetX((int) (maxSoFarX - (getWidth() / getInnerScale())));
-        }
-        else if (shouldFitMaxScrollOffsetToOverflowY() && getOverflowOrientation() == Orientation.VERTICAL)
-        {
-            setMaxScrollOffsetY((int) (maxSoFarY - (getHeight() / getInnerScale())));
-        }
-
-        tryFitToContents();
+        setDesiredWidth(width);
+        setDesiredHeight(height);
     }
 
     @Override
-    public void layoutDockedContents()
+    public void measureChildren()
     {
-        // Flow panels do not support docked content.
-    }
-
-    @Override
-    protected void updateDraggedControlOnRelease(@Nonnull Control draggedChild)
-    {
-        if (getDragReorderType() == DragReorderType.INSERT_ON_RELEASE)
+        for (BaseControl child : getChildrenCopy())
         {
-            reorderFromDrag(draggedChild);
+            double availableWidth = ((getDesiredWidth() - getPaddingWidth()) / getInnerScale().x) - child.getMarginWidth();
+            double availableHeight = ((getDesiredHeight() - getPaddingHeight()) / getInnerScale().y) - child.getMarginHeight();
+
+            if (getDirection().isHorizontal)
+            {
+                availableWidth = Double.POSITIVE_INFINITY;
+                availableHeight -= child.getMarginHeight() + getPaddingHeight();
+            }
+            else
+            {
+                availableWidth -= child.getMarginWidth() + getPaddingWidth();
+                availableHeight = Double.POSITIVE_INFINITY;
+            }
+
+            child.doMeasure(availableWidth, availableHeight);
         }
     }
 
     @Override
-    protected void updateDraggedControl(@Nonnull Control draggedChild)
+    protected void arrange()
     {
-        if (getDragReorderType() == DragReorderType.INSERT_ON_MOVE)
+        double availableWidth = getWidthWithoutPadding() / getInnerScale().x;
+        double availableHeight = getHeightWithoutPadding() / getInnerScale().y;
+
+        double newLineControlX = 0.0;
+        double newLineControlY = 0.0;
+
+        if (getStartCorner() == Corner.TOP_RIGHT || getStartCorner() == Corner.BOTTOM_RIGHT)
         {
-            reorderFromDrag(draggedChild);
+            newLineControlX = getWidthWithoutPadding() / getInnerScale().x;
         }
-    }
 
-    /**
-     * Reorders the controls based on the dragged control.
-     *
-     * @param draggedControl the child control currently being dragged.
-     */
-    protected void reorderFromDrag(@Nonnull Control draggedControl)
-    {
-        float draggedMidX = draggedControl.getMidX();
-        float draggedMidY = draggedControl.getMidY();
-
-        Control closestControl = draggedControl;
-        float closestDifX = Integer.MAX_VALUE;
-        float closestDifY = Integer.MAX_VALUE;
-        float rowOrColumnLowerBound = 0;
-        float rowOrColumnUpperBound = 0;
-
-        List<Float> rowOrColumnBoundsCoordsWithScrollOffset = rowOrColumnBoundsCoords.stream().map(i -> i - (getFlowDirection() == Direction.LEFT_TO_RIGHT ? getScrollOffsetY() : getScrollOffsetX())).collect(Collectors.toList());
-
-        if (getFlowDirection() == Direction.LEFT_TO_RIGHT)
+        if (getStartCorner() == Corner.BOTTOM_LEFT || getStartCorner() == Corner.BOTTOM_RIGHT)
         {
-            // If the dragged control is above the first row.
-            if (draggedControl.getMidY() <= rowOrColumnBoundsCoordsWithScrollOffset.get(0))
+            newLineControlY = getHeightWithoutPadding() / getInnerScale().y;
+        }
+
+        double controlX = newLineControlX;
+        double controlLeft = 0.0;
+        double controlRight = 0.0;
+        double controlY = newLineControlY;
+        double controlTop = 0.0;
+        double controlBottom = 0.0;
+        boolean hasJustReset = true;
+        List<BaseControl> controlsToAlign = new ArrayList<>();
+        List<List<BaseControl>> linesOfControlsToAlign = new ArrayList<>();
+
+        for (BaseControl control : getChildrenCopy())
+        {
+            control.setWidth(control.getDesiredWidth());
+            control.setHeight(control.getDesiredHeight());
+
+            if (getDirection() == Direction.LEFT_TO_RIGHT)
             {
-                rowOrColumnLowerBound = rowOrColumnBoundsCoordsWithScrollOffset.get(0);
-                rowOrColumnUpperBound = rowOrColumnBoundsCoordsWithScrollOffset.get(1);
-            }
-            // If the dragged control is below the last row.
-            else if (draggedControl.getMidY() >= rowOrColumnBoundsCoordsWithScrollOffset.get(rowOrColumnBoundsCoordsWithScrollOffset.size() - 1))
-            {
-                rowOrColumnLowerBound = rowOrColumnBoundsCoordsWithScrollOffset.get(rowOrColumnBoundsCoordsWithScrollOffset.size() - 2);
-                rowOrColumnUpperBound = rowOrColumnBoundsCoordsWithScrollOffset.get(rowOrColumnBoundsCoordsWithScrollOffset.size() - 1);
-            }
-            // Otherwise work out which row it is on.
-            else
-            {
-                for (int i = rowOrColumnBoundsCoordsWithScrollOffset.size() - 1; i >= 0; i--)
+                controlX += control.getMargin().left;
+                controlRight = controlX + control.getWidth() + control.getMargin().right;
+
+                if (!hasJustReset && controlRight > availableWidth)
                 {
-                    if (draggedControl.getMidY() > rowOrColumnBoundsCoordsWithScrollOffset.get(i))
-                    {
-                        rowOrColumnLowerBound = rowOrColumnBoundsCoordsWithScrollOffset.get(i);
-                        rowOrColumnUpperBound = rowOrColumnBoundsCoordsWithScrollOffset.get(i + 1);
+                    controlX = newLineControlX + control.getMargin().left;
+                    controlY = newLineControlY;
+                    hasJustReset = true;
 
-                        break;
-                    }
-                }
-            }
-
-            List<Control> controlsInRow = new ArrayList<>();
-
-            for (Control control : getChildrenCopy())
-            {
-                if (!control.isVisible())
-                {
-                    continue;
-                }
-
-                if (control == draggedControl)
-                {
-                    continue;
-                }
-
-                // Ignore any controls outside the row.
-                if (control.getMidY() < rowOrColumnLowerBound || control.getMidY() > rowOrColumnUpperBound)
-                {
-                    continue;
-                }
-
-                controlsInRow.add(control);
-
-                float difX = draggedMidX - control.getMidX();
-
-                if (Math.abs(difX) < Math.abs(closestDifX))
-                {
-                    closestControl = control;
-                    closestDifX = difX;
-                }
-            }
-
-            if (controlsInRow.size() == 0)
-            {
-                Control lastControl = getChildren().get(getChildren().size() - 1);
-
-                if (lastControl != draggedControl)
-                {
-                    insertOrMoveChildAfter(draggedControl, lastControl);
-                }
-            }
-            else if (closestControl != draggedControl && closestControl.isReorderable())
-            {
-                if (closestDifX < 0)
-                {
-                    insertOrMoveChildBefore(draggedControl, closestControl);
+                    linesOfControlsToAlign.add(controlsToAlign);
+                    alignVertically(controlsToAlign);
+                    controlsToAlign = new ArrayList<>();
                 }
                 else
                 {
-                    insertOrMoveChildAfter(draggedControl, closestControl);
+                    hasJustReset = false;
+                }
+
+                if (getOverflowDirection() == Direction.TOP_TO_BOTTOM)
+                {
+                    controlY += control.getMargin().top;
+                }
+                else if (getOverflowDirection() == Direction.BOTTOM_TO_TOP)
+                {
+                    controlY -= control.getHeight() + control.getMargin().bottom;
                 }
             }
-        }
-        else
-        {
-            // If the dragged control is to the left of the first column.
-            if (draggedControl.getMidX() < rowOrColumnBoundsCoordsWithScrollOffset.get(0))
+            if (getDirection() == Direction.RIGHT_TO_LEFT)
             {
-                rowOrColumnLowerBound = rowOrColumnBoundsCoordsWithScrollOffset.get(0);
-                rowOrColumnUpperBound = rowOrColumnBoundsCoordsWithScrollOffset.get(1);
-            }
-            // If the dragged control is to the right of the last column.
-            else if (draggedControl.getMidX() > rowOrColumnBoundsCoordsWithScrollOffset.get(rowOrColumnBoundsCoordsWithScrollOffset.size() - 1))
-            {
-                rowOrColumnLowerBound = rowOrColumnBoundsCoordsWithScrollOffset.get(rowOrColumnBoundsCoordsWithScrollOffset.size() - 2);
-                rowOrColumnUpperBound = rowOrColumnBoundsCoordsWithScrollOffset.get(rowOrColumnBoundsCoordsWithScrollOffset.size() - 1);
-            }
-            // Otherwise work out which column it is on.
-            else
-            {
-                for (int i = rowOrColumnBoundsCoordsWithScrollOffset.size() - 1; i >= 0; i--)
+                controlX -= control.getWidth() + control.getMargin().right;
+                controlLeft = controlX - control.getMargin().left;
+
+                if (!hasJustReset && controlLeft < 0.0)
                 {
-                    if (draggedControl.getMidX() > rowOrColumnBoundsCoordsWithScrollOffset.get(i))
-                    {
-                        rowOrColumnLowerBound = rowOrColumnBoundsCoordsWithScrollOffset.get(i);
-                        rowOrColumnUpperBound = rowOrColumnBoundsCoordsWithScrollOffset.get(i + 1);
+                    controlX = newLineControlX - control.getWidth() - control.getMargin().right;
+                    controlY = newLineControlY;
+                    hasJustReset = true;
 
-                        break;
-                    }
-                }
-            }
-
-            List<Control> controlsInColumn = new ArrayList<>();
-
-            for (Control control : getChildrenCopy())
-            {
-                if (!control.isVisible())
-                {
-                    continue;
-                }
-
-                if (control == draggedControl)
-                {
-                    continue;
-                }
-
-                // Ignore any controls outside the column.
-                if (control.getMidX() < rowOrColumnLowerBound || control.getMidX() > rowOrColumnUpperBound)
-                {
-                    continue;
-                }
-
-                controlsInColumn.add(control);
-
-                float difY = draggedMidY - control.getMidY();
-
-                if (Math.abs(difY) < Math.abs(closestDifY))
-                {
-                    closestControl = control;
-                    closestDifY = difY;
-                }
-            }
-
-            if (controlsInColumn.size() == 0)
-            {
-                Control lastControl = getChildren().get(getChildren().size() - 1);
-
-                if (lastControl != draggedControl)
-                {
-                    insertOrMoveChildAfter(draggedControl, lastControl);
-                }
-            }
-            else if (closestControl != draggedControl && closestControl.isReorderable())
-            {
-                if (closestDifY < 0)
-                {
-                    insertOrMoveChildBefore(draggedControl, closestControl);
+                    linesOfControlsToAlign.add(controlsToAlign);
+                    alignVertically(controlsToAlign);
+                    controlsToAlign = new ArrayList<>();
                 }
                 else
                 {
-                    insertOrMoveChildAfter(draggedControl, closestControl);
+                    hasJustReset = false;
+                }
+
+                if (getOverflowDirection() == Direction.TOP_TO_BOTTOM)
+                {
+                    controlY += control.getMargin().top;
+                }
+                else if (getOverflowDirection() == Direction.BOTTOM_TO_TOP)
+                {
+                    controlY -= control.getHeight() + control.getMargin().bottom;
+                }
+            }
+            else if (getDirection() == Direction.TOP_TO_BOTTOM)
+            {
+                controlY += control.getMargin().top;
+                controlBottom = controlY + control.getHeight() + control.getMargin().bottom;
+
+                if (!hasJustReset && controlBottom > availableHeight)
+                {
+                    controlX = newLineControlX;
+                    controlY = newLineControlY + control.getMargin().top;
+                    hasJustReset = true;
+
+                    linesOfControlsToAlign.add(controlsToAlign);
+                    alignHorizontally(controlsToAlign);
+                    controlsToAlign = new ArrayList<>();
+                }
+                else
+                {
+                    hasJustReset = false;
+                }
+
+                if (getOverflowDirection() == Direction.LEFT_TO_RIGHT)
+                {
+                    controlX += control.getMargin().left;
+                }
+                else if (getOverflowDirection() == Direction.RIGHT_TO_LEFT)
+                {
+                    controlX -= control.getWidth() + control.getMargin().right;
+                }
+            }
+            else if (getDirection() == Direction.BOTTOM_TO_TOP)
+            {
+                controlY -= control.getHeight() + control.getMargin().bottom;
+                controlTop = controlY - control.getMargin().top;
+
+                if (!hasJustReset && controlTop < 0.0)
+                {
+                    controlX = newLineControlX;
+                    controlY = newLineControlY - control.getHeight() - control.getMargin().bottom;
+                    hasJustReset = true;
+
+                    linesOfControlsToAlign.add(controlsToAlign);
+                    alignHorizontally(controlsToAlign);
+                    controlsToAlign = new ArrayList<>();
+                }
+                else
+                {
+                    hasJustReset = false;
+                }
+
+                if (getOverflowDirection() == Direction.LEFT_TO_RIGHT)
+                {
+                    controlX += control.getMargin().left;
+                }
+                else if (getOverflowDirection() == Direction.RIGHT_TO_LEFT)
+                {
+                    controlX -= control.getWidth() + control.getMargin().right;
+                }
+            }
+
+            control.setX(controlX);
+            control.setY(controlY);
+
+            controlsToAlign.add(control);
+
+            if (getDirection() == Direction.LEFT_TO_RIGHT)
+            {
+                controlX += control.getWidth() + control.getMargin().right + getHorizontalSpacing();
+
+                if (getOverflowDirection() == Direction.TOP_TO_BOTTOM)
+                {
+                    controlY -= control.getMargin().top;
+                }
+                else if (getOverflowDirection() == Direction.BOTTOM_TO_TOP)
+                {
+                    controlY += control.getHeight() + control.getMargin().bottom;
+                }
+            }
+            else if (getDirection() == Direction.RIGHT_TO_LEFT)
+            {
+                controlX -= control.getMargin().left + getHorizontalSpacing();
+
+                if (getOverflowDirection() == Direction.TOP_TO_BOTTOM)
+                {
+                    controlY -= control.getMargin().top;
+                }
+                else if (getOverflowDirection() == Direction.BOTTOM_TO_TOP)
+                {
+                    controlY += control.getHeight() + control.getMargin().bottom;
+                }
+            }
+            else if (getDirection() == Direction.TOP_TO_BOTTOM)
+            {
+                if (getOverflowDirection() == Direction.LEFT_TO_RIGHT)
+                {
+                    controlX -= control.getMargin().left;
+                }
+                else if (getOverflowDirection() == Direction.RIGHT_TO_LEFT)
+                {
+                    controlX += control.getWidth() + control.getMargin().right;
+                }
+
+                controlY += control.getHeight() + control.getMargin().bottom + getVerticalSpacing();
+            }
+            else if (getDirection() == Direction.BOTTOM_TO_TOP)
+            {
+                if (getOverflowDirection() == Direction.LEFT_TO_RIGHT)
+                {
+                    controlX -= control.getMargin().left;
+                }
+                else if (getOverflowDirection() == Direction.RIGHT_TO_LEFT)
+                {
+                    controlX += control.getWidth() + control.getMargin().right;
+                }
+
+                controlY -= control.getMargin().top + getVerticalSpacing();
+            }
+
+            if (getOverflowDirection() == Direction.LEFT_TO_RIGHT)
+            {
+                controlRight = controlX + control.getWidthWithMargin() + getHorizontalSpacing();
+
+                if (controlRight > newLineControlX)
+                {
+                    newLineControlX = controlRight;
+                }
+            }
+            else if (getOverflowDirection() == Direction.RIGHT_TO_LEFT)
+            {
+                controlLeft = controlX - control.getWidthWithMargin() - getHorizontalSpacing();
+
+                if (controlLeft < newLineControlX)
+                {
+                    newLineControlX = controlLeft;
+                }
+            }
+            else if (getOverflowDirection() == Direction.TOP_TO_BOTTOM)
+            {
+                controlBottom = controlY + control.getHeightWithMargin() + getVerticalSpacing();
+
+                if (controlBottom > newLineControlY)
+                {
+                    newLineControlY = controlBottom;
+                }
+            }
+            else if (getOverflowDirection() == Direction.BOTTOM_TO_TOP)
+            {
+                controlTop = controlY - control.getHeightWithMargin() - getVerticalSpacing();
+
+                if (controlTop < newLineControlY)
+                {
+                    newLineControlY = controlTop;
+                }
+            }
+        }
+
+        if (!controlsToAlign.isEmpty())
+        {
+            linesOfControlsToAlign.add(controlsToAlign);
+
+            if (getDirection() == Direction.LEFT_TO_RIGHT || getDirection() == Direction.RIGHT_TO_LEFT)
+            {
+                alignVertically(controlsToAlign);
+            }
+            else
+            {
+                alignHorizontally(controlsToAlign);
+            }
+        }
+
+        if (getHorizontalContentAlignment() != null)
+        {
+            if (getDirection().isVertical)
+            {
+                double minX = Double.POSITIVE_INFINITY;
+                double maxX = Double.NEGATIVE_INFINITY;
+
+                for (BaseControl controlToAlign : getChildren())
+                {
+                    double controlToAlignMinX = controlToAlign.getX() - controlToAlign.getMargin().left;
+                    double controlToAlignMaxX = controlToAlign.getX() + controlToAlign.getWidth() + controlToAlign.getMargin().right;
+
+                    if (controlToAlignMinX < minX)
+                    {
+                        minX = controlToAlignMinX;
+                    }
+
+                    if (controlToAlignMaxX > maxX)
+                    {
+                        maxX = controlToAlignMaxX;
+                    }
+                }
+                double dif = ((maxX - minX - availableWidth)) * (getOverflowDirection() == Direction.LEFT_TO_RIGHT ? -getHorizontalContentAlignment() : 1.0 - getHorizontalContentAlignment());
+
+                for (BaseControl controlToAlign : getChildren())
+                {
+                    controlToAlign.setX(controlToAlign.getX() + dif);
+                }
+            }
+            else
+            {
+                for (List<BaseControl> line : linesOfControlsToAlign)
+                {
+                    double lineMinX = Double.POSITIVE_INFINITY;
+                    double lineMaxX = Double.NEGATIVE_INFINITY;
+
+                    for (BaseControl controlToAlign : line)
+                    {
+                        double controlToAlignMinX = controlToAlign.getX() - controlToAlign.getMargin().left;
+                        double controlToAlignMaxX = controlToAlign.getX() + controlToAlign.getWidth() + controlToAlign.getMargin().right;
+
+                        if (controlToAlignMinX < lineMinX)
+                        {
+                            lineMinX = controlToAlignMinX;
+                        }
+
+                        if (controlToAlignMaxX > lineMaxX)
+                        {
+                            lineMaxX = controlToAlignMaxX;
+                        }
+                    }
+
+                    double dif = ((availableWidth - (lineMaxX - lineMinX))) * (getDirection() == Direction.RIGHT_TO_LEFT ? 1.0 - getHorizontalContentAlignment() : -getHorizontalContentAlignment());
+
+                    for (BaseControl controlToAlign : line)
+                    {
+                        controlToAlign.setX(controlToAlign.getX() - dif);
+                    }
+                }
+            }
+        }
+
+        if (getVerticalContentAlignment() != null)
+        {
+            if (getDirection().isHorizontal)
+            {
+                double minY = Double.POSITIVE_INFINITY;
+                double maxY = Double.NEGATIVE_INFINITY;
+
+                for (BaseControl controlToAlign : getChildren())
+                {
+                    double controlToAlignMinY = controlToAlign.getY() - controlToAlign.getMargin().top;
+                    double controlToAlignMaxY = controlToAlign.getY() + controlToAlign.getHeight() + controlToAlign.getMargin().bottom;
+
+                    if (controlToAlignMinY < minY)
+                    {
+                        minY = controlToAlignMinY;
+                    }
+
+                    if (controlToAlignMaxY > maxY)
+                    {
+                        maxY = controlToAlignMaxY;
+                    }
+                }
+                double dif = ((maxY - minY - availableHeight)) * (getOverflowDirection() == Direction.TOP_TO_BOTTOM ? -getVerticalContentAlignment() : 1.0 - getVerticalContentAlignment());
+
+                for (BaseControl controlToAlign : getChildren())
+                {
+                    controlToAlign.setY(controlToAlign.getY() + dif);
+                }
+            }
+            else
+            {
+                for (List<BaseControl> line : linesOfControlsToAlign)
+                {
+                    double lineMinY = Double.POSITIVE_INFINITY;
+                    double lineMaxY = Double.NEGATIVE_INFINITY;
+
+                    for (BaseControl controlToAlign : line)
+                    {
+                        double controlToAlignMinY = controlToAlign.getY() - controlToAlign.getMargin().top;
+                        double controlToAlignMaxY = controlToAlign.getY() + controlToAlign.getHeight() + controlToAlign.getMargin().bottom;
+
+                        if (controlToAlignMinY < lineMinY)
+                        {
+                            lineMinY = controlToAlignMinY;
+                        }
+
+                        if (controlToAlignMaxY > lineMaxY)
+                        {
+                            lineMaxY = controlToAlignMaxY;
+                        }
+                    }
+
+                    double dif = ((availableHeight - (lineMaxY - lineMinY))) * (getDirection() == Direction.BOTTOM_TO_TOP ? 1.0 - getVerticalContentAlignment() : -getVerticalContentAlignment());
+
+                    for (BaseControl controlToAlign : line)
+                    {
+                        controlToAlign.setY(controlToAlign.getY() - dif);
+                    }
                 }
             }
         }
     }
 
-    /**
-     * @return the current flow direction.
-     */
+    private void alignHorizontally(@Nonnull List<BaseControl> controlsToAlign)
+    {
+        if (getLineAlignment() != null)
+        {
+            double minX = Double.POSITIVE_INFINITY;
+            double maxX = Double.NEGATIVE_INFINITY;
+
+            for (BaseControl controlToAlign : controlsToAlign)
+            {
+                double controlToAlignMinX = controlToAlign.getX() - controlToAlign.getMargin().left;
+                double controlToAlignMaxX = controlToAlign.getX() + controlToAlign.getWidth() + controlToAlign.getMargin().right;
+
+                if (controlToAlignMinX < minX)
+                {
+                    minX = controlToAlignMinX;
+                }
+
+                if (controlToAlignMaxX > maxX)
+                {
+                    maxX = controlToAlignMaxX;
+                }
+            }
+
+            double dif = maxX - minX;
+
+            for (BaseControl controlToAlign : controlsToAlign)
+            {
+                controlToAlign.setX(minX + controlToAlign.getMargin().left + (dif - controlToAlign.getWidthWithMargin()) * getLineAlignment());
+            }
+        }
+    }
+
+    private void alignVertically(@Nonnull List<BaseControl> controlsToAlign)
+    {
+        if (getLineAlignment() != null)
+        {
+            double minY = Double.POSITIVE_INFINITY;
+            double maxY = Double.NEGATIVE_INFINITY;
+
+            for (BaseControl controlToAlign : controlsToAlign)
+            {
+                double controlToAlignMinY = controlToAlign.getY() - controlToAlign.getMargin().top;
+                double controlToAlignMaxY = controlToAlign.getY() + controlToAlign.getHeight() + controlToAlign.getMargin().bottom;
+
+                if (controlToAlignMinY < minY)
+                {
+                    minY = controlToAlignMinY;
+                }
+
+                if (controlToAlignMaxY > maxY)
+                {
+                    maxY = controlToAlignMaxY;
+                }
+            }
+
+            double dif = maxY - minY;
+
+            for (BaseControl controlToAlign : controlsToAlign)
+            {
+                controlToAlign.setY(minY + controlToAlign.getMargin().top + (dif - controlToAlign.getHeightWithMargin()) * getLineAlignment());
+            }
+        }
+    }
+
     @Nonnull
-    public Direction getFlowDirection()
+    public Flow getFlow()
     {
-        return flowDirection;
+        return flow;
     }
 
-    /**
-     * Sets the current flow direction of the panel.
-     */
-    public void setFlowDirection(@Nonnull Direction flowDirection)
+    public void setFlow(@Nonnull Flow flow)
     {
-        this.flowDirection = flowDirection;
+        this.flow = flow;
 
-        layoutContents();
+        markArrangeDirty(true);
     }
 
-    /**
-     * @return the overflow direction of the panel.
-     */
     @Nonnull
-    public Orientation getOverflowOrientation()
+    public Corner getStartCorner()
     {
-        return overflowOrientation;
+        return flow.startCorner;
     }
 
-    /**
-     * Sets the overflow direction of the panel.
-     */
-    public void setOverflowOrientation(@Nonnull Orientation overflowOrientation)
+    @Nonnull
+    public Direction getDirection()
     {
-        this.overflowOrientation = overflowOrientation;
-
-        layoutContents();
+        return flow.direction;
     }
 
-    /**
-     * @return whether to distribute the contents evenly.
-     */
-    public boolean shouldDistributeEvenly()
+    @Nonnull
+    public Direction getOverflowDirection()
     {
-        return shouldDistributeEvenly;
+        return flow.overflowDirection;
     }
 
-    /**
-     * Sets whether to distribute the contents evenly.
-     */
-    public void setShouldDistributeEvenly(boolean shouldDistributeEvenly)
+    public double getHorizontalSpacing()
     {
-        this.shouldDistributeEvenly = shouldDistributeEvenly;
-
-        layoutContents();
+        return horizontalSpacing;
     }
 
-    /**
-     * Whether to automatically adjust the max scroll offset to fit the overflow in both axes.
-     */
-    public boolean shouldFitMaxScrollOffsetToOverflowXY()
+    public void setHorizontalSpacing(double horizontalSpacing)
     {
-        return shouldFitMaxScrollOffsetToOverflowX() && shouldFitMaxScrollOffsetToOverflowY();
+        this.horizontalSpacing = horizontalSpacing;
+
+        markArrangeDirty(true);
     }
 
-    /**
-     * Sets whether to automatically adjust the max scroll offset to fit the overflow in both axes.
-     */
-    public void setFitMaxScrollOffsetToOverflowXY(boolean fitMaxScrollOffsetToOverflowXY)
+    public double getVerticalSpacing()
     {
-        setFitMaxScrollOffsetToOverflowX(true);
-        setFitMaxScrollOffsetToOverflowY(true);
+        return verticalSpacing;
     }
 
-    /**
-     * Whether to automatically adjust the max scroll offset to fit the overflow in the x-axis.
-     */
-    public boolean shouldFitMaxScrollOffsetToOverflowX()
+    public void setVerticalSpacing(double verticalSpacing)
     {
-        return fitMaxScrollOffsetToOverflowX;
+        this.verticalSpacing = verticalSpacing;
+
+        markArrangeDirty(true);
     }
 
-    /**
-     * Sets whether to automatically adjust the max scroll offset to fit the overflow in the x-axis.
-     */
-    public void setFitMaxScrollOffsetToOverflowX(boolean fitMaxScrollOffsetToOverflowX)
+    @Nullable
+    public Double getLineAlignment()
     {
-        this.fitMaxScrollOffsetToOverflowX = fitMaxScrollOffsetToOverflowX;
+        return lineAlignment;
     }
 
-    /**
-     * Whether to automatically adjust the max scroll offset to fit the overflow in the y-axis.
-     */
-    public boolean shouldFitMaxScrollOffsetToOverflowY()
+    public void setLineAlignment(@Nullable Double lineAlignment)
     {
-        return fitMaxScrollOffsetToOverflowY;
-    }
+        this.lineAlignment = lineAlignment;
 
-    /**
-     * Sets whether to automatically adjust the max scroll offset to fit the overflow in the y-axis.
-     */
-    public void setFitMaxScrollOffsetToOverflowY(boolean fitMaxScrollOffsetToOverflowY)
-    {
-        this.fitMaxScrollOffsetToOverflowY = fitMaxScrollOffsetToOverflowY;
-    }
-
-    /**
-     * @return the horizontal item gap.
-     */
-    public int getItemGapX()
-    {
-        return itemGapX;
-    }
-
-    /**
-     * Sets the horizontal item gap.
-     */
-    public void setItemGapX(int itemGapX)
-    {
-        this.itemGapX = itemGapX;
-
-        layoutContents();
-    }
-
-    /**
-     * @return the vertical item gap.
-     */
-    public int getItemGapY()
-    {
-        return itemGapY;
-    }
-
-    /**
-     * Sets the vertical item gap.
-     */
-    public void setItemGapY(int itemGapY)
-    {
-        this.itemGapY = itemGapY;
-
-        layoutContents();
+        markArrangeDirty(true);
     }
 }

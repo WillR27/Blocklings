@@ -1,11 +1,10 @@
 package com.willr27.blocklings.client.gui.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.willr27.blocklings.client.gui.control.Control;
+import com.willr27.blocklings.client.gui.control.controls.ScreenControl;
+import com.willr27.blocklings.client.gui3.util.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.InputMappings;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -13,25 +12,25 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nonnull;
 
 /**
- * A base screen used to support using {@link Control} objects.
+ * A base screen to provide an adapter for {@link Screen}.
  */
 @OnlyIn(Dist.CLIENT)
-public abstract class BlocklingsScreen extends Screen
+public class BlocklingsScreen extends Screen
 {
     /**
-     * The blockling.
+     * The blockling associated with the screen.
      */
     @Nonnull
-    protected final BlocklingEntity blockling;
+    public final BlocklingEntity blockling;
 
     /**
      * The root control that contains all the sub controls on the screen.
      */
     @Nonnull
-    protected final ScreenControl screenControl = new ScreenControl();
+    public final ScreenControl screenControl = new ScreenControl();
 
     /**
-     * @param blockling the blockling.
+     * @param blockling the blockling associated with the screen.
      */
     protected BlocklingsScreen(@Nonnull BlocklingEntity blockling)
     {
@@ -44,93 +43,42 @@ public abstract class BlocklingsScreen extends Screen
     {
         super.init();
 
-        screenControl.init(width, height);
+        screenControl.setWidth(width);
+        screenControl.setHeight(height);
+        screenControl.markMeasureDirty(true);
+        screenControl.markArrangeDirty(true);
     }
 
     @Override
-    public void tick()
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
-        screenControl.tick();
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
+
+        screenControl.measureAndArrange();
+
+        float guiScale = GuiUtil.getInstance().getGuiScale();
+
+        matrixStack.pushPose();
+        matrixStack.scale(1.0f / guiScale, 1.0f / guiScale, 1.0f);
+
+        screenControl.forwardRender(matrixStack, mouseX, mouseY, partialTicks);
+
+        matrixStack.popPose();
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int screenMouseX, int screenMouseY, float partialTicks)
+    public boolean mouseReleased(double mouseX, double mouseY, int button)
     {
-        screenControl.render(matrixStack, screenMouseX, screenMouseY, partialTicks);
+        screenControl.forwardMouseReleased(mouseX, mouseY, button);
+
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean mouseClicked(double screenMouseX, double screenMouseY, int mouseButton)
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount)
     {
-        if (screenControl.mouseClicked(screenMouseX, screenMouseY, mouseButton))
-        {
-            return true;
-        }
+        screenControl.forwardMouseScrolled(mouseX, mouseY, amount);
 
-        return super.mouseClicked(screenMouseX, screenMouseY, mouseButton);
-    }
-
-    @Override
-    public boolean mouseReleased(double screenMouseX, double screenMouseY, int mouseButton)
-    {
-        if (screenControl.mouseReleased(screenMouseX, screenMouseY, mouseButton))
-        {
-            return true;
-        }
-
-        return super.mouseReleased(screenMouseX, screenMouseY, mouseButton);
-    }
-
-    @Override
-    public boolean mouseScrolled(double screenMouseX, double screenMouseY, double scrollAmount)
-    {
-        if (screenControl.mouseScrolled(screenMouseX, screenMouseY, scrollAmount))
-        {
-            return true;
-        }
-
-        return super.mouseScrolled(screenMouseX, screenMouseY, scrollAmount);
-    }
-
-    @Override
-    public final boolean keyPressed(int keyCode, int scanCode, int mods)
-    {
-        if (screenControl.keyPressed(keyCode, scanCode, mods))
-        {
-            return true;
-        }
-
-        InputMappings.Input key = InputMappings.getKey(keyCode, scanCode);
-
-        if (Minecraft.getInstance().options.keyInventory.isActiveAndMatches(key))
-        {
-            onClose();
-
-            return true;
-        }
-
-        return super.keyPressed(keyCode, scanCode, mods);
-    }
-
-    @Override
-    public final boolean keyReleased(int keyCode, int scanCode, int mods)
-    {
-        if (screenControl.keyReleased(keyCode, scanCode, mods))
-        {
-            return true;
-        }
-
-        return super.keyReleased(keyCode, scanCode, mods);
-    }
-
-    @Override
-    public final boolean charTyped(char character, int keyCode)
-    {
-        if (screenControl.charTyped(character, keyCode))
-        {
-            return true;
-        }
-
-        return super.charTyped(character, keyCode);
+        return super.mouseScrolled(mouseX, mouseY, amount);
     }
 }

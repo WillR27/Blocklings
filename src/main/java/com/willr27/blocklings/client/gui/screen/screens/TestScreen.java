@@ -1,222 +1,96 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
-import com.willr27.blocklings.client.gui.control.*;
-import com.willr27.blocklings.client.gui.control.controls.GridControl;
-import com.willr27.blocklings.client.gui.control.controls.TestControl;
+import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
-import com.willr27.blocklings.client.gui.control.event.events.input.MouseButtonEvent;
-import com.willr27.blocklings.client.gui.control.event.events.input.MousePosEvent;
+import com.willr27.blocklings.client.gui.properties.Flow;
 import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
-import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
-import java.util.EnumSet;
-import java.util.Random;
 
-@OnlyIn(Dist.CLIENT)
 public class TestScreen extends BlocklingsScreen
 {
+    /**
+     * @param blockling the blockling associated with the screen.
+     */
     public TestScreen(@Nonnull BlocklingEntity blockling)
     {
         super(blockling);
-    }
 
-    @Override
-    protected void init()
-    {
-        super.init();
-
-        ing();
-    }
-
-    private void ing()
-    {
-        GridControl gridControl = new GridControl(new GridControl.GridDefinition()
-                .addRow(new GridControl.GridDefinition.Auto())
-                .addRow(new GridControl.GridDefinition.Fill(1.0f))
-                .addRow(new GridControl.GridDefinition.Auto())
-                .addCol(new GridControl.GridDefinition.Fill(0.6f))
-                .addCol(new GridControl.GridDefinition.Auto())
-                .addCol(new GridControl.GridDefinition.Fill(0.4f))
-                .addCol(new GridControl.GridDefinition.Auto()));
-        gridControl.setParent(screenControl);
-//        gridControl.setFitToContentsXY(true);
-        gridControl.setWidth(new Fill(1.0f));
-        gridControl.setHeight(new Fill(1.0f));
-        gridControl.setBackgroundColour(Colour.fromRGBInt(0xffffff));
-        gridControl.rebuildGrid();
-        Random random = new Random();
-        Control control1 = new Control()
-        {
-            @Override
-            protected void onMouseClicked(@Nonnull MouseButtonEvent mouseButtonEvent)
-            {
-                super.onMouseClicked(mouseButtonEvent);
-                gridControl.setWidth(new Fill(random.nextFloat()));
-                gridControl.setHeight(new Fill(random.nextFloat()));
-            }
-        };
-        gridControl.addControl(control1, 0, 1);
-        control1.setHeight(10.0f);
-        control1.setWidth(10);
-        control1.setBackgroundColour(Colour.fromRGBInt(0x000000));
-
-        Control control2 = new Control();
-        gridControl.addControl(control2, 1, 2);
-        control2.setX(10);
-        control2.setAlignmentY(new Alignment(0.5f));
-        control2.setWidth(20);
-        control2.setHeight(30);
-        control2.setBackgroundColour(Colour.fromRGBInt(0x0000ff));
-
-        Control control3 = new Control();
-        control3.setHeight(0);
-        gridControl.addControl(control3, 1, 2);
-        control3.setWidth(new Fill(0.5f));
-        control3.setHeight(new Fill(0.9f));
-        control3.setX(10);
-        control3.setAlignmentX(new Alignment(0.5f));
-        control3.setAlignmentY(new Alignment(0.5f));
-        control3.setBackgroundColour(Colour.fromRGBInt(0xff00ff));
-
-        Control control4 = new Control();
-        gridControl.addControl(control4, 3, 0);
-        control4.setX(10);
-        control4.setAlignmentY(new Alignment(0.5f));
-        control4.setWidth(20);
-        control4.setHeight(60);
-        control4.setBackgroundColour(Colour.fromRGBInt(0x000000));
-    }
-
-    private void wog()
-    {
-        Control control1 = new Control()
-        {
-            @Override
-            protected void onMouseClicked(@Nonnull MouseButtonEvent mouseButtonEvent)
-            {
-                setWidth(90 * mouseButtonEvent.mouseButton);
-                setHeight(50 * mouseButtonEvent.mouseButton);
-
-                super.onMouseClicked(mouseButtonEvent);
-            }
-        };
-        control1.setParent(screenControl);
-        control1.setWidth(300);
-        control1.setHeight(200);
-        control1.setInnerScale(2.0f);
-        control1.setBackgroundColour(new Colour(255, 0, 255));
-
-        Control anchorControl = new Control();
-        anchorControl.setWidth(30);
-        anchorControl.setHeight(20);
-        anchorControl.setX(100);
-        anchorControl.setY(50);
-        anchorControl.setParent(control1);
-        anchorControl.setAnchor(EnumSet.noneOf(Side.class));
-        anchorControl.setBackgroundColour(new Colour(0, 255, 120));
-    }
-
-    private void pog()
-    {
-        Control control333 = new Control();
-//        control333.setParent(screenControl);
-        control333.setHeight(100);
-        control333.setDraggableXY(true);
-        control333.setScrollableXY(true);
-        control333.setMaxScrollOffsetY(270);
+//        Control control = new Control();
+//        control.setParent(screenControl);
+//        control.setHorizontalAlignment(0.5);
+//        control.setVerticalAlignment(0.5);
+//        control.setWidth(100.0);
+//        control.setHeight(50.0);
+//        control.setCanScrollHorizontally(true);
+//        control.setCanScrollVertically(true);
+////        control.setMaxWidth(100.0);
+////        control.setShouldFitWidthToContent(true);
+////        control.setShouldFitHeightToContent(true);
+////        control.setWidthPercentage(0.5);
+////        control.setHeightPercentage(0.75);
+//        control.setPadding(5, 10, 15, 20);
+//        control.setBackgroundColour(control.randomColour());
+//
+//        Control control2 = new Control()
+//        {
+//            protected void mouseReleased(double mouseX, double mouseY, int button)
+//            {
+//                setWidth(163);
+//                setHeight(20);
+//                control.setInnerScale(0.5, 0.5);
+////                setWidthPercentage(1.0);
+////                setHeightPercentage(1.0);
+//                control.setPadding(5, 10, 15, 20);
+//                setHorizontalAlignment(0.5);
+//                setVerticalAlignment(0.5);
+////                setMargin(8);
+//            }
+//        };
+//        control2.setParent(control);
+//        control2.setBackgroundColour(control2.randomColour());
+//
+//        Control control3 = new Control();
+//        control3.setParent(control);
+//        control3.setWidth(20.0);
+//        control3.setHeight(50.0);
+//        control3.setHorizontalAlignment(0.5);
+//        control3.setBackgroundColour(control3.randomColour());
 
         FlowPanel flowPanel = new FlowPanel();
         flowPanel.setParent(screenControl);
-        flowPanel.setInnerScale(2.0f);
-        flowPanel.setWidth(300);
-        flowPanel.setHeight(200);
-        flowPanel.setPadding(3, 2, 5, 7);
-        flowPanel.setBackgroundColour(new Colour(1.0f, 0.0f, 0.0f));
-        flowPanel.setBlocksDrag(true);
-        flowPanel.setDraggableXY(true);
-        flowPanel.setScrollableXY(true);
-        flowPanel.setFlowDirection(Direction.LEFT_TO_RIGHT);
-        flowPanel.setOverflowOrientation(Orientation.VERTICAL);
-        flowPanel.setDragReorderType(DragReorderType.INSERT_ON_RELEASE);
-        flowPanel.setFitToContentsXY(false);
-        flowPanel.setItemGapX(1);
-        flowPanel.setItemGapY(1);
+        flowPanel.setWidth(70.0);
+        flowPanel.setHeight(70.0);
+//        stackPanel.setMaxWidth(100.0);
+//        stackPanel.setMaxHeight(100.0);
+        flowPanel.setInnerScale(0.5, 0.5);
+//        stackPanel.setMinScroll(0.0, 0.0);
+//        stackPanel.setMaxScroll(100.0, 100.0);
+        flowPanel.setCanScrollHorizontally(true);
+        flowPanel.setCanScrollVertically(true);
+        flowPanel.setPadding(10, 10, 10, 10);
+//        stackPanel.setShouldFitWidthToContent(true);
+//        stackPanel.setShouldFitHeightToContent(true);
+        flowPanel.setFlow(Flow.BOTTOM_RIGHT_BOTTOM_TO_TOP);
+        flowPanel.setHorizontalSpacing(4.0);
+        flowPanel.setVerticalSpacing(4.0);
+        flowPanel.setHorizontalAlignment(0.5);
+        flowPanel.setVerticalAlignment(0.5);
+        flowPanel.setHorizontalContentAlignment(0.5);
+        flowPanel.setVerticalContentAlignment(0.5);
+        flowPanel.setLineAlignment(0.5);
+        flowPanel.setBackgroundColour(flowPanel.randomColour());
 
-        Random random = new Random();
-        for (int i = 0; i < 400 ; i++)
+        for (int i = 0; i < 15; i++)
         {
-            Control control = new Control()
-            {
-                @Override
-                public void onDragStart(@Nonnull MousePosEvent mousePosEvent)
-                {
-                    setBackgroundColour(new Colour(0.0f, 1.0f, 1.0f));
-                }
-
-                @Override
-                public void onDragEnd(@Nonnull MousePosEvent mousePosEvent)
-                {
-                    setBackgroundColour(new Colour(1.0f, 1.0f, 1.0f));
-                }
-
-                @Override
-                protected void onMouseReleased(@Nonnull MouseButtonEvent mouseButtonEvent)
-                {
-//                    getParent().removeChild(this);
-
-                    super.onMouseReleased(mouseButtonEvent);
-                }
-            };
-            control.setParent(flowPanel);
-            control.setDraggableXY(true);
-            control.setWidth(23);
-            control.setHeight(35);
-            control.setMargins(5, 2, 1, 3);
-            control.setBackgroundColour(new Colour(random.nextFloat(), random.nextFloat(), random.nextFloat()));
+            Control stackPanelControl = new Control();
+            stackPanelControl.setParent(flowPanel);
+            stackPanelControl.setWidth(stackPanelControl.randomInt(10, 20));
+            stackPanelControl.setHeight(stackPanelControl.randomInt(10, 50));
+//            stackPanelControl.setMargin(stackPanelControl.randomInt(2, 4));
+            stackPanelControl.setMargin(1);
+            stackPanelControl.setBackgroundColour(0xffffff00 | (i*30 << 0));
         }
-
-        int i = 0;
-    }
-
-    private void egg()
-    {
-        TestControl control1 = new TestControl();
-        TestControl control2 = new TestControl();
-        TestControl control3 = new TestControl();
-        screenControl.addChild(control1);
-        control1.addChild(control2);
-        control2.addChild(control3);
-
-        control1.setInnerScale(2.0f);
-        control2.setInnerScale(4.0f);
-
-        control1.setX(2);
-        control1.setY(2);
-        control2.setX(4);
-        control2.setY(4);
-        control3.setX(0);
-        control3.setY(0);
-
-        control1.setWidth(120);
-        control1.setHeight(91);
-        control2.setWidth(36);
-        control2.setHeight(21);
-        control3.setWidth(3);
-        control3.setHeight(6);
-
-        control1.setScrollableXY(true);
-        control1.setMaxScrollOffsetX(200);
-        control1.setMaxScrollOffsetY(300);
-        control2.setScrollableXY(true);
-        control2.setMaxScrollOffsetX(5);
-        control2.setMaxScrollOffsetY(5);
-
-        control1.setBackgroundColour(new Colour(255, 0, 255));
-        control2.setBackgroundColour(new Colour(0, 255, 255));
-        control3.setBackgroundColour(new Colour(255, 255, 0));
     }
 }

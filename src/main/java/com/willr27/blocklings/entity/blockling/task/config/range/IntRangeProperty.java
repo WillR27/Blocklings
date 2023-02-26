@@ -1,22 +1,16 @@
 package com.willr27.blocklings.entity.blockling.task.config.range;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.client.gui.control.controls.config.IntRangeControl;
-import com.willr27.blocklings.client.gui2.GuiUtil;
-import com.willr27.blocklings.client.gui2.IControl;
+import com.willr27.blocklings.client.gui3.control.Control;
+import com.willr27.blocklings.client.gui3.control.controls.config.IntRangeControl;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
  * Configures an int range property.

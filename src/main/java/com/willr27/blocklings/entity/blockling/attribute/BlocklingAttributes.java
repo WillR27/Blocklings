@@ -1,6 +1,6 @@
 package com.willr27.blocklings.entity.blockling.attribute;
 
-import com.willr27.blocklings.client.gui.GuiTextures;
+import com.willr27.blocklings.client.gui3.GuiTextures;
 import com.willr27.blocklings.client.gui2.Colour;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
