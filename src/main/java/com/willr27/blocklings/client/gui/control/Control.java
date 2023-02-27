@@ -2,15 +2,22 @@ package com.willr27.blocklings.client.gui.control;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.controls.ScreenControl;
+import com.willr27.blocklings.client.gui.control.event.events.TryDragEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseClickedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrolledEvent;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.client.gui2.GuiTextures;
 import com.willr27.blocklings.client.gui2.GuiUtil;
+import com.willr27.blocklings.client.gui3.control.Side;
 import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A base class for all controls.
@@ -221,16 +228,9 @@ public class Control extends BaseControl
     }
 
     @Override
-    public void forwardRender(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void forwardRender(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
     {
-        // Scale the control, but also make sure to cancel out the translation caused by the scaling.
-        matrixStack.pushPose();
-//        matrixStack.scale((float) getPixelScaleX(), (float) getPixelScaleY(), 1.0f);
-//        matrixStack.translate((getActualPixelX() / getPixelScaleX()) - getActualPixelX(), (getActualPixelY() / getPixelScaleY()) - getActualPixelY(), 0.0);
-
-        render(matrixStack, mouseX, mouseY, partialTicks);
-
-        matrixStack.popPose();
+        onRender(matrixStack, mouseX, mouseY, partialTicks);
 
         for (BaseControl child : getChildrenCopy())
         {
@@ -239,7 +239,7 @@ public class Control extends BaseControl
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void onRender(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
     {
         int x = (int) getActualPixelX();
         int y = (int) getActualPixelY();
@@ -271,50 +271,252 @@ public class Control extends BaseControl
         renderTexture(matrixStack, texture, getActualPixelX(), getActualPixelY(), getPixelScaleX(), getPixelScaleY());
     }
 
-    public void forwardMouseReleased(double mouseX, double mouseY, int button)
+    @Override
+    public void forwardTryDrag(@Nonnull TryDragEvent e)
     {
         for (BaseControl child : getReverseChildrenCopy())
         {
-//            if (child.isMouseOver(mouseX, mouseY))
+            if (!e.isHandled())
             {
-                child.forwardMouseReleased(mouseX, mouseY, button);
+                child.forwardTryDrag(e);
             }
         }
 
-        mouseReleased(mouseX, mouseY, button);
+        if (!e.isHandled() && getParent() != null)
+        {
+            if (isPressed() && isDraggable())
+            {
+                double pixelDragDifX = e.mouseX - getScreen().getPressedStartPixelX();
+                double pixelDragDifY = e.mouseY - getScreen().getPressedStartPixelY();
+                double localDragDifX = pixelDragDifX / getPixelScaleX();
+                double localDragDifY = pixelDragDifY / getPixelScaleY();
+                double absLocalDragDifX = Math.abs(localDragDifX);
+                double absLocalDragDifY = Math.abs(localDragDifY);
+
+                boolean isDraggedX = absLocalDragDifX >= getDragThreshold();
+                boolean isDraggedY = absLocalDragDifY >= getDragThreshold();
+
+                if (isDraggedX || isDraggedY)
+                {
+                    setIsDragging(true);
+                    e.setIsHandled(true);
+                }
+            }
+        }
     }
 
     @Override
-    protected void mouseReleased(double mouseX, double mouseY, int button)
+    public void onDragStart()
     {
 
     }
 
     @Override
-    public void forwardMouseScrolled(double mouseX, double mouseY, double amount)
+    public void onDrag(double mouseX, double mouseY, float partialTicks)
+    {
+        if (isDraggableX())
+        {
+            setX(((getParent().toLocalX(mouseX) / getParent().getInnerScale().x) - getWidth() / 2.0) + getParent().getScrollX());
+        }
+
+        if (isDraggableY())
+        {
+            setY(((getParent().toLocalY(mouseY) / getParent().getInnerScale().y) - getHeight() / 2.0) + getParent().getScrollY());
+        }
+
+        List<Side> atParentBounds = getParentBoundsAt();
+        double scrollAmount = 10.0 * partialTicks;
+
+        if (isDraggableX())
+        {
+            if (atParentBounds.contains(Side.LEFT))
+            {
+                if (getParent().canScrollHorizontally())
+                {
+                    getParent().scrollX(scrollAmount * -1);
+                }
+
+                if (getParent().shouldBlockDrag())
+                {
+                    setX(getParent().toLocalX(getParent().getActualPixelX()) / getParent().getInnerScale().x + getParent().getScrollX());
+                }
+            }
+            else if (atParentBounds.contains(Side.RIGHT))
+            {
+                if (getParent().canScrollHorizontally())
+                {
+                    getParent().scrollX(scrollAmount);
+                }
+
+                if (getParent().shouldBlockDrag())
+                {
+                    setX(getParent().toLocalX(getParent().getActualPixelX() + getParent().getPixelWidth()) / getParent().getInnerScale().x - getWidth() + getParent().getScrollX());
+                }
+            }
+        }
+
+        if (isDraggableY())
+        {
+            if (atParentBounds.contains(Side.TOP))
+            {
+                if (getParent().canScrollVertically())
+                {
+                    getParent().scrollY(scrollAmount * -1);
+                }
+
+                if (getParent().shouldBlockDrag())
+                {
+                    setY(getParent().toLocalY(getParent().getActualPixelY()) / getParent().getInnerScale().y + getParent().getScrollY());
+                }
+            }
+            else if (atParentBounds.contains(Side.BOTTOM))
+            {
+                if (getParent().canScrollVertically())
+                {
+                    getParent().scrollY(scrollAmount);
+                }
+
+                if (getParent().shouldBlockDrag())
+                {
+                    setY(getParent().toLocalY(getParent().getActualPixelY() + getParent().getPixelHeight()) / getParent().getInnerScale().y - getHeight() + getParent().getScrollY());
+                }
+            }
+        }
+    }
+
+    /**
+     * @return the sides of the parent the control is currently at or exceeding, null if not.
+     */
+    @Nonnull
+    public List<Side> getParentBoundsAt()
+    {
+        List<Side> sides = new ArrayList<>();
+
+        if (getActualPixelX() <= getParent().getActualPixelX())
+        {
+            sides.add(Side.LEFT);
+        }
+
+        if (getActualPixelX() + getPixelWidth() >= getParent().getActualPixelX() + getParent().getPixelWidth())
+        {
+            sides.add(Side.RIGHT);
+        }
+
+        if (getActualPixelY() <= getParent().getActualPixelY())
+        {
+            sides.add(Side.TOP);
+        }
+
+        if (getActualPixelY() + getPixelHeight() >= getParent().getActualPixelY() + getParent().getPixelHeight())
+        {
+            sides.add(Side.BOTTOM);
+        }
+
+        return sides;
+    }
+
+    @Override
+    public void onDragEnd()
+    {
+        if (getParent() != null)
+        {
+            getParent().markArrangeDirty(true);
+        }
+    }
+
+    @Override
+    public void forwardMouseClicked(@Nonnull MouseClickedEvent e)
     {
         for (BaseControl child : getReverseChildrenCopy())
         {
-//            if (child.isMouseOver(mouseX, mouseY))
+            if (child.contains(e.mouseX, e.mouseY))
             {
-                child.forwardMouseScrolled(mouseX, mouseY, amount);
+                child.forwardMouseClicked(e);
             }
         }
 
-        mouseScrolled(mouseX, mouseY, amount);
+        if (!e.isHandled())
+        {
+            eventBus.post(this, e);
+
+            if (!e.isHandled())
+            {
+                setIsPressed(true);
+                setIsFocused(true);
+                onMouseClicked(e);
+            }
+        }
     }
 
     @Override
-    protected void mouseScrolled(double mouseX, double mouseY, double amount)
+    public void onMouseClicked(@Nonnull MouseClickedEvent e)
+    {
+        e.setIsHandled(true);
+    }
+
+    @Override
+    public void forwardMouseReleased(@Nonnull MouseReleasedEvent e)
+    {
+        for (BaseControl child : getReverseChildrenCopy())
+        {
+            if (child.contains(e.mouseX, e.mouseY))
+            {
+                child.forwardMouseReleased(e);
+            }
+        }
+
+        if (!e.isHandled())
+        {
+            eventBus.post(this, e);
+
+            if (!e.isHandled())
+            {
+                onMouseReleased(e);
+            }
+        }
+    }
+
+    @Override
+    protected void onMouseReleased(@Nonnull MouseReleasedEvent e)
+    {
+        e.setIsHandled(true);
+    }
+
+    @Override
+    public void forwardMouseScrolled(@Nonnull MouseScrolledEvent e)
+    {
+        for (BaseControl child : getReverseChildrenCopy())
+        {
+            if (child.contains(e.mouseX, e.mouseY))
+            {
+                child.forwardMouseScrolled(e);
+            }
+        }
+
+        if (!e.isHandled())
+        {
+            eventBus.post(this, e);
+
+            if (!e.isHandled())
+            {
+                onMouseScrolled(e);
+            }
+        }
+    }
+
+    @Override
+    protected void onMouseScrolled(@Nonnull MouseScrolledEvent e)
     {
         if (GuiUtil.isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL))
         {
-            scrollX(-10.0 * amount);
+            scrollX(-10.0 * e.amount);
         }
         else
         {
-            scrollY(-10.0 * amount);
+            scrollY(-10.0 * e.amount);
         }
+
+        e.setIsHandled(true);
     }
 
     @Override
@@ -370,8 +572,8 @@ public class Control extends BaseControl
     }
 
     @Override
-    public boolean isInside(double screenX, double screenY)
+    public boolean contains(double pixelX, double pixelY)
     {
-        return screenX >= getActualPixelX() && screenX <= getActualPixelX() + getWidth() && screenY >= getActualPixelY() && screenY <= getActualPixelY() + getHeight();
+        return pixelX >= getActualPixelX() && pixelX <= getActualPixelX() + getPixelWidth() && pixelY >= getActualPixelY() && pixelY <= getActualPixelY() + getPixelHeight();
     }
 }

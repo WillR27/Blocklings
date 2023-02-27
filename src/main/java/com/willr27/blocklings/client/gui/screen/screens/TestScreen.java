@@ -1,7 +1,10 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
+import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseClickedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
 import com.willr27.blocklings.client.gui.properties.Flow;
 import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
@@ -64,7 +67,7 @@ public class TestScreen extends BlocklingsScreen
         flowPanel.setHeight(70.0);
 //        stackPanel.setMaxWidth(100.0);
 //        stackPanel.setMaxHeight(100.0);
-        flowPanel.setInnerScale(0.5, 0.5);
+//        flowPanel.setInnerScale(0.5, 0.5);
 //        stackPanel.setMinScroll(0.0, 0.0);
 //        stackPanel.setMaxScroll(100.0, 100.0);
         flowPanel.setCanScrollHorizontally(true);
@@ -91,6 +94,8 @@ public class TestScreen extends BlocklingsScreen
 //            stackPanelControl.setMargin(stackPanelControl.randomInt(2, 4));
             stackPanelControl.setMargin(1);
             stackPanelControl.setBackgroundColour(0xffffff00 | (i*30 << 0));
+            stackPanelControl.eventBus.subscribe((BaseControl control, MouseClickedEvent e) -> control.setBackgroundColour(0xff00ff00));
+            stackPanelControl.eventBus.subscribe((BaseControl control, MouseReleasedEvent e) -> System.out.println("Released!"));
         }
     }
 }

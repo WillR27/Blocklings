@@ -2,6 +2,9 @@ package com.willr27.blocklings.client.gui.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.controls.ScreenControl;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseClickedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrolledEvent;
 import com.willr27.blocklings.client.gui3.util.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import net.minecraft.client.gui.screen.Screen;
@@ -52,33 +55,45 @@ public class BlocklingsScreen extends Screen
     @Override
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
-
-        screenControl.measureAndArrange();
-
-        float guiScale = GuiUtil.getInstance().getGuiScale();
-
-        matrixStack.pushPose();
-        matrixStack.scale(1.0f / guiScale, 1.0f / guiScale, 1.0f);
-
-        screenControl.forwardRender(matrixStack, mouseX, mouseY, partialTicks);
-
-        matrixStack.popPose();
+        screenControl.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button)
+    public boolean mouseClicked(double screenMouseX, double screenMouseY, int button)
     {
-        screenControl.forwardMouseReleased(mouseX, mouseY, button);
+        double mouseX = GuiUtil.getInstance().getPixelMouseX();
+        double mouseY = GuiUtil.getInstance().getPixelMouseY();
 
-        return super.mouseReleased(mouseX, mouseY, button);
+        MouseClickedEvent e = new MouseClickedEvent(mouseX, mouseY, button);
+
+        screenControl.forwardMouseClicked(e);
+
+        return e.isHandled() || super.mouseClicked(screenMouseX, screenMouseY, button);
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount)
+    public boolean mouseReleased(double screenMouseX, double screenMouseY, int button)
     {
-        screenControl.forwardMouseScrolled(mouseX, mouseY, amount);
+        double mouseX = GuiUtil.getInstance().getPixelMouseX();
+        double mouseY = GuiUtil.getInstance().getPixelMouseY();
 
-        return super.mouseScrolled(mouseX, mouseY, amount);
+        MouseReleasedEvent e = new MouseReleasedEvent(mouseX, mouseY, button);
+
+        screenControl.forwardMouseReleased(e);
+
+        return e.isHandled() || super.mouseReleased(screenMouseX, screenMouseY, button);
+    }
+
+    @Override
+    public boolean mouseScrolled(double screenMouseX, double screenMouseY, double amount)
+    {
+        double mouseX = GuiUtil.getInstance().getPixelMouseX();
+        double mouseY = GuiUtil.getInstance().getPixelMouseY();
+
+        MouseScrolledEvent e = new MouseScrolledEvent(mouseX, mouseY, amount);
+
+        screenControl.forwardMouseScrolled(e);
+
+        return e.isHandled() || super.mouseScrolled(screenMouseX, screenMouseY, amount);
     }
 }
