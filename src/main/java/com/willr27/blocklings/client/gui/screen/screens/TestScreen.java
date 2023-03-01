@@ -67,7 +67,7 @@ public class TestScreen extends BlocklingsScreen
         flowPanel.setHeight(70.0);
 //        stackPanel.setMaxWidth(100.0);
 //        stackPanel.setMaxHeight(100.0);
-//        flowPanel.setInnerScale(0.5, 0.5);
+        flowPanel.setInnerScale(0.5, 0.5);
 //        stackPanel.setMinScroll(0.0, 0.0);
 //        stackPanel.setMaxScroll(100.0, 100.0);
         flowPanel.setCanScrollHorizontally(true);
@@ -80,8 +80,8 @@ public class TestScreen extends BlocklingsScreen
         flowPanel.setVerticalSpacing(4.0);
         flowPanel.setHorizontalAlignment(0.5);
         flowPanel.setVerticalAlignment(0.5);
-        flowPanel.setHorizontalContentAlignment(0.5);
-        flowPanel.setVerticalContentAlignment(0.5);
+//        flowPanel.setHorizontalContentAlignment(0.5);
+//        flowPanel.setVerticalContentAlignment(0.5);
         flowPanel.setLineAlignment(0.5);
         flowPanel.setBackgroundColour(flowPanel.randomColour());
 
@@ -90,7 +90,7 @@ public class TestScreen extends BlocklingsScreen
             Control stackPanelControl = new Control();
             stackPanelControl.setParent(flowPanel);
             stackPanelControl.setWidth(stackPanelControl.randomInt(10, 20));
-            stackPanelControl.setHeight(stackPanelControl.randomInt(10, 50));
+            stackPanelControl.setHeight(stackPanelControl.randomInt(10, 20));
 //            stackPanelControl.setMargin(stackPanelControl.randomInt(2, 4));
             stackPanelControl.setMargin(1);
             stackPanelControl.setBackgroundColour(0xffffff00 | (i*30 << 0));

@@ -139,6 +139,7 @@ public abstract class BaseControl extends GuiControl
     protected abstract void calculateScroll();
 
     public abstract void forwardRender(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks);
+    protected abstract void onRenderUpdate(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks);
     protected abstract void onRender(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks);
 
     public abstract void forwardTryDrag(@Nonnull TryDragEvent e);
@@ -264,8 +265,89 @@ public abstract class BaseControl extends GuiControl
 
     public void addChild(@Nonnull BaseControl child)
     {
+        if (getChildren().contains(child))
+        {
+            return;
+        }
+
         children.add(child);
         child.parent = this;
+
+        markMeasureDirty(true);
+        markArrangeDirty(true);
+    }
+
+    public void insertChildBefore(@Nonnull BaseControl controlToInsert, @Nonnull BaseControl controlToInsertBefore)
+    {
+        int index = children.indexOf(controlToInsert);
+
+        if (index != -1)
+        {
+            children.remove(index);
+        }
+
+        int beforeIndex = children.indexOf(controlToInsertBefore);
+
+        if (beforeIndex == -1)
+        {
+            if (index != -1)
+            {
+                children.add(index, controlToInsert);
+            }
+
+            throw new IllegalArgumentException("The given control to insert before is not a child of this control.");
+        }
+
+        if (index == beforeIndex)
+        {
+            if (index != -1)
+            {
+                children.add(index, controlToInsert);
+            }
+
+            return;
+        }
+
+        children.add(beforeIndex, controlToInsert);
+        controlToInsert.parent = this;
+
+        markMeasureDirty(true);
+        markArrangeDirty(true);
+    }
+
+    public void insertChildAfter(@Nonnull BaseControl controlToInsert, @Nonnull BaseControl controlToInsertAfter)
+    {
+        int index = children.indexOf(controlToInsert);
+
+        if (index != -1)
+        {
+            children.remove(index);
+        }
+
+        int afterIndex = children.indexOf(controlToInsertAfter);
+
+        if (afterIndex == -1)
+        {
+            if (index != -1)
+            {
+                children.add(index, controlToInsert);
+            }
+
+            throw new IllegalArgumentException("The given control to insert after is not a child of this control.");
+        }
+
+        if (afterIndex + 1 == index)
+        {
+            if (index != -1)
+            {
+                children.add(index, controlToInsert);
+            }
+
+            return;
+        }
+
+        children.add(afterIndex + 1, controlToInsert);
+        controlToInsert.parent = this;
 
         markMeasureDirty(true);
         markArrangeDirty(true);
@@ -848,14 +930,64 @@ public abstract class BaseControl extends GuiControl
         return pixelY;
     }
 
+    public double getPixelMidX()
+    {
+        return getPixelX() + getPixelWidth() / 2.0;
+    }
+
+    public double getPixelMidY()
+    {
+        return getPixelY() + getPixelHeight() / 2.0;
+    }
+
+    public double toActualPixelX(double pixelX)
+    {
+        return pixelX - (getParent() != null ? getParent().getScrollX() : 0.0) * getPixelScaleX();
+    }
+
     public double getActualPixelX()
     {
-        return getPixelX() - (getParent() != null ? getParent().getScrollX() : 0.0) * getPixelScaleX();
+        return toActualPixelX(getPixelX());
+    }
+
+    public double toActualPixelY(double pixelY)
+    {
+        return pixelY - (getParent() != null ? getParent().getScrollY() : 0.0) * getPixelScaleY();
     }
 
     public double getActualPixelY()
     {
-        return getPixelY() - (getParent() != null ? getParent().getScrollY() : 0.0) * getPixelScaleY();
+        return toActualPixelY(getPixelY());
+    }
+
+    public double getActualPixelMidX()
+    {
+        return getActualPixelX() + getPixelWidth() / 2.0;
+    }
+
+    public double getActualPixelMidY()
+    {
+        return getActualPixelY() + getPixelHeight() / 2.0;
+    }
+
+    public double getActualPixelLeft()
+    {
+        return getActualPixelX();
+    }
+
+    public double getActualPixelTop()
+    {
+        return getActualPixelY();
+    }
+
+    public double getActualPixelRight()
+    {
+        return getActualPixelX() + getPixelWidth();
+    }
+
+    public double getActualPixelBottom()
+    {
+        return getActualPixelY() + getPixelHeight();
     }
 
     @Nullable

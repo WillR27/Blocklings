@@ -1,13 +1,16 @@
 package com.willr27.blocklings.client.gui.control.controls.panels;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.properties.Corner;
 import com.willr27.blocklings.client.gui.properties.Direction;
 import com.willr27.blocklings.client.gui.properties.Flow;
+import com.willr27.blocklings.client.gui.properties.Side;
 import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -29,6 +32,12 @@ public class FlowPanel extends Control
 
     @Nullable
     private Double lineAlignment = null;
+
+    @Nonnull
+    List<List<BaseControl>> orderedControls = new ArrayList<>();
+
+    @Nonnull
+    List<Double> lineBounds = new ArrayList<>();
 
     @Override
     protected void measureSelf(double availableWidth, double availableHeight)
@@ -167,8 +176,18 @@ public class FlowPanel extends Control
         double controlTop = 0.0;
         double controlBottom = 0.0;
         boolean hasJustReset = true;
-        List<BaseControl> controlsToAlign = new ArrayList<>();
-        List<List<BaseControl>> linesOfControlsToAlign = new ArrayList<>();
+        List<BaseControl> controlsInLine = new ArrayList<>();
+        orderedControls.clear();
+        lineBounds.clear();
+
+        if (getOverflowDirection().isHorizontal)
+        {
+            lineBounds.add(newLineControlX);
+        }
+        else
+        {
+            lineBounds.add(newLineControlY);
+        }
 
         for (BaseControl control : getChildrenCopy())
         {
@@ -186,9 +205,9 @@ public class FlowPanel extends Control
                     controlY = newLineControlY;
                     hasJustReset = true;
 
-                    linesOfControlsToAlign.add(controlsToAlign);
-                    alignVertically(controlsToAlign);
-                    controlsToAlign = new ArrayList<>();
+                    orderedControls.add(controlsInLine);
+                    alignVertically(controlsInLine);
+                    controlsInLine = new ArrayList<>();
                 }
                 else
                 {
@@ -215,9 +234,9 @@ public class FlowPanel extends Control
                     controlY = newLineControlY;
                     hasJustReset = true;
 
-                    linesOfControlsToAlign.add(controlsToAlign);
-                    alignVertically(controlsToAlign);
-                    controlsToAlign = new ArrayList<>();
+                    orderedControls.add(controlsInLine);
+                    alignVertically(controlsInLine);
+                    controlsInLine = new ArrayList<>();
                 }
                 else
                 {
@@ -244,9 +263,9 @@ public class FlowPanel extends Control
                     controlY = newLineControlY + control.getMargin().top;
                     hasJustReset = true;
 
-                    linesOfControlsToAlign.add(controlsToAlign);
-                    alignHorizontally(controlsToAlign);
-                    controlsToAlign = new ArrayList<>();
+                    orderedControls.add(controlsInLine);
+                    alignHorizontally(controlsInLine);
+                    controlsInLine = new ArrayList<>();
                 }
                 else
                 {
@@ -273,9 +292,9 @@ public class FlowPanel extends Control
                     controlY = newLineControlY - control.getHeight() - control.getMargin().bottom;
                     hasJustReset = true;
 
-                    linesOfControlsToAlign.add(controlsToAlign);
-                    alignHorizontally(controlsToAlign);
-                    controlsToAlign = new ArrayList<>();
+                    orderedControls.add(controlsInLine);
+                    alignHorizontally(controlsInLine);
+                    controlsInLine = new ArrayList<>();
                 }
                 else
                 {
@@ -295,7 +314,7 @@ public class FlowPanel extends Control
             control.setX(controlX);
             control.setY(controlY);
 
-            controlsToAlign.add(control);
+            controlsInLine.add(control);
 
             if (getDirection() == Direction.LEFT_TO_RIGHT)
             {
@@ -350,6 +369,18 @@ public class FlowPanel extends Control
                 controlY -= control.getMargin().top + getVerticalSpacing();
             }
 
+            if (hasJustReset)
+            {
+                if (getOverflowDirection().isHorizontal)
+                {
+                    lineBounds.add(newLineControlX + (getOverflowDirection() == Direction.LEFT_TO_RIGHT ? -getHorizontalSpacing() : getHorizontalSpacing()) / 2.0);
+                }
+                else
+                {
+                    lineBounds.add(newLineControlY + (getOverflowDirection() == Direction.TOP_TO_BOTTOM ? -getVerticalSpacing() : getVerticalSpacing()) / 2.0);
+                }
+            }
+
             if (getOverflowDirection() == Direction.LEFT_TO_RIGHT)
             {
                 controlRight = controlX + control.getWidthWithMargin() + getHorizontalSpacing();
@@ -388,17 +419,26 @@ public class FlowPanel extends Control
             }
         }
 
-        if (!controlsToAlign.isEmpty())
+        if (getOverflowDirection().isHorizontal)
         {
-            linesOfControlsToAlign.add(controlsToAlign);
+            lineBounds.add(newLineControlX + (getOverflowDirection() == Direction.LEFT_TO_RIGHT ? -getHorizontalSpacing() : getHorizontalSpacing()));
+        }
+        else
+        {
+            lineBounds.add(newLineControlY + (getOverflowDirection() == Direction.TOP_TO_BOTTOM ? -getVerticalSpacing() : getVerticalSpacing()));
+        }
+
+        if (!controlsInLine.isEmpty())
+        {
+            orderedControls.add(controlsInLine);
 
             if (getDirection() == Direction.LEFT_TO_RIGHT || getDirection() == Direction.RIGHT_TO_LEFT)
             {
-                alignVertically(controlsToAlign);
+                alignVertically(controlsInLine);
             }
             else
             {
-                alignHorizontally(controlsToAlign);
+                alignHorizontally(controlsInLine);
             }
         }
 
@@ -433,7 +473,7 @@ public class FlowPanel extends Control
             }
             else
             {
-                for (List<BaseControl> line : linesOfControlsToAlign)
+                for (List<BaseControl> line : orderedControls)
                 {
                     double lineMinX = Double.POSITIVE_INFINITY;
                     double lineMaxX = Double.NEGATIVE_INFINITY;
@@ -495,7 +535,7 @@ public class FlowPanel extends Control
             }
             else
             {
-                for (List<BaseControl> line : linesOfControlsToAlign)
+                for (List<BaseControl> line : orderedControls)
                 {
                     double lineMinY = Double.POSITIVE_INFINITY;
                     double lineMaxY = Double.NEGATIVE_INFINITY;
@@ -587,6 +627,194 @@ public class FlowPanel extends Control
             for (BaseControl controlToAlign : controlsToAlign)
             {
                 controlToAlign.setY(minY + controlToAlign.getMargin().top + (dif - controlToAlign.getHeightWithMargin()) * getLineAlignment());
+            }
+        }
+    }
+
+    @Override
+    protected void onRenderUpdate(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+    {
+        if (getScreen().getDraggedControl() != null && getScreen().getDraggedControl().getParent() == this)
+        {
+            updateDraggedControl(getScreen().getDraggedControl());
+        }
+    }
+
+    private void updateDraggedControl(@Nonnull BaseControl draggedControl)
+    {
+        double pixelMidX = draggedControl.getPixelMidX();
+        double pixelMidY = draggedControl.getPixelMidY();
+
+        List<BaseControl> containingLine = null;
+
+        for (int i = 0; i < orderedControls.size(); i++)
+        {
+            double lineMin = lineBounds.get(i);
+            double lineMax = lineBounds.get(i + 1);
+            double temp = lineMin;
+
+            if (lineMin > lineMax)
+            {
+                lineMin = lineMax;
+                lineMax = temp;
+            }
+
+            if (getOverflowDirection().isHorizontal)
+            {
+                lineMin = toActualPixelX(getActualPixelX() + lineMin * getPixelScaleX() * getInnerScale().x + getPixelPadding().left);
+                lineMax = toActualPixelX(getActualPixelX() + lineMax * getPixelScaleX() * getInnerScale().x + getPixelPadding().left);
+
+                if (pixelMidX >= lineMin && pixelMidX <= lineMax)
+                {
+                    containingLine = orderedControls.get(i);
+                    break;
+                }
+            }
+            else
+            {
+                lineMin = toActualPixelY(getActualPixelY() + lineMin * getPixelScaleY() * getInnerScale().y + getPixelPadding().top);
+                lineMax = toActualPixelY(getActualPixelY() + lineMax * getPixelScaleY() * getInnerScale().y + getPixelPadding().top);
+
+                if (pixelMidY >= lineMin && pixelMidY <= lineMax)
+                {
+                    containingLine = orderedControls.get(i);
+                    break;
+                }
+            }
+        }
+
+        if (containingLine != null)
+        {
+            Side closestSide = null;
+            BaseControl closetControl = null;
+            double closestDistance = Double.POSITIVE_INFINITY;
+
+            for (BaseControl control : containingLine)
+            {
+                if (control == draggedControl)
+                {
+                    continue;
+                }
+
+                if (getDirection().isHorizontal)
+                {
+                    double controlLeft = control.getActualPixelLeft();
+                    double controlRight = control.getActualPixelRight();
+
+                    if (pixelMidX >= controlLeft && pixelMidX <= controlRight)
+                    {
+                        closestSide = pixelMidX < control.getActualPixelMidX() ? Side.LEFT : Side.RIGHT;
+                        closetControl = control;
+                        break;
+                    }
+                    else if (pixelMidX < controlLeft)
+                    {
+                        double distance = controlLeft - pixelMidX;
+
+                        if (distance < closestDistance)
+                        {
+                            closestDistance = distance;
+                            closestSide = Side.LEFT;
+                            closetControl = control;
+                        }
+                    }
+                    else if (pixelMidX > controlRight)
+                    {
+                        double distance = pixelMidX - controlRight;
+
+                        if (distance < closestDistance)
+                        {
+                            closestDistance = distance;
+                            closestSide = Side.RIGHT;
+                            closetControl = control;
+                        }
+                    }
+                }
+
+                if (getDirection().isVertical)
+                {
+                    double controlTop = control.getActualPixelTop();
+                    double controlBottom = control.getActualPixelBottom();
+
+                    if (pixelMidY >= controlTop && pixelMidY <= controlBottom)
+                    {
+                        closestSide = pixelMidY < control.getActualPixelMidY() ? Side.TOP : Side.BOTTOM;
+                        closetControl = control;
+                        break;
+                    }
+                    else if (pixelMidY < controlTop)
+                    {
+                        double distance = controlTop - pixelMidY;
+
+                        if (distance < closestDistance)
+                        {
+                            closestDistance = distance;
+                            closestSide = Side.TOP;
+                            closetControl = control;
+                        }
+                    }
+                    else if (pixelMidY > controlBottom)
+                    {
+                        double distance = pixelMidY - controlBottom;
+
+                        if (distance < closestDistance)
+                        {
+                            closestDistance = distance;
+                            closestSide = Side.BOTTOM;
+                            closetControl = control;
+                        }
+                    }
+                }
+            }
+
+            if (closetControl != null)
+            {
+                closetControl.setBackgroundColour(0xffff00ff);
+
+                if (getDirection() == Direction.LEFT_TO_RIGHT)
+                {
+                    if (closestSide == Side.LEFT)
+                    {
+                        insertChildBefore(draggedControl, closetControl);
+                    }
+                    else if (closestSide == Side.RIGHT)
+                    {
+                        insertChildAfter(draggedControl, closetControl);
+                    }
+                }
+                else if (getDirection() == Direction.RIGHT_TO_LEFT)
+                {
+                    if (closestSide == Side.LEFT)
+                    {
+                        insertChildAfter(draggedControl, closetControl);
+                    }
+                    else if (closestSide == Side.RIGHT)
+                    {
+                        insertChildBefore(draggedControl, closetControl);
+                    }
+                }
+                else if (getDirection() == Direction.TOP_TO_BOTTOM)
+                {
+                    if (closestSide == Side.TOP)
+                    {
+                        insertChildBefore(draggedControl, closetControl);
+                    }
+                    else if (closestSide == Side.BOTTOM)
+                    {
+                        insertChildAfter(draggedControl, closetControl);
+                    }
+                }
+                else if (getDirection() == Direction.BOTTOM_TO_TOP)
+                {
+                    if (closestSide == Side.TOP)
+                    {
+                        insertChildAfter(draggedControl, closetControl);
+                    }
+                    else if (closestSide == Side.BOTTOM)
+                    {
+                        insertChildBefore(draggedControl, closetControl);
+                    }
+                }
             }
         }
     }

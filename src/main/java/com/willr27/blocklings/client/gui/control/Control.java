@@ -230,12 +230,19 @@ public class Control extends BaseControl
     @Override
     public void forwardRender(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
     {
+        onRenderUpdate(matrixStack, mouseX, mouseY, partialTicks);
         onRender(matrixStack, mouseX, mouseY, partialTicks);
 
         for (BaseControl child : getChildrenCopy())
         {
             child.forwardRender(matrixStack, mouseX, mouseY, partialTicks);
         }
+    }
+
+    @Override
+    protected void onRenderUpdate(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+    {
+
     }
 
     @Override
