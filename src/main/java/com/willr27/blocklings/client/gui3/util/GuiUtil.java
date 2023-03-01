@@ -1,10 +1,12 @@
 package com.willr27.blocklings.client.gui3.util;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -75,4 +77,28 @@ public abstract class GuiUtil
      * @param scaleToBoundingBox whether to scale the entity based on its bounding box (essentially scale up/down relatively to a single block hitbox).
      */
     public abstract void renderEntityOnScreen(@Nonnull MatrixStack matrixStack, @Nonnull LivingEntity entity, int screenX, int screenY, float screenMouseX, float screenMouseY, float scale, boolean scaleToBoundingBox);
+
+    public static void enableScissor()
+    {
+        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+    }
+
+    public static void disableScissor()
+    {
+        GL11.glDisable(GL11.GL_SCISSOR_TEST);
+    }
+
+    public static void scissor(float x, float y, int width, int height)
+    {
+        MainWindow window = Minecraft.getInstance().getWindow();
+        float scale = 1.0f;
+
+        int scissorX = (int) (x * scale);
+        int scissorY = (int) (window.getHeight() - ((y + height) * scale));
+        int scissorWidth = (int) (width * scale);
+        int scissorHeight = (int) (height * scale);
+
+        enableScissor();
+        GL11.glScissor(scissorX, scissorY, scissorWidth, scissorHeight);
+    }
 }

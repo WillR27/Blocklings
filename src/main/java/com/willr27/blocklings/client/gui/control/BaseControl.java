@@ -12,6 +12,7 @@ import com.willr27.blocklings.client.gui.control.event.events.input.MouseRelease
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrolledEvent;
 import com.willr27.blocklings.client.gui.properties.Margin;
 import com.willr27.blocklings.client.gui.properties.Padding;
+import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.client.gui3.util.GuiUtil;
 import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraftforge.api.distmarker.Dist;
@@ -107,6 +108,8 @@ public abstract class BaseControl extends GuiControl
 
     private boolean shouldBlockDrag = true;
 
+    private boolean shouldScissor = true;
+
     private int backgroundColour = 0x00000000;
 
     /**
@@ -138,9 +141,9 @@ public abstract class BaseControl extends GuiControl
 
     protected abstract void calculateScroll();
 
-    public abstract void forwardRender(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks);
-    protected abstract void onRenderUpdate(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks);
-    protected abstract void onRender(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks);
+    public abstract void forwardRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks);
+    protected abstract void onRenderUpdate(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks);
+    protected abstract void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks);
 
     public abstract void forwardTryDrag(@Nonnull TryDragEvent e);
     public abstract void onDragStart();
@@ -230,12 +233,13 @@ public abstract class BaseControl extends GuiControl
 //        }
 //    }
 
+    @Nullable
     public BaseControl getParent()
     {
         return parent;
     }
 
-    public void setParent(BaseControl parent)
+    public void setParent(@Nullable BaseControl parent)
     {
         parent.addChild(this);
     }
@@ -361,7 +365,7 @@ public abstract class BaseControl extends GuiControl
     @Nullable
     public ScreenControl getScreen()
     {
-        return this instanceof ScreenControl ? (ScreenControl) this : (getParent() != null ? getParent().getScreen() : null);
+        return getParent() != null ? getParent().getScreen() : null;
     }
 
     @Nonnull
@@ -861,15 +865,15 @@ public abstract class BaseControl extends GuiControl
 
     public void setPosition(double x, double y)
     {
-        position.x = x;
-        position.y = y;
-
         if (x == position.x && y == position.y)
         {
             return;
         }
 
-        if (getParent() != null)
+        position.x = x;
+        position.y = y;
+
+        if (getParent() != null && !isDragging())
         {
             getParent().onChildPositionSizeChanged(this);
         }
@@ -900,34 +904,84 @@ public abstract class BaseControl extends GuiControl
         setPosition(getX(), y);
     }
 
-    @Nonnull
-    public Position getPixelPosition()
+    /**
+     * Converts a local x coordinate to a pixel x coordinate inside the control. I.e. if a child control had
+     * an x coordinate of 10 what would the pixel x coordinate be? So this takes into account the inner scaling
+     * of this control.
+     *
+     * @param x the local x coordinate to convert.
+     * @return the pixel x coordinate.
+     */
+    public double toPixelX(double x)
     {
-        return new Position(getPixelX(), getPixelY());
-    }
-
-    public double getPixelX()
-    {
-        double pixelX = getX() * getPixelScaleX();
-
-        if (getParent() != null)
-        {
-            pixelX += getParent().getPixelX() + getParent().getPixelPadding().left;
-        }
+        double pixelX = x * getChildPixelScaleX();
+        pixelX += getPixelX() + getPixelPadding().left;
+        pixelX -= getScrollX() * getChildPixelScaleX();
 
         return pixelX;
     }
 
-    public double getPixelY()
+    public double getPixelX()
     {
-        double pixelY = getY() * getPixelScaleY();
-
         if (getParent() != null)
         {
-            pixelY += getParent().getPixelY() + getParent().getPixelPadding().top;
+            return getParent().toPixelX(getX());
+        }
+        else
+        {
+            return getX() * getPixelScaleX();
+        }
+    }
+
+    public void setPixelX(double pixelX)
+    {
+        if (getParent() != null)
+        {
+            pixelX -= getParent().getPixelX() + getParent().getPixelPadding().left;
+            pixelX += getParent().getScrollX() * getPixelScaleX();
         }
 
+        setX(pixelX / getPixelScaleX());
+    }
+
+    /**
+     * Converts a local y coordinate to a pixel y coordinate inside the control. I.e. if a child control had
+     * an y coordinate of 10 what would the pixel y coordinate be? So this takes into account the inner scaling
+     * of this control.
+     *
+     * @param y the local y coordinate to convert.
+     * @return the pixel y coordinate.
+     */
+    public double toPixelY(double y)
+    {
+        double pixelY = y * getChildPixelScaleY();
+        pixelY += getPixelY() + getPixelPadding().top;
+        pixelY -= getScrollY() * getChildPixelScaleY();
+
         return pixelY;
+    }
+
+    public double getPixelY()
+    {
+        if (getParent() != null)
+        {
+            return getParent().toPixelY(getY());
+        }
+        else
+        {
+            return getY() * getPixelScaleY();
+        }
+    }
+
+    public void setPixelY(double pixelY)
+    {
+        if (getParent() != null)
+        {
+            pixelY -= getParent().getPixelY() + getParent().getPixelPadding().top;
+            pixelY += getParent().getScrollY() * getPixelScaleY();
+        }
+
+        setY(pixelY / getPixelScaleY());
     }
 
     public double getPixelMidX()
@@ -940,54 +994,24 @@ public abstract class BaseControl extends GuiControl
         return getPixelY() + getPixelHeight() / 2.0;
     }
 
-    public double toActualPixelX(double pixelX)
+    public double getPixelLeft()
     {
-        return pixelX - (getParent() != null ? getParent().getScrollX() : 0.0) * getPixelScaleX();
+        return getPixelX();
     }
 
-    public double getActualPixelX()
+    public double getPixelTop()
     {
-        return toActualPixelX(getPixelX());
+        return getPixelY();
     }
 
-    public double toActualPixelY(double pixelY)
+    public double getPixelRight()
     {
-        return pixelY - (getParent() != null ? getParent().getScrollY() : 0.0) * getPixelScaleY();
+        return getPixelX() + getPixelWidth();
     }
 
-    public double getActualPixelY()
+    public double getPixelBottom()
     {
-        return toActualPixelY(getPixelY());
-    }
-
-    public double getActualPixelMidX()
-    {
-        return getActualPixelX() + getPixelWidth() / 2.0;
-    }
-
-    public double getActualPixelMidY()
-    {
-        return getActualPixelY() + getPixelHeight() / 2.0;
-    }
-
-    public double getActualPixelLeft()
-    {
-        return getActualPixelX();
-    }
-
-    public double getActualPixelTop()
-    {
-        return getActualPixelY();
-    }
-
-    public double getActualPixelRight()
-    {
-        return getActualPixelX() + getPixelWidth();
-    }
-
-    public double getActualPixelBottom()
-    {
-        return getActualPixelY() + getPixelHeight();
+        return getPixelY() + getPixelHeight();
     }
 
     @Nullable
@@ -1364,9 +1388,15 @@ public abstract class BaseControl extends GuiControl
         }
     }
 
+    @Nullable
+    public BaseControl getHoveredControl()
+    {
+        return getScreen() == null ? null : getScreen().getHoveredControl();
+    }
+
     public boolean isHovered()
     {
-        return getScreen() == null ? false : getScreen().getHoveredControl() == this;
+        return getHoveredControl() == this;
     }
 
     public void setIsHovered(boolean isHovered)
@@ -1381,9 +1411,15 @@ public abstract class BaseControl extends GuiControl
         }
     }
 
+    @Nullable
+    public BaseControl getPressedControl()
+    {
+        return getScreen() == null ? null : getScreen().getPressedControl();
+    }
+
     public boolean isPressed()
     {
-        return getScreen() == null ? false : getScreen().getPressedControl() == this;
+        return getPressedControl() == this;
     }
 
     public void setIsPressed(boolean isPressed)
@@ -1398,9 +1434,15 @@ public abstract class BaseControl extends GuiControl
         }
     }
 
+    @Nullable
+    public BaseControl getFocusedControl()
+    {
+        return getScreen() == null ? null : getScreen().getFocusedControl();
+    }
+
     public boolean isFocused()
     {
-        return getScreen() == null ? false : getScreen().getFocusedControl() == this;
+        return getFocusedControl() == this;
     }
 
     public void setIsFocused(boolean isFocused)
@@ -1415,9 +1457,15 @@ public abstract class BaseControl extends GuiControl
         }
     }
 
+    @Nullable
+    public BaseControl getDraggedControl()
+    {
+        return getScreen() == null ? null : getScreen().getDraggedControl();
+    }
+
     public boolean isDragging()
     {
-        return getScreen() == null ? false : getScreen().getDraggedControl() == this;
+        return getDraggedControl() == this;
     }
 
     public void setIsDragging(boolean isDragging)
@@ -1477,6 +1525,16 @@ public abstract class BaseControl extends GuiControl
         this.shouldBlockDrag = shouldBlockDrag;
     }
 
+    public boolean shouldScissor()
+    {
+        return shouldScissor;
+    }
+
+    public void setShouldScissor(boolean shouldScissor)
+    {
+        this.shouldScissor = shouldScissor;
+    }
+
     public int getBackgroundColour()
     {
         return backgroundColour;
@@ -1492,7 +1550,7 @@ public abstract class BaseControl extends GuiControl
      */
     public double toLocalX(double pixelX)
     {
-        return (pixelX - getPixelPadding().left - getActualPixelX()) / getPixelScaleX();
+        return (pixelX - getPixelPadding().left - getPixelX()) / getPixelScaleX();
     }
 
     /**
@@ -1500,7 +1558,7 @@ public abstract class BaseControl extends GuiControl
      */
     public double toLocalY(double pixelY)
     {
-        return (pixelY - getPixelPadding().top - getActualPixelY()) / getPixelScaleY();
+        return (pixelY - getPixelPadding().top - getPixelY()) / getPixelScaleY();
     }
 
     public double getGuiScale()
@@ -1525,6 +1583,11 @@ public abstract class BaseControl extends GuiControl
     	return getGuiScale() * getScaleX();
     }
 
+    public double getChildPixelScaleX()
+    {
+    	return getPixelScaleX() * getInnerScale().x;
+    }
+
     public double getScaleY()
     {
         return getParent() != null ? getParent().getScaleY() * getParent().getInnerScale().y : 1.0;
@@ -1540,6 +1603,11 @@ public abstract class BaseControl extends GuiControl
     public double getPixelScaleY()
     {
     	return getGuiScale() * getScaleY();
+    }
+
+    public double getChildPixelScaleY()
+    {
+    	return getPixelScaleY() * getInnerScale().y;
     }
 
     public int randomColour()

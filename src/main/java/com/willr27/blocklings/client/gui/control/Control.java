@@ -6,9 +6,12 @@ import com.willr27.blocklings.client.gui.control.event.events.TryDragEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseClickedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrolledEvent;
+import com.willr27.blocklings.client.gui.util.ScissorBounds;
+import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.client.gui2.GuiTextures;
 import com.willr27.blocklings.client.gui2.GuiUtil;
+import com.willr27.blocklings.client.gui3.RenderArgs;
 import com.willr27.blocklings.client.gui3.control.Side;
 import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraftforge.api.distmarker.Dist;
@@ -228,28 +231,31 @@ public class Control extends BaseControl
     }
 
     @Override
-    public void forwardRender(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+    public void forwardRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
     {
-        onRenderUpdate(matrixStack, mouseX, mouseY, partialTicks);
-        onRender(matrixStack, mouseX, mouseY, partialTicks);
+        applyScissor(scissorStack);
+        onRenderUpdate(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+        onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
 
         for (BaseControl child : getChildrenCopy())
         {
-            child.forwardRender(matrixStack, mouseX, mouseY, partialTicks);
+            child.forwardRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
         }
+
+        undoScissor(scissorStack);
     }
 
     @Override
-    protected void onRenderUpdate(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+    protected void onRenderUpdate(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
     {
 
     }
 
     @Override
-    public void onRender(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+    public void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
     {
-        int x = (int) getActualPixelX();
-        int y = (int) getActualPixelY();
+        int x = (int) getPixelX();
+        int y = (int) getPixelY();
         int px = (int) (x + getPixelPadding().left);
         int py = (int) (y + getPixelPadding().top);
         int width = (int) getPixelWidth();
@@ -265,7 +271,7 @@ public class Control extends BaseControl
 
     protected void renderRectangleAsBackground(@Nonnull MatrixStack matrixStack, int colour)
     {
-        renderRectangle(matrixStack, (int) getActualPixelX(), (int) getActualPixelY(), (int) getPixelWidth(), (int) getPixelHeight(), colour);
+        renderRectangle(matrixStack, (int) getPixelX(), (int) getPixelY(), (int) getPixelWidth(), (int) getPixelHeight(), colour);
     }
 
     protected void renderBackgroundColour(@Nonnull MatrixStack matrixStack)
@@ -275,7 +281,31 @@ public class Control extends BaseControl
 
     protected void renderTextureAsBackground(@Nonnull MatrixStack matrixStack, @Nonnull GuiTexture texture)
     {
-        renderTexture(matrixStack, texture, getActualPixelX(), getActualPixelY(), getPixelScaleX(), getPixelScaleY());
+        renderTexture(matrixStack, texture, getPixelX(), getPixelY(), getPixelScaleX(), getPixelScaleY());
+    }
+
+    /**
+     * Applies any scissoring to the control before rendering.
+     */
+    protected void applyScissor(@Nonnull ScissorStack scissorStack)
+    {
+        if (shouldScissor())
+        {
+            scissorStack.push(new ScissorBounds((int) Math.round(getPixelX()), (int) Math.round(getPixelY()), (int) Math.round(getPixelWidth()), (int) Math.round(getPixelHeight())));
+            scissorStack.enable();
+        }
+    }
+
+    /**
+     * Undoes any scissoring to the control after rendering.
+     */
+    protected void undoScissor(@Nonnull ScissorStack scissorStack)
+    {
+        if (shouldScissor())
+        {
+            scissorStack.pop();
+            scissorStack.disable();
+        }
     }
 
     @Override
@@ -323,12 +353,12 @@ public class Control extends BaseControl
     {
         if (isDraggableX())
         {
-            setX(((getParent().toLocalX(mouseX) / getParent().getInnerScale().x) - getWidth() / 2.0) + getParent().getScrollX());
+            setPixelX(mouseX - getPixelWidth() / 2.0);
         }
 
         if (isDraggableY())
         {
-            setY(((getParent().toLocalY(mouseY) / getParent().getInnerScale().y) - getHeight() / 2.0) + getParent().getScrollY());
+            setPixelY(mouseY - getPixelHeight() / 2.0);
         }
 
         List<Side> atParentBounds = getParentBoundsAt();
@@ -345,7 +375,7 @@ public class Control extends BaseControl
 
                 if (getParent().shouldBlockDrag())
                 {
-                    setX(getParent().toLocalX(getParent().getActualPixelX()) / getParent().getInnerScale().x + getParent().getScrollX());
+                    setX(getParent().toLocalX(getParent().getPixelX()) / getParent().getInnerScale().x + getParent().getScrollX());
                 }
             }
             else if (atParentBounds.contains(Side.RIGHT))
@@ -357,7 +387,7 @@ public class Control extends BaseControl
 
                 if (getParent().shouldBlockDrag())
                 {
-                    setX(getParent().toLocalX(getParent().getActualPixelX() + getParent().getPixelWidth()) / getParent().getInnerScale().x - getWidth() + getParent().getScrollX());
+                    setX(getParent().toLocalX(getParent().getPixelX() + getParent().getPixelWidth()) / getParent().getInnerScale().x - getWidth() + getParent().getScrollX());
                 }
             }
         }
@@ -373,7 +403,7 @@ public class Control extends BaseControl
 
                 if (getParent().shouldBlockDrag())
                 {
-                    setY(getParent().toLocalY(getParent().getActualPixelY()) / getParent().getInnerScale().y + getParent().getScrollY());
+                    setY(getParent().toLocalY(getParent().getPixelY()) / getParent().getInnerScale().y + getParent().getScrollY());
                 }
             }
             else if (atParentBounds.contains(Side.BOTTOM))
@@ -385,7 +415,7 @@ public class Control extends BaseControl
 
                 if (getParent().shouldBlockDrag())
                 {
-                    setY(getParent().toLocalY(getParent().getActualPixelY() + getParent().getPixelHeight()) / getParent().getInnerScale().y - getHeight() + getParent().getScrollY());
+                    setY(getParent().toLocalY(getParent().getPixelY() + getParent().getPixelHeight()) / getParent().getInnerScale().y - getHeight() + getParent().getScrollY());
                 }
             }
         }
@@ -399,22 +429,22 @@ public class Control extends BaseControl
     {
         List<Side> sides = new ArrayList<>();
 
-        if (getActualPixelX() <= getParent().getActualPixelX())
+        if (getPixelX() <= getParent().getPixelX())
         {
             sides.add(Side.LEFT);
         }
 
-        if (getActualPixelX() + getPixelWidth() >= getParent().getActualPixelX() + getParent().getPixelWidth())
+        if (getPixelX() + getPixelWidth() >= getParent().getPixelX() + getParent().getPixelWidth())
         {
             sides.add(Side.RIGHT);
         }
 
-        if (getActualPixelY() <= getParent().getActualPixelY())
+        if (getPixelY() <= getParent().getPixelY())
         {
             sides.add(Side.TOP);
         }
 
-        if (getActualPixelY() + getPixelHeight() >= getParent().getActualPixelY() + getParent().getPixelHeight())
+        if (getPixelY() + getPixelHeight() >= getParent().getPixelY() + getParent().getPixelHeight())
         {
             sides.add(Side.BOTTOM);
         }
@@ -581,6 +611,6 @@ public class Control extends BaseControl
     @Override
     public boolean contains(double pixelX, double pixelY)
     {
-        return pixelX >= getActualPixelX() && pixelX <= getActualPixelX() + getPixelWidth() && pixelY >= getActualPixelY() && pixelY <= getActualPixelY() + getPixelHeight();
+        return pixelX >= getPixelX() && pixelX <= getPixelX() + getPixelWidth() && pixelY >= getPixelY() && pixelY <= getPixelY() + getPixelHeight();
     }
 }

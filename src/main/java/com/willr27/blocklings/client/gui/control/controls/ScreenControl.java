@@ -8,6 +8,7 @@ import com.willr27.blocklings.client.gui.control.event.events.input.MouseClicked
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrolledEvent;
 import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
+import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.client.gui3.util.GuiUtil;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.api.distmarker.Dist;
@@ -162,7 +163,7 @@ public class ScreenControl extends Control
         matrixStack.pushPose();
         matrixStack.scale(1.0f / guiScale, 1.0f / guiScale, 1.0f);
 
-        forwardRender(matrixStack, mouseX, mouseY, partialTicks);
+        forwardRender(matrixStack, new ScissorStack(), mouseX, mouseY, partialTicks);
 
         matrixStack.popPose();
     }
@@ -195,6 +196,14 @@ public class ScreenControl extends Control
     }
 
     @Nullable
+    @Override
+    public ScreenControl getScreen()
+    {
+        return this;
+    }
+
+    @Override
+    @Nullable
     public BaseControl getHoveredControl()
     {
         return hoveredControl;
@@ -205,6 +214,7 @@ public class ScreenControl extends Control
         this.hoveredControl = hoveredControl;
     }
 
+    @Override
     @Nullable
     public BaseControl getPressedControl()
     {
@@ -225,6 +235,7 @@ public class ScreenControl extends Control
         pressedControl = control;
     }
 
+    @Override
     @Nullable
     public BaseControl getFocusedControl()
     {
@@ -236,6 +247,7 @@ public class ScreenControl extends Control
         this.focusedControl = focusedControl;
     }
 
+    @Override
     @Nullable
     public BaseControl getDraggedControl()
     {

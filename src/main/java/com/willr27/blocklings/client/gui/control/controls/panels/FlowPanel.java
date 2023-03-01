@@ -7,6 +7,7 @@ import com.willr27.blocklings.client.gui.properties.Corner;
 import com.willr27.blocklings.client.gui.properties.Direction;
 import com.willr27.blocklings.client.gui.properties.Flow;
 import com.willr27.blocklings.client.gui.properties.Side;
+import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -188,6 +189,9 @@ public class FlowPanel extends Control
         {
             lineBounds.add(newLineControlY);
         }
+
+        double draggedControlX = getDraggedControl() != null ? getDraggedControl().getX() : 0.0;
+        double draggedControlY = getDraggedControl() != null ? getDraggedControl().getY() : 0.0;
 
         for (BaseControl control : getChildrenCopy())
         {
@@ -565,6 +569,12 @@ public class FlowPanel extends Control
                 }
             }
         }
+
+        if (getDraggedControl() != null)
+        {
+            getDraggedControl().setX(draggedControlX);
+            getDraggedControl().setY(draggedControlY);
+        }
     }
 
     private void alignHorizontally(@Nonnull List<BaseControl> controlsToAlign)
@@ -632,11 +642,11 @@ public class FlowPanel extends Control
     }
 
     @Override
-    protected void onRenderUpdate(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+    protected void onRenderUpdate(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
     {
-        if (getScreen().getDraggedControl() != null && getScreen().getDraggedControl().getParent() == this)
+        if (getDraggedControl() != null && getDraggedControl().getParent() == this)
         {
-            updateDraggedControl(getScreen().getDraggedControl());
+            updateDraggedControl(getDraggedControl());
         }
     }
 
@@ -661,8 +671,8 @@ public class FlowPanel extends Control
 
             if (getOverflowDirection().isHorizontal)
             {
-                lineMin = toActualPixelX(getActualPixelX() + lineMin * getPixelScaleX() * getInnerScale().x + getPixelPadding().left);
-                lineMax = toActualPixelX(getActualPixelX() + lineMax * getPixelScaleX() * getInnerScale().x + getPixelPadding().left);
+                lineMin = toPixelX(lineMin);
+                lineMax = toPixelX(lineMax);
 
                 if (pixelMidX >= lineMin && pixelMidX <= lineMax)
                 {
@@ -672,8 +682,8 @@ public class FlowPanel extends Control
             }
             else
             {
-                lineMin = toActualPixelY(getActualPixelY() + lineMin * getPixelScaleY() * getInnerScale().y + getPixelPadding().top);
-                lineMax = toActualPixelY(getActualPixelY() + lineMax * getPixelScaleY() * getInnerScale().y + getPixelPadding().top);
+                lineMin = toPixelY(lineMin);
+                lineMax = toPixelY(lineMax);
 
                 if (pixelMidY >= lineMin && pixelMidY <= lineMax)
                 {
@@ -698,12 +708,12 @@ public class FlowPanel extends Control
 
                 if (getDirection().isHorizontal)
                 {
-                    double controlLeft = control.getActualPixelLeft();
-                    double controlRight = control.getActualPixelRight();
+                    double controlLeft = control.getPixelLeft();
+                    double controlRight = control.getPixelRight();
 
                     if (pixelMidX >= controlLeft && pixelMidX <= controlRight)
                     {
-                        closestSide = pixelMidX < control.getActualPixelMidX() ? Side.LEFT : Side.RIGHT;
+                        closestSide = pixelMidX < control.getPixelMidX() ? Side.LEFT : Side.RIGHT;
                         closetControl = control;
                         break;
                     }
@@ -733,12 +743,12 @@ public class FlowPanel extends Control
 
                 if (getDirection().isVertical)
                 {
-                    double controlTop = control.getActualPixelTop();
-                    double controlBottom = control.getActualPixelBottom();
+                    double controlTop = control.getPixelTop();
+                    double controlBottom = control.getPixelBottom();
 
                     if (pixelMidY >= controlTop && pixelMidY <= controlBottom)
                     {
-                        closestSide = pixelMidY < control.getActualPixelMidY() ? Side.TOP : Side.BOTTOM;
+                        closestSide = pixelMidY < control.getPixelMidY() ? Side.TOP : Side.BOTTOM;
                         closetControl = control;
                         break;
                     }
