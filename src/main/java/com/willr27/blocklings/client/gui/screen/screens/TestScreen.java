@@ -80,7 +80,7 @@ public class TestScreen extends BlocklingsScreen
         flowPanel.setPadding(10, 10, 10, 10);
 //        stackPanel.setShouldFitWidthToContent(true);
 //        stackPanel.setShouldFitHeightToContent(true);
-        flowPanel.setFlow(Flow.BOTTOM_RIGHT_BOTTOM_TO_TOP);
+        flowPanel.setFlow(Flow.TOP_LEFT_LEFT_TO_RIGHT);
         flowPanel.setHorizontalSpacing(4.0);
         flowPanel.setVerticalSpacing(4.0);
         flowPanel.setHorizontalAlignment(0.5);

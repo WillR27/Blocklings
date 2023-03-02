@@ -100,9 +100,9 @@ public abstract class BaseControl extends GuiControl
 
     private boolean canScrollVertically = false;
 
-    private boolean isDraggableX = true;
+    private boolean isDraggableX = false;
 
-    private boolean isDraggableY = true;
+    private boolean isDraggableY = false;
 
     private double dragThreshold = 4.0;
 
@@ -1221,14 +1221,34 @@ public abstract class BaseControl extends GuiControl
         setScroll(getScrollX(), y);
     }
 
-    public void scrollX(double x)
+    /**
+     * Tries to scroll in the x direction.
+     *
+     * @param x the amount to scroll.
+     * @return the amount scrolled.
+     */
+    public double scrollX(double x)
     {
+        double previousScroll = getScrollX();
+
         setScrollX(getScrollX() + x);
+
+        return getScrollX() - previousScroll;
     }
 
-    public void scrollY(double y)
+    /**
+     * Tries to scroll in the y direction.
+     *
+     * @param y the amount to scroll.
+     * @return the amount scrolled.
+     */
+    public double scrollY(double y)
     {
+        double previousScroll = getScrollY();
+
         setScrollY(getScrollY() + y);
+
+        return getScrollY() - previousScroll;
     }
 
     public double getScrollXPercent()

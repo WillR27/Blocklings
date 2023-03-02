@@ -23,7 +23,7 @@ public class MouseScrolledEvent extends HandleableEvent
     /**
      * The amount scrolled.
      */
-    public final double amount;
+    public double amount;
 
     /**
      * @param mouseX the pixel x position of the mouse.

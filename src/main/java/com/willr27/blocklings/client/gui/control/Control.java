@@ -544,16 +544,26 @@ public class Control extends BaseControl
     @Override
     protected void onMouseScrolled(@Nonnull MouseScrolledEvent e)
     {
+        double amountScrolled = 0.0;
+        double amountToScroll = -10.0 * e.amount;
+
         if (GuiUtil.isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL))
         {
-            scrollX(-10.0 * e.amount);
+            amountScrolled = scrollX(amountToScroll);
         }
         else
         {
-            scrollY(-10.0 * e.amount);
+            amountScrolled = scrollY(amountToScroll);
         }
 
-        e.setIsHandled(true);
+        if (amountScrolled == amountToScroll)
+        {
+            e.setIsHandled(true);
+        }
+        else
+        {
+            e.amount = e.amount * (1.0 - (amountScrolled / amountToScroll));
+        }
     }
 
     @Override
