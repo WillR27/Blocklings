@@ -2,9 +2,11 @@ package com.willr27.blocklings.client.gui.screen.screens;
 
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
+import com.willr27.blocklings.client.gui.control.controls.panels.DockPanel;
 import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseClickedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
+import com.willr27.blocklings.client.gui.properties.Dock;
 import com.willr27.blocklings.client.gui.properties.Flow;
 import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
@@ -62,9 +64,47 @@ public class TestScreen extends BlocklingsScreen
 //        control3.setHorizontalAlignment(0.5);
 //        control3.setBackgroundColour(control3.randomColour());
 
-        screenControl.setCanScrollVertically(true);
-        screenControl.setMinScrollY(-100.0);
-        screenControl.setMaxScrollY(100.0);
+        DockPanel dockPanel = new DockPanel();
+        dockPanel.setParent(screenControl);
+        dockPanel.setPadding(10.0, 5.0, 10.0, 5.0);
+        dockPanel.setWidth(100.0);
+        dockPanel.setHeight(150.0);
+        dockPanel.setInnerScale(0.5, 0.5);
+
+        Control dockPanelControl2 = new Control();
+        dockPanel.addChild(dockPanelControl2, Dock.RIGHT);
+        dockPanelControl2.setWidth(dockPanel.randomInt(10, 30));
+        dockPanelControl2.setHeightPercentage(1.0);
+        dockPanelControl2.setBackgroundColour(0xff00ff00);
+        dockPanelControl2.setMargin(dockPanel.randomInt(0, 5));
+
+        Control dockPanelControl1 = new Control();
+        dockPanel.addChild(dockPanelControl1, Dock.BOTTOM);
+        dockPanelControl1.setWidthPercentage(1.0);
+        dockPanelControl1.setHeight(dockPanel.randomInt(10, 30));
+        dockPanelControl1.setBackgroundColour(0xffff0000);
+        dockPanelControl1.setMargin(dockPanel.randomInt(0, 5));
+
+        Control dockPanelControl3 = new Control();
+        dockPanel.addChild(dockPanelControl3, Dock.TOP);
+        dockPanelControl3.setWidthPercentage(1.0);
+        dockPanelControl3.setHeight(dockPanel.randomInt(10, 30));
+        dockPanelControl3.setBackgroundColour(0xff0000ff);
+        dockPanelControl3.setMargin(dockPanel.randomInt(0, 5));
+
+        Control dockPanelControl4 = new Control();
+        dockPanel.addChild(dockPanelControl4, Dock.LEFT);
+        dockPanelControl4.setWidth(dockPanel.randomInt(10, 30));
+        dockPanelControl4.setHeightPercentage(1.0);
+        dockPanelControl4.setBackgroundColour(0xffffff00);
+        dockPanelControl4.setMargin(dockPanel.randomInt(0, 5));
+
+        Control dockPanelControl5 = new Control();
+        dockPanel.addChild(dockPanelControl5, Dock.FILL);
+        dockPanelControl5.setWidthPercentage(1.0);
+        dockPanelControl5.setHeightPercentage(1.0);
+        dockPanelControl5.setBackgroundColour(0xff00ffff);
+        dockPanelControl5.setMargin(dockPanel.randomInt(0, 5));
 
         FlowPanel flowPanel = new FlowPanel();
         flowPanel.setParent(screenControl);

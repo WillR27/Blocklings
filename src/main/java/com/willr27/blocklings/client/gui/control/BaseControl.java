@@ -281,6 +281,20 @@ public abstract class BaseControl extends GuiControl
         markArrangeDirty(true);
     }
 
+    public void removeChild(@Nonnull BaseControl child)
+    {
+        if (!getChildren().contains(child))
+        {
+            return;
+        }
+
+        children.remove(child);
+        child.parent = null;
+
+        markMeasureDirty(true);
+        markArrangeDirty(true);
+    }
+
     public void insertChildBefore(@Nonnull BaseControl controlToInsert, @Nonnull BaseControl controlToInsertBefore)
     {
         int index = children.indexOf(controlToInsert);
