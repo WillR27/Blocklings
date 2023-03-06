@@ -1,15 +1,16 @@
 package com.willr27.blocklings.client.gui.control;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.willr27.blocklings.client.gui.Offset;
-import com.willr27.blocklings.client.gui.Position;
-import com.willr27.blocklings.client.gui.Scale;
-import com.willr27.blocklings.client.gui.Size;
+import com.willr27.blocklings.client.gui.control.event.events.PositionChangedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.SizeChangedEvent;
+import com.willr27.blocklings.client.gui.properties.Offset;
+import com.willr27.blocklings.client.gui.properties.Position;
+import com.willr27.blocklings.client.gui.properties.Scale;
+import com.willr27.blocklings.client.gui.properties.Size;
 import com.willr27.blocklings.client.gui.control.controls.ScreenControl;
 import com.willr27.blocklings.client.gui.control.event.events.TryDragEvent;
-import com.willr27.blocklings.client.gui.control.event.events.input.MouseClickedEvent;
-import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
-import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrolledEvent;
+import com.willr27.blocklings.client.gui.control.event.events.TryHoverEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.*;
 import com.willr27.blocklings.client.gui.properties.Margin;
 import com.willr27.blocklings.client.gui.properties.Padding;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
@@ -141,23 +142,55 @@ public abstract class BaseControl extends GuiControl
 
     protected abstract void calculateScroll();
 
+    public abstract void forwardTick();
+    protected abstract void onTick();
+
     public abstract void forwardRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks);
     protected abstract void onRenderUpdate(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks);
     protected abstract void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks);
+    public abstract void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks);
+
+    public abstract void forwardHover(@Nonnull TryHoverEvent e);
+    public abstract void onHoverEnter();
+    public abstract void onHoverExit();
+
+    public abstract void onPressStart();
+    public abstract void onPressEnd();
+
+    public abstract void onFocused();
+    public abstract void onUnfocused();
 
     public abstract void forwardTryDrag(@Nonnull TryDragEvent e);
     public abstract void onDragStart();
     public abstract void onDrag(double mouseX, double mouseY, float partialTicks);
     public abstract void onDragEnd();
 
+    abstract public void forwardGlobalMouseClicked(@Nonnull MouseClickedEvent e);
+    abstract protected void onGlobalMouseClicked(@Nonnull MouseClickedEvent e);
     abstract public void forwardMouseClicked(@Nonnull MouseClickedEvent e);
     abstract protected void onMouseClicked(@Nonnull MouseClickedEvent e);
 
+    abstract public void forwardGlobalMouseReleased(@Nonnull MouseReleasedEvent e);
+    abstract protected void onGlobalMouseReleased(@Nonnull MouseReleasedEvent e);
     abstract public void forwardMouseReleased(@Nonnull MouseReleasedEvent e);
     abstract protected void onMouseReleased(@Nonnull MouseReleasedEvent e);
 
+    abstract public void forwardGlobalMouseScrolled(@Nonnull MouseScrolledEvent e);
+    abstract protected void onGlobalMouseScrolled(@Nonnull MouseScrolledEvent e);
     abstract public void forwardMouseScrolled(@Nonnull MouseScrolledEvent e);
     abstract protected void onMouseScrolled(@Nonnull MouseScrolledEvent e);
+
+    abstract public void forwardGlobalKeyPressed(@Nonnull KeyPressedEvent e);
+    abstract protected void onGlobalKeyPressed(@Nonnull KeyPressedEvent e);
+    abstract public void onKeyPressed(@Nonnull KeyPressedEvent e);
+
+    abstract public void forwardGlobalKeyReleased(@Nonnull KeyReleasedEvent e);
+    abstract protected void onGlobalKeyReleased(@Nonnull KeyReleasedEvent e);
+    abstract public void onKeyReleased(@Nonnull KeyReleasedEvent e);
+
+    abstract public void forwardGlobalCharTyped(@Nonnull CharTypedEvent e);
+    abstract protected void onGlobalCharTyped(@Nonnull CharTypedEvent e);
+    abstract public void onCharTyped(@Nonnull CharTypedEvent e);
 
     abstract protected void onChildDesiredSizeChanged(@Nonnull BaseControl child);
     abstract protected void onChildSizeChanged(@Nonnull BaseControl child);
@@ -588,6 +621,9 @@ public abstract class BaseControl extends GuiControl
             return;
         }
 
+        double oldWidth = size.width;
+        double oldHeight = size.height;
+
         size.width = width;
         size.height = height;
 
@@ -600,6 +636,8 @@ public abstract class BaseControl extends GuiControl
         {
             getParent().onChildSizeChanged(this);
         }
+
+        eventBus.post(this, new SizeChangedEvent(oldWidth, oldHeight));
     }
 
     public void setSize(@Nonnull Size size)
@@ -884,6 +922,9 @@ public abstract class BaseControl extends GuiControl
             return;
         }
 
+        double oldX = position.x;
+        double oldY = position.y;
+
         position.x = x;
         position.y = y;
 
@@ -891,6 +932,8 @@ public abstract class BaseControl extends GuiControl
         {
             getParent().onChildPositionSizeChanged(this);
         }
+
+        eventBus.post(this, new PositionChangedEvent(oldX, oldY));
     }
 
     public void setPosition(@Nonnull Position position)

@@ -1,17 +1,17 @@
 package com.willr27.blocklings.client.gui.control;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.client.gui.control.controls.ScreenControl;
 import com.willr27.blocklings.client.gui.control.event.events.TryDragEvent;
-import com.willr27.blocklings.client.gui.control.event.events.input.MouseClickedEvent;
-import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
-import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrolledEvent;
+import com.willr27.blocklings.client.gui.control.event.events.TryHoverEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.*;
+import com.willr27.blocklings.client.gui.texture.Texture;
 import com.willr27.blocklings.client.gui.util.ScissorBounds;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.client.gui2.GuiTexture;
 import com.willr27.blocklings.client.gui2.GuiTextures;
 import com.willr27.blocklings.client.gui2.GuiUtil;
-import com.willr27.blocklings.client.gui3.RenderArgs;
 import com.willr27.blocklings.client.gui3.control.Side;
 import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraftforge.api.distmarker.Dist;
@@ -231,8 +231,30 @@ public class Control extends BaseControl
     }
 
     @Override
+    public void forwardTick()
+    {
+        for (BaseControl child : getChildrenCopy())
+        {
+            child.forwardTick();
+        }
+
+        onTick();
+    }
+
+    @Override
+    protected void onTick()
+    {
+
+    }
+
+    @Override
     public void forwardRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
     {
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.defaultAlphaFunc();
+        RenderSystem.enableDepthTest();
+
         applyScissor(scissorStack);
         onRenderUpdate(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
         onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
@@ -252,21 +274,16 @@ public class Control extends BaseControl
     }
 
     @Override
-    public void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+    protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
     {
-        int x = (int) getPixelX();
-        int y = (int) getPixelY();
-        int px = (int) (x + getPixelPadding().left);
-        int py = (int) (y + getPixelPadding().top);
-        int width = (int) getPixelWidth();
-        int height = (int) getPixelHeight();
-        int pwidth = (int) getPixelWidthWithoutPadding();
-        int pheight = (int) getPixelHeightWithoutPadding();
+//        if (!(this instanceof ScreenControl)) renderRectangle(matrixStack, getPixelX(), getPixelY(), (int) getPixelWidth(), (int) getPixelHeight(), 0xff000000);
+        renderRectangle(matrixStack, getPixelX() + getPixelPadding().left, getPixelY() + getPixelPadding().top, (int) getPixelWidthWithoutPadding(), (int) getPixelHeightWithoutPadding(), getBackgroundColour());
+    }
 
-        if (!(this instanceof ScreenControl)) renderRectangle(matrixStack, x, y, width, height, 0xff000000);
-        renderRectangle(matrixStack, px, py, pwidth, pheight, getBackgroundColour());
+    @Override
+    public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+    {
 
-        renderTextureAsBackground(matrixStack, GuiTextures.DROPDOWN_DOWN_ARROW);
     }
 
     protected void renderRectangleAsBackground(@Nonnull MatrixStack matrixStack, int colour)
@@ -274,14 +291,24 @@ public class Control extends BaseControl
         renderRectangle(matrixStack, (int) getPixelX(), (int) getPixelY(), (int) getPixelWidth(), (int) getPixelHeight(), colour);
     }
 
+    protected void renderRectangleAsBackground(@Nonnull MatrixStack matrixStack, int colour, double dx, double dy, double width, double height)
+    {
+        renderRectangle(matrixStack, (int) getPixelX() + dx * getPixelScaleX(), (int) getPixelY() + dy * getPixelScaleY(), (int) (width * getPixelScaleX()), (int) (height * getPixelScaleY()), colour);
+    }
+
     protected void renderBackgroundColour(@Nonnull MatrixStack matrixStack)
     {
         renderRectangleAsBackground(matrixStack, getBackgroundColour());
     }
 
-    protected void renderTextureAsBackground(@Nonnull MatrixStack matrixStack, @Nonnull GuiTexture texture)
+    protected void renderTextureAsBackground(@Nonnull MatrixStack matrixStack, @Nonnull Texture texture)
     {
         renderTexture(matrixStack, texture, getPixelX(), getPixelY(), getPixelScaleX(), getPixelScaleY());
+    }
+
+    protected void renderTextureAsBackground(@Nonnull MatrixStack matrixStack, @Nonnull Texture texture, double dx, double dy)
+    {
+        renderTexture(matrixStack, texture, getPixelX() + dx * getPixelScaleX(), getPixelY() + dy * getPixelScaleX(), getPixelScaleX(), getPixelScaleY());
     }
 
     /**
@@ -309,8 +336,72 @@ public class Control extends BaseControl
     }
 
     @Override
+    public void forwardHover(@Nonnull TryHoverEvent e)
+    {
+        if (!contains(e.mouseX, e.mouseY))
+        {
+            return;
+        }
+
+        for (BaseControl child : getReverseChildrenCopy())
+        {
+            if (!e.isHandled())
+            {
+                child.forwardHover(e);
+            }
+        }
+
+        if (!e.isHandled() && getParent() != null)
+        {
+            setIsHovered(true);
+            e.setIsHandled(true);
+        }
+    }
+
+    @Override
+    public void onHoverEnter()
+    {
+
+    }
+
+    @Override
+    public void onHoverExit()
+    {
+
+    }
+
+    @Override
+    public void onPressStart()
+    {
+
+    }
+
+    @Override
+    public void onPressEnd()
+    {
+
+    }
+
+    @Override
+    public void onFocused()
+    {
+
+    }
+
+    @Override
+    public void onUnfocused()
+    {
+
+    }
+
+    @Override
     public void forwardTryDrag(@Nonnull TryDragEvent e)
     {
+        if (!contains(e.mouseX, e.mouseY))
+        {
+            return;
+        }
+
         for (BaseControl child : getReverseChildrenCopy())
         {
             if (!e.isHandled())
@@ -462,6 +553,34 @@ public class Control extends BaseControl
     }
 
     @Override
+    public void forwardGlobalMouseClicked(@Nonnull MouseClickedEvent e)
+    {
+        if (!contains(e.mouseX, e.mouseY))
+        {
+            return;
+        }
+
+        for (BaseControl child : getReverseChildrenCopy())
+        {
+            if (!e.isHandled())
+            {
+                child.forwardGlobalMouseClicked(e);
+            }
+        }
+
+        if (!e.isHandled())
+        {
+            onGlobalMouseClicked(e);
+        }
+    }
+
+    @Override
+    protected void onGlobalMouseClicked(@Nonnull MouseClickedEvent e)
+    {
+
+    }
+
+    @Override
     public void forwardMouseClicked(@Nonnull MouseClickedEvent e)
     {
         for (BaseControl child : getReverseChildrenCopy())
@@ -478,9 +597,13 @@ public class Control extends BaseControl
 
             if (!e.isHandled())
             {
-                setIsPressed(true);
-                setIsFocused(true);
                 onMouseClicked(e);
+
+                if (e.isHandled())
+                {
+                    setIsPressed(true);
+                    setIsFocused(true);
+                }
             }
         }
     }
@@ -489,6 +612,34 @@ public class Control extends BaseControl
     public void onMouseClicked(@Nonnull MouseClickedEvent e)
     {
         e.setIsHandled(true);
+    }
+
+    @Override
+    public void forwardGlobalMouseReleased(@Nonnull MouseReleasedEvent e)
+    {
+        if (!contains(e.mouseX, e.mouseY))
+        {
+            return;
+        }
+
+        for (BaseControl child : getReverseChildrenCopy())
+        {
+            if (!e.isHandled())
+            {
+                child.forwardGlobalMouseReleased(e);
+            }
+        }
+
+        if (!e.isHandled())
+        {
+            onGlobalMouseReleased(e);
+        }
+    }
+
+    @Override
+    protected void onGlobalMouseReleased(@Nonnull MouseReleasedEvent e)
+    {
+
     }
 
     @Override
@@ -520,11 +671,44 @@ public class Control extends BaseControl
     }
 
     @Override
-    public void forwardMouseScrolled(@Nonnull MouseScrolledEvent e)
+    public void forwardGlobalMouseScrolled(@Nonnull MouseScrolledEvent e)
     {
+        if (!contains(e.mouseX, e.mouseY))
+        {
+            return;
+        }
+
         for (BaseControl child : getReverseChildrenCopy())
         {
-            if (child.contains(e.mouseX, e.mouseY))
+            if (!e.isHandled())
+            {
+                child.forwardGlobalMouseScrolled(e);
+            }
+        }
+
+        if (!e.isHandled())
+        {
+            onGlobalMouseScrolled(e);
+        }
+    }
+
+    @Override
+    protected void onGlobalMouseScrolled(@Nonnull MouseScrolledEvent e)
+    {
+
+    }
+
+    @Override
+    public void forwardMouseScrolled(@Nonnull MouseScrolledEvent e)
+    {
+        if (!contains(e.mouseX, e.mouseY))
+        {
+            return;
+        }
+
+        for (BaseControl child : getReverseChildrenCopy())
+        {
+            if (!e.isHandled())
             {
                 child.forwardMouseScrolled(e);
             }
@@ -564,6 +748,93 @@ public class Control extends BaseControl
         {
             e.amount = e.amount * (1.0 - (amountScrolled / amountToScroll));
         }
+    }
+
+    @Override
+    public void forwardGlobalKeyPressed(@Nonnull KeyPressedEvent e)
+    {
+        for (BaseControl child : getReverseChildrenCopy())
+        {
+            if (!e.isHandled())
+            {
+                child.forwardGlobalKeyPressed(e);
+            }
+        }
+
+        if (!e.isHandled())
+        {
+            onGlobalKeyPressed(e);
+        }
+    }
+
+    @Override
+    protected void onGlobalKeyPressed(@Nonnull KeyPressedEvent e)
+    {
+
+    }
+
+    @Override
+    public void onKeyPressed(@Nonnull KeyPressedEvent e)
+    {
+
+    }
+
+    @Override
+    public void forwardGlobalKeyReleased(@Nonnull KeyReleasedEvent e)
+    {
+        for (BaseControl child : getReverseChildrenCopy())
+        {
+            if (!e.isHandled())
+            {
+                child.forwardGlobalKeyReleased(e);
+            }
+        }
+
+        if (!e.isHandled())
+        {
+            onGlobalKeyReleased(e);
+        }
+    }
+
+    @Override
+    protected void onGlobalKeyReleased(@Nonnull KeyReleasedEvent e)
+    {
+
+    }
+
+    @Override
+    public void onKeyReleased(@Nonnull KeyReleasedEvent e)
+    {
+
+    }
+
+    @Override
+    public void forwardGlobalCharTyped(@Nonnull CharTypedEvent e)
+    {
+        for (BaseControl child : getReverseChildrenCopy())
+        {
+            if (!e.isHandled())
+            {
+                child.forwardGlobalCharTyped(e);
+            }
+        }
+
+        if (!e.isHandled())
+        {
+            onGlobalCharTyped(e);
+        }
+    }
+
+    @Override
+    protected void onGlobalCharTyped(@Nonnull CharTypedEvent e)
+    {
+
+    }
+
+    @Override
+    public void onCharTyped(@Nonnull CharTypedEvent e)
+    {
+
     }
 
     @Override

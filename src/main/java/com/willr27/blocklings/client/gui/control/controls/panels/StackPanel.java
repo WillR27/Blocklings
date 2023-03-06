@@ -18,6 +18,8 @@ public class StackPanel extends Control
     @Nonnull
     private Direction direction = Direction.TOP_TO_BOTTOM;
 
+    private double spacing = 0.0;
+
     @Override
     protected void measureSelf(double availableWidth, double availableHeight)
     {
@@ -196,19 +198,19 @@ public class StackPanel extends Control
 
             if (getDirection() == Direction.LEFT_TO_RIGHT)
             {
-                nextControlX += control.getWidth() + control.getMargin().right;
+                nextControlX += control.getWidth() + control.getMargin().right + getSpacing();
             }
             else if (getDirection() == Direction.RIGHT_TO_LEFT)
             {
-                nextControlX -= control.getMargin().left;
+                nextControlX -= control.getMargin().left + getSpacing();
             }
             else if (getDirection() == Direction.TOP_TO_BOTTOM)
             {
-                nextControlY += control.getHeight() + control.getMargin().bottom;
+                nextControlY += control.getHeight() + control.getMargin().bottom + getSpacing();
             }
             else if (getDirection() == Direction.BOTTOM_TO_TOP)
             {
-                nextControlY -= control.getMargin().right;
+                nextControlY -= control.getMargin().right + getSpacing();
             }
         }
     }
@@ -222,5 +224,17 @@ public class StackPanel extends Control
     public void setDirection(@Nonnull Direction direction)
     {
         this.direction = direction;
+    }
+
+    public double getSpacing()
+    {
+        return spacing;
+    }
+
+    public void setSpacing(double spacing)
+    {
+        this.spacing = spacing;
+
+        markArrangeDirty(true);
     }
 }

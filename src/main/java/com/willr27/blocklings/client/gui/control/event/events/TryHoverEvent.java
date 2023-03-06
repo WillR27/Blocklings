@@ -5,10 +5,10 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
- * An event used when trying to drag a control.
+ * An event used when trying to hover over a control.
  */
 @OnlyIn(Dist.CLIENT)
-public class TryDragEvent extends HandleableEvent
+public class TryHoverEvent extends HandleableEvent
 {
     /**
      * The pixel x position of the mouse.
@@ -24,7 +24,7 @@ public class TryDragEvent extends HandleableEvent
      * @param mouseX the pixel x position of the mouse.
      * @param mouseY the pixel y position of the mouse.
      */
-    public TryDragEvent(double mouseX, double mouseY)
+    public TryHoverEvent(double mouseX, double mouseY)
     {
         this.mouseX = mouseX;
         this.mouseY = mouseY;

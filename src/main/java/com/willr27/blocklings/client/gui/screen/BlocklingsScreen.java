@@ -2,9 +2,7 @@ package com.willr27.blocklings.client.gui.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.controls.ScreenControl;
-import com.willr27.blocklings.client.gui.control.event.events.input.MouseClickedEvent;
-import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
-import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrolledEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.*;
 import com.willr27.blocklings.client.gui3.util.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import net.minecraft.client.gui.screen.Screen;
@@ -53,6 +51,14 @@ public class BlocklingsScreen extends Screen
     }
 
     @Override
+    public void tick()
+    {
+        screenControl.forwardTick();
+
+        super.tick();
+    }
+
+    @Override
     public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         screenControl.render(matrixStack, mouseX, mouseY, partialTicks);
@@ -95,5 +101,35 @@ public class BlocklingsScreen extends Screen
         screenControl.forwardMouseScrolled(e);
 
         return e.isHandled() || super.mouseScrolled(screenMouseX, screenMouseY, amount);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers)
+    {
+        KeyPressedEvent e = new KeyPressedEvent(keyCode, scanCode, modifiers);
+
+        screenControl.forwardGlobalKeyPressed(e);
+
+        return e.isHandled() || super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers)
+    {
+        KeyReleasedEvent e = new KeyReleasedEvent(keyCode, scanCode, modifiers);
+
+        screenControl.forwardGlobalKeyReleased(e);
+
+        return e.isHandled() || super.keyReleased(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean charTyped(char character, int modifiers)
+    {
+        CharTypedEvent e = new CharTypedEvent(character, modifiers);
+
+        screenControl.forwardGlobalCharTyped(e);
+
+        return e.isHandled() || super.charTyped(character, modifiers);
     }
 }

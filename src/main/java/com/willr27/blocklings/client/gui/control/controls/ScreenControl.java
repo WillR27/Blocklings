@@ -1,14 +1,15 @@
 package com.willr27.blocklings.client.gui.control.controls;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.event.events.TryDragEvent;
-import com.willr27.blocklings.client.gui.control.event.events.input.MouseClickedEvent;
-import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
-import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrolledEvent;
+import com.willr27.blocklings.client.gui.control.event.events.TryHoverEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.*;
 import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
+import com.willr27.blocklings.client.gui3.RenderArgs;
 import com.willr27.blocklings.client.gui3.util.GuiUtil;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.api.distmarker.Dist;
@@ -151,6 +152,16 @@ public class ScreenControl extends Control
         double mouseX = GuiUtil.getInstance().getPixelMouseX();
         double mouseY = GuiUtil.getInstance().getPixelMouseY();
 
+        TryHoverEvent e = new TryHoverEvent(mouseX, mouseY);
+
+        forwardHover(e);
+
+        if (!e.isHandled())
+        {
+            setHoveredControl(null);
+        }
+
+
         forwardTryDrag(new TryDragEvent(mouseX, mouseY));
 
         if (getDraggedControl() != null)
@@ -166,17 +177,30 @@ public class ScreenControl extends Control
         forwardRender(matrixStack, new ScissorStack(), mouseX, mouseY, partialTicks);
 
         matrixStack.popPose();
+
+        if (getHoveredControl() != null && getDraggedControl() == null)
+        {
+            matrixStack.pushPose();
+            matrixStack.scale((float) getHoveredControl().getScaleX(), (float) getHoveredControl().getScaleY(), 1.0f);
+
+            RenderSystem.enableDepthTest();
+            getHoveredControl().onRenderTooltip(matrixStack, mouseX, mouseY, partialTicks);
+
+            matrixStack.popPose();
+        }
     }
 
     @Override
     public void forwardMouseClicked(@Nonnull MouseClickedEvent e)
     {
+        forwardGlobalMouseClicked(e);
         super.forwardMouseClicked(e);
     }
 
     @Override
     public void forwardMouseReleased(@Nonnull MouseReleasedEvent e)
     {
+        forwardGlobalMouseReleased(e);
         super.forwardMouseReleased(e);
 
         setPressedControl(null);
@@ -186,7 +210,41 @@ public class ScreenControl extends Control
     @Override
     public void forwardMouseScrolled(@Nonnull MouseScrolledEvent e)
     {
+        forwardGlobalMouseScrolled(e);
         super.forwardMouseScrolled(e);
+    }
+
+    @Override
+    public void forwardGlobalKeyPressed(@Nonnull KeyPressedEvent e)
+    {
+        super.forwardGlobalKeyPressed(e);
+
+        if (!e.isHandled() && getFocusedControl() != null)
+        {
+            getFocusedControl().onKeyPressed(e);
+        }
+    }
+
+    @Override
+    public void forwardGlobalKeyReleased(@Nonnull KeyReleasedEvent e)
+    {
+        super.forwardGlobalKeyReleased(e);
+
+        if (!e.isHandled() && getFocusedControl() != null)
+        {
+            getFocusedControl().onKeyReleased(e);
+        }
+    }
+
+    @Override
+    public void forwardGlobalCharTyped(@Nonnull CharTypedEvent e)
+    {
+        super.forwardGlobalCharTyped(e);
+
+        if (!e.isHandled() && getFocusedControl() != null)
+        {
+            getFocusedControl().onCharTyped(e);
+        }
     }
 
     @Override
@@ -209,9 +267,22 @@ public class ScreenControl extends Control
         return hoveredControl;
     }
 
-    public void setHoveredControl(@Nullable BaseControl hoveredControl)
+    public void setHoveredControl(@Nullable BaseControl control)
     {
-        this.hoveredControl = hoveredControl;
+        if (hoveredControl != control)
+        {
+            if (hoveredControl != null)
+            {
+                hoveredControl.onHoverExit();
+            }
+
+            if (control != null)
+            {
+                control.onHoverEnter();
+            }
+        }
+
+        hoveredControl = control;
     }
 
     @Override
@@ -225,10 +296,14 @@ public class ScreenControl extends Control
     {
         if (pressedControl != control)
         {
+            if (pressedControl != null)
+            {
+                pressedControl.onPressEnd();
+            }
+
             if (control != null)
             {
-                pressedStartPixelX = GuiUtil.getInstance().getPixelMouseX();
-                pressedStartPixelY = GuiUtil.getInstance().getPixelMouseY();
+                control.onPressStart();
             }
         }
 
@@ -242,9 +317,22 @@ public class ScreenControl extends Control
         return focusedControl;
     }
 
-    public void setFocusedControl(@Nullable BaseControl focusedControl)
+    public void setFocusedControl(@Nullable BaseControl control)
     {
-        this.focusedControl = focusedControl;
+        if (focusedControl != control)
+        {
+            if (focusedControl != null)
+            {
+                focusedControl.onUnfocused();
+            }
+
+            if (control != null)
+            {
+                control.onFocused();
+            }
+        }
+
+        focusedControl = control;
     }
 
     @Override

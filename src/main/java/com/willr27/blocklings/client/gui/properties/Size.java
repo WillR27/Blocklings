@@ -1,4 +1,4 @@
-package com.willr27.blocklings.client.gui;
+package com.willr27.blocklings.client.gui.properties;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
