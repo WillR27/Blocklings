@@ -78,35 +78,35 @@ public class TestScreen extends BlocklingsScreen
         dockPanelControl2.setWidth(dockPanel.randomInt(10, 30));
         dockPanelControl2.setHeightPercentage(1.0);
         dockPanelControl2.setBackgroundColour(0xff00ff00);
-        dockPanelControl2.setMargin(dockPanel.randomInt(0, 5));
+        dockPanelControl2.setMargins(dockPanel.randomInt(0, 5));
 
         Control dockPanelControl1 = new Control();
         dockPanel.addChild(dockPanelControl1, Dock.BOTTOM);
         dockPanelControl1.setWidthPercentage(1.0);
         dockPanelControl1.setHeight(dockPanel.randomInt(10, 30));
         dockPanelControl1.setBackgroundColour(0xffff0000);
-        dockPanelControl1.setMargin(dockPanel.randomInt(0, 5));
+        dockPanelControl1.setMargins(dockPanel.randomInt(0, 5));
 
         Control dockPanelControl3 = new Control();
         dockPanel.addChild(dockPanelControl3, Dock.TOP);
         dockPanelControl3.setWidthPercentage(1.0);
         dockPanelControl3.setHeight(dockPanel.randomInt(10, 30));
         dockPanelControl3.setBackgroundColour(0xff0000ff);
-        dockPanelControl3.setMargin(dockPanel.randomInt(0, 5));
+        dockPanelControl3.setMargins(dockPanel.randomInt(0, 5));
 
         Control dockPanelControl4 = new Control();
         dockPanel.addChild(dockPanelControl4, Dock.LEFT);
         dockPanelControl4.setWidth(dockPanel.randomInt(10, 30));
         dockPanelControl4.setHeightPercentage(1.0);
         dockPanelControl4.setBackgroundColour(0xffffff00);
-        dockPanelControl4.setMargin(dockPanel.randomInt(0, 5));
+        dockPanelControl4.setMargins(dockPanel.randomInt(0, 5));
 
         Control dockPanelControl5 = new Control();
         dockPanel.addChild(dockPanelControl5, Dock.FILL);
         dockPanelControl5.setWidthPercentage(1.0);
         dockPanelControl5.setHeightPercentage(1.0);
         dockPanelControl5.setBackgroundColour(0xff00ffff);
-        dockPanelControl5.setMargin(dockPanel.randomInt(0, 5));
+        dockPanelControl5.setMargins(dockPanel.randomInt(0, 5));
 
         FlowPanel flowPanel = new FlowPanel();
         flowPanel.setParent(screenControl);
@@ -139,7 +139,7 @@ public class TestScreen extends BlocklingsScreen
             stackPanelControl.setWidth(stackPanelControl.randomInt(10, 40));
             stackPanelControl.setHeight(stackPanelControl.randomInt(10, 40));
 //            stackPanelControl.setMargin(stackPanelControl.randomInt(2, 4));
-            stackPanelControl.setMargin(1);
+            stackPanelControl.setMargins(1);
             stackPanelControl.setBackgroundColour(0xffffff00 | (i*30 << 0));
             stackPanelControl.eventBus.subscribe((BaseControl control, MouseClickedEvent e) -> control.setBackgroundColour(0xff00ff00));
             stackPanelControl.eventBus.subscribe((BaseControl control, MouseReleasedEvent e) -> System.out.println("Released!"));

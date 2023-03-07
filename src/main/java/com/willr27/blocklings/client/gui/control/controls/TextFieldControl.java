@@ -31,7 +31,7 @@ public class TextFieldControl extends Control
      * The underlying {@link TextFieldWidget};
      */
     @Nonnull
-    protected final TextFieldWidget textFieldWidget = new TextFieldWidget(font, 0, 0, 100, font.lineHeight - 1, new StringTextComponent("message?"));
+    protected final TextFieldWidget textFieldWidget = new TextFieldWidget(font, 0, 0, 100, font.lineHeight - 2, new StringTextComponent("message?"));
 
     /**
      */

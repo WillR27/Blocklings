@@ -1,5 +1,6 @@
 package com.willr27.blocklings.client.gui2;
 
+import com.willr27.blocklings.client.gui.texture.Texture;
 import net.minecraft.util.ResourceLocation;
 
 public class GuiTexture
@@ -37,6 +38,11 @@ public class GuiTexture
     public GuiTexture adjust(int dw, int dh)
     {
         return new GuiTexture(texture, x, y, width + dw, height + dh);
+    }
+
+    public Texture toTexture()
+    {
+        return new Texture(texture, x, y, width, height);
     }
 
     public static class GoalGuiTexture extends GuiTexture

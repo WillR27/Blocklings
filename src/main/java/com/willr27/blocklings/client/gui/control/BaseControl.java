@@ -101,6 +101,8 @@ public abstract class BaseControl extends GuiControl
 
     private boolean canScrollVertically = false;
 
+    private boolean isInteractive = true;
+
     private boolean isDraggableX = false;
 
     private boolean isDraggableY = false;
@@ -143,7 +145,7 @@ public abstract class BaseControl extends GuiControl
     protected abstract void calculateScroll();
 
     public abstract void forwardTick();
-    protected abstract void onTick();
+    public abstract void onTick();
 
     public abstract void forwardRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks);
     protected abstract void onRenderUpdate(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks);
@@ -402,6 +404,14 @@ public abstract class BaseControl extends GuiControl
 
         markMeasureDirty(true);
         markArrangeDirty(true);
+    }
+
+    public void clearChildren()
+    {
+        for (BaseControl child : getChildrenCopy())
+        {
+            removeChild(child);
+        }
     }
 
     public int getTreeDepth()
@@ -808,7 +818,7 @@ public abstract class BaseControl extends GuiControl
         return margin.top + margin.bottom;
     }
 
-    public void setMargin(double left, double top, double right, double bottom)
+    public void setMargins(double left, double top, double right, double bottom)
     {
         if (left == margin.left && top == margin.top && right == margin.right && bottom == margin.bottom)
         {
@@ -831,14 +841,14 @@ public abstract class BaseControl extends GuiControl
         }
     }
 
-    public void setMargin(double margin)
+    public void setMargins(double margin)
     {
-        setMargin(margin, margin, margin, margin);
+        setMargins(margin, margin, margin, margin);
     }
 
-    public void setMargin(@Nonnull Margin margin)
+    public void setMargins(@Nonnull Margin margin)
     {
-        setMargin(margin.left, margin.top, margin.right, margin.bottom);
+        setMargins(margin.left, margin.top, margin.right, margin.bottom);
     }
 
     @Nonnull
@@ -1600,6 +1610,16 @@ public abstract class BaseControl extends GuiControl
     public void setShouldBlockDrag(boolean shouldBlockDrag)
     {
         this.shouldBlockDrag = shouldBlockDrag;
+    }
+
+    public boolean isInteractive()
+    {
+        return isInteractive;
+    }
+
+    public void setInteractive(boolean isInteractive)
+    {
+        this.isInteractive = isInteractive;
     }
 
     public boolean shouldScissor()

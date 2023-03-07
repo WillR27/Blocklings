@@ -12,6 +12,7 @@ import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.client.gui3.RenderArgs;
 import com.willr27.blocklings.client.gui3.util.GuiUtil;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -57,47 +58,50 @@ public class ScreenControl extends Control
         measureList.removeIf(control -> control.getScreen() != this);
         arrangeList.removeIf(control -> control.getScreen() != this);
 
-        while (!measureList.isEmpty())
+        while (!measureList.isEmpty() || !arrangeList.isEmpty())
         {
-            int minDepth = Integer.MAX_VALUE;
-            BaseControl minDepthControl = null;
-
-            for (BaseControl control : measureList)
+            while (!measureList.isEmpty())
             {
-                if (control.getTreeDepth() < minDepth)
+                int minDepth = Integer.MAX_VALUE;
+                BaseControl minDepthControl = null;
+
+                for (BaseControl control : measureList)
                 {
-                    minDepth = control.getTreeDepth();
-                    minDepthControl = control;
+                    if (control.getTreeDepth() < minDepth)
+                    {
+                        minDepth = control.getTreeDepth();
+                        minDepthControl = control;
+                    }
+                }
+
+                if (minDepthControl == this)
+                {
+                    minDepthControl.doMeasure(getWidth(), getHeight());
+                }
+                else if (minDepthControl != null && minDepthControl.getParent() != null)
+                {
+                    minDepthControl.getParent().measureChildren();
                 }
             }
 
-            if (minDepthControl == this)
+            while (!arrangeList.isEmpty())
             {
-                minDepthControl.doMeasure(getWidth(), getHeight());
-            }
-            else if (minDepthControl != null && minDepthControl.getParent() != null)
-            {
-                minDepthControl.getParent().measureChildren();
-            }
-        }
+                int minDepth = Integer.MAX_VALUE;
+                BaseControl minDepthControl = null;
 
-        while (!arrangeList.isEmpty())
-        {
-            int minDepth = Integer.MAX_VALUE;
-            BaseControl minDepthControl = null;
-
-            for (BaseControl control : arrangeList)
-            {
-                if (control.getTreeDepth() < minDepth)
+                for (BaseControl control : arrangeList)
                 {
-                    minDepth = control.getTreeDepth();
-                    minDepthControl = control;
+                    if (control.getTreeDepth() < minDepth)
+                    {
+                        minDepth = control.getTreeDepth();
+                        minDepthControl = control;
+                    }
                 }
-            }
 
-            if (minDepthControl != null)
-            {
-                minDepthControl.doArrange();
+                if (minDepthControl != null)
+                {
+                    minDepthControl.doArrange();
+                }
             }
         }
     }
@@ -161,7 +165,6 @@ public class ScreenControl extends Control
             setHoveredControl(null);
         }
 
-
         forwardTryDrag(new TryDragEvent(mouseX, mouseY));
 
         if (getDraggedControl() != null)
@@ -188,6 +191,12 @@ public class ScreenControl extends Control
 
             matrixStack.popPose();
         }
+    }
+
+    @Override
+    protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+    {
+
     }
 
     @Override

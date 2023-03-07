@@ -242,7 +242,7 @@ public class Control extends BaseControl
     }
 
     @Override
-    protected void onTick()
+    public void onTick()
     {
 
     }
@@ -321,6 +321,10 @@ public class Control extends BaseControl
             scissorStack.push(new ScissorBounds((int) Math.round(getPixelX()), (int) Math.round(getPixelY()), (int) Math.round(getPixelWidth()), (int) Math.round(getPixelHeight())));
             scissorStack.enable();
         }
+        else
+        {
+            scissorStack.disable();
+        }
     }
 
     /**
@@ -338,6 +342,11 @@ public class Control extends BaseControl
     @Override
     public void forwardHover(@Nonnull TryHoverEvent e)
     {
+        if (!isInteractive())
+        {
+            return;
+        }
+
         if (!contains(e.mouseX, e.mouseY))
         {
             return;
@@ -397,6 +406,11 @@ public class Control extends BaseControl
     @Override
     public void forwardTryDrag(@Nonnull TryDragEvent e)
     {
+        if (!isInteractive())
+        {
+            return;
+        }
+
         if (!contains(e.mouseX, e.mouseY))
         {
             return;
@@ -583,6 +597,11 @@ public class Control extends BaseControl
     @Override
     public void forwardMouseClicked(@Nonnull MouseClickedEvent e)
     {
+        if (!isInteractive())
+        {
+            return;
+        }
+
         for (BaseControl child : getReverseChildrenCopy())
         {
             if (child.contains(e.mouseX, e.mouseY))
@@ -645,6 +664,11 @@ public class Control extends BaseControl
     @Override
     public void forwardMouseReleased(@Nonnull MouseReleasedEvent e)
     {
+        if (!isInteractive())
+        {
+            return;
+        }
+
         for (BaseControl child : getReverseChildrenCopy())
         {
             if (child.contains(e.mouseX, e.mouseY))
@@ -701,6 +725,11 @@ public class Control extends BaseControl
     @Override
     public void forwardMouseScrolled(@Nonnull MouseScrolledEvent e)
     {
+        if (!isInteractive())
+        {
+            return;
+        }
+
         if (!contains(e.mouseX, e.mouseY))
         {
             return;

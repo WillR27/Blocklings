@@ -9,6 +9,7 @@ import com.willr27.blocklings.client.gui3.RenderArgs;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -75,6 +76,32 @@ public abstract class GuiControl extends AbstractGui
         matrixStack.scale((float) scaleX, (float) scaleY, 1.0f);
         renderTexture(matrixStack, texture);
         matrixStack.popPose();
+    }
+
+    /**
+     * Renders shadowed text using the given matrix stack.
+     *
+     * @param matrixStack the matrix stack.
+     * @param text the text to render.
+     * @param colour the colour of the text.
+     */
+    protected void renderShadowedText(@Nonnull MatrixStack matrixStack, @Nonnull ITextComponent text, int colour)
+    {
+        Screen.drawString(matrixStack, Minecraft.getInstance().font, text, 0, 0, colour);
+        RenderSystem.enableAlphaTest();
+    }
+
+    /**
+     * Renders text using the given matrix stack.
+     *
+     * @param matrixStack the matrix stack.
+     * @param text the text to render.
+     * @param colour the colour of the text.
+     */
+    protected void renderText(@Nonnull MatrixStack matrixStack, @Nonnull ITextComponent text, int colour)
+    {
+        font.draw(matrixStack, text, 0, 0, colour);
+        RenderSystem.enableAlphaTest();
     }
 
     /**

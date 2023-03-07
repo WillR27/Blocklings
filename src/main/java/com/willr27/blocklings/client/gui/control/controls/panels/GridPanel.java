@@ -71,47 +71,55 @@ public class GridPanel extends Control
                 GridDefinition rowDefinition = getRowDefinition(row);
                 GridDefinition columnDefinition = getColumnDefinition(col);
 
-                // Skip ratio cells for now.
-                if (rowDefinition == GridDefinition.RATIO || columnDefinition == GridDefinition.RATIO)
+                if (columnDefinition != GridDefinition.RATIO)
                 {
-                    continue;
+                    double remainingWidth = availableWidth - Arrays.stream(columnWidths).sum();
+                    remainingWidth += columnWidths[col];
+
+                    for (BaseControl control : getCellControls(row, col))
+                    {
+                        // Get cell dimensions if available.
+                        double availableCellWidth = columnWidths[col];
+
+                        // Get remaining space for an auto sized column.
+                        if (columnDefinition == GridDefinition.AUTO)
+                        {
+                            availableCellWidth = Math.max(0.0, remainingWidth);
+                        }
+
+                        control.doMeasure(availableCellWidth, 0.0);
+
+                        // Update the current column width.
+                        if (control.getDesiredWidth() > columnWidths[col])
+                        {
+                            columnWidths[col] = control.getDesiredWidth();
+                        }
+                    }
                 }
 
-                double remainingWidth = availableWidth - Arrays.stream(columnWidths).sum();
-                double remainingHeight = availableHeight - Arrays.stream(rowHeights).sum();
-                remainingWidth += columnWidths[col];
-                remainingHeight += rowHeights[row];
-
-                for (BaseControl control : getCellControls(row, col))
+                if (rowDefinition != GridDefinition.RATIO)
                 {
-                    // Get cell dimensions if available.
-                    double availableCellWidth = columnWidths[col];
-                    double availableCellHeight = rowHeights[row];
+                    double remainingHeight = availableHeight - Arrays.stream(rowHeights).sum();
+                    remainingHeight += rowHeights[row];
 
-                    // Get remaining space for an auto sized row.
-                    if (rowDefinition == GridDefinition.AUTO)
+                    for (BaseControl control : getCellControls(row, col))
                     {
-                        availableCellHeight = Math.max(0.0, remainingHeight);
-                    }
+                        // Get cell dimensions if available.
+                        double availableCellHeight = rowHeights[row];
 
-                    // Get remaining space for an auto sized column.
-                    if (columnDefinition == GridDefinition.AUTO)
-                    {
-                        availableCellWidth = Math.max(0.0, remainingWidth);
-                    }
+                        // Get remaining space for an auto sized row.
+                        if (rowDefinition == GridDefinition.AUTO)
+                        {
+                            availableCellHeight = Math.max(0.0, remainingHeight);
+                        }
 
-                    control.doMeasure(availableCellWidth, availableCellHeight);
+                        control.doMeasure(0.0, availableCellHeight);
 
-                    // Update the current column width.
-                    if (control.getDesiredWidth() > columnWidths[col])
-                    {
-                        columnWidths[col] = control.getDesiredWidth();
-                    }
-
-                    // Update the current row height.
-                    if (control.getDesiredHeight() > rowHeights[row])
-                    {
-                        rowHeights[row] = control.getDesiredHeight();
+                        // Update the current row height.
+                        if (control.getDesiredHeight() > rowHeights[row])
+                        {
+                            rowHeights[row] = control.getDesiredHeight();
+                        }
                     }
                 }
             }
@@ -176,7 +184,7 @@ public class GridPanel extends Control
                     double availableCellWidth = columnWidths[col];
                     double availableCellHeight = rowHeights[row];
 
-                    control.doMeasure(availableCellWidth, availableCellHeight);
+                    control.doMeasure(availableCellWidth - control.getMarginWidth(), availableCellHeight - control.getMarginHeight());
                 }
             }
         }
@@ -191,14 +199,16 @@ public class GridPanel extends Control
             {
                 double x = col == 0 ? 0.0 : Arrays.stream(columnWidths).limit(col).sum();
                 double y = row == 0 ? 0.0 : Arrays.stream(rowHeights).limit(row).sum();
+                double width = columnWidths[col];
+                double height = rowHeights[row];
 
                 for (BaseControl control : getCellControls(row, col))
                 {
                     control.setWidth(control.getDesiredWidth());
                     control.setHeight(control.getDesiredHeight());
 
-                    control.setX(x);
-                    control.setY(y);
+                    control.setX(x + (width - control.getWidthWithMargin()) * getHorizontalAlignmentFor(control) + control.getMargin().left);
+                    control.setY(y + (height - control.getHeightWithMargin()) * getVerticalAlignmentFor(control) + control.getMargin().top);
                 }
             }
         }

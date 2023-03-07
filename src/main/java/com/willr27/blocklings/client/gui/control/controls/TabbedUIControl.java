@@ -96,7 +96,6 @@ public class TabbedUIControl extends Control
         contentControl.setParent(this);
         contentControl.setWidth(160);
         contentControl.setHeight(150);
-        contentControl.setPadding(1.0);
         contentControl.setHorizontalAlignment(0.5);
         contentControl.setVerticalAlignment(0.5);
     }
