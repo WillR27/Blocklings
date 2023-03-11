@@ -7,10 +7,12 @@ import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.client.gui2.GuiUtil;
 import com.willr27.blocklings.util.DoubleUtil;
+import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import javax.annotation.Nonnull;
 
@@ -92,8 +94,21 @@ public class TextBlockControl extends Control
         float x = getGuiScale() == 1.0f ? Math.round(textScreenX) : textScreenX;
         float y = getGuiScale() == 1.0f ? Math.round(textScreenY) : textScreenY;
 
+        float z = isDraggingOrAncestor() ? 100.0f : -1.0f;
+
+        try
+        {
+            // For some reason we can't just access the values in the matrix.
+            // So we have to get the z translation via reflection. Nice.
+            z = ObfuscationReflectionHelper.getPrivateValue(Matrix4f.class, matrixStack.last().pose(), "m23");
+        }
+        catch (Exception ex)
+        {
+//            Blocklings.LOGGER.warn(ex.toString());
+        }
+
         MatrixStack matrixStack2 = new MatrixStack();
-        matrixStack2.translate(x, y, 5.0);
+        matrixStack2.translate(x, y, z);
         matrixStack2.scale((float) getScaleX(), (float) getScaleY(), 1.0f);
 
         if (shouldRenderShadow())

@@ -14,6 +14,9 @@ import com.willr27.blocklings.client.gui2.GuiTextures;
 import com.willr27.blocklings.client.gui2.GuiUtil;
 import com.willr27.blocklings.client.gui3.control.Side;
 import com.willr27.blocklings.util.DoubleUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
@@ -54,6 +57,11 @@ public class Control extends BaseControl
 
             for (BaseControl childControl : getChildren())
             {
+                if (childControl.getWidthPercentage() != null)
+                {
+                    continue;
+                }
+
                 double childX = (childControl.getX() + childControl.getWidth() + childControl.getMargin().right) * getInnerScale().x;
 
                 if (childX > maxX)
@@ -75,6 +83,11 @@ public class Control extends BaseControl
 
             for (BaseControl childControl : getChildren())
             {
+                if (childControl.getHeightPercentage() != null)
+                {
+                    continue;
+                }
+
                 double childY = (childControl.getY() + childControl.getHeight() + childControl.getMargin().bottom) * getInnerScale().y;
 
                 if (childY > maxY)
@@ -255,9 +268,14 @@ public class Control extends BaseControl
         RenderSystem.defaultAlphaFunc();
         RenderSystem.enableDepthTest();
 
+        matrixStack.pushPose();
+        matrixStack.translate(0.0f, 0.0f, isDraggingOrAncestor() ? 100.0f : 0.0f);
+
         applyScissor(scissorStack);
         onRenderUpdate(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
         onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+
+        matrixStack.popPose();
 
         for (BaseControl child : getChildrenCopy())
         {
@@ -277,7 +295,10 @@ public class Control extends BaseControl
     protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
     {
 //        if (!(this instanceof ScreenControl)) renderRectangle(matrixStack, getPixelX(), getPixelY(), (int) getPixelWidth(), (int) getPixelHeight(), 0xff000000);
+//        matrixStack.pushPose();
+//        matrixStack.translate(0.0f, 0.0f, 1.0f);
         renderRectangle(matrixStack, getPixelX() + getPixelPadding().left, getPixelY() + getPixelPadding().top, (int) getPixelWidthWithoutPadding(), (int) getPixelHeightWithoutPadding(), getBackgroundColour());
+//        matrixStack.popPose();
     }
 
     @Override
@@ -309,6 +330,34 @@ public class Control extends BaseControl
     protected void renderTextureAsBackground(@Nonnull MatrixStack matrixStack, @Nonnull Texture texture, double dx, double dy)
     {
         renderTexture(matrixStack, texture, getPixelX() + dx * getPixelScaleX(), getPixelY() + dy * getPixelScaleX(), getPixelScaleX(), getPixelScaleY());
+    }
+
+    /**
+     * Renders a tooltip at the mouse position.
+     *
+     * @param matrixStack the matrix stack.
+     * @param mouseX the mouse x position.
+     * @param mouseY the mouse y position.
+     * @param tooltip the tooltip to render.
+     */
+    public void renderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, @Nonnull ITextComponent tooltip)
+    {
+        List<IReorderingProcessor> tooltip2 = new ArrayList<>();
+        tooltip2.add(tooltip.getVisualOrderText());
+        renderTooltip(matrixStack, mouseX, mouseY, getPixelScaleX(), getPixelScaleY(), tooltip2);
+    }
+
+    /**
+     * Renders a tooltip at the mouse position.
+     *
+     * @param matrixStack the matrix stack.
+     * @param mouseX the mouse x position.
+     * @param mouseY the mouse y position.
+     * @param tooltip the tooltip to render.
+     */
+    public void renderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, @Nonnull List<IReorderingProcessor> tooltip)
+    {
+        Minecraft.getInstance().screen.renderTooltip(matrixStack, tooltip, (int) (mouseX / getPixelScaleX()), (int) (mouseY / getPixelScaleY()));
     }
 
     /**
@@ -382,13 +431,13 @@ public class Control extends BaseControl
     @Override
     public void onPressStart()
     {
-
+setBackgroundColour(0xff0000ff);
     }
 
     @Override
     public void onPressEnd()
     {
-
+setBackgroundColour(0x00000000);
     }
 
     @Override
@@ -628,7 +677,7 @@ public class Control extends BaseControl
     }
 
     @Override
-    public void onMouseClicked(@Nonnull MouseClickedEvent e)
+    protected void onMouseClicked(@Nonnull MouseClickedEvent e)
     {
         e.setIsHandled(true);
     }
@@ -883,7 +932,7 @@ public class Control extends BaseControl
     @Override
     protected void onChildSizeChanged(@Nonnull BaseControl child)
     {
-        if (!isArranging() && shouldFitToContent())
+        if (shouldFitToContent())
         {
             markMeasureDirty(true);
         }

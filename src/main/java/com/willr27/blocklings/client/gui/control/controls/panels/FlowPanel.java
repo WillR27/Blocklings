@@ -3,6 +3,7 @@ package com.willr27.blocklings.client.gui.control.controls.panels;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
+import com.willr27.blocklings.client.gui.control.event.events.ReorderEvent;
 import com.willr27.blocklings.client.gui.properties.Corner;
 import com.willr27.blocklings.client.gui.properties.Direction;
 import com.willr27.blocklings.client.gui.properties.Flow;
@@ -696,12 +697,17 @@ public class FlowPanel extends Control
         if (containingLine != null)
         {
             Side closestSide = null;
-            BaseControl closetControl = null;
+            BaseControl closestControl = null;
             double closestDistance = Double.POSITIVE_INFINITY;
 
             for (BaseControl control : containingLine)
             {
                 if (control == draggedControl)
+                {
+                    continue;
+                }
+
+                if (!control.isReorderable())
                 {
                     continue;
                 }
@@ -714,7 +720,7 @@ public class FlowPanel extends Control
                     if (pixelMidX >= controlLeft && pixelMidX <= controlRight)
                     {
                         closestSide = pixelMidX < control.getPixelMidX() ? Side.LEFT : Side.RIGHT;
-                        closetControl = control;
+                        closestControl = control;
                         break;
                     }
                     else if (pixelMidX < controlLeft)
@@ -725,7 +731,7 @@ public class FlowPanel extends Control
                         {
                             closestDistance = distance;
                             closestSide = Side.LEFT;
-                            closetControl = control;
+                            closestControl = control;
                         }
                     }
                     else if (pixelMidX > controlRight)
@@ -736,12 +742,11 @@ public class FlowPanel extends Control
                         {
                             closestDistance = distance;
                             closestSide = Side.RIGHT;
-                            closetControl = control;
+                            closestControl = control;
                         }
                     }
                 }
-
-                if (getDirection().isVertical)
+                else if (getDirection().isVertical)
                 {
                     double controlTop = control.getPixelTop();
                     double controlBottom = control.getPixelBottom();
@@ -749,7 +754,7 @@ public class FlowPanel extends Control
                     if (pixelMidY >= controlTop && pixelMidY <= controlBottom)
                     {
                         closestSide = pixelMidY < control.getPixelMidY() ? Side.TOP : Side.BOTTOM;
-                        closetControl = control;
+                        closestControl = control;
                         break;
                     }
                     else if (pixelMidY < controlTop)
@@ -760,7 +765,7 @@ public class FlowPanel extends Control
                         {
                             closestDistance = distance;
                             closestSide = Side.TOP;
-                            closetControl = control;
+                            closestControl = control;
                         }
                     }
                     else if (pixelMidY > controlBottom)
@@ -771,58 +776,66 @@ public class FlowPanel extends Control
                         {
                             closestDistance = distance;
                             closestSide = Side.BOTTOM;
-                            closetControl = control;
+                            closestControl = control;
                         }
                     }
                 }
             }
 
-            if (closetControl != null)
+            if (closestControl != null)
             {
-                closetControl.setBackgroundColour(0xffff00ff);
+                boolean isDraggedBeforeClosest = getChildrenCopy().indexOf(draggedControl) < getChildrenCopy().indexOf(closestControl);
 
                 if (getDirection() == Direction.LEFT_TO_RIGHT)
                 {
-                    if (closestSide == Side.LEFT)
+                    if (closestSide == Side.LEFT && !isDraggedBeforeClosest)
                     {
-                        insertChildBefore(draggedControl, closetControl);
+                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, true));
+                        insertChildBefore(draggedControl, closestControl);
                     }
-                    else if (closestSide == Side.RIGHT)
+                    else if (closestSide == Side.RIGHT && isDraggedBeforeClosest)
                     {
-                        insertChildAfter(draggedControl, closetControl);
+                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, false));
+                        insertChildAfter(draggedControl, closestControl);
                     }
                 }
                 else if (getDirection() == Direction.RIGHT_TO_LEFT)
                 {
-                    if (closestSide == Side.LEFT)
+                    if (closestSide == Side.LEFT && isDraggedBeforeClosest)
                     {
-                        insertChildAfter(draggedControl, closetControl);
+                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, false));
+                        insertChildAfter(draggedControl, closestControl);
                     }
-                    else if (closestSide == Side.RIGHT)
+                    else if (closestSide == Side.RIGHT && !isDraggedBeforeClosest)
                     {
-                        insertChildBefore(draggedControl, closetControl);
+                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, true));
+                        insertChildBefore(draggedControl, closestControl);
                     }
                 }
                 else if (getDirection() == Direction.TOP_TO_BOTTOM)
                 {
-                    if (closestSide == Side.TOP)
+                    if (closestSide == Side.TOP && !isDraggedBeforeClosest)
                     {
-                        insertChildBefore(draggedControl, closetControl);
+                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, true));
+                        insertChildBefore(draggedControl, closestControl);
                     }
-                    else if (closestSide == Side.BOTTOM)
+                    else if (closestSide == Side.BOTTOM && isDraggedBeforeClosest)
                     {
-                        insertChildAfter(draggedControl, closetControl);
+                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, false));
+                        insertChildAfter(draggedControl, closestControl);
                     }
                 }
                 else if (getDirection() == Direction.BOTTOM_TO_TOP)
                 {
-                    if (closestSide == Side.TOP)
+                    if (closestSide == Side.TOP && isDraggedBeforeClosest)
                     {
-                        insertChildAfter(draggedControl, closetControl);
+                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, false));
+                        insertChildAfter(draggedControl, closestControl);
                     }
-                    else if (closestSide == Side.BOTTOM)
+                    else if (closestSide == Side.BOTTOM && !isDraggedBeforeClosest)
                     {
-                        insertChildBefore(draggedControl, closetControl);
+                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, true));
+                        insertChildBefore(draggedControl, closestControl);
                     }
                 }
             }

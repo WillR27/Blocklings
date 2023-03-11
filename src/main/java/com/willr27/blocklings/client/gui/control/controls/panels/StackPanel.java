@@ -1,8 +1,12 @@
 package com.willr27.blocklings.client.gui.control.controls.panels;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
+import com.willr27.blocklings.client.gui.control.event.events.ReorderEvent;
 import com.willr27.blocklings.client.gui.properties.Direction;
+import com.willr27.blocklings.client.gui.properties.Side;
+import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -119,11 +123,9 @@ public class StackPanel extends Control
             if (getDirection().isHorizontal)
             {
                 availableWidth = Double.POSITIVE_INFINITY;
-                availableHeight -= child.getMarginHeight() + getPaddingHeight();
             }
             else
             {
-                availableWidth -= child.getMarginWidth() + getPaddingWidth();
                 availableHeight = Double.POSITIVE_INFINITY;
             }
 
@@ -211,6 +213,165 @@ public class StackPanel extends Control
             else if (getDirection() == Direction.BOTTOM_TO_TOP)
             {
                 nextControlY -= control.getMargin().right + getSpacing();
+            }
+        }
+    }
+
+    @Override
+    protected void onRenderUpdate(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+    {
+        if (getDraggedControl() != null && getDraggedControl().getParent() == this)
+        {
+            updateDraggedControl(getDraggedControl());
+        }
+    }
+
+    private void updateDraggedControl(@Nonnull BaseControl draggedControl)
+    {
+        double pixelMidX = draggedControl.getPixelMidX();
+        double pixelMidY = draggedControl.getPixelMidY();
+
+        double closestDistance = Double.POSITIVE_INFINITY;
+        BaseControl closestControl = null;
+        Side closestSide = null;
+
+        for (BaseControl control : getChildrenCopy())
+        {
+            if (control == draggedControl)
+            {
+                continue;
+            }
+
+            if (!control.isReorderable())
+            {
+                continue;
+            }
+
+            if (getDirection().isHorizontal)
+            {
+                double controlLeft = control.getPixelLeft();
+                double controlRight = control.getPixelRight();
+
+                if (pixelMidX >= controlLeft && pixelMidX <= controlRight)
+                {
+                    closestSide = pixelMidX < control.getPixelMidX() ? Side.LEFT : Side.RIGHT;
+                    closestControl = control;
+                    break;
+                }
+                else if (pixelMidX < controlLeft)
+                {
+                    double distance = controlLeft - pixelMidX;
+
+                    if (distance < closestDistance)
+                    {
+                        closestDistance = distance;
+                        closestSide = Side.LEFT;
+                        closestControl = control;
+                    }
+                }
+                else if (pixelMidX > controlRight)
+                {
+                    double distance = pixelMidX - controlRight;
+
+                    if (distance < closestDistance)
+                    {
+                        closestDistance = distance;
+                        closestSide = Side.RIGHT;
+                        closestControl = control;
+                    }
+                }
+            }
+            else if (getDirection().isVertical)
+            {
+                double controlTop = control.getPixelTop();
+                double controlBottom = control.getPixelBottom();
+
+                if (pixelMidY >= controlTop && pixelMidY <= controlBottom)
+                {
+                    closestSide = pixelMidY < control.getPixelMidY() ? Side.TOP : Side.BOTTOM;
+                    closestControl = control;
+                    break;
+                }
+                else if (pixelMidY < controlTop)
+                {
+                    double distance = controlTop - pixelMidY;
+
+                    if (distance < closestDistance)
+                    {
+                        closestDistance = distance;
+                        closestSide = Side.TOP;
+                        closestControl = control;
+                    }
+                }
+                else if (pixelMidY > controlBottom)
+                {
+                    double distance = pixelMidY - controlBottom;
+
+                    if (distance < closestDistance)
+                    {
+                        closestDistance = distance;
+                        closestSide = Side.BOTTOM;
+                        closestControl = control;
+                    }
+                }
+            }
+        }
+
+        if (closestControl != null)
+        {
+            boolean isDraggedBeforeClosest = getChildrenCopy().indexOf(draggedControl) < getChildrenCopy().indexOf(closestControl);
+
+            if (getDirection() == Direction.LEFT_TO_RIGHT)
+            {
+                if (closestSide == Side.LEFT && !isDraggedBeforeClosest)
+                {
+                    eventBus.post(this, new ReorderEvent(draggedControl, closestControl, true));
+                    insertChildBefore(draggedControl, closestControl);
+                }
+                else if (closestSide == Side.RIGHT && isDraggedBeforeClosest)
+                {
+                    eventBus.post(this, new ReorderEvent(draggedControl, closestControl, false));
+                    insertChildAfter(draggedControl, closestControl);
+                }
+            }
+            else if (getDirection() == Direction.RIGHT_TO_LEFT)
+            {
+                if (closestSide == Side.LEFT && isDraggedBeforeClosest)
+                {
+                    eventBus.post(this, new ReorderEvent(draggedControl, closestControl, false));
+                    insertChildAfter(draggedControl, closestControl);
+                }
+                else if (closestSide == Side.RIGHT && !isDraggedBeforeClosest)
+                {
+                    eventBus.post(this, new ReorderEvent(draggedControl, closestControl, true));
+                    insertChildBefore(draggedControl, closestControl);
+                }
+            }
+            else if (getDirection() == Direction.TOP_TO_BOTTOM)
+            {
+                if (closestSide == Side.TOP && !isDraggedBeforeClosest)
+                {
+                    eventBus.post(this, new ReorderEvent(draggedControl, closestControl, true));
+                    insertChildBefore(draggedControl, closestControl);
+                }
+                else if (closestSide == Side.BOTTOM && isDraggedBeforeClosest)
+                {
+                    eventBus.post(this, new ReorderEvent(draggedControl, closestControl, false));
+                    insertChildAfter(draggedControl, closestControl);
+                }
+            }
+            else if (getDirection() == Direction.BOTTOM_TO_TOP)
+            {
+                if (closestSide == Side.TOP && isDraggedBeforeClosest)
+                {
+                    eventBus.post(this, new ReorderEvent(draggedControl, closestControl, false));
+                    insertChildAfter(draggedControl, closestControl);
+                }
+                else if (closestSide == Side.BOTTOM && !isDraggedBeforeClosest)
+                {
+                    eventBus.post(this, new ReorderEvent(draggedControl, closestControl, true));
+                    insertChildBefore(draggedControl, closestControl);
+                }
             }
         }
     }

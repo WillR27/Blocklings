@@ -1,6 +1,7 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.*;
 import com.willr27.blocklings.client.gui.control.controls.panels.GridPanel;
@@ -8,6 +9,7 @@ import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
 import com.willr27.blocklings.client.gui.control.controls.stats.EnumeratingStatControl;
 import com.willr27.blocklings.client.gui.control.controls.stats.StatControl;
 import com.willr27.blocklings.client.gui.control.controls.stats.XpBarControl;
+import com.willr27.blocklings.client.gui.control.event.events.FocusChangedEvent;
 import com.willr27.blocklings.client.gui.properties.Direction;
 import com.willr27.blocklings.client.gui.properties.GridDefinition;
 import com.willr27.blocklings.client.gui.texture.Textures;
@@ -15,9 +17,11 @@ import com.willr27.blocklings.client.gui2.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.BlocklingHand;
 import com.willr27.blocklings.entity.blockling.attribute.BlocklingAttributes;
+import com.willr27.blocklings.item.BlocklingsItems;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
@@ -55,23 +59,23 @@ public class StatsScreen extends TabbedScreen
         mainGridPanel.addChild(textFieldControl, 0, 0);
         textFieldControl.setWidthPercentage(1.0);
         textFieldControl.setHeightPercentage(1.0);
-        textFieldControl.setText("Hello World!");
+        textFieldControl.setText(blockling.getCustomName().getString());
         textFieldControl.setHorizontalContentAlignment(0.5);
         textFieldControl.setMaxTextLength(25);
         textFieldControl.setShouldRenderBackground(false);
-//        textFieldControl.focusChanged.subscribe((e) ->
-//        {
-//            if (!textFieldControl.getText().trim().isEmpty())
-//            {
-//                blockling.setCustomName(new StringTextComponent(textFieldControl.getText()), true);
-//            }
-//            else
-//            {
-//                ITextComponent name = BlocklingsItems.BLOCKLING.get().getName(BlocklingsItems.BLOCKLING.get().getDefaultInstance());
-//                blockling.setCustomName(new StringTextComponent(name.getString()), true);
-//                textFieldControl.setText(name.getString());
-//            }
-//        });
+        textFieldControl.eventBus.subscribe((BaseControl control, FocusChangedEvent e) ->
+        {
+            if (!textFieldControl.getText().trim().isEmpty())
+            {
+                blockling.setCustomName(new StringTextComponent(textFieldControl.getText()), true);
+            }
+            else
+            {
+                ITextComponent name = BlocklingsItems.BLOCKLING.get().getName(BlocklingsItems.BLOCKLING.get().getDefaultInstance());
+                blockling.setCustomName(new StringTextComponent(name.getString()), true);
+                textFieldControl.setText(name.getString());
+            }
+        });
 
         GridPanel statsGridPanel = new GridPanel();
         mainGridPanel.addChild(statsGridPanel, 1, 0);

@@ -45,6 +45,12 @@ public class TabbedUIControl extends Control
     public final Control contentControl;
 
     /**
+     * The background control.
+     */
+    @Nonnull
+    public final TexturedControl backgroundControl;
+
+    /**
      * @param blockling the blockling.
      * @param selectedTab the selected tab.
      */
@@ -59,7 +65,7 @@ public class TabbedUIControl extends Control
         setHorizontalAlignment(0.5);
         setVerticalAlignment(0.5);
 
-        Control backgroundControl = new TexturedControl(selectedTab.backgroundTexture);
+        backgroundControl = new TexturedControl(selectedTab.backgroundTexture);
         backgroundControl.setParent(this);
         backgroundControl.setHorizontalAlignment(0.5);
 
@@ -101,7 +107,7 @@ public class TabbedUIControl extends Control
     }
 
     @Override
-    public void onMouseClicked(@Nonnull MouseClickedEvent e)
+    protected void onMouseClicked(@Nonnull MouseClickedEvent e)
     {
 
     }
@@ -160,6 +166,8 @@ public class TabbedUIControl extends Control
         @Override
         protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
         {
+            matrixStack.pushPose();
+
             if (isSelected())
             {
                 matrixStack.translate(0.0, 0.0, 5.0);
@@ -172,6 +180,8 @@ public class TabbedUIControl extends Control
                 renderTextureAsBackground(matrixStack, unselectedBackgroundTexture, tab.left ? 4 : 3, 0);
                 renderTextureAsBackground(matrixStack, tab.iconTexture, tab.left ? 7 : 3, 3);
             }
+
+            matrixStack.popPose();
         }
 
         @Override

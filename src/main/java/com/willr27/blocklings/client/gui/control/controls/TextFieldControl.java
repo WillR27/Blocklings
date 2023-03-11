@@ -91,7 +91,7 @@ public class TextFieldControl extends Control
     }
 
     @Override
-    public void onMouseClicked(@Nonnull MouseClickedEvent e)
+    protected void onMouseClicked(@Nonnull MouseClickedEvent e)
     {
         double textFieldMouseX = e.mouseX / getGuiScale();
         double textFieldMouseY = e.mouseY / getGuiScale();

@@ -103,6 +103,8 @@ public abstract class BaseControl extends GuiControl
 
     private boolean isInteractive = true;
 
+    private boolean isReorderable = true;
+
     private boolean isDraggableX = false;
 
     private boolean isDraggableY = false;
@@ -1555,6 +1557,21 @@ public abstract class BaseControl extends GuiControl
         return getDraggedControl() == this;
     }
 
+    public boolean isDraggingOrAncestor()
+    {
+        if (isDragging())
+        {
+            return true;
+        }
+
+        if (getParent() == null)
+        {
+            return false;
+        }
+
+        return getParent().isDraggingOrAncestor();
+    }
+
     public void setIsDragging(boolean isDragging)
     {
         if (isDragging)
@@ -1620,6 +1637,16 @@ public abstract class BaseControl extends GuiControl
     public void setInteractive(boolean isInteractive)
     {
         this.isInteractive = isInteractive;
+    }
+
+    public boolean isReorderable()
+    {
+        return isReorderable;
+    }
+
+    public void setReorderable(boolean reorderable)
+    {
+        isReorderable = reorderable;
     }
 
     public boolean shouldScissor()

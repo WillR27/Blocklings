@@ -79,7 +79,7 @@ public class XpBarControl extends Control
             @Override
             public void onTick()
             {
-                setWidth(backgroundTexture.width * getXpPercentage());
+                setWidth(getBackgroundTexture().width * getXpPercentage());
             }
         };
         xpBarForegroundControl.setParent(xpBarControl);

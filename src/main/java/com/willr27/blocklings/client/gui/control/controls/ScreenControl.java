@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
+import com.willr27.blocklings.client.gui.control.event.events.FocusChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.TryDragEvent;
 import com.willr27.blocklings.client.gui.control.event.events.TryHoverEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.*;
@@ -328,6 +329,9 @@ public class ScreenControl extends Control
 
     public void setFocusedControl(@Nullable BaseControl control)
     {
+        boolean previousFocus = focusedControl == control;
+        BaseControl previousFocusedControl = focusedControl;
+
         if (focusedControl != control)
         {
             if (focusedControl != null)
@@ -342,6 +346,15 @@ public class ScreenControl extends Control
         }
 
         focusedControl = control;
+
+        if (previousFocusedControl != null)
+        {
+            previousFocusedControl.eventBus.post(previousFocusedControl, new FocusChangedEvent(previousFocus));
+        }
+        else if (focusedControl != null)
+        {
+            focusedControl.eventBus.post(focusedControl, new FocusChangedEvent(previousFocus));
+        }
     }
 
     @Override

@@ -110,6 +110,8 @@ public abstract class GuiControl extends AbstractGui
      * @param matrixStack the matrix stack.
      * @param mouseX the mouse x position.
      * @param mouseY the mouse y position.
+     * @param pixelScaleX the x pixel scale.
+     * @param pixelScaleY the y pixel scale.
      * @param tooltip the tooltip to render.
      */
     public void renderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, double pixelScaleX, double pixelScaleY, @Nonnull ITextComponent tooltip)
@@ -125,6 +127,8 @@ public abstract class GuiControl extends AbstractGui
      * @param matrixStack the matrix stack.
      * @param mouseX the mouse x position.
      * @param mouseY the mouse y position.
+     * @param pixelScaleX the x pixel scale.
+     * @param pixelScaleY the y pixel scale.
      * @param tooltip the tooltip to render.
      */
     public void renderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, double pixelScaleX, double pixelScaleY, @Nonnull List<IReorderingProcessor> tooltip)

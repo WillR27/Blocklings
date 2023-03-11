@@ -9,6 +9,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A control for all tabbed blockling controls.
@@ -16,18 +17,35 @@ import javax.annotation.Nonnull;
 @OnlyIn(Dist.CLIENT)
 public class TexturedControl extends Control
 {
+    /**
+     * The background texture.
+     */
     @Nonnull
-    public final Texture backgroundTexture;
+    private Texture backgroundTexture;
 
     /**
+     * The pressed background texture.
+     */
+    @Nullable
+    private Texture pressedBackgroundTexture;
+
+    /**
+     * @param backgroundTexture the background texture.
      */
     public TexturedControl(@Nonnull Texture backgroundTexture)
     {
-        super();
-        this.backgroundTexture = backgroundTexture;
+        this(backgroundTexture, null);
+    }
 
-        setWidth(backgroundTexture.width);
-        setHeight(backgroundTexture.height);
+    /**
+     * @param backgroundTexture the background texture.
+     */
+    public TexturedControl(@Nonnull Texture backgroundTexture, @Nullable Texture pressedBackgroundTexture)
+    {
+        super();
+
+        setBackgroundTexture(backgroundTexture, true);
+        setPressedBackgroundTexture(pressedBackgroundTexture, false);
     }
 
     @Override
@@ -35,6 +53,59 @@ public class TexturedControl extends Control
     {
         super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
 
-        renderTextureAsBackground(matrixStack, backgroundTexture);
+        if (isPressed() && getPressedBackgroundTexture() != null)
+        {
+            renderTextureAsBackground(matrixStack, pressedBackgroundTexture);
+        }
+        else
+        {
+            renderTextureAsBackground(matrixStack, backgroundTexture);
+        }
+    }
+
+    /**
+     * @return the background texture.
+     */
+    @Nonnull
+    public Texture getBackgroundTexture()
+    {
+        return backgroundTexture;
+    }
+
+    /**
+     * Sets the background texture.
+     */
+    public void setBackgroundTexture(@Nonnull Texture backgroundTexture, boolean updateSize)
+    {
+        this.backgroundTexture = backgroundTexture;
+
+        if (updateSize)
+        {
+            setWidth(backgroundTexture.width);
+            setHeight(backgroundTexture.height);
+        }
+    }
+
+    /**
+     * @return the pressed background texture.
+     */
+    @Nullable
+    public Texture getPressedBackgroundTexture()
+    {
+        return pressedBackgroundTexture;
+    }
+
+    /**
+     * Sets the pressed background texture.
+     */
+    public void setPressedBackgroundTexture(@Nullable Texture pressedBackgroundTexture, boolean updateSize)
+    {
+        this.pressedBackgroundTexture = pressedBackgroundTexture;
+
+        if (updateSize)
+        {
+            setWidth(pressedBackgroundTexture.width);
+            setHeight(pressedBackgroundTexture.height);
+        }
     }
 }
