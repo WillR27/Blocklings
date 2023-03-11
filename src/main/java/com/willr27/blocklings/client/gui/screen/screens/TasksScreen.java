@@ -6,15 +6,21 @@ import com.willr27.blocklings.client.gui.control.controls.TabbedUIControl;
 import com.willr27.blocklings.client.gui.control.controls.TextFieldControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.GridPanel;
 import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
+import com.willr27.blocklings.client.gui.control.controls.panels.TabbedPanel;
 import com.willr27.blocklings.client.gui.control.controls.tasks.TaskControl;
+import com.willr27.blocklings.client.gui.control.event.events.FocusChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.ReorderEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.KeyPressedEvent;
 import com.willr27.blocklings.client.gui.properties.Direction;
 import com.willr27.blocklings.client.gui.properties.GridDefinition;
+import com.willr27.blocklings.client.gui.properties.Visibility;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.task.Task;
+import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 
@@ -35,6 +41,18 @@ public class TasksScreen extends TabbedScreen
      */
     @Nonnull
     private final Control configContainer;
+
+    /**
+     * The task's name.
+     */
+    @Nonnull
+    private final TextFieldControl configNameField;
+
+    /**
+     * The tabbed panel containing the task config's tabs.
+     */
+    @Nonnull
+    private final TabbedPanel configTabbedPanel;
 
     /**
      * @param blockling the blockling associated with the screen.
@@ -111,15 +129,15 @@ public class TasksScreen extends TabbedScreen
         scrollBar.setBackgroundColour(0xff00ff00);
 
         configContainer = new Control();
+        configContainer.setParent(tabbedUIControl.contentControl);
         configContainer.setWidthPercentage(2.0);
         configContainer.setHeightPercentage(1.0);
 
-        TextFieldControl configNameField = new TextFieldControl();
+        configNameField = new TextFieldControl();
         configContainer.addChild(configNameField);
         configNameField.setWidthPercentage(1.0);
         configNameField.setHeight(20.0);
         configNameField.setShouldRenderBackground(false);
-        configNameField.setText("asdasd");
 
         GridPanel configGrid = new GridPanel();
         configGrid.setParent(configContainer);
@@ -131,11 +149,8 @@ public class TasksScreen extends TabbedScreen
         configGrid.addColumnDefinition(GridDefinition.FIXED, 5.0);
         configGrid.addColumnDefinition(GridDefinition.FIXED, 12.0);
 
-        Control tabbedControl = new Control();
-        configGrid.addChild(tabbedControl, 0, 0);
-        tabbedControl.setWidthPercentage(1.0);
-        tabbedControl.setHeightPercentage(1.0);
-        tabbedControl.setBackgroundColour(0xff0000ff);
+        configTabbedPanel = new TabbedPanel();
+        configGrid.addChild(configTabbedPanel, 0, 0);
 
         Control scrollBar2 = new Control();
         configGrid.addChild(scrollBar2, 0, 2);
@@ -143,6 +158,42 @@ public class TasksScreen extends TabbedScreen
         scrollBar2.setHeightPercentage(1.0);
         scrollBar2.setMargins(0.0, 1.0, 0.0, 1.0);
         scrollBar2.setBackgroundColour(0xff00ff00);
+
+        screenControl.eventBus.subscribe((BaseControl control, KeyPressedEvent e) ->
+        {
+            if (configContainer.getVisibility() == Visibility.VISIBLE && e.keyCode == GLFW.GLFW_KEY_ESCAPE)
+            {
+                closeConfig();
+                e.setIsHandled(true);
+            }
+        });
+
+        closeConfig();
+    }
+
+    private void initConfigTabs(@Nonnull Task task)
+    {
+        configTabbedPanel.clearTabs();
+
+        BaseControl control = configTabbedPanel.addTab(new BlocklingsTranslationTextComponent("task.ui.tab.misc"));
+
+        Control control1 = new Control();
+        control1.setParent(control);
+        control1.setWidth(40.0);
+        control1.setHeight(40.0);
+        control1.setHorizontalAlignment(0.5);
+        control1.setVerticalAlignment(0.5);
+        control1.setBackgroundColour(control.randomColour());
+
+        BaseControl control2 = configTabbedPanel.addTab(new BlocklingsTranslationTextComponent("task.ui.tab.requirements"));
+
+        Control control3 = new Control();
+        control3.setParent(control2);
+        control3.setWidth(40.0);
+        control3.setHeight(40.0);
+        control3.setHorizontalAlignment(1.0);
+        control3.setVerticalAlignment(1.0);
+        control3.setBackgroundColour(control2.randomColour());
     }
 
     /**
@@ -151,8 +202,20 @@ public class TasksScreen extends TabbedScreen
     public void openConfig(@Nonnull Task task)
     {
         tabbedUIControl.backgroundControl.setBackgroundTexture(Textures.Tasks.CONFIG_BACKGROUND, true);
-        tabbedUIControl.contentControl.clearChildren();
-        tabbedUIControl.contentControl.addChild(configContainer);
+        tasksGrid.setVisibility(Visibility.COLLAPSED);
+        configContainer.setVisibility(Visibility.VISIBLE);
+
+        configNameField.setText(task.getCustomName());
+        configNameField.eventBus.subscribe((BaseControl control, FocusChangedEvent e) ->
+        {
+            if (!configNameField.isFocused() && task != null)
+            {
+                task.setCustomName(configNameField.getText().trim());
+                configNameField.setText(task.getCustomName());
+            }
+        });
+
+        initConfigTabs(task);
     }
 
     /**
@@ -161,7 +224,7 @@ public class TasksScreen extends TabbedScreen
     public void closeConfig()
     {
         tabbedUIControl.backgroundControl.setBackgroundTexture(Textures.Tasks.BACKGROUND, true);
-        tabbedUIControl.contentControl.clearChildren();
-        tabbedUIControl.contentControl.addChild(tasksGrid);
+        tasksGrid.setVisibility(Visibility.VISIBLE);
+        configContainer.setVisibility(Visibility.COLLAPSED);
     }
 }

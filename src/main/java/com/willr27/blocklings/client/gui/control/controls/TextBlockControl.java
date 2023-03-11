@@ -53,6 +53,17 @@ public class TextBlockControl extends Control
      */
     private float textScreenY = 0;
 
+    /**
+     */
+    public TextBlockControl()
+    {
+        super();
+
+        setInteractive(false);
+        setWidthPercentage(1.0);
+        setShouldFitHeightToContent(true);
+    }
+
     @Override
     protected void measureSelf(double availableWidth, double availableHeight)
     {
@@ -88,8 +99,13 @@ public class TextBlockControl extends Control
     {
         super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
 
-        textScreenX = (float) (getPixelX() / getGuiScale());
-        textScreenY = (float) (getPixelY() / getGuiScale());
+        double screenWidth = getPixelWidthWithoutPadding() / getGuiScale();
+        double screenHeight = getPixelHeightWithoutPadding() / getGuiScale();
+        double horizontalAlignment = getHorizontalContentAlignment() != null ? getHorizontalContentAlignment() : 0.0;
+        double verticalAlignment = getVerticalContentAlignment() != null ? getVerticalContentAlignment() : 0.0;
+
+        textScreenX = (float) (getPixelX() / getGuiScale() + (screenWidth - font.width(getTextToRender())) * horizontalAlignment);
+        textScreenY = (float) (getPixelY() / getGuiScale() + (screenHeight - font.lineHeight) * verticalAlignment);
 
         float x = getGuiScale() == 1.0f ? Math.round(textScreenX) : textScreenX;
         float y = getGuiScale() == 1.0f ? Math.round(textScreenY) : textScreenY;

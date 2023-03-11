@@ -2,15 +2,13 @@ package com.willr27.blocklings.client.gui.control;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.willr27.blocklings.client.gui.control.controls.ScreenControl;
 import com.willr27.blocklings.client.gui.control.event.events.TryDragEvent;
 import com.willr27.blocklings.client.gui.control.event.events.TryHoverEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.*;
+import com.willr27.blocklings.client.gui.properties.Visibility;
 import com.willr27.blocklings.client.gui.texture.Texture;
 import com.willr27.blocklings.client.gui.util.ScissorBounds;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
-import com.willr27.blocklings.client.gui2.GuiTexture;
-import com.willr27.blocklings.client.gui2.GuiTextures;
 import com.willr27.blocklings.client.gui2.GuiUtil;
 import com.willr27.blocklings.client.gui3.control.Side;
 import com.willr27.blocklings.util.DoubleUtil;
@@ -263,6 +261,11 @@ public class Control extends BaseControl
     @Override
     public void forwardRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
     {
+        if (getVisibility() != Visibility.VISIBLE)
+        {
+            return;
+        }
+
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.defaultAlphaFunc();
@@ -396,6 +399,11 @@ public class Control extends BaseControl
             return;
         }
 
+        if (getVisibility() == Visibility.COLLAPSED)
+        {
+            return;
+        }
+
         if (!contains(e.mouseX, e.mouseY))
         {
             return;
@@ -456,6 +464,11 @@ setBackgroundColour(0x00000000);
     public void forwardTryDrag(@Nonnull TryDragEvent e)
     {
         if (!isInteractive())
+        {
+            return;
+        }
+
+        if (getVisibility() == Visibility.COLLAPSED)
         {
             return;
         }
@@ -651,6 +664,11 @@ setBackgroundColour(0x00000000);
             return;
         }
 
+        if (getVisibility() == Visibility.COLLAPSED)
+        {
+            return;
+        }
+
         for (BaseControl child : getReverseChildrenCopy())
         {
             if (child.contains(e.mouseX, e.mouseY))
@@ -718,6 +736,11 @@ setBackgroundColour(0x00000000);
             return;
         }
 
+        if (getVisibility() == Visibility.COLLAPSED)
+        {
+            return;
+        }
+
         for (BaseControl child : getReverseChildrenCopy())
         {
             if (child.contains(e.mouseX, e.mouseY))
@@ -775,6 +798,11 @@ setBackgroundColour(0x00000000);
     public void forwardMouseScrolled(@Nonnull MouseScrolledEvent e)
     {
         if (!isInteractive())
+        {
+            return;
+        }
+
+        if (getVisibility() == Visibility.COLLAPSED)
         {
             return;
         }
@@ -852,6 +880,30 @@ setBackgroundColour(0x00000000);
     }
 
     @Override
+    public void forwardKeyPressed(@Nonnull KeyPressedEvent e)
+    {
+        if (e.isHandled())
+        {
+            return;
+        }
+
+        if (isInteractive() && getVisibility() != Visibility.COLLAPSED)
+        {
+            eventBus.post(this, e);
+
+            if (!e.isHandled())
+            {
+                onKeyPressed(e);
+            }
+        }
+
+        if (getParent() != null)
+        {
+            getParent().forwardKeyPressed(e);
+        }
+    }
+
+    @Override
     public void onKeyPressed(@Nonnull KeyPressedEvent e)
     {
 
@@ -881,6 +933,30 @@ setBackgroundColour(0x00000000);
     }
 
     @Override
+    public void forwardKeyReleased(@Nonnull KeyReleasedEvent e)
+    {
+        if (e.isHandled())
+        {
+            return;
+        }
+
+        if (isInteractive() && getVisibility() != Visibility.COLLAPSED)
+        {
+            eventBus.post(this, e);
+
+            if (!e.isHandled())
+            {
+                onKeyReleased(e);
+            }
+        }
+
+        if (getParent() != null)
+        {
+            getParent().forwardKeyReleased(e);
+        }
+    }
+
+    @Override
     public void onKeyReleased(@Nonnull KeyReleasedEvent e)
     {
 
@@ -907,6 +983,30 @@ setBackgroundColour(0x00000000);
     protected void onGlobalCharTyped(@Nonnull CharTypedEvent e)
     {
 
+    }
+
+    @Override
+    public void forwardCharTyped(@Nonnull CharTypedEvent e)
+    {
+        if (e.isHandled())
+        {
+            return;
+        }
+
+        if (isInteractive() && getVisibility() != Visibility.COLLAPSED)
+        {
+            eventBus.post(this, e);
+
+            if (!e.isHandled())
+            {
+                onCharTyped(e);
+            }
+        }
+
+        if (getParent() != null)
+        {
+            getParent().forwardCharTyped(e);
+        }
     }
 
     @Override
@@ -964,6 +1064,17 @@ setBackgroundColour(0x00000000);
     @Override
     protected void onChildAlignmentChanged(@Nonnull BaseControl child)
     {
+        markArrangeDirty(true);
+    }
+
+    @Override
+    protected void onChildVisiblityChanged(@Nonnull BaseControl child)
+    {
+        if (shouldFitToContent())
+        {
+            markMeasureDirty(true);
+        }
+
         markArrangeDirty(true);
     }
 

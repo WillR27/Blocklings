@@ -8,6 +8,7 @@ import com.willr27.blocklings.client.gui.control.event.events.FocusChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.TryDragEvent;
 import com.willr27.blocklings.client.gui.control.event.events.TryHoverEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.*;
+import com.willr27.blocklings.client.gui.properties.Visibility;
 import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.client.gui3.RenderArgs;
@@ -21,6 +22,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Used as the root control for a {@link BlocklingsScreen} and {@link BlocklingsContainerScreen}.
@@ -59,9 +61,9 @@ public class ScreenControl extends Control
         measureList.removeIf(control -> control.getScreen() != this);
         arrangeList.removeIf(control -> control.getScreen() != this);
 
-        while (!measureList.isEmpty() || !arrangeList.isEmpty())
+        while (!measureList.stream().filter(control -> control.getVisibility() != Visibility.COLLAPSED).collect(Collectors.toList()).isEmpty() || !arrangeList.stream().filter(control -> control.getVisibility() != Visibility.COLLAPSED).collect(Collectors.toList()).isEmpty())
         {
-            while (!measureList.isEmpty())
+            while (!measureList.stream().filter(control -> control.getVisibility() != Visibility.COLLAPSED).collect(Collectors.toList()).isEmpty())
             {
                 int minDepth = Integer.MAX_VALUE;
                 BaseControl minDepthControl = null;
@@ -85,7 +87,7 @@ public class ScreenControl extends Control
                 }
             }
 
-            while (!arrangeList.isEmpty())
+            while (!arrangeList.stream().filter(control -> control.getVisibility() != Visibility.COLLAPSED).collect(Collectors.toList()).isEmpty())
             {
                 int minDepth = Integer.MAX_VALUE;
                 BaseControl minDepthControl = null;
@@ -231,7 +233,7 @@ public class ScreenControl extends Control
 
         if (!e.isHandled() && getFocusedControl() != null)
         {
-            getFocusedControl().onKeyPressed(e);
+            getFocusedControl().forwardKeyPressed(e);
         }
     }
 
@@ -242,7 +244,7 @@ public class ScreenControl extends Control
 
         if (!e.isHandled() && getFocusedControl() != null)
         {
-            getFocusedControl().onKeyReleased(e);
+            getFocusedControl().forwardKeyReleased(e);
         }
     }
 
@@ -253,7 +255,7 @@ public class ScreenControl extends Control
 
         if (!e.isHandled() && getFocusedControl() != null)
         {
-            getFocusedControl().onCharTyped(e);
+            getFocusedControl().forwardCharTyped(e);
         }
     }
 

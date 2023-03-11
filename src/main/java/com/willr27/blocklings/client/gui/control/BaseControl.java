@@ -3,16 +3,11 @@ package com.willr27.blocklings.client.gui.control;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.event.events.PositionChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.SizeChangedEvent;
-import com.willr27.blocklings.client.gui.properties.Offset;
-import com.willr27.blocklings.client.gui.properties.Position;
-import com.willr27.blocklings.client.gui.properties.Scale;
-import com.willr27.blocklings.client.gui.properties.Size;
+import com.willr27.blocklings.client.gui.properties.*;
 import com.willr27.blocklings.client.gui.control.controls.ScreenControl;
 import com.willr27.blocklings.client.gui.control.event.events.TryDragEvent;
 import com.willr27.blocklings.client.gui.control.event.events.TryHoverEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.*;
-import com.willr27.blocklings.client.gui.properties.Margin;
-import com.willr27.blocklings.client.gui.properties.Padding;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.client.gui3.util.GuiUtil;
 import com.willr27.blocklings.util.DoubleUtil;
@@ -101,6 +96,9 @@ public abstract class BaseControl extends GuiControl
 
     private boolean canScrollVertically = false;
 
+    @Nonnull
+    private Visibility visibility = Visibility.VISIBLE;
+
     private boolean isInteractive = true;
 
     private boolean isReorderable = true;
@@ -186,21 +184,25 @@ public abstract class BaseControl extends GuiControl
 
     abstract public void forwardGlobalKeyPressed(@Nonnull KeyPressedEvent e);
     abstract protected void onGlobalKeyPressed(@Nonnull KeyPressedEvent e);
-    abstract public void onKeyPressed(@Nonnull KeyPressedEvent e);
+    abstract public void forwardKeyPressed(@Nonnull KeyPressedEvent e);
+    abstract protected void onKeyPressed(@Nonnull KeyPressedEvent e);
 
     abstract public void forwardGlobalKeyReleased(@Nonnull KeyReleasedEvent e);
     abstract protected void onGlobalKeyReleased(@Nonnull KeyReleasedEvent e);
-    abstract public void onKeyReleased(@Nonnull KeyReleasedEvent e);
+    abstract public void forwardKeyReleased(@Nonnull KeyReleasedEvent e);
+    abstract protected void onKeyReleased(@Nonnull KeyReleasedEvent e);
 
     abstract public void forwardGlobalCharTyped(@Nonnull CharTypedEvent e);
     abstract protected void onGlobalCharTyped(@Nonnull CharTypedEvent e);
-    abstract public void onCharTyped(@Nonnull CharTypedEvent e);
+    abstract public void forwardCharTyped(@Nonnull CharTypedEvent e);
+    abstract protected void onCharTyped(@Nonnull CharTypedEvent e);
 
     abstract protected void onChildDesiredSizeChanged(@Nonnull BaseControl child);
     abstract protected void onChildSizeChanged(@Nonnull BaseControl child);
     abstract protected void onChildMarginChanged(@Nonnull BaseControl child);
     abstract protected void onChildPositionSizeChanged(@Nonnull BaseControl child);
     abstract protected void onChildAlignmentChanged(@Nonnull BaseControl child);
+    abstract protected void onChildVisiblityChanged(@Nonnull BaseControl child);
 
     abstract public boolean contains(double pixelX, double pixelY);
 
@@ -318,20 +320,6 @@ public abstract class BaseControl extends GuiControl
         markArrangeDirty(true);
     }
 
-    public void removeChild(@Nonnull BaseControl child)
-    {
-        if (!getChildren().contains(child))
-        {
-            return;
-        }
-
-        children.remove(child);
-        child.parent = null;
-
-        markMeasureDirty(true);
-        markArrangeDirty(true);
-    }
-
     public void insertChildBefore(@Nonnull BaseControl controlToInsert, @Nonnull BaseControl controlToInsertBefore)
     {
         int index = children.indexOf(controlToInsert);
@@ -403,6 +391,20 @@ public abstract class BaseControl extends GuiControl
 
         children.add(afterIndex + 1, controlToInsert);
         controlToInsert.parent = this;
+
+        markMeasureDirty(true);
+        markArrangeDirty(true);
+    }
+
+    public void removeChild(@Nonnull BaseControl child)
+    {
+        if (!getChildren().contains(child))
+        {
+            return;
+        }
+
+        children.remove(child);
+        child.parent = null;
 
         markMeasureDirty(true);
         markArrangeDirty(true);
@@ -853,6 +855,26 @@ public abstract class BaseControl extends GuiControl
         setMargins(margin.left, margin.top, margin.right, margin.bottom);
     }
 
+    public void setMarginLeft(double left)
+    {
+        setMargins(left, margin.top, margin.right, margin.bottom);
+    }
+
+    public void setMarginTop(double top)
+    {
+        setMargins(margin.left, top, margin.right, margin.bottom);
+    }
+
+    public void setMarginRight(double right)
+    {
+        setMargins(margin.left, margin.top, right, margin.bottom);
+    }
+
+    public void setMarginBottom(double bottom)
+    {
+        setMargins(margin.left, margin.top, margin.right, bottom);
+    }
+
     @Nonnull
     public Padding getPadding()
     {
@@ -919,6 +941,26 @@ public abstract class BaseControl extends GuiControl
     public void setPadding(@Nonnull Padding padding)
     {
         setPadding(padding.left, padding.top, padding.right, padding.bottom);
+    }
+
+    public void setPaddingLeft(double padding)
+    {
+        setPadding(padding, getPadding().top, getPadding().right, getPadding().bottom);
+    }
+
+    public void setPaddingTop(double padding)
+    {
+        setPadding(getPadding().left, padding, getPadding().right, getPadding().bottom);
+    }
+
+    public void setPaddingRight(double padding)
+    {
+        setPadding(getPadding().left, getPadding().top, padding, getPadding().bottom);
+    }
+
+    public void setPaddingBottom(double padding)
+    {
+        setPadding(getPadding().left, getPadding().top, getPadding().right, padding);
     }
 
     @Nonnull
@@ -1627,6 +1669,27 @@ public abstract class BaseControl extends GuiControl
     public void setShouldBlockDrag(boolean shouldBlockDrag)
     {
         this.shouldBlockDrag = shouldBlockDrag;
+    }
+
+    @Nonnull
+    public Visibility getVisibility()
+    {
+        return visibility;
+    }
+
+    public void setVisibility(@Nonnull Visibility visibility)
+    {
+        if (this.visibility == visibility)
+        {
+            return;
+        }
+
+        this.visibility = visibility;
+
+        if (getParent() != null)
+        {
+            onChildVisiblityChanged(this);
+        }
     }
 
     public boolean isInteractive()
