@@ -6,6 +6,7 @@ import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.TextBlockControl;
 import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.GridPanel;
+import com.willr27.blocklings.client.gui.control.event.events.TryHoverEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseClickedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
 import com.willr27.blocklings.client.gui.properties.GridDefinition;
@@ -51,7 +52,7 @@ public class TaskControl extends Control
         this.task = task;
 
         setWidthPercentage(1.0);
-        setShouldFitHeightToContent(true);
+        setFitHeightToContent(true);
         setDraggableY(task != null);
         setReorderable(task != null);
 
@@ -65,11 +66,12 @@ public class TaskControl extends Control
         };
         gridControl.setParent(this);
         gridControl.setWidthPercentage(1.0);
-        gridControl.setShouldFitHeightToContent(true);
+        gridControl.setFitHeightToContent(true);
         gridControl.addRowDefinition(GridDefinition.RATIO, 1.0);
         gridControl.addColumnDefinition(GridDefinition.AUTO, 1.0);
         gridControl.addColumnDefinition(GridDefinition.RATIO, 1.0);
         gridControl.addColumnDefinition(GridDefinition.AUTO, 1.0);
+        gridControl.setHoverable(false);
 
         Control iconBackgroundControl = task != null ? new TexturedControl(Textures.Tasks.TASK_ICON_BACKGROUND_RAISED, Textures.Tasks.TASK_ICON_BACKGROUND_PRESSED) : new TexturedControl(Textures.Tasks.TASK_ADD_ICON_BACKGROUND);
         gridControl.addChild(iconBackgroundControl, 0, 0);
@@ -153,6 +155,7 @@ public class TaskControl extends Control
         taskNameBackgroundGrid.addColumnDefinition(GridDefinition.FIXED, 16.0);
         taskNameBackgroundGrid.setWidthPercentage(1.0);
         taskNameBackgroundGrid.setHeight(Textures.Tasks.TASK_NAME_BACKGROUND.height);
+        taskNameBackgroundGrid.setHoverable(false);
 
         Control stateIconControl = new TexturedControl(Textures.Common.NODE_UNPRESSED, Textures.Common.NODE_PRESSED)
         {
@@ -248,8 +251,9 @@ public class TaskControl extends Control
         };
         taskNameBackgroundGrid.addChild(taskNameControl, 0, 1);
         taskNameControl.setWidthPercentage(1.0);
-        taskNameControl.setShouldFitHeightToContent(true);
+        taskNameControl.setFitHeightToContent(true);
         taskNameControl.setVerticalAlignment(0.5);
+        taskNameControl.setInteractive(false);
         taskNameControl.onTick();
 
         Control addRemoveControl = new TexturedControl(task == null ? Textures.Tasks.TASK_ADD_ICON : Textures.Tasks.TASK_REMOVE_ICON)

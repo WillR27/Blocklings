@@ -55,6 +55,11 @@ public class Control extends BaseControl
 
             for (BaseControl childControl : getChildren())
             {
+                if (childControl.getVisibility() == Visibility.COLLAPSED)
+                {
+                    continue;
+                }
+
                 if (childControl.getWidthPercentage() != null)
                 {
                     continue;
@@ -81,6 +86,11 @@ public class Control extends BaseControl
 
             for (BaseControl childControl : getChildren())
             {
+                if (childControl.getVisibility() == Visibility.COLLAPSED)
+                {
+                    continue;
+                }
+
                 if (childControl.getHeightPercentage() != null)
                 {
                     continue;
@@ -106,6 +116,11 @@ public class Control extends BaseControl
     {
         for (BaseControl child : getChildrenCopy())
         {
+            if (child.getVisibility() == Visibility.COLLAPSED)
+            {
+                continue;
+            }
+
             double availableWidth = ((getDesiredWidth() - getPaddingWidth()) / getInnerScale().x) - child.getMarginWidth();
             double availableHeight = ((getDesiredHeight() - getPaddingHeight()) / getInnerScale().y) - child.getMarginHeight();
 
@@ -143,6 +158,11 @@ public class Control extends BaseControl
     {
         for (BaseControl control : getChildrenCopy())
         {
+            if (control.getVisibility() == Visibility.COLLAPSED)
+            {
+                continue;
+            }
+
             control.setWidth(control.getDesiredWidth());
             control.setHeight(control.getDesiredHeight());
 
@@ -417,7 +437,7 @@ public class Control extends BaseControl
             }
         }
 
-        if (!e.isHandled() && getParent() != null)
+        if (isHoverable() && !e.isHandled() && getParent() != null)
         {
             setIsHovered(true);
             e.setIsHandled(true);

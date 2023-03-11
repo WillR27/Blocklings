@@ -1,9 +1,12 @@
 package com.willr27.blocklings.client.gui.control.controls;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
+import com.willr27.blocklings.client.gui.properties.Visibility;
 import com.willr27.blocklings.client.gui.texture.Texture;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
+import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -44,8 +47,82 @@ public class TexturedControl extends Control
     {
         super();
 
-        setBackgroundTexture(backgroundTexture, true);
-        setPressedBackgroundTexture(pressedBackgroundTexture, false);
+        setFitWidthToContent(true);
+        setFitHeightToContent(true);
+        setBackgroundTexture(backgroundTexture);
+        setPressedBackgroundTexture(pressedBackgroundTexture);
+    }
+
+    @Override
+    protected void measureSelf(double availableWidth, double availableHeight)
+    {
+        double width = getWidth();
+        double height = getHeight();
+
+        if (getWidthPercentage() != null && DoubleUtil.isPositiveAndFinite(availableWidth))
+        {
+            width = availableWidth * getWidthPercentage();
+        }
+        else if (shouldFitWidthToContent())
+        {
+            double maxX = isPressed() && getPressedBackgroundTexture() != null ? getPressedBackgroundTexture().width : getBackgroundTexture().width;
+
+            for (BaseControl childControl : getChildren())
+            {
+                if (childControl.getVisibility() == Visibility.COLLAPSED)
+                {
+                    continue;
+                }
+
+                if (childControl.getWidthPercentage() != null)
+                {
+                    continue;
+                }
+
+                double childX = (childControl.getX() + childControl.getWidth() + childControl.getMargin().right) * getInnerScale().x;
+
+                if (childX > maxX)
+                {
+                    maxX = childX;
+                }
+            }
+
+            width = maxX != Double.NEGATIVE_INFINITY ? maxX + getPaddingWidth() : 0.0;
+        }
+
+        if (getHeightPercentage() != null && DoubleUtil.isPositiveAndFinite(availableHeight))
+        {
+            height = availableHeight * getHeightPercentage();
+        }
+        else if (shouldFitHeightToContent())
+        {
+            double maxY = isPressed() && getPressedBackgroundTexture() != null ? getPressedBackgroundTexture().height : getBackgroundTexture().height;
+
+            for (BaseControl childControl : getChildren())
+            {
+                if (childControl.getVisibility() == Visibility.COLLAPSED)
+                {
+                    continue;
+                }
+
+                if (childControl.getHeightPercentage() != null)
+                {
+                    continue;
+                }
+
+                double childY = (childControl.getY() + childControl.getHeight() + childControl.getMargin().bottom) * getInnerScale().y;
+
+                if (childY > maxY)
+                {
+                    maxY = childY;
+                }
+            }
+
+            height = maxY != Double.NEGATIVE_INFINITY ? maxY + getPaddingHeight() : 0.0;
+        }
+
+        setDesiredWidth(width);
+        setDesiredHeight(height);
     }
 
     @Override
@@ -75,14 +152,13 @@ public class TexturedControl extends Control
     /**
      * Sets the background texture.
      */
-    public void setBackgroundTexture(@Nonnull Texture backgroundTexture, boolean updateSize)
+    public void setBackgroundTexture(@Nonnull Texture backgroundTexture)
     {
         this.backgroundTexture = backgroundTexture;
 
-        if (updateSize)
+        if (shouldFitToContent())
         {
-            setWidth(backgroundTexture.width);
-            setHeight(backgroundTexture.height);
+            markMeasureDirty(true);
         }
     }
 
@@ -98,14 +174,13 @@ public class TexturedControl extends Control
     /**
      * Sets the pressed background texture.
      */
-    public void setPressedBackgroundTexture(@Nullable Texture pressedBackgroundTexture, boolean updateSize)
+    public void setPressedBackgroundTexture(@Nullable Texture pressedBackgroundTexture)
     {
         this.pressedBackgroundTexture = pressedBackgroundTexture;
 
-        if (updateSize)
+        if (shouldFitToContent())
         {
-            setWidth(pressedBackgroundTexture.width);
-            setHeight(pressedBackgroundTexture.height);
+            markMeasureDirty(true);
         }
     }
 }

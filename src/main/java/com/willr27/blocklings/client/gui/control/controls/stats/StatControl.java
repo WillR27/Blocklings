@@ -63,22 +63,22 @@ public class StatControl extends Control
         this.tooltipSupplier = tooltipSupplier;
         this.renderValueToLeftOfIcon = renderValueToLeftOfIcon;
 
-        setShouldFitHeightToContent(true);
-        setShouldFitWidthToContent(true);
+        setFitHeightToContent(true);
+        setFitWidthToContent(true);
         setInteractive(false);
 
         StackPanel stackPanel = new StackPanel();
         stackPanel.setParent(this);
         stackPanel.setSpacing(6.0);
-        stackPanel.setShouldFitWidthToContent(true);
-        stackPanel.setShouldFitHeightToContent(true);
+        stackPanel.setFitWidthToContent(true);
+        stackPanel.setFitHeightToContent(true);
         stackPanel.setDirection(Direction.LEFT_TO_RIGHT);
 
         iconControl = new TexturedControl(iconTexture);
         valueControl = new TextBlockControl();
         valueControl.setMargins(0, 1, 0, 0);
-        valueControl.setShouldFitWidthToContent(true);
-        valueControl.setShouldFitHeightToContent(true);
+        valueControl.setFitWidthToContent(true);
+        valueControl.setFitHeightToContent(true);
         valueControl.setTextColour(0xffffe100);
         valueControl.setVerticalAlignment(0.0);
         valueControl.setText(new StringTextComponent(valueSupplier.get()));

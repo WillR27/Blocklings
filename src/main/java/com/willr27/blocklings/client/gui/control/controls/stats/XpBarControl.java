@@ -51,13 +51,13 @@ public class XpBarControl extends Control
         this.blockling = blockling;
         this.level = level;
 
-        setShouldFitWidthToContent(true);
-        setShouldFitHeightToContent(true);
+        setFitWidthToContent(true);
+        setFitHeightToContent(true);
 
         StackPanel stackPanel = new StackPanel();
         stackPanel.setParent(this);
-        stackPanel.setShouldFitWidthToContent(true);
-        stackPanel.setShouldFitHeightToContent(true);
+        stackPanel.setFitWidthToContent(true);
+        stackPanel.setFitHeightToContent(true);
         stackPanel.setDirection(Direction.LEFT_TO_RIGHT);
         stackPanel.setSpacing(5);
         stackPanel.setInteractive(false);
@@ -67,8 +67,8 @@ public class XpBarControl extends Control
 
         Control xpBarControl = new Control();
         xpBarControl.setParent(stackPanel);
-        xpBarControl.setShouldFitWidthToContent(true);
-        xpBarControl.setShouldFitHeightToContent(true);
+        xpBarControl.setFitWidthToContent(true);
+        xpBarControl.setFitHeightToContent(true);
         xpBarControl.setVerticalAlignment(0.5);
 
         TexturedControl xpBarBackgroundControl = new TexturedControl(level.getXpBarBackgroundTexture().toTexture());
@@ -97,8 +97,8 @@ public class XpBarControl extends Control
             }
         };
         levelTextControl.setParent(this);
-        levelTextControl.setShouldFitWidthToContent(true);
-        levelTextControl.setShouldFitHeightToContent(true);
+        levelTextControl.setFitWidthToContent(true);
+        levelTextControl.setFitHeightToContent(true);
 //        levelTextControl.useDescenderlessLineHeight();
         levelTextControl.setTextColour(level.getLevelColour().argb());
         levelTextControl.setHorizontalAlignment(0.5);

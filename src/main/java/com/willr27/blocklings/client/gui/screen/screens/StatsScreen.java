@@ -228,7 +228,7 @@ public class StatsScreen extends TabbedScreen
         StackPanel levelsPanel = new StackPanel();
         statsGridPanel.addChild(levelsPanel, 1, 0);
         levelsPanel.setWidthPercentage(1.0);
-        levelsPanel.setShouldFitHeightToContent(true);
+        levelsPanel.setFitHeightToContent(true);
         levelsPanel.setDirection(Direction.TOP_TO_BOTTOM);
         levelsPanel.setPadding(0.0, 0.0, 0.0, 6.0);
         levelsPanel.setSpacing(1.0);

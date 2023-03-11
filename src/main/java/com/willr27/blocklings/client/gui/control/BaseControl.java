@@ -99,6 +99,8 @@ public abstract class BaseControl extends GuiControl
     @Nonnull
     private Visibility visibility = Visibility.VISIBLE;
 
+    private boolean isHoverable = true;
+
     private boolean isInteractive = true;
 
     private boolean isReorderable = true;
@@ -280,7 +282,17 @@ public abstract class BaseControl extends GuiControl
 
     public void setParent(@Nullable BaseControl parent)
     {
-        parent.addChild(this);
+        if (parent != null)
+        {
+            parent.addChild(this);
+        }
+        else
+        {
+            if (getParent() != null)
+            {
+                getParent().removeChild(this);
+            }
+        }
     }
 
     public List<BaseControl> getChildren()
@@ -311,6 +323,11 @@ public abstract class BaseControl extends GuiControl
         if (getChildren().contains(child))
         {
             return;
+        }
+
+        if (child.getParent() != null)
+        {
+            child.getParent().removeChild(child);
         }
 
         children.add(child);
@@ -396,6 +413,62 @@ public abstract class BaseControl extends GuiControl
         markArrangeDirty(true);
     }
 
+    /**
+     * Inserts the given control at the given index.
+     *
+     * @param controlToInsert the control to insert.
+     * @param index the index to insert the control at.
+     */
+    public void insertChildAt(@Nonnull BaseControl controlToInsert, int index)
+    {
+        int currentIndex = children.indexOf(controlToInsert);
+
+        if (currentIndex != -1)
+        {
+            children.remove(currentIndex);
+
+            if (currentIndex < index)
+            {
+                index--;
+            }
+        }
+        else if (controlToInsert.getParent() != null)
+        {
+            controlToInsert.getParent().removeChild(controlToInsert);
+        }
+
+        if (index < 0 || index > children.size())
+        {
+            throw new IllegalArgumentException("The given index is out of bounds.");
+        }
+
+        children.add(index, controlToInsert);
+        controlToInsert.parent = this;
+
+        markMeasureDirty(true);
+        markArrangeDirty(true);
+    }
+
+    /**
+     * Inserts the given control at the first index.
+     *
+     * @param controlToInsert the control to insert.
+     */
+    public void insertChildFirst(@Nonnull BaseControl controlToInsert)
+    {
+        insertChildAt(controlToInsert, 0);
+    }
+
+    /**
+     * Inserts the given control at the last index.
+     *
+     * @param controlToInsert the control to insert.
+     */
+    public void insertChildLast(@Nonnull BaseControl controlToInsert)
+    {
+        insertChildAt(controlToInsert, children.size());
+    }
+
     public void removeChild(@Nonnull BaseControl child)
     {
         if (!getChildren().contains(child))
@@ -421,6 +494,51 @@ public abstract class BaseControl extends GuiControl
     public int getTreeDepth()
     {
         return getParent() != null ? getParent().getTreeDepth() + 1 : 0;
+    }
+
+    public boolean isAncestor(@Nullable BaseControl control)
+    {
+        if (control == null)
+        {
+            return false;
+        }
+
+        if (control == this)
+        {
+            return false;
+        }
+
+        if (getParent() == null)
+        {
+            return false;
+        }
+
+        if (control == getParent())
+        {
+            return true;
+        }
+
+        return getParent().isAncestor(this);
+    }
+
+    public boolean isDescendant(@Nullable BaseControl control)
+    {
+        if (control == null)
+        {
+            return false;
+        }
+
+        if (control == this)
+        {
+            return false;
+        }
+
+        if (getChildren().contains(control))
+        {
+            return true;
+        }
+
+        return getChildren().stream().anyMatch(child -> child.isDescendant(control));
     }
 
     @Nullable
@@ -724,7 +842,7 @@ public abstract class BaseControl extends GuiControl
         return shouldFitWidthToContent;
     }
 
-    public void setShouldFitWidthToContent(boolean shouldFitWidthToContent)
+    public void setFitWidthToContent(boolean shouldFitWidthToContent)
     {
         if (this.shouldFitWidthToContent == shouldFitWidthToContent)
         {
@@ -741,7 +859,7 @@ public abstract class BaseControl extends GuiControl
         return shouldFitHeightToContent;
     }
 
-    public void setShouldFitHeightToContent(boolean shouldFitHeightToContent)
+    public void setFitHeightToContent(boolean shouldFitHeightToContent)
     {
         if (this.shouldFitHeightToContent == shouldFitHeightToContent)
         {
@@ -1578,7 +1696,7 @@ public abstract class BaseControl extends GuiControl
 
     public void setIsFocused(boolean isFocused)
     {
-        if (isFocused)
+        if (isFocused && isInteractive())
         {
             getScreen().setFocusedControl(this);
         }
@@ -1686,10 +1804,22 @@ public abstract class BaseControl extends GuiControl
 
         this.visibility = visibility;
 
+        markMeasureDirty(true);
+
         if (getParent() != null)
         {
-            onChildVisiblityChanged(this);
+            getParent().onChildVisiblityChanged(this);
         }
+    }
+
+    public boolean isHoverable()
+    {
+        return isHoverable;
+    }
+
+    public void setHoverable(boolean hoverable)
+    {
+        isHoverable = hoverable;
     }
 
     public boolean isInteractive()

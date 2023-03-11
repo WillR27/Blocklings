@@ -3,6 +3,7 @@ package com.willr27.blocklings.client.gui.control.controls.panels;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.properties.Dock;
+import com.willr27.blocklings.client.gui.properties.Visibility;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -58,6 +59,11 @@ public class DockPanel extends Control
 
         for (BaseControl control : getChildrenCopy())
         {
+            if (control.getVisibility() == Visibility.COLLAPSED)
+            {
+                continue;
+            }
+
             control.setWidth(control.getDesiredWidth());
             control.setHeight(control.getDesiredHeight());
 

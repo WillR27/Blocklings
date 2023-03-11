@@ -44,8 +44,8 @@ public class EnumeratingControl<T extends Control> extends Control
      */
     public EnumeratingControl()
     {
-        setShouldFitWidthToContent(true);
-        setShouldFitHeightToContent(true);
+        setFitWidthToContent(true);
+        setFitHeightToContent(true);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.willr27.blocklings.client.gui.control.controls;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
@@ -61,7 +60,7 @@ public class TextBlockControl extends Control
 
         setInteractive(false);
         setWidthPercentage(1.0);
-        setShouldFitHeightToContent(true);
+        setFitHeightToContent(true);
     }
 
     @Override
@@ -110,7 +109,7 @@ public class TextBlockControl extends Control
         float x = getGuiScale() == 1.0f ? Math.round(textScreenX) : textScreenX;
         float y = getGuiScale() == 1.0f ? Math.round(textScreenY) : textScreenY;
 
-        float z = isDraggingOrAncestor() ? 100.0f : -1.0f;
+        float z = isDraggingOrAncestor() ? 100.0f : 0.0f;
 
         try
         {
@@ -124,7 +123,7 @@ public class TextBlockControl extends Control
         }
 
         MatrixStack matrixStack2 = new MatrixStack();
-        matrixStack2.translate(x, y, z);
+        matrixStack2.translate(x, y, 0.0);
         matrixStack2.scale((float) getScaleX(), (float) getScaleY(), 1.0f);
 
         if (shouldRenderShadow())

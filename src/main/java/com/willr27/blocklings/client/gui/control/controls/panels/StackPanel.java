@@ -6,6 +6,7 @@ import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.event.events.ReorderEvent;
 import com.willr27.blocklings.client.gui.properties.Direction;
 import com.willr27.blocklings.client.gui.properties.Side;
+import com.willr27.blocklings.client.gui.properties.Visibility;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraftforge.api.distmarker.Dist;
@@ -41,6 +42,11 @@ public class StackPanel extends Control
 
             for (BaseControl childControl : getChildren())
             {
+                if (childControl.getVisibility() == Visibility.COLLAPSED)
+                {
+                    continue;
+                }
+
                 double childMinX = (childControl.getX() - childControl.getMargin().left) * getInnerScale().x;
                 double childMaxX = (childControl.getX() + childControl.getWidth() + childControl.getMargin().right) * getInnerScale().x;
 
@@ -80,6 +86,11 @@ public class StackPanel extends Control
 
             for (BaseControl childControl : getChildren())
             {
+                if (childControl.getVisibility() == Visibility.COLLAPSED)
+                {
+                    continue;
+                }
+
                 double childMinY = (childControl.getY() - childControl.getMargin().top) * getInnerScale().y;
                 double childY = (childControl.getY() + childControl.getHeight() + childControl.getMargin().bottom) * getInnerScale().y;
 
@@ -117,6 +128,11 @@ public class StackPanel extends Control
     {
         for (BaseControl child : getChildrenCopy())
         {
+            if (child.getVisibility() == Visibility.COLLAPSED)
+            {
+                continue;
+            }
+
             double availableWidth = ((getDesiredWidth() - getPaddingWidth()) / getInnerScale().x) - child.getMarginWidth();
             double availableHeight = ((getDesiredHeight() - getPaddingHeight()) / getInnerScale().y) - child.getMarginHeight();
 
@@ -153,6 +169,11 @@ public class StackPanel extends Control
 
         for (BaseControl control : getChildrenCopy())
         {
+            if (control.getVisibility() == Visibility.COLLAPSED)
+            {
+                continue;
+            }
+
             control.setWidth(control.getDesiredWidth());
             control.setHeight(control.getDesiredHeight());
 

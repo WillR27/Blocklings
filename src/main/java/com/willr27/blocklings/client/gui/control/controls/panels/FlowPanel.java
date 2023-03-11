@@ -4,10 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.event.events.ReorderEvent;
-import com.willr27.blocklings.client.gui.properties.Corner;
-import com.willr27.blocklings.client.gui.properties.Direction;
-import com.willr27.blocklings.client.gui.properties.Flow;
-import com.willr27.blocklings.client.gui.properties.Side;
+import com.willr27.blocklings.client.gui.properties.*;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraftforge.api.distmarker.Dist;
@@ -196,6 +193,11 @@ public class FlowPanel extends Control
 
         for (BaseControl control : getChildrenCopy())
         {
+            if (control.getVisibility() == Visibility.COLLAPSED)
+            {
+                continue;
+            }
+
             control.setWidth(control.getDesiredWidth());
             control.setHeight(control.getDesiredHeight());
 

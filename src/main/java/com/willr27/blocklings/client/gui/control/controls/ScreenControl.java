@@ -70,6 +70,11 @@ public class ScreenControl extends Control
 
                 for (BaseControl control : measureList)
                 {
+                    if (control.getVisibility() == Visibility.COLLAPSED)
+                    {
+                        continue;
+                    }
+
                     if (control.getTreeDepth() < minDepth)
                     {
                         minDepth = control.getTreeDepth();
@@ -94,6 +99,11 @@ public class ScreenControl extends Control
 
                 for (BaseControl control : arrangeList)
                 {
+                    if (control.getVisibility() == Visibility.COLLAPSED)
+                    {
+                        continue;
+                    }
+
                     if (control.getTreeDepth() < minDepth)
                     {
                         minDepth = control.getTreeDepth();
@@ -331,31 +341,26 @@ public class ScreenControl extends Control
 
     public void setFocusedControl(@Nullable BaseControl control)
     {
+        if (focusedControl == control)
+        {
+            return;
+        }
+
         boolean previousFocus = focusedControl == control;
         BaseControl previousFocusedControl = focusedControl;
-
-        if (focusedControl != control)
-        {
-            if (focusedControl != null)
-            {
-                focusedControl.onUnfocused();
-            }
-
-            if (control != null)
-            {
-                control.onFocused();
-            }
-        }
 
         focusedControl = control;
 
         if (previousFocusedControl != null)
         {
             previousFocusedControl.eventBus.post(previousFocusedControl, new FocusChangedEvent(previousFocus));
+            previousFocusedControl.onUnfocused();
         }
-        else if (focusedControl != null)
+
+        if (focusedControl != null)
         {
             focusedControl.eventBus.post(focusedControl, new FocusChangedEvent(previousFocus));
+            focusedControl.onFocused();
         }
     }
 

@@ -87,7 +87,14 @@ public abstract class GuiControl extends AbstractGui
      */
     protected void renderShadowedText(@Nonnull MatrixStack matrixStack, @Nonnull ITextComponent text, int colour)
     {
-        Screen.drawString(matrixStack, Minecraft.getInstance().font, text, 0, 0, colour);
+        int a = (colour & 0xff000000) >> 24;
+        int r = ((colour & 0x00ff0000) >> 16) / 4;
+        int g = ((colour & 0x0000ff00) >> 8) / 4;
+        int b = (colour & 0x000000ff) / 4;
+        int shadow = (a << 24) | (r << 16) | (g << 8) | b;
+
+        font.draw(matrixStack, text, 1, 1, shadow);
+        font.draw(matrixStack, text, 0, 0, colour);
         RenderSystem.enableAlphaTest();
     }
 

@@ -3,6 +3,7 @@ package com.willr27.blocklings.client.gui.control.controls.panels;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.properties.GridDefinition;
+import com.willr27.blocklings.client.gui.properties.Visibility;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -25,10 +26,10 @@ public class GridPanel extends Control
     private final Map<BaseControl, GridCell> cells = new HashMap<>();
 
     @Nonnull
-    private double[] rowHeights;
+    private double[] rowHeights = new double[0];
 
     @Nonnull
-    private double[] columnWidths;
+    private double[] columnWidths = new double[0];
 
     @Override
     public void measureChildren()
@@ -78,6 +79,11 @@ public class GridPanel extends Control
 
                     for (BaseControl control : getCellControls(row, col))
                     {
+                        if (control.getVisibility() == Visibility.COLLAPSED)
+                        {
+                            continue;
+                        }
+
                         // Get cell dimensions if available.
                         double availableCellWidth = columnWidths[col];
 
@@ -89,10 +95,12 @@ public class GridPanel extends Control
 
                         control.doMeasure(availableCellWidth, 0.0);
 
+                        double desiredWidth = control.getDesiredWidth() + control.getMarginWidth();
+
                         // Update the current column width.
-                        if (control.getDesiredWidth() > columnWidths[col])
+                        if (desiredWidth > columnWidths[col])
                         {
-                            columnWidths[col] = control.getDesiredWidth();
+                            columnWidths[col] = desiredWidth;
                         }
                     }
                 }
@@ -104,6 +112,11 @@ public class GridPanel extends Control
 
                     for (BaseControl control : getCellControls(row, col))
                     {
+                        if (control.getVisibility() == Visibility.COLLAPSED)
+                        {
+                            continue;
+                        }
+
                         // Get cell dimensions if available.
                         double availableCellHeight = rowHeights[row];
 
@@ -115,10 +128,12 @@ public class GridPanel extends Control
 
                         control.doMeasure(0.0, availableCellHeight);
 
+                        double desiredHeight = control.getDesiredHeight() + control.getMarginHeight();
+
                         // Update the current row height.
-                        if (control.getDesiredHeight() > rowHeights[row])
+                        if (desiredHeight > rowHeights[row])
                         {
-                            rowHeights[row] = control.getDesiredHeight();
+                            rowHeights[row] = desiredHeight;
                         }
                     }
                 }
@@ -181,6 +196,11 @@ public class GridPanel extends Control
 
                 for (BaseControl control : getCellControls(row, col))
                 {
+                    if (control.getVisibility() == Visibility.COLLAPSED)
+                    {
+                        continue;
+                    }
+
                     double availableCellWidth = columnWidths[col];
                     double availableCellHeight = rowHeights[row];
 
@@ -204,6 +224,11 @@ public class GridPanel extends Control
 
                 for (BaseControl control : getCellControls(row, col))
                 {
+                    if (control.getVisibility() == Visibility.COLLAPSED)
+                    {
+                        continue;
+                    }
+
                     control.setWidth(control.getDesiredWidth());
                     control.setHeight(control.getDesiredHeight());
 
