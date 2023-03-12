@@ -55,6 +55,11 @@ public class FlowPanel extends Control
 
             for (BaseControl childControl : getChildren())
             {
+                if (childControl.getVisibility() == Visibility.COLLAPSED)
+                {
+                    continue;
+                }
+
                 double childMinX = (childControl.getX() - childControl.getMargin().left) * getInnerScale().x;
                 double childMaxX = (childControl.getX() + childControl.getWidth() + childControl.getMargin().right) * getInnerScale().x;
 
@@ -94,6 +99,11 @@ public class FlowPanel extends Control
 
             for (BaseControl childControl : getChildren())
             {
+                if (childControl.getVisibility() == Visibility.COLLAPSED)
+                {
+                    continue;
+                }
+
                 double childMinY = (childControl.getY() - childControl.getMargin().top) * getInnerScale().y;
                 double childY = (childControl.getY() + childControl.getHeight() + childControl.getMargin().bottom) * getInnerScale().y;
 
@@ -138,6 +148,11 @@ public class FlowPanel extends Control
     {
         for (BaseControl child : getChildrenCopy())
         {
+            if (child.getVisibility() == Visibility.COLLAPSED)
+            {
+                continue;
+            }
+
             double availableWidth = ((getDesiredWidth() - getPaddingWidth()) / getInnerScale().x) - child.getMarginWidth();
             double availableHeight = ((getDesiredHeight() - getPaddingHeight()) / getInnerScale().y) - child.getMarginHeight();
 

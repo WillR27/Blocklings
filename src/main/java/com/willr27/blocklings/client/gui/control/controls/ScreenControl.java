@@ -22,6 +22,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -61,20 +62,18 @@ public class ScreenControl extends Control
         measureList.removeIf(control -> control.getScreen() != this);
         arrangeList.removeIf(control -> control.getScreen() != this);
 
-        while (!measureList.stream().filter(control -> control.getVisibility() != Visibility.COLLAPSED).collect(Collectors.toList()).isEmpty() || !arrangeList.stream().filter(control -> control.getVisibility() != Visibility.COLLAPSED).collect(Collectors.toList()).isEmpty())
+        List<BaseControl> filteredMeasureList = filterControls(measureList);
+        List<BaseControl> filteredArrangeList = filterControls(arrangeList);
+
+        while (!filteredMeasureList.isEmpty() || !filteredArrangeList.isEmpty())
         {
-            while (!measureList.stream().filter(control -> control.getVisibility() != Visibility.COLLAPSED).collect(Collectors.toList()).isEmpty())
+            while (!filteredMeasureList.isEmpty())
             {
                 int minDepth = Integer.MAX_VALUE;
                 BaseControl minDepthControl = null;
 
-                for (BaseControl control : measureList)
+                for (BaseControl control : filteredMeasureList)
                 {
-                    if (control.getVisibility() == Visibility.COLLAPSED)
-                    {
-                        continue;
-                    }
-
                     if (control.getTreeDepth() < minDepth)
                     {
                         minDepth = control.getTreeDepth();
@@ -90,20 +89,19 @@ public class ScreenControl extends Control
                 {
                     minDepthControl.getParent().measureChildren();
                 }
+
+                filteredMeasureList = filterControls(measureList);
             }
 
-            while (!arrangeList.stream().filter(control -> control.getVisibility() != Visibility.COLLAPSED).collect(Collectors.toList()).isEmpty())
+            filteredArrangeList = filterControls(arrangeList);
+
+            while (!filteredArrangeList.isEmpty() && filteredMeasureList.isEmpty())
             {
                 int minDepth = Integer.MAX_VALUE;
                 BaseControl minDepthControl = null;
 
-                for (BaseControl control : arrangeList)
+                for (BaseControl control : filteredArrangeList)
                 {
-                    if (control.getVisibility() == Visibility.COLLAPSED)
-                    {
-                        continue;
-                    }
-
                     if (control.getTreeDepth() < minDepth)
                     {
                         minDepth = control.getTreeDepth();
@@ -115,8 +113,26 @@ public class ScreenControl extends Control
                 {
                     minDepthControl.doArrange();
                 }
+
+                filteredMeasureList = filterControls(measureList);
+                filteredArrangeList = filterControls(arrangeList);
             }
+
+            filteredMeasureList = filterControls(measureList);
+            filteredArrangeList = filterControls(arrangeList);
         }
+    }
+
+    /**
+     * Filters the given list.
+     *
+     * @param controls the list to filter.
+     * @return the filtered list.
+     */
+    @Nonnull
+    private List<BaseControl> filterControls(@Nonnull List<BaseControl> controls)
+    {
+        return controls.stream().filter(c -> !c.isCollapsedOrAncestor()).collect(Collectors.toList());
     }
 
     @Override

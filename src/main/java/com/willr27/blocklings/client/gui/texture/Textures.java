@@ -138,6 +138,8 @@ public class Textures
     {
         public static final ResourceLocation TASKS = new BlocklingsResourceLocation("textures/gui/tasks.png");
         public static final ResourceLocation TASKS_CONFIG = new BlocklingsResourceLocation("textures/gui/task_configure.png");
+        public static final ResourceLocation WHITELIST = new BlocklingsResourceLocation("textures/gui/whitelist.png");
+
         public static final Texture BACKGROUND = new Texture(TASKS, 0, 0, 176, 166);
         public static final Texture CONFIG_BACKGROUND = new Texture(TASKS_CONFIG, 0, 0, 176, 166);
 
@@ -148,6 +150,9 @@ public class Textures
         public static final Texture TASK_ADD_ICON = new Texture(TASKS, 136, 166, 17, 20);
         public static final Texture TASK_REMOVE_ICON = new Texture(TASKS, 156, 166, 17, 20);
         public static final Texture TASK_CONFIG_ICON = new Texture(TASKS, 176, 166, 20, 20);
+
+        public static final Texture ENTRY_UNSELECTED = new Texture(WHITELIST, 0, 166, 30, 30);
+        public static final Texture ENTRY_SELECTED = ENTRY_UNSELECTED.dx(ENTRY_UNSELECTED.width);
     }
 
     public static class Equipment

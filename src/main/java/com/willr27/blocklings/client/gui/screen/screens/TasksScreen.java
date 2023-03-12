@@ -6,6 +6,7 @@ import com.willr27.blocklings.client.gui.control.controls.ComboBoxControl;
 import com.willr27.blocklings.client.gui.control.controls.TabbedUIControl;
 import com.willr27.blocklings.client.gui.control.controls.TextBlockControl;
 import com.willr27.blocklings.client.gui.control.controls.TextFieldControl;
+import com.willr27.blocklings.client.gui.control.controls.config.WhitelistConfigControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.GridPanel;
 import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
 import com.willr27.blocklings.client.gui.control.controls.panels.TabbedPanel;
@@ -25,6 +26,7 @@ import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.task.Task;
 import com.willr27.blocklings.entity.blockling.task.TaskType;
 import com.willr27.blocklings.entity.blockling.task.config.Property;
+import com.willr27.blocklings.entity.blockling.whitelist.GoalWhitelist;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.StringTextComponent;
@@ -204,12 +206,12 @@ public class TasksScreen extends TabbedScreen
     {
         configTabbedPanel.clearTabs();
 
-        BaseControl miscControl = configTabbedPanel.addTab(new BlocklingsTranslationTextComponent("task.ui.tab.misc"));
-        miscControl.setPadding(4.0, 10.0, 4.0, 4.0);
-        miscControl.setCanScrollVertically(true);
+        BaseControl miscContainer = configTabbedPanel.addTab(new BlocklingsTranslationTextComponent("task.ui.tab.misc"));
+        miscContainer.setPadding(4.0, 10.0, 4.0, 4.0);
+        miscContainer.setCanScrollVertically(true);
 
         StackPanel miscStackPanel = new StackPanel();
-        miscStackPanel.setParent(miscControl);
+        miscStackPanel.setParent(miscContainer);
         miscStackPanel.setWidthPercentage(1.0);
         miscStackPanel.setFitHeightToContent(true);
         miscStackPanel.setDirection(Direction.TOP_TO_BOTTOM);
@@ -277,6 +279,22 @@ public class TasksScreen extends TabbedScreen
                 propertyControl.setParent(miscStackPanel);
                 propertyControl.setMarginTop(3.0);
             }
+
+            if (!task.getGoal().whitelists.isEmpty())
+            {
+                for (GoalWhitelist whitelist : task.getGoal().whitelists)
+                {
+                    if (whitelist.isUnlocked())
+                    {
+                        BaseControl whitelistContainer = configTabbedPanel.addTab(whitelist.name);
+                        whitelistContainer.setPadding(4.0, 10.0, 4.0, 4.0);
+                        whitelistContainer.setCanScrollVertically(true);
+
+                        WhitelistConfigControl whitelistConfigControl = new WhitelistConfigControl(whitelist);
+                        whitelistConfigControl.setParent(whitelistContainer);
+                    }
+                }
+            }
         }
     }
 
@@ -285,8 +303,15 @@ public class TasksScreen extends TabbedScreen
      */
     private void onTaskTypeChanged(@Nonnull Task.TypeChangedEvent typeChangedEvent)
     {
-        initConfigTabs(typeChangedEvent.task);
-        configNameField.setText(currentTask.getCustomName());
+        try
+        {
+            initConfigTabs(typeChangedEvent.task);
+            configNameField.setText(currentTask.getCustomName());
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     /**

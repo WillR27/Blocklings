@@ -9,6 +9,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A control used to display an entity.
@@ -40,6 +41,18 @@ public class EntityControl extends Control
     private float entityScale = 1.0f;
 
     /**
+     * The x-coordinate to look at. If null, the entity will look at the mouse.
+     */
+    @Nullable
+    private Float lookX = null;
+
+    /**
+     * The y-coordinate to look at. If null, the entity will look at the mouse.
+     */
+    @Nullable
+    private Float lookY = null;
+
+    /**
      * Whether to scale the entity up/down based on its bounding box. Useful for rendering all entities at a
      * similar relative scale.
      */
@@ -54,7 +67,10 @@ public class EntityControl extends Control
         double scale = getEntityScale() * minDimension / 16.0f;
         double x = ((getPixelX() + getPixelWidth() / 2) / getGuiScale()) + getOffsetX() * scale;
         double y = ((getPixelY() + getPixelHeight()) / getGuiScale()) + getOffsetY() * scale;
-        GuiUtil.getInstance().renderEntityOnScreen(new MatrixStack(), entity, (int) x, (int) y, (float) (mouseX / getGuiScale()), (float) (mouseY / getGuiScale()), (float) scale, shouldScaleToBoundingBox());
+        float lookX = getLookX() != null ? getLookX() : (float) (mouseX / getGuiScale());
+        float lookY = getLookY() != null ? getLookY() : (float) (mouseY / getGuiScale());
+
+        GuiUtil.getInstance().renderEntityOnScreen(new MatrixStack(), entity, (int) x, (int) y, lookX, lookY, (float) scale, shouldScaleToBoundingBox());
     }
 
     /**
@@ -136,5 +152,39 @@ public class EntityControl extends Control
     public void setScaleToBoundingBox(boolean scaleToBoundingBox)
     {
         this.scaleToBoundingBox = scaleToBoundingBox;
+    }
+
+    /**
+     * @return the x-coordinate to look at. If null, the entity will look at the mouse.
+     */
+    @Nullable
+    public Float getLookX()
+    {
+        return lookX;
+    }
+
+    /**
+     * Sets the x-coordinate to look at. If null, the entity will look at the mouse.
+     */
+    public void setLookX(@Nullable Float lookX)
+    {
+        this.lookX = lookX;
+    }
+
+    /**
+     * @return the y-coordinate to look at. If null, the entity will look at the mouse.
+     */
+    @Nullable
+    public Float getLookY()
+    {
+        return lookY;
+    }
+
+    /**
+     * Sets the y-coordinate to look at. If null, the entity will look at the mouse.
+     */
+    public void setLookY(@Nullable Float lookY)
+    {
+        this.lookY = lookY;
     }
 }

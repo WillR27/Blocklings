@@ -1793,6 +1793,36 @@ public abstract class BaseControl extends GuiControl
         this.shouldBlockDrag = shouldBlockDrag;
     }
 
+    public boolean isAncestorCollapsed()
+    {
+        if (getParent() == null)
+        {
+            return false;
+        }
+
+        if (getParent().getVisibility() == Visibility.COLLAPSED)
+        {
+            return true;
+        }
+
+        return getParent().isAncestorCollapsed();
+    }
+
+    public boolean isCollapsedOrAncestor()
+    {
+        if (getVisibility() == Visibility.COLLAPSED)
+        {
+            return true;
+        }
+
+        if (getParent() == null)
+        {
+            return false;
+        }
+
+        return getParent().isCollapsedOrAncestor();
+    }
+
     @Nonnull
     public Visibility getVisibility()
     {

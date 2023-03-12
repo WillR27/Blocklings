@@ -1,6 +1,7 @@
 package com.willr27.blocklings.client.gui.control.controls.panels;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.TextBlockControl;
@@ -299,6 +300,8 @@ public class TabbedPanel extends Control
         @Override
         protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
         {
+            RenderSystem.disableDepthTest();
+
             if (isFirst() && isLast())
             {
                 renderTextureAsBackground(matrixStack, backgroundTexture.dx(GuiTextures.Common.Tab.EDGE_WIDTH).width((int) getWidth()));
@@ -316,6 +319,8 @@ public class TabbedPanel extends Control
                 renderTextureAsBackground(matrixStack, backgroundTexture.width((int) getWidth() - GuiTextures.Common.Tab.EDGE_WIDTH));
                 renderTextureAsBackground(matrixStack, backgroundTexture.dx(backgroundTexture.width - GuiTextures.Common.Tab.EDGE_WIDTH).width(GuiTextures.Common.Tab.EDGE_WIDTH), (int) (getWidth() - GuiTextures.Common.Tab.EDGE_WIDTH), 0);
             }
+
+            RenderSystem.enableDepthTest();
 
             super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
         }

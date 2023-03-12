@@ -156,6 +156,11 @@ public class Control extends BaseControl
 
         for (BaseControl child : getChildrenCopy())
         {
+            if (child.isCollapsedOrAncestor())
+            {
+                continue;
+            }
+
             child.doArrange();
         }
     }
