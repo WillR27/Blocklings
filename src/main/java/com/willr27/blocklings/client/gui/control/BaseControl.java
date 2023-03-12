@@ -73,6 +73,8 @@ public abstract class BaseControl extends GuiControl
     @Nonnull
     private final Position position = new Position(0.0, 0.0);
 
+    private boolean shouldSnapToScreenCoords = false;
+
     @Nullable
     private Double horizontalAlignment = null;
     @Nullable
@@ -1156,14 +1158,19 @@ public abstract class BaseControl extends GuiControl
 
     public double getPixelX()
     {
+        double pixelX = getX() * getPixelScaleX();
+
         if (getParent() != null)
         {
-            return getParent().toPixelX(getX());
+            pixelX = getParent().toPixelX(getX());
         }
-        else
+
+        if (shouldSnapToScreenCoords())
         {
-            return getX() * getPixelScaleX();
+            pixelX = Math.round(pixelX / getGuiScale()) * getGuiScale();
         }
+
+        return pixelX;
     }
 
     public void setPixelX(double pixelX)
@@ -1196,14 +1203,19 @@ public abstract class BaseControl extends GuiControl
 
     public double getPixelY()
     {
+        double pixelY = getY() * getPixelScaleY();
+
         if (getParent() != null)
         {
-            return getParent().toPixelY(getY());
+            pixelY = getParent().toPixelY(getY());
         }
-        else
+
+        if (shouldSnapToScreenCoords())
         {
-            return getY() * getPixelScaleY();
+            pixelY = Math.round(pixelY / getGuiScale()) * getGuiScale();
         }
+
+        return pixelY;
     }
 
     public void setPixelY(double pixelY)
@@ -1245,6 +1257,16 @@ public abstract class BaseControl extends GuiControl
     public double getPixelBottom()
     {
         return getPixelY() + getPixelHeight();
+    }
+
+    public boolean shouldSnapToScreenCoords()
+    {
+        return shouldSnapToScreenCoords;
+    }
+
+    public void setShouldSnapToScreenCoords(boolean shouldSnapToScreenCoords)
+    {
+        this.shouldSnapToScreenCoords = shouldSnapToScreenCoords;
     }
 
     @Nullable

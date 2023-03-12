@@ -82,6 +82,7 @@ public class StatControl extends Control
         valueControl.setTextColour(0xffffe100);
         valueControl.setVerticalAlignment(0.0);
         valueControl.setText(new StringTextComponent(valueSupplier.get()));
+        valueControl.useDescenderlessLineHeight();
 
         if (renderValueToLeftOfIcon)
         {

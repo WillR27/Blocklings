@@ -99,7 +99,7 @@ public class XpBarControl extends Control
         levelTextControl.setParent(this);
         levelTextControl.setFitWidthToContent(true);
         levelTextControl.setFitHeightToContent(true);
-//        levelTextControl.useDescenderlessLineHeight();
+        levelTextControl.useDescenderlessLineHeight();
         levelTextControl.setTextColour(level.getLevelColour().argb());
         levelTextControl.setHorizontalAlignment(0.5);
         levelTextControl.setVerticalAlignment(0.5);

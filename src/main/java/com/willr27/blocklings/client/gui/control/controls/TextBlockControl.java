@@ -53,6 +53,11 @@ public class TextBlockControl extends Control
     private float textScreenY = 0;
 
     /**
+     * The line height.
+     */
+    private int lineHeight = font.lineHeight;
+
+    /**
      */
     public TextBlockControl()
     {
@@ -85,7 +90,7 @@ public class TextBlockControl extends Control
         }
         else if (shouldFitHeightToContent())
         {
-            double textHeight = font.lineHeight;
+            double textHeight = getLineHeight();
             height = textHeight + getPaddingHeight();
         }
 
@@ -111,10 +116,10 @@ public class TextBlockControl extends Control
         double verticalAlignment = getVerticalContentAlignment() != null ? getVerticalContentAlignment() : 0.0;
 
         textScreenX = (float) (getPixelX() / getGuiScale() + (screenWidth - font.width(getTextToRender())) * horizontalAlignment);
-        textScreenY = (float) (getPixelY() / getGuiScale() + (screenHeight - font.lineHeight) * verticalAlignment);
+        textScreenY = (float) (getPixelY() / getGuiScale() + (screenHeight - getLineHeight()) * verticalAlignment);
 
-        float x = getGuiScale() == 1.0f ? Math.round(textScreenX) : textScreenX;
-        float y = getGuiScale() == 1.0f ? Math.round(textScreenY) : textScreenY;
+        float x = (float) (Math.round(textScreenX * getGuiScale()) / getGuiScale());
+        float y = (float) (Math.round(textScreenY * getGuiScale()) / getGuiScale());
 
         float z = isDraggingOrAncestor() ? 100.0f : 0.0f;
 
@@ -239,5 +244,39 @@ public class TextBlockControl extends Control
     public void setTextColour(int textColour)
     {
         this.textColour = textColour;
+    }
+
+    /**
+     * @return the line height.
+     */
+    public int getLineHeight()
+    {
+        return lineHeight;
+    }
+
+    /**
+     * Sets the line height.
+     *
+     * @param lineHeight the line height.
+     */
+    public void setLineHeight(int lineHeight)
+    {
+        this.lineHeight = lineHeight;
+    }
+
+    /**
+     * Sets the line height to be the default line height.
+     */
+    public void useDefaultLineHeight()
+    {
+        setLineHeight(font.lineHeight);
+    }
+
+    /**
+     * Sets the line height to be the default line height minus the height of descenders.
+     */
+    public void useDescenderlessLineHeight()
+    {
+        setLineHeight(font.lineHeight - 1);
     }
 }
