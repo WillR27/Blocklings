@@ -117,8 +117,6 @@ public abstract class RangeControl<T extends Number> extends Control
             @Override
             public void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
-                super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
-
                 renderTextureAsBackground(matrixStack, getBackgroundTexture().width((int) (getWidth() - 1)));
                 renderTextureAsBackground(matrixStack, getBackgroundTexture().width(1).dx(255), getWidth() - 1, 0);
             }

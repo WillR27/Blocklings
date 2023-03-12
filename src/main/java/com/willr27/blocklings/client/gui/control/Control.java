@@ -403,7 +403,7 @@ public class Control extends BaseControl
         if (shouldScissor())
         {
             scissorStack.push(new ScissorBounds((int) Math.round(getPixelX()), (int) Math.round(getPixelY()), (int) Math.round(getPixelWidth()), (int) Math.round(getPixelHeight())));
-//            scissorStack.enable();
+            scissorStack.enable();
         }
         else
         {
