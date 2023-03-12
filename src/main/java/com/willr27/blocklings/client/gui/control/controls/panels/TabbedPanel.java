@@ -124,7 +124,6 @@ public class TabbedPanel extends Control
         container.setParent(containerContainer);
         container.setWidthPercentage(1.0);
         container.setHeightPercentage(1.0);
-        container.setBackgroundColour(container.randomColour());
         container.setVisibility(Visibility.COLLAPSED);
 
         if (tabContainer.getChildren().size() == 1)

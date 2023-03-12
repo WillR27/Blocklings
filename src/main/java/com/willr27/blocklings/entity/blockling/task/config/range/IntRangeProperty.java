@@ -1,16 +1,22 @@
 package com.willr27.blocklings.entity.blockling.task.config.range;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.willr27.blocklings.client.gui.control.BaseControl;
+import com.willr27.blocklings.client.gui.control.controls.config.IntRangeControl;
+import com.willr27.blocklings.client.gui2.GuiUtil;
 import com.willr27.blocklings.client.gui3.control.Control;
-import com.willr27.blocklings.client.gui3.control.controls.config.IntRangeControl;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
  * Configures an int range property.
@@ -64,31 +70,30 @@ public class IntRangeProperty extends RangeProperty<Integer>
     @OnlyIn(Dist.CLIENT)
     @Override
     @Nonnull
-    public Control createControl()
+    public BaseControl createControl()
     {
-       return new IntRangeControl(min, max, value);
-//        return new IntRangeControl(parent, min, max, value)
-//        {
-//            @Override
-//            public void renderTooltip(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY)
-//            {
-//                if (!grabberControl.isPressed())
-//                {
-//                    List<StringTextComponent> tooltip = GuiUtil.splitText(font, desc, 200);
-//                    tooltip.add(0, new StringTextComponent(""));
-//                    tooltip.add(0, new StringTextComponent(TextFormatting.GOLD + name.getString()));
-//
-//                    screen.renderTooltip(matrixStack, GuiUtil.toReorderingProcessorList(tooltip), mouseX, mouseY);
-//                }
-//            }
-//
-//            @Override
-//            public void setValue(Integer value)
-//            {
-//                super.setValue(value);
-//
-//                IntRangeProperty.this.setValue(getValue(), true);
-//            }
-//        };
+        return new IntRangeControl(min, max, value)
+        {
+            @Override
+            public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+            {
+                if (!grabberControl.isPressed())
+                {
+                    List<StringTextComponent> tooltip = GuiUtil.splitText(font, desc, 200);
+                    tooltip.add(0, new StringTextComponent(""));
+                    tooltip.add(0, new StringTextComponent(TextFormatting.GOLD + name.getString()));
+
+                    renderTooltip(matrixStack, mouseX, mouseY, GuiUtil.toReorderingProcessorList(tooltip));
+                }
+            }
+
+            @Override
+            public void setValue(@Nonnull Integer value, boolean updateGrabberPosition, boolean postEvent)
+            {
+                super.setValue(value, updateGrabberPosition, postEvent);
+
+                IntRangeProperty.this.setValue(getValue(), true);
+            }
+        };
     }
 }

@@ -60,14 +60,7 @@ public class ComboBoxControl extends StackPanel
         setFitHeightToContent(true);
         setDirection(Direction.TOP_TO_BOTTOM);
 
-        itemsStackPanel = new StackPanel()
-        {
-            @Override
-            protected void measureSelf(double availableWidth, double availableHeight)
-            {
-                super.measureSelf(availableWidth, availableHeight);
-            }
-        };
+        itemsStackPanel = new StackPanel();
         itemsStackPanel.setParent(this);
         itemsStackPanel.setWidthPercentage(1.0);
         itemsStackPanel.setFitHeightToContent(true);
@@ -76,18 +69,6 @@ public class ComboBoxControl extends StackPanel
         setSelectedItemControl(selectedItemControl, false);
 
         collapse();
-    }
-
-    @Override
-    protected void measureSelf(double availableWidth, double availableHeight)
-    {
-        super.measureSelf(availableWidth, availableHeight);
-    }
-
-    @Override
-    protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
-    {
-        super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
     }
 
     /**
@@ -278,12 +259,6 @@ public class ComboBoxControl extends StackPanel
         @Nonnull
         private final TexturedControl arrowControl;
 
-        @Override
-        protected void measureSelf(double availableWidth, double availableHeight)
-        {
-            super.measureSelf(availableWidth, availableHeight);
-        }
-
         /**
          * @param item the associated item.
          */
@@ -297,24 +272,6 @@ public class ComboBoxControl extends StackPanel
 
             backgroundControl = new TexturedControl(Textures.Common.DropDown.UNSELECTED_BACKGROUND)
             {
-                @Override
-                public void setHeight(double height)
-                {
-                    super.setHeight(height);
-                }
-
-                @Override
-                protected void setDesiredHeight(double desiredHeight)
-                {
-                    super.setDesiredHeight(desiredHeight);
-                }
-
-                @Override
-                protected void measureSelf(double availableWidth, double availableHeight)
-                {
-                    super.measureSelf(availableWidth, availableHeight);
-                }
-
                 @Override
                 public void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
                 {
@@ -370,10 +327,10 @@ public class ComboBoxControl extends StackPanel
             nameControl.setVerticalAlignment(0.5);
             nameControl.setMarginRight(3.0);
 
-            arrowControl = new TexturedControl(Textures.Common.DropDown.UP_ARROW);
+            arrowControl = new TexturedControl(Textures.Common.DropDown.DOWN_ARROW);
             gridPanel.addChild(arrowControl, 0, 2);
             arrowControl.setVerticalAlignment(0.5);
-            arrowControl.setMarginRight(4.0);
+            arrowControl.setMarginRight(5.0);
             arrowControl.setVisibility(Visibility.COLLAPSED);
         }
 
@@ -437,7 +394,7 @@ public class ComboBoxControl extends StackPanel
          */
         private void onExpanded()
         {
-            arrowControl.setBackgroundTexture(Textures.Common.DropDown.DOWN_ARROW);
+            arrowControl.setBackgroundTexture(Textures.Common.DropDown.UP_ARROW);
         }
 
         /**
@@ -445,7 +402,7 @@ public class ComboBoxControl extends StackPanel
          */
         private void onCollapsed()
         {
-            arrowControl.setBackgroundTexture(Textures.Common.DropDown.UP_ARROW);
+            arrowControl.setBackgroundTexture(Textures.Common.DropDown.DOWN_ARROW);
         }
 
         /**

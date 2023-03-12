@@ -1,6 +1,6 @@
 package com.willr27.blocklings.entity.blockling.task.config;
 
-import com.willr27.blocklings.client.gui3.control.Control;
+import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.entity.blockling.task.Task;
@@ -101,7 +101,7 @@ public abstract class Property implements IReadWriteNBT
      */
     @OnlyIn(Dist.CLIENT)
     @Nonnull
-    public abstract Control createControl();
+    public abstract BaseControl createControl();
 
     /**
      * Used to sync properties between the client and server.

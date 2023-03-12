@@ -101,6 +101,10 @@ public abstract class BaseControl extends GuiControl
 
     private boolean isHoverable = true;
 
+    private boolean isPressable = true;
+
+    private boolean isFocusable = true;
+
     private boolean isInteractive = true;
 
     private boolean isReorderable = true;
@@ -1650,7 +1654,7 @@ public abstract class BaseControl extends GuiControl
 
     public void setIsHovered(boolean isHovered)
     {
-        if (isHovered)
+        if (isHovered && isHoverable())
         {
             getScreen().setHoveredControl(this);
         }
@@ -1673,7 +1677,7 @@ public abstract class BaseControl extends GuiControl
 
     public void setIsPressed(boolean isPressed)
     {
-        if (isPressed)
+        if (isPressed && isPressable())
         {
             getScreen().setPressedControl(this);
         }
@@ -1696,7 +1700,7 @@ public abstract class BaseControl extends GuiControl
 
     public void setIsFocused(boolean isFocused)
     {
-        if (isFocused && isInteractive())
+        if (isFocused && isInteractive() && isFocusable())
         {
             getScreen().setFocusedControl(this);
         }
@@ -1820,6 +1824,41 @@ public abstract class BaseControl extends GuiControl
     public void setHoverable(boolean hoverable)
     {
         isHoverable = hoverable;
+
+        if (!isHoverable() && isHovered())
+        {
+            setIsHovered(false);
+        }
+    }
+
+    public boolean isPressable()
+    {
+        return isPressable;
+    }
+
+    public void setPressable(boolean pressable)
+    {
+        isPressable = pressable;
+
+        if (!isPressable() && isPressed())
+        {
+            setIsPressed(false);
+        }
+    }
+
+    public boolean isFocusable()
+    {
+        return isFocusable;
+    }
+
+    public void setFocusable(boolean focusable)
+    {
+        isFocusable = focusable;
+
+        if (!isFocusable() && isFocused())
+        {
+            setIsFocused(false);
+        }
     }
 
     public boolean isInteractive()

@@ -89,8 +89,15 @@ public class TextBlockControl extends Control
             height = textHeight + getPaddingHeight();
         }
 
-        setDesiredWidth(width);
-        setDesiredHeight(height);
+        if (availableWidth >= 0.0)
+        {
+            setDesiredWidth(width);
+        }
+
+        if (availableHeight >= 0.0)
+        {
+            setDesiredHeight(height);
+        }
     }
 
     @Override

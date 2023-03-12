@@ -122,8 +122,15 @@ public class FlowPanel extends Control
             }
         }
 
-        setDesiredWidth(width);
-        setDesiredHeight(height);
+        if (availableWidth >= 0.0)
+        {
+            setDesiredWidth(width);
+        }
+
+        if (availableHeight >= 0.0)
+        {
+            setDesiredHeight(height);
+        }
     }
 
     @Override

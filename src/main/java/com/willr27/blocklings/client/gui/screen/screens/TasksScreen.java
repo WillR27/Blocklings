@@ -20,9 +20,11 @@ import com.willr27.blocklings.client.gui.properties.Visibility;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui2.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.task.Task;
 import com.willr27.blocklings.entity.blockling.task.TaskType;
+import com.willr27.blocklings.entity.blockling.task.config.Property;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.StringTextComponent;
@@ -203,7 +205,7 @@ public class TasksScreen extends TabbedScreen
         configTabbedPanel.clearTabs();
 
         BaseControl miscControl = configTabbedPanel.addTab(new BlocklingsTranslationTextComponent("task.ui.tab.misc"));
-        miscControl.setPadding(4.0, 7.0, 4.0, 4.0);
+        miscControl.setPadding(4.0, 10.0, 4.0, 4.0);
         miscControl.setCanScrollVertically(true);
 
         StackPanel miscStackPanel = new StackPanel();
@@ -215,11 +217,12 @@ public class TasksScreen extends TabbedScreen
         TextBlockControl taskTypeTextBlock = new TextBlockControl();
         taskTypeTextBlock.setParent(miscStackPanel);
         taskTypeTextBlock.setWidthPercentage(1.0);
-        taskTypeTextBlock.setText("asdsadad");
+        taskTypeTextBlock.setText(new BlocklingsTranslationTextComponent("task.ui.task_type").getString());
 
         ComboBoxControl taskTypeComboBox = new ComboBoxControl();
         taskTypeComboBox.setParent(miscStackPanel);
         taskTypeComboBox.setWidthPercentage(1.0);
+        taskTypeComboBox.setMarginTop(3.0);
         taskTypeComboBox.eventBus.subscribe((BaseControl c, SelectionChangedEvent e) ->
         {
             TaskType type = (TaskType) e.newItem.value;
@@ -255,6 +258,25 @@ public class TasksScreen extends TabbedScreen
         else
         {
             taskTypeComboBox.addItem(item);
+        }
+
+        if (task.isConfigured())
+        {
+            BlocklingGoal goal = task.getGoal();
+
+            for (Property property : goal.properties)
+            {
+                TextBlockControl nameControl = new TextBlockControl();
+                nameControl.setParent(miscStackPanel);
+                nameControl.setWidthPercentage(1.0);
+                nameControl.setFitHeightToContent(true);
+                nameControl.setText(property.name);
+                nameControl.setMarginTop(8.0);
+
+                BaseControl propertyControl = property.createControl();
+                propertyControl.setParent(miscStackPanel);
+                propertyControl.setMarginTop(3.0);
+            }
         }
     }
 

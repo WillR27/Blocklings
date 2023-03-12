@@ -107,8 +107,15 @@ public class Control extends BaseControl
             height = maxY != Double.NEGATIVE_INFINITY ? maxY + getPaddingHeight() : 0.0;
         }
 
-        setDesiredWidth(width);
-        setDesiredHeight(height);
+        if (availableWidth >= 0.0)
+        {
+            setDesiredWidth(width);
+        }
+
+        if (availableHeight >= 0.0)
+        {
+            setDesiredHeight(height);
+        }
     }
 
     @Override
@@ -437,10 +444,10 @@ public class Control extends BaseControl
             }
         }
 
-        if (isHoverable() && !e.isHandled() && getParent() != null)
+        if (!e.isHandled() && getParent() != null)
         {
             setIsHovered(true);
-            e.setIsHandled(true);
+            e.setIsHandled(isHovered());
         }
     }
 
@@ -857,7 +864,7 @@ setBackgroundColour(0x00000000);
         double amountScrolled = 0.0;
         double amountToScroll = -10.0 * e.amount;
 
-        if (GuiUtil.isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL))
+        if (GuiUtil.isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL) || GuiUtil.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL))
         {
             amountScrolled = scrollX(amountToScroll);
         }

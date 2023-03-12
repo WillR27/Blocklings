@@ -93,7 +93,7 @@ public class GridPanel extends Control
                             availableCellWidth = Math.max(0.0, remainingWidth);
                         }
 
-                        control.doMeasure(availableCellWidth, 0.0);
+                        control.doMeasure(availableCellWidth, -1.0);
 
                         double desiredWidth = control.getDesiredWidth() + control.getMarginWidth();
 
@@ -126,7 +126,7 @@ public class GridPanel extends Control
                             availableCellHeight = Math.max(0.0, remainingHeight);
                         }
 
-                        control.doMeasure(0.0, availableCellHeight);
+                        control.doMeasure(-1.0, availableCellHeight);
 
                         double desiredHeight = control.getDesiredHeight() + control.getMarginHeight();
 

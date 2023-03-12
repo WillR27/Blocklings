@@ -31,7 +31,17 @@ public class TextFieldControl extends Control
      * The underlying {@link TextFieldWidget};
      */
     @Nonnull
-    protected final TextFieldWidget textFieldWidget = new TextFieldWidget(font, 0, 0, 100, font.lineHeight - 2, new StringTextComponent("message?"));
+    protected final TextFieldWidget textFieldWidget = new TextFieldWidget(font, 0, 0, 100, font.lineHeight - 1, new StringTextComponent("message?"));
+
+    /**
+     * The amount to offset the text field's x position by.
+     */
+    private double textFieldXRemainder = 0.0;
+
+    /**
+     * The amount to offset the text field's y position by.
+     */
+    private double textFieldYRemainder = 0.0;
 
     /**
      */
@@ -49,6 +59,7 @@ public class TextFieldControl extends Control
         setHorizontalContentAlignment(0.0);
         setVerticalContentAlignment(0.5);
         setPadding(6, 3, 6, 3);
+        setHeight(20.0);
     }
 
     /**
@@ -58,8 +69,12 @@ public class TextFieldControl extends Control
     {
         textFieldWidget.setWidth((int) Math.min(getPixelWidthWithoutPadding() / getGuiScale(), (getPixelWidthWithoutPadding() / getGuiScale())));
 
-        textFieldWidget.x = (int) (((getPixelX() / getGuiScale()) + Math.max(0.0, getWidthWithoutPadding() - font.width(getText())) * getHorizontalContentAlignment()) + getPadding().left);
-        textFieldWidget.y = (int) (((getPixelY() / getGuiScale()) + (getHeightWithoutPadding() - textFieldWidget.getHeight()) * getVerticalContentAlignment()) + getPadding().top);
+        double screenX = ((getPixelX() / getGuiScale()) + Math.max(0.0, getWidthWithoutPadding() - font.width(getText())) * getHorizontalContentAlignment()) + getPadding().left;
+        double screenY = ((getPixelY() / getGuiScale()) + (getHeightWithoutPadding() - textFieldWidget.getHeight()) * getVerticalContentAlignment()) + getPadding().top;
+        textFieldWidget.x = (int) screenX;
+        textFieldWidget.y = (int) screenY;
+        textFieldXRemainder = screenX - textFieldWidget.x;
+        textFieldYRemainder = screenY - textFieldWidget.y;
     }
 
     @Override
@@ -78,16 +93,24 @@ public class TextFieldControl extends Control
 
         if (shouldRenderBackground())
         {
-            // I have no idea why this is needed. Without it, the text field's text is rendered behind the background.
-            RenderSystem.disableDepthTest();
-
-            renderRectangleAsBackground(matrixStack, isFocused() ? 0xffdddddd : 0xffaaaaaa);
             renderRectangleAsBackground(matrixStack, 0xff111111, 1, 1, (int) (getWidth() - 2), (int) (getHeight() - 2));
-
-            RenderSystem.enableDepthTest();
         }
 
-        textFieldWidget.renderButton(new MatrixStack(), (int) Math.round(mouseX), (int) Math.round(mouseY), partialTicks);
+        MatrixStack textFieldMatrixStack = new MatrixStack();
+        textFieldMatrixStack.translate(textFieldXRemainder, textFieldYRemainder, 0.0);
+        textFieldWidget.renderButton(textFieldMatrixStack, (int) Math.round(mouseX), (int) Math.round(mouseY), partialTicks);
+
+        // Reset the color to white so that the rest of the GUI renders properly.
+        // The text field renders a blue highlight which can cascade into other controls.
+        RenderSystem.color3f(1.0f, 1.0f, 1.0f);
+
+        if (shouldRenderBackground)
+        {
+            renderRectangleAsBackground(matrixStack, isFocused() ? 0xffdddddd : 0xffaaaaaa, 0, 0, 1, getHeight());
+            renderRectangleAsBackground(matrixStack, isFocused() ? 0xffdddddd : 0xffaaaaaa, getWidth() - 1, 0, 1, getHeight());
+            renderRectangleAsBackground(matrixStack, isFocused() ? 0xffdddddd : 0xffaaaaaa, 0, 0, getWidth(), 1);
+            renderRectangleAsBackground(matrixStack, isFocused() ? 0xffdddddd : 0xffaaaaaa, 0, getHeight() - 1, getWidth(), 1);
+        }
     }
 
     @Override
@@ -95,13 +118,19 @@ public class TextFieldControl extends Control
     {
         double textFieldMouseX = e.mouseX / getGuiScale();
         double textFieldMouseY = e.mouseY / getGuiScale();
-        boolean flag = textFieldMouseX < (double)textFieldWidget.x;
+        boolean beforeStartOfText = textFieldMouseX < (double)textFieldWidget.x;
+        boolean afterEndOfText = textFieldMouseX > (double)(textFieldWidget.x + textFieldWidget.getWidth());
 
         textFieldWidget.mouseClicked(textFieldMouseX, textFieldMouseY, e.button);
 
-        if (flag)
+        if (beforeStartOfText)
         {
             textFieldWidget.moveCursorToStart();
+            textFieldWidget.setFocus(true);
+        }
+        else if (afterEndOfText)
+        {
+            textFieldWidget.moveCursorToEnd();
             textFieldWidget.setFocus(true);
         }
 
@@ -186,11 +215,12 @@ public class TextFieldControl extends Control
     public void setText(@Nonnull String text)
     {
         textFieldWidget.setValue(text);
+        textFieldWidget.moveCursorToStart();
     }
 
     public void setText(@Nonnull ITextComponent text)
     {
-        textFieldWidget.setValue(text.getString());
+        setText(text.getString());
     }
 
     /**
