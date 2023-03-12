@@ -80,7 +80,7 @@ public class StatControl extends Control
         valueControl.setFitWidthToContent(true);
         valueControl.setFitHeightToContent(true);
         valueControl.setTextColour(0xffffe100);
-        valueControl.setVerticalAlignment(0.0);
+        valueControl.setVerticalAlignment(0.5);
         valueControl.setText(new StringTextComponent(valueSupplier.get()));
         valueControl.useDescenderlessLineHeight();
 
