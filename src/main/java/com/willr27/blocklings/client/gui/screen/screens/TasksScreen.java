@@ -237,7 +237,7 @@ public class TasksScreen extends TabbedScreen
             tooltip.add(taskType.name.withStyle(TextFormatting.GOLD).getVisualOrderText());
             tooltip.add(StringTextComponent.EMPTY.getVisualOrderText());
             tooltip.addAll(GuiUtil.splitText(font, taskType.desc, 200).stream().map(s -> s.withStyle(TextFormatting.WHITE).getVisualOrderText()).collect(Collectors.toList()));
-            ComboBoxControl.Item item = new ComboBoxControl.Item(taskType.name, taskType, taskType.texture.toTexture().dy(1).dHeight(-2), tooltip);
+            ComboBoxControl.Item item = new ComboBoxControl.Item(taskType.name, taskType, taskType.texture.toTexture().dx(1).dy(1).dWidth(-2).dHeight(-2), tooltip);
 
             if (taskType == task.getType())
             {
@@ -251,7 +251,7 @@ public class TasksScreen extends TabbedScreen
 
         List<IReorderingProcessor> tooltip = new ArrayList<>();
         tooltip.add(BlocklingTasks.NULL.name.withStyle(TextFormatting.GOLD).getVisualOrderText());
-        ComboBoxControl.Item item = new ComboBoxControl.Item(BlocklingTasks.NULL.name, BlocklingTasks.NULL, BlocklingTasks.NULL.texture.toTexture().dy(1).dHeight(-2), tooltip);
+        ComboBoxControl.Item item = new ComboBoxControl.Item(BlocklingTasks.NULL.name, BlocklingTasks.NULL, BlocklingTasks.NULL.texture.toTexture().dx(1).dy(1).dWidth(-2).dHeight(-2), tooltip);
 
         if (BlocklingTasks.NULL == task.getType())
         {
