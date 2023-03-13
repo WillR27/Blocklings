@@ -1,5 +1,6 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
+import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.TabbedUIControl;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseClickedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
@@ -33,6 +34,13 @@ public abstract class TabbedContainerScreen<T extends Container> extends Blockli
     public TabbedContainerScreen(@Nonnull BlocklingEntity blockling, @Nonnull T container, @Nonnull TabbedUIControl.Tab selectedTab)
     {
         super(blockling, container);
+
+        Control background = new Control();
+        background.setParent(screenControl);
+        background.setInteractive(false);
+        background.setWidthPercentage(1.0);
+        background.setHeightPercentage(1.0);
+        background.setBackgroundColour(0xaa000000);
 
         tabbedUIControl = new TabbedUIControl(blockling, selectedTab)
         {

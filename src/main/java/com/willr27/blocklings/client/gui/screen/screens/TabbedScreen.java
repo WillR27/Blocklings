@@ -1,5 +1,6 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
+import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.TabbedUIControl;
 import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
@@ -27,6 +28,13 @@ public abstract class TabbedScreen extends BlocklingsScreen
     public TabbedScreen(@Nonnull BlocklingEntity blockling, @Nonnull TabbedUIControl.Tab selectedTab)
     {
         super(blockling);
+
+        Control background = new Control();
+        background.setParent(screenControl);
+        background.setInteractive(false);
+        background.setWidthPercentage(1.0);
+        background.setHeightPercentage(1.0);
+        background.setBackgroundColour(0xaa000000);
 
         tabbedUIControl = new TabbedUIControl(blockling, selectedTab);
         tabbedUIControl.setParent(screenControl);
