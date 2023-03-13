@@ -31,4 +31,10 @@ public abstract class TabbedScreen extends BlocklingsScreen
         tabbedUIControl = new TabbedUIControl(blockling, selectedTab);
         tabbedUIControl.setParent(screenControl);
     }
+
+    @Override
+    public boolean isPauseScreen()
+    {
+        return false;
+    }
 }

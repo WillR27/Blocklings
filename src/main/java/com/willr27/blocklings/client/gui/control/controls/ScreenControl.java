@@ -8,13 +8,11 @@ import com.willr27.blocklings.client.gui.control.event.events.FocusChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.TryDragEvent;
 import com.willr27.blocklings.client.gui.control.event.events.TryHoverEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.*;
-import com.willr27.blocklings.client.gui.properties.Visibility;
+import com.willr27.blocklings.client.gui.screen.BlocklingsContainerScreen;
 import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
-import com.willr27.blocklings.client.gui3.RenderArgs;
 import com.willr27.blocklings.client.gui3.util.GuiUtil;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -22,7 +20,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -236,6 +233,12 @@ public class ScreenControl extends Control
     }
 
     @Override
+    protected void onMouseClicked(@Nonnull MouseClickedEvent e)
+    {
+
+    }
+
+    @Override
     public void forwardMouseReleased(@Nonnull MouseReleasedEvent e)
     {
         forwardGlobalMouseReleased(e);
@@ -246,10 +249,22 @@ public class ScreenControl extends Control
     }
 
     @Override
+    protected void onMouseReleased(@Nonnull MouseReleasedEvent e)
+    {
+
+    }
+
+    @Override
     public void forwardMouseScrolled(@Nonnull MouseScrolledEvent e)
     {
         forwardGlobalMouseScrolled(e);
         super.forwardMouseScrolled(e);
+    }
+
+    @Override
+    protected void onMouseScrolled(@Nonnull MouseScrolledEvent e)
+    {
+
     }
 
     @Override

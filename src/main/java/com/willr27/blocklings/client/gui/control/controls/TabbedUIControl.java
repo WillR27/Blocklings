@@ -5,6 +5,7 @@ import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseClickedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrolledEvent;
 import com.willr27.blocklings.client.gui.texture.Texture;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
@@ -64,10 +65,12 @@ public class TabbedUIControl extends Control
         setHeight(166);
         setHorizontalAlignment(0.5);
         setVerticalAlignment(0.5);
+        setShouldSnapToScreenCoords(true);
 
         backgroundControl = new TexturedControl(selectedTab.backgroundTexture);
         backgroundControl.setParent(this);
         backgroundControl.setHorizontalAlignment(0.5);
+        backgroundControl.setInteractive(false);
 
         StackPanel leftTabsPanel = new StackPanel();
         leftTabsPanel.setParent(this);
@@ -98,7 +101,26 @@ public class TabbedUIControl extends Control
             }
         }
 
-        contentControl = new Control();
+        contentControl = new Control()
+        {
+            @Override
+            protected void onMouseClicked(@Nonnull MouseClickedEvent e)
+            {
+
+            }
+
+            @Override
+            protected void onMouseReleased(@Nonnull MouseReleasedEvent e)
+            {
+
+            }
+
+            @Override
+            protected void onMouseScrolled(@Nonnull MouseScrolledEvent e)
+            {
+
+            }
+        };
         contentControl.setParent(this);
         contentControl.setWidth(160);
         contentControl.setHeight(150);
