@@ -118,6 +118,8 @@
   "blocklings.skill.buy_confirmation": "Are you sure you want to unlock %s?",
   "blocklings.skill.unknown": "???",
   "blocklings.skill.name": "Skill",
+  "blocklings.skill.buy.yes": "Yes",
+  "blocklings.skill.buy.no": "No",
 
   "blocklings.skill.general.heal.name": "Heal",
   "blocklings.skill.general.heal.desc": "Right-click on your blockling with flowers or their respective type items to heal 3-5 health.",

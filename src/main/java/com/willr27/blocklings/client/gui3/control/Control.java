@@ -731,7 +731,7 @@ public class Control extends Gui
      */
     protected void applyPreRenderTransformations(@Nonnull RenderArgs renderArgs)
     {
-        float scale = getCumulativeScale() * GuiUtil.getInstance().getGuiScale();
+        float scale = getCumulativeScale() * GuiUtil.get().getGuiScale();
 
         // Scale the control, but also make sure to cancel out the translation caused by the scaling.
         renderArgs.matrixStack.pushPose();
@@ -991,7 +991,7 @@ public class Control extends Gui
      */
     public void renderTooltip(@Nonnull RenderArgs renderArgs, @Nonnull List<IReorderingProcessor> tooltip)
     {
-        Minecraft.getInstance().screen.renderTooltip(renderArgs.matrixStack, tooltip, (int) (renderArgs.pixelMouseX / (GuiUtil.getInstance().getGuiScale() * getCumulativeScale())), (int) (renderArgs.pixelMouseY / (GuiUtil.getInstance().getGuiScale() * getCumulativeScale())));
+        Minecraft.getInstance().screen.renderTooltip(renderArgs.matrixStack, tooltip, (int) (renderArgs.pixelMouseX / (GuiUtil.get().getGuiScale() * getCumulativeScale())), (int) (renderArgs.pixelMouseY / (GuiUtil.get().getGuiScale() * getCumulativeScale())));
     }
 
      /**
@@ -1095,8 +1095,8 @@ public class Control extends Gui
             {
                 int pixelDragDifX = mousePosEvent.mousePixelX - getScreen().getPressedStartPixelX();
                 int pixelDragDifY = mousePosEvent.mousePixelY - getScreen().getPressedStartPixelY();
-                int localDragDifX = Math.round((pixelDragDifX / getCumulativeScale()) / GuiUtil.getInstance().getGuiScale());
-                int localDragDifY = Math.round((pixelDragDifY / getCumulativeScale()) / GuiUtil.getInstance().getGuiScale());
+                int localDragDifX = Math.round((pixelDragDifX / getCumulativeScale()) / GuiUtil.get().getGuiScale());
+                int localDragDifY = Math.round((pixelDragDifY / getCumulativeScale()) / GuiUtil.get().getGuiScale());
                 int absLocalDragDifX = Math.abs(localDragDifX);
                 int absLocalDragDifY = Math.abs(localDragDifY);
 
@@ -1523,7 +1523,7 @@ public class Control extends Gui
     {
         float scrollAmount = (float) ((getScrollSpeed() / (getCumulativeScale() * getCumulativeScale())) * -1.0f * mouseScrollEvent.scrollAmount);
 
-        if (GuiUtil.getInstance().isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL) || GuiUtil.getInstance().isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL))
+        if (GuiUtil.get().isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL) || GuiUtil.get().isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL))
         {
             if (isScrollableX())
             {
@@ -1969,7 +1969,7 @@ public class Control extends Gui
      */
     public final float getScreenX()
     {
-        return getPixelX() / GuiUtil.getInstance().getGuiScale();
+        return getPixelX() / GuiUtil.get().getGuiScale();
     }
 
     /**
@@ -1987,11 +1987,11 @@ public class Control extends Gui
     {
         if (getParent() != null)
         {
-            pixelX = Math.round(getParent().getPixelX() + (getX() * getParent().getCumulativeInnerScale() * GuiUtil.getInstance().getGuiScale()));
+            pixelX = Math.round(getParent().getPixelX() + (getX() * getParent().getCumulativeInnerScale() * GuiUtil.get().getGuiScale()));
         }
         else
         {
-            pixelX = Math.round(getX() * GuiUtil.getInstance().getGuiScale());
+            pixelX = Math.round(getX() * GuiUtil.get().getGuiScale());
         }
 
         children.forEach(Control::recalcPixelX);
@@ -2002,7 +2002,7 @@ public class Control extends Gui
      */
     public final float getScreenY()
     {
-        return getPixelY() / GuiUtil.getInstance().getGuiScale();
+        return getPixelY() / GuiUtil.get().getGuiScale();
     }
 
     /**
@@ -2020,11 +2020,11 @@ public class Control extends Gui
     {
         if (getParent() != null)
         {
-            pixelY = Math.round(getParent().getPixelY() + (getY() * getParent().getCumulativeInnerScale() * GuiUtil.getInstance().getGuiScale()));
+            pixelY = Math.round(getParent().getPixelY() + (getY() * getParent().getCumulativeInnerScale() * GuiUtil.get().getGuiScale()));
         }
         else
         {
-            pixelY = Math.round(getY() * GuiUtil.getInstance().getGuiScale());
+            pixelY = Math.round(getY() * GuiUtil.get().getGuiScale());
         }
 
         children.forEach(Control::recalcPixelY);
@@ -2145,7 +2145,7 @@ public class Control extends Gui
      */
     public float getScreenWidth()
     {
-        return getPixelWidth() / GuiUtil.getInstance().getGuiScale();
+        return getPixelWidth() / GuiUtil.get().getGuiScale();
     }
 
     /**
@@ -2153,7 +2153,7 @@ public class Control extends Gui
      */
     public int getEffectivePixelWidth()
     {
-        return Math.round((getWidth() + getMargin(Side.LEFT) + getMargin(Side.RIGHT)) * getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
+        return Math.round((getWidth() + getMargin(Side.LEFT) + getMargin(Side.RIGHT)) * getCumulativeScale() * GuiUtil.get().getGuiScale());
     }
 
     /**
@@ -2169,7 +2169,7 @@ public class Control extends Gui
      */
     public final void recalcPixelWidth()
     {
-        pixelWidth = Math.round(getWidth() * getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
+        pixelWidth = Math.round(getWidth() * getCumulativeScale() * GuiUtil.get().getGuiScale());
     }
 
     /**
@@ -2177,7 +2177,7 @@ public class Control extends Gui
      */
     public float getScreenHeight()
     {
-        return getPixelHeight() / GuiUtil.getInstance().getGuiScale();
+        return getPixelHeight() / GuiUtil.get().getGuiScale();
     }
 
     /**
@@ -2185,7 +2185,7 @@ public class Control extends Gui
      */
     public int getEffectivePixelHeight()
     {
-        return Math.round((getHeight() + getMargin(Side.TOP) + getMargin(Side.BOTTOM)) * getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
+        return Math.round((getHeight() + getMargin(Side.TOP) + getMargin(Side.BOTTOM)) * getCumulativeScale() * GuiUtil.get().getGuiScale());
     }
 
     /**
@@ -2201,7 +2201,7 @@ public class Control extends Gui
      */
     public final void recalcPixelHeight()
     {
-        pixelHeight = Math.round(getHeight() * getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
+        pixelHeight = Math.round(getHeight() * getCumulativeScale() * GuiUtil.get().getGuiScale());
     }
 
     /**
@@ -2731,7 +2731,7 @@ public class Control extends Gui
      */
     public float toLocalX(float pixelX)
     {
-        return (pixelX - getPixelX()) / (getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
+        return (pixelX - getPixelX()) / (getCumulativeScale() * GuiUtil.get().getGuiScale());
     }
 
     /**
@@ -2739,7 +2739,7 @@ public class Control extends Gui
      */
     public float toLocalY(float pixelY)
     {
-        return (pixelY - getPixelY()) / (getCumulativeScale() * GuiUtil.getInstance().getGuiScale());
+        return (pixelY - getPixelY()) / (getCumulativeScale() * GuiUtil.get().getGuiScale());
     }
 
     /**
@@ -2747,7 +2747,7 @@ public class Control extends Gui
      */
     public static int toScreenX(int pixelX)
     {
-        return (int) (pixelX / GuiUtil.getInstance().getGuiScale());
+        return (int) (pixelX / GuiUtil.get().getGuiScale());
     }
 
     /**
@@ -2755,7 +2755,7 @@ public class Control extends Gui
      */
     public static int toScreenY(int pixelY)
     {
-        return (int) (pixelY / GuiUtil.getInstance().getGuiScale());
+        return (int) (pixelY / GuiUtil.get().getGuiScale());
     }
 
     /**

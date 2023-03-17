@@ -27,7 +27,7 @@ public abstract class GuiUtil
      * @return the instance of {@link GuiUtil}.
      */
     @Nonnull
-    public static GuiUtil getInstance()
+    public static GuiUtil get()
     {
         if (instance == null)
         {
@@ -48,6 +48,11 @@ public abstract class GuiUtil
      * @return the current gui scale.
      */
     public abstract float getGuiScale();
+
+    /**
+     * @return the maximum gui scale.
+     */
+    public abstract float getMaxGuiScale();
 
     /**
      * @return the current mouse pixel x coordinate.

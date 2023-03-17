@@ -97,7 +97,7 @@ public class TaskControl extends Control
             }
 
             @Override
-            public void onDragStart()
+            public void onDragStart(double mouseX, double mouseY)
             {
                 iconTexture = task != null ? task.getType().texture.toTexture() : Textures.Tasks.TASK_CONFIG_ICON;
             }

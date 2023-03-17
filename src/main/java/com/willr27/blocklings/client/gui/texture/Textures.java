@@ -6,6 +6,9 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import java.util.Random;
+
+import static net.minecraft.client.gui.widget.Widget.WIDGETS_LOCATION;
 
 /**
  * A collection of all gui textures used.
@@ -16,6 +19,9 @@ public class Textures
     public static class Common
     {
         public static final ResourceLocation COMMON = new BlocklingsResourceLocation("textures/gui/common_widgets.png");
+
+        public static final Texture BUTTON = new Texture(WIDGETS_LOCATION, 0, 66, 200, 20);
+        public static final Texture BUTTON_HOVERED = new Texture(WIDGETS_LOCATION, 0, 86, 200, 20);
 
         public static final Texture NODE_UNPRESSED = new Texture(COMMON, 46, 0, 12, 12);
         public static final Texture NODE_PRESSED = new Texture(COMMON, 58, 0, 12, 12);
@@ -165,5 +171,33 @@ public class Textures
     {
         public static final ResourceLocation SKILLS = new BlocklingsResourceLocation("textures/gui/skills.png");
         public static final Texture BACKGROUND = new Texture(SKILLS, 0, 0, 176, 166);
+
+        public static final Texture MAXIMISE_BUTTON = new Texture(SKILLS, 0, 206, 11, 11);
+        public static final Texture MAXIMISE_BUTTON_HOVERED = new Texture(SKILLS, 11, 206, 11, 11);
+
+        public static final Texture STAT_SKILL_BACKGROUND = new Texture(SKILLS, 0, 217, 24, 24);
+        public static final Texture AI_SKILL_BACKGROUND_HOVERED = new Texture(SKILLS, 24, 217, 24, 24);
+        public static final Texture UTILITY_SKILL_BACKGROUND = new Texture(SKILLS, 48, 217, 24, 24);
+        public static final Texture OTHER_SKILL_BACKGROUND_HOVERED = new Texture(SKILLS, 72, 217, 24, 24);
+
+        public static class Combat
+        {
+            public static final Tiles TILES = new Tiles("textures/gui/skills_backgrounds/mining.png");
+        }
+
+        public static class Tiles extends BlocklingsResourceLocation
+        {
+            public static final int TILE_SIZE = 16;
+
+            private Tiles(@Nonnull String path)
+            {
+                super(path);
+            }
+
+            public Texture randomTile(@Nonnull Random random)
+            {
+                return new Texture(this, random.nextInt(256 / TILE_SIZE) * TILE_SIZE, random.nextInt(256 / TILE_SIZE) * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            }
+        }
     }
 }

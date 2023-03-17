@@ -6,7 +6,6 @@ import com.willr27.blocklings.client.gui.control.event.events.input.*;
 import com.willr27.blocklings.client.gui3.util.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;
@@ -95,8 +94,8 @@ public class BlocklingsContainerScreen<T extends Container> extends ContainerScr
     @Override
     public boolean mouseClicked(double screenMouseX, double screenMouseY, int button)
     {
-        double mouseX = GuiUtil.getInstance().getPixelMouseX();
-        double mouseY = GuiUtil.getInstance().getPixelMouseY();
+        double mouseX = GuiUtil.get().getPixelMouseX();
+        double mouseY = GuiUtil.get().getPixelMouseY();
 
         MouseClickedEvent e = new MouseClickedEvent(mouseX, mouseY, button);
 
@@ -108,8 +107,8 @@ public class BlocklingsContainerScreen<T extends Container> extends ContainerScr
     @Override
     public boolean mouseReleased(double screenMouseX, double screenMouseY, int button)
     {
-        double mouseX = GuiUtil.getInstance().getPixelMouseX();
-        double mouseY = GuiUtil.getInstance().getPixelMouseY();
+        double mouseX = GuiUtil.get().getPixelMouseX();
+        double mouseY = GuiUtil.get().getPixelMouseY();
 
         MouseReleasedEvent e = new MouseReleasedEvent(mouseX, mouseY, button);
 
@@ -121,8 +120,8 @@ public class BlocklingsContainerScreen<T extends Container> extends ContainerScr
     @Override
     public boolean mouseScrolled(double screenMouseX, double screenMouseY, double amount)
     {
-        double mouseX = GuiUtil.getInstance().getPixelMouseX();
-        double mouseY = GuiUtil.getInstance().getPixelMouseY();
+        double mouseX = GuiUtil.get().getPixelMouseX();
+        double mouseY = GuiUtil.get().getPixelMouseY();
 
         MouseScrolledEvent e = new MouseScrolledEvent(mouseX, mouseY, amount);
 

@@ -70,7 +70,7 @@ public class EntityControl extends Control
         float lookX = getLookX() != null ? getLookX() : (float) (mouseX / getGuiScale());
         float lookY = getLookY() != null ? getLookY() : (float) (mouseY / getGuiScale());
 
-        GuiUtil.getInstance().renderEntityOnScreen(new MatrixStack(), entity, (int) x, (int) y, lookX, lookY, (float) scale, shouldScaleToBoundingBox());
+        GuiUtil.get().renderEntityOnScreen(new MatrixStack(), entity, (int) x, (int) y, lookX, lookY, (float) scale, shouldScaleToBoundingBox());
     }
 
     /**

@@ -13,6 +13,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
  * A panel that stacks its children on top of each other.
@@ -241,6 +242,64 @@ public class StackPanel extends Control
             else if (getDirection() == Direction.BOTTOM_TO_TOP)
             {
                 nextControlY -= control.getMargin().right + getSpacing();
+            }
+        }
+
+        if (getHorizontalContentAlignment() != null)
+        {
+            double minX = Double.POSITIVE_INFINITY;
+            double maxX = Double.NEGATIVE_INFINITY;
+
+            for (BaseControl controlToAlign : getChildren())
+            {
+                double controlToAlignMinX = controlToAlign.getX() - controlToAlign.getMargin().left;
+                double controlToAlignMaxX = controlToAlign.getX() + controlToAlign.getWidth() + controlToAlign.getMargin().right;
+
+                if (controlToAlignMinX < minX)
+                {
+                    minX = controlToAlignMinX;
+                }
+
+                if (controlToAlignMaxX > maxX)
+                {
+                    maxX = controlToAlignMaxX;
+                }
+            }
+
+            double dif = ((getWidthWithoutPadding() * getInnerScale().x) - (maxX - minX)) * getHorizontalContentAlignment();
+
+            for (BaseControl controlToAlign : getChildren())
+            {
+                controlToAlign.setX(controlToAlign.getX() + dif);
+            }
+        }
+
+        if (getVerticalContentAlignment() != null)
+        {
+            double minY = Double.POSITIVE_INFINITY;
+            double maxY = Double.NEGATIVE_INFINITY;
+
+            for (BaseControl controlToAlign : getChildren())
+            {
+                double controlToAlignMinY = controlToAlign.getY() - controlToAlign.getMargin().top;
+                double controlToAlignMaxY = controlToAlign.getY() + controlToAlign.getHeight() + controlToAlign.getMargin().bottom;
+
+                if (controlToAlignMinY < minY)
+                {
+                    minY = controlToAlignMinY;
+                }
+
+                if (controlToAlignMaxY > maxY)
+                {
+                    maxY = controlToAlignMaxY;
+                }
+            }
+
+            double dif = ((getHeightWithoutPadding() * getInnerScale().y) - (maxY - minY)) * getVerticalContentAlignment();
+
+            for (BaseControl controlToAlign : getChildren())
+            {
+                controlToAlign.setY(controlToAlign.getY() + dif);
             }
         }
     }

@@ -178,9 +178,9 @@ public class ScreenControl extends Control
      */
     public void render(@Nonnull MatrixStack matrixStack, int screenMouseX, int screenMouseY, float partialTicks)
     {
-        float guiScale = GuiUtil.getInstance().getGuiScale();
-        double mouseX = GuiUtil.getInstance().getPixelMouseX();
-        double mouseY = GuiUtil.getInstance().getPixelMouseY();
+        float guiScale = GuiUtil.get().getGuiScale();
+        double mouseX = GuiUtil.get().getPixelMouseX();
+        double mouseY = GuiUtil.get().getPixelMouseY();
 
         TryHoverEvent e = new TryHoverEvent(mouseX, mouseY);
 
@@ -357,6 +357,8 @@ public class ScreenControl extends Control
             if (control != null)
             {
                 control.onPressStart();
+                setPressedStartPixelX(GuiUtil.get().getPixelMouseX());
+                setPressedStartPixelY(GuiUtil.get().getPixelMouseY());
             }
         }
 
@@ -413,7 +415,7 @@ public class ScreenControl extends Control
 
             if (control != null)
             {
-                control.onDragStart();
+                control.onDragStart(GuiUtil.get().getPixelMouseX(), GuiUtil.get().getPixelMouseY());
             }
         }
 
@@ -425,8 +427,18 @@ public class ScreenControl extends Control
         return pressedStartPixelX;
     }
 
+    public void setPressedStartPixelX(double pressedStartPixelX)
+    {
+        this.pressedStartPixelX = pressedStartPixelX;
+    }
+
     public double getPressedStartPixelY()
     {
         return pressedStartPixelY;
+    }
+
+    public void setPressedStartPixelY(double pressedStartPixelY)
+    {
+        this.pressedStartPixelY = pressedStartPixelY;
     }
 }

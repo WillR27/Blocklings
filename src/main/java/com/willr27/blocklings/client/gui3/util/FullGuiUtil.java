@@ -28,6 +28,12 @@ public class FullGuiUtil extends GuiUtil
     }
 
     @Override
+    public float getMaxGuiScale()
+    {
+        return (float) Minecraft.getInstance().getWindow().calculateScale(0, Minecraft.getInstance().isEnforceUnicode());
+    }
+
+    @Override
     public int getPixelMouseX()
     {
         return (int) Minecraft.getInstance().mouseHandler.xpos();

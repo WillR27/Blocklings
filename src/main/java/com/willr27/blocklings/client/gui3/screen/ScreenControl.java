@@ -101,9 +101,9 @@ public class ScreenControl extends Control implements IScreen
      */
     public void render(@Nonnull MatrixStack matrixStack, int screenMouseX, int screenMouseY, float partialTicks)
     {
-        float guiScale = GuiUtil.getInstance().getGuiScale();
-        int pixelMouseX = GuiUtil.getInstance().getPixelMouseX();
-        int pixelMouseY = GuiUtil.getInstance().getPixelMouseY();
+        float guiScale = GuiUtil.get().getGuiScale();
+        int pixelMouseX = GuiUtil.get().getPixelMouseX();
+        int pixelMouseY = GuiUtil.get().getPixelMouseY();
 
         {
             MousePosEvent mousePosEvent = new MousePosEvent(Math.round(toLocalX(pixelMouseX)), Math.round(toLocalY(pixelMouseY)), pixelMouseX, pixelMouseY);
@@ -159,8 +159,8 @@ public class ScreenControl extends Control implements IScreen
     {
         wasMouseClickedBeforeRelease = true;
 
-        int pixelMouseX = GuiUtil.getInstance().getPixelMouseX();
-        int pixelMouseY = GuiUtil.getInstance().getPixelMouseY();
+        int pixelMouseX = GuiUtil.get().getPixelMouseX();
+        int pixelMouseY = GuiUtil.get().getPixelMouseY();
 
         MouseButtonEvent mouseButtonEvent = new MouseButtonEvent(Math.round(toLocalX(pixelMouseX)), Math.round(toLocalY(pixelMouseY)), pixelMouseX, pixelMouseY, mouseButton);
 
@@ -191,8 +191,8 @@ public class ScreenControl extends Control implements IScreen
 
         wasMouseClickedBeforeRelease = false;
 
-        int pixelMouseX = GuiUtil.getInstance().getPixelMouseX();
-        int pixelMouseY = GuiUtil.getInstance().getPixelMouseY();
+        int pixelMouseX = GuiUtil.get().getPixelMouseX();
+        int pixelMouseY = GuiUtil.get().getPixelMouseY();
 
         MouseButtonEvent mouseButtonEvent = new MouseButtonEvent(Math.round(toLocalX(pixelMouseX)), Math.round(toLocalY(pixelMouseY)), pixelMouseX, pixelMouseY, mouseButton);
 
@@ -212,8 +212,8 @@ public class ScreenControl extends Control implements IScreen
      */
     public boolean mouseScrolled(double screenMouseX, double screenMouseY, double scrollAmount)
     {
-        int pixelMouseX = GuiUtil.getInstance().getPixelMouseX();
-        int pixelMouseY = GuiUtil.getInstance().getPixelMouseY();
+        int pixelMouseX = GuiUtil.get().getPixelMouseX();
+        int pixelMouseY = GuiUtil.get().getPixelMouseY();
 
         MouseScrollEvent mouseScrollEvent = new MouseScrollEvent(Math.round(toLocalX(pixelMouseX)), Math.round(toLocalY(pixelMouseY)), pixelMouseX, pixelMouseY, scrollAmount);
 

@@ -8,10 +8,12 @@ import com.willr27.blocklings.client.gui.control.event.events.SizeChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.*;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
@@ -96,8 +98,21 @@ public class TextFieldControl extends Control
             renderRectangleAsBackground(matrixStack, 0xff111111, 1, 1, (int) (getWidth() - 2), (int) (getHeight() - 2));
         }
 
+        float z = isDraggingOrAncestor() ? (float) getDraggedControl().getDragZ() : (float) getRenderZ();
+
+        try
+        {
+            // For some reason we can't just access the values in the matrix.
+            // So we have to get the z translation via reflection. Nice.
+            z = ObfuscationReflectionHelper.getPrivateValue(Matrix4f.class, matrixStack.last().pose(), "m23");
+        }
+        catch (Exception ex)
+        {
+//            Blocklings.LOGGER.warn(ex.toString());
+        }
+
         MatrixStack textFieldMatrixStack = new MatrixStack();
-        textFieldMatrixStack.translate(textFieldXRemainder, textFieldYRemainder, 0.0);
+        textFieldMatrixStack.translate(textFieldXRemainder, textFieldYRemainder, z);
         textFieldWidget.renderButton(textFieldMatrixStack, (int) Math.round(mouseX), (int) Math.round(mouseY), partialTicks);
 
         // Reset the color to white so that the rest of the GUI renders properly.

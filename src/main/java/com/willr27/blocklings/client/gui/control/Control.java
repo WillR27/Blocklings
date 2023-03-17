@@ -298,13 +298,14 @@ public class Control extends BaseControl
             return;
         }
 
+        RenderSystem.color3f(1.0f, 1.0f, 1.0f);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.defaultAlphaFunc();
         RenderSystem.enableDepthTest();
 
         matrixStack.pushPose();
-        matrixStack.translate(0.0f, 0.0f, isDraggingOrAncestor() ? 100.0f : 0.0f);
+        matrixStack.translate(0.0f, 0.0f, isDraggingOrAncestor() ? getDraggedControl().getDragZ() : getRenderZ());
 
         applyScissor(scissorStack);
         onRenderUpdate(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
@@ -471,13 +472,13 @@ public class Control extends BaseControl
     @Override
     public void onPressStart()
     {
-setBackgroundColour(0xff0000ff);
+
     }
 
     @Override
     public void onPressEnd()
     {
-setBackgroundColour(0x00000000);
+
     }
 
     @Override
@@ -542,7 +543,7 @@ setBackgroundColour(0x00000000);
     }
 
     @Override
-    public void onDragStart()
+    public void onDragStart(double mouseX, double mouseY)
     {
 
     }
@@ -769,6 +770,11 @@ setBackgroundColour(0x00000000);
         }
 
         if (getVisibility() == Visibility.COLLAPSED)
+        {
+            return;
+        }
+
+        if (getDraggedControl() != null)
         {
             return;
         }

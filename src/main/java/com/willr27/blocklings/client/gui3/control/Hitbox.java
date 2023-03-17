@@ -88,10 +88,10 @@ public abstract class Hitbox
         @Override
         public boolean collidesWith(@Nonnull Control control, float pixelX, float pixelY)
         {
-            float lowX = control.getPixelX() + x * control.getCumulativeScale() * GuiUtil.getInstance().getGuiScale();
-            float highX = lowX + width * control.getCumulativeScale() * GuiUtil.getInstance().getGuiScale();
-            float lowY = control.getPixelY() + y * control.getCumulativeScale() * GuiUtil.getInstance().getGuiScale();
-            float highY = lowY + height * control.getCumulativeScale() * GuiUtil.getInstance().getGuiScale();
+            float lowX = control.getPixelX() + x * control.getCumulativeScale() * GuiUtil.get().getGuiScale();
+            float highX = lowX + width * control.getCumulativeScale() * GuiUtil.get().getGuiScale();
+            float lowY = control.getPixelY() + y * control.getCumulativeScale() * GuiUtil.get().getGuiScale();
+            float highY = lowY + height * control.getCumulativeScale() * GuiUtil.get().getGuiScale();
 
             return pixelX >= lowX &&
                    pixelX <  highX &&

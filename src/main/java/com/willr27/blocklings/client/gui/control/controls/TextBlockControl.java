@@ -121,7 +121,7 @@ public class TextBlockControl extends Control
         float x = (float) (Math.round(textScreenX * getGuiScale()) / getGuiScale());
         float y = (float) (Math.round(textScreenY * getGuiScale()) / getGuiScale());
 
-        float z = isDraggingOrAncestor() ? 100.0f : 0.0f;
+        float z = isDraggingOrAncestor() ? (float) getDraggedControl().getDragZ() : (float) getRenderZ();
 
         try
         {
@@ -135,7 +135,7 @@ public class TextBlockControl extends Control
         }
 
         MatrixStack matrixStack2 = new MatrixStack();
-        matrixStack2.translate(x, y, 0.0);
+        matrixStack2.translate(x, y, z);
         matrixStack2.scale((float) getScaleX(), (float) getScaleY(), 1.0f);
 
         if (shouldRenderShadow())

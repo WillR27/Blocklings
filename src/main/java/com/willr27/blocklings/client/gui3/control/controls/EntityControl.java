@@ -50,7 +50,7 @@ public class EntityControl extends Control
     {
         float minDimension = Math.min(getWidth(), getHeight());
         float scale = getEntityScale() * getCumulativeScale() * minDimension / 16.0f;
-        GuiUtil.getInstance().renderEntityOnScreen(new MatrixStack(), entity, (int) (getScreenX() + getScreenWidth() / 2 + getOffsetX() * scale), (int) (getScreenY() + getScreenHeight() + getOffsetY() * scale), toScreenX(renderArgs.pixelMouseX), toScreenY(renderArgs.pixelMouseY), scale, shouldScaleToBoundingBox());
+        GuiUtil.get().renderEntityOnScreen(new MatrixStack(), entity, (int) (getScreenX() + getScreenWidth() / 2 + getOffsetX() * scale), (int) (getScreenY() + getScreenHeight() + getOffsetY() * scale), toScreenX(renderArgs.pixelMouseX), toScreenY(renderArgs.pixelMouseY), scale, shouldScaleToBoundingBox());
     }
 
     /**

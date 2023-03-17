@@ -20,6 +20,12 @@ public class TestGuiUtil extends GuiUtil
     }
 
     @Override
+    public float getMaxGuiScale()
+    {
+        return 4.0f;
+    }
+
+    @Override
     public int getPixelMouseX()
     {
         return 0;

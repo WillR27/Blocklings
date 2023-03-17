@@ -25,7 +25,7 @@ import java.util.*;
 public abstract class BaseControl extends GuiControl
 {
     @Nonnull
-    public final Random random = new Random();
+    public static final Random random = new Random();
 
     @Nonnull
     public final ControlEventBus eventBus = new ControlEventBus();
@@ -75,6 +75,8 @@ public abstract class BaseControl extends GuiControl
 
     private boolean shouldSnapToScreenCoords = false;
 
+    private boolean shouldSnapToPixelCoords = false;
+
     @Nullable
     private Double horizontalAlignment = null;
     @Nullable
@@ -117,9 +119,13 @@ public abstract class BaseControl extends GuiControl
 
     private double dragThreshold = 4.0;
 
+    private double dragZ = 100.0;
+
     private boolean shouldBlockDrag = true;
 
     private boolean shouldScissor = true;
+
+    private double renderZ = 0.0;
 
     private int backgroundColour = 0x00000000;
 
@@ -171,7 +177,7 @@ public abstract class BaseControl extends GuiControl
     public abstract void onUnfocused();
 
     public abstract void forwardTryDrag(@Nonnull TryDragEvent e);
-    public abstract void onDragStart();
+    public abstract void onDragStart(double mouseX, double mouseY);
     public abstract void onDrag(double mouseX, double mouseY, float partialTicks);
     public abstract void onDragEnd();
 
@@ -288,6 +294,11 @@ public abstract class BaseControl extends GuiControl
 
     public void setParent(@Nullable BaseControl parent)
     {
+        if (getParent() == parent)
+        {
+            return;
+        }
+
         if (parent != null)
         {
             parent.addChild(this);
@@ -1169,6 +1180,10 @@ public abstract class BaseControl extends GuiControl
         {
             pixelX = Math.round(pixelX / getGuiScale()) * getGuiScale();
         }
+        else if (shouldSnapToPixelCoords())
+        {
+            pixelX = Math.round(pixelX);
+        }
 
         return pixelX;
     }
@@ -1213,6 +1228,10 @@ public abstract class BaseControl extends GuiControl
         if (shouldSnapToScreenCoords())
         {
             pixelY = Math.round(pixelY / getGuiScale()) * getGuiScale();
+        }
+        else if (shouldSnapToPixelCoords())
+        {
+            pixelY = Math.round(pixelY);
         }
 
         return pixelY;
@@ -1267,6 +1286,16 @@ public abstract class BaseControl extends GuiControl
     public void setShouldSnapToScreenCoords(boolean shouldSnapToScreenCoords)
     {
         this.shouldSnapToScreenCoords = shouldSnapToScreenCoords;
+    }
+
+    public boolean shouldSnapToPixelCoords()
+    {
+        return shouldSnapToPixelCoords;
+    }
+
+    public void setShouldSnapToPixelCoords(boolean shouldSnapToPixelCoords)
+    {
+        this.shouldSnapToPixelCoords = shouldSnapToPixelCoords;
     }
 
     @Nullable
@@ -1815,6 +1844,16 @@ public abstract class BaseControl extends GuiControl
         this.shouldBlockDrag = shouldBlockDrag;
     }
 
+    public double getDragZ()
+    {
+        return dragZ;
+    }
+
+    public void setDragZ(double dragZ)
+    {
+        this.dragZ = dragZ;
+    }
+
     public boolean isAncestorCollapsed()
     {
         if (getParent() == null)
@@ -1943,6 +1982,16 @@ public abstract class BaseControl extends GuiControl
         this.shouldScissor = shouldScissor;
     }
 
+    public double getRenderZ()
+    {
+        return renderZ;
+    }
+
+    public void setRenderZ(double renderZ)
+    {
+        this.renderZ = renderZ;
+    }
+
     public int getBackgroundColour()
     {
         return backgroundColour;
@@ -1958,7 +2007,7 @@ public abstract class BaseControl extends GuiControl
      */
     public double toLocalX(double pixelX)
     {
-        return (pixelX - getPixelPadding().left - getPixelX()) / getPixelScaleX();
+        return (pixelX - getPixelPadding().left - getPixelX()) / getPixelScaleX() / getInnerScale().x;
     }
 
     /**
@@ -1966,12 +2015,12 @@ public abstract class BaseControl extends GuiControl
      */
     public double toLocalY(double pixelY)
     {
-        return (pixelY - getPixelPadding().top - getPixelY()) / getPixelScaleY();
+        return (pixelY - getPixelPadding().top - getPixelY()) / getPixelScaleY() / getInnerScale().y;
     }
 
     public double getGuiScale()
     {
-        return GuiUtil.getInstance().getGuiScale();
+        return GuiUtil.get().getGuiScale();
     }
 
     public double getScaleX()

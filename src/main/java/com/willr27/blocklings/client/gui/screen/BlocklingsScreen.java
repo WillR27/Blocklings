@@ -67,8 +67,8 @@ public class BlocklingsScreen extends Screen
     @Override
     public boolean mouseClicked(double screenMouseX, double screenMouseY, int button)
     {
-        double mouseX = GuiUtil.getInstance().getPixelMouseX();
-        double mouseY = GuiUtil.getInstance().getPixelMouseY();
+        double mouseX = GuiUtil.get().getPixelMouseX();
+        double mouseY = GuiUtil.get().getPixelMouseY();
 
         MouseClickedEvent e = new MouseClickedEvent(mouseX, mouseY, button);
 
@@ -80,8 +80,8 @@ public class BlocklingsScreen extends Screen
     @Override
     public boolean mouseReleased(double screenMouseX, double screenMouseY, int button)
     {
-        double mouseX = GuiUtil.getInstance().getPixelMouseX();
-        double mouseY = GuiUtil.getInstance().getPixelMouseY();
+        double mouseX = GuiUtil.get().getPixelMouseX();
+        double mouseY = GuiUtil.get().getPixelMouseY();
 
         MouseReleasedEvent e = new MouseReleasedEvent(mouseX, mouseY, button);
 
@@ -93,8 +93,8 @@ public class BlocklingsScreen extends Screen
     @Override
     public boolean mouseScrolled(double screenMouseX, double screenMouseY, double amount)
     {
-        double mouseX = GuiUtil.getInstance().getPixelMouseX();
-        double mouseY = GuiUtil.getInstance().getPixelMouseY();
+        double mouseX = GuiUtil.get().getPixelMouseX();
+        double mouseY = GuiUtil.get().getPixelMouseY();
 
         MouseScrolledEvent e = new MouseScrolledEvent(mouseX, mouseY, amount);
 

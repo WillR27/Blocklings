@@ -51,6 +51,9 @@ public class TexturedControl extends Control
         setFitHeightToContent(true);
         setBackgroundTexture(backgroundTexture);
         setPressedBackgroundTexture(pressedBackgroundTexture);
+
+        setWidth(backgroundTexture.width);
+        setHeight(backgroundTexture.height);
     }
 
     @Override
@@ -133,7 +136,7 @@ public class TexturedControl extends Control
     }
 
     @Override
-    public void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+    protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
     {
         super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
 
