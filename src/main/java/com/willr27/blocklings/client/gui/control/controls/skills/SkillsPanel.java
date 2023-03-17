@@ -921,12 +921,10 @@ public class SkillsPanel extends CanvasPanel
             container.setFitHeightToContent(true);
             container.setDirection(Direction.TOP_TO_BOTTOM);
             container.setSpacing(20.0);
-            container.setRenderZ(0.4);
 
             messageContainer = new StackPanel();
             messageContainer.setParent(container);
             messageContainer.setDirection(Direction.TOP_TO_BOTTOM);
-            messageContainer.setRenderZ(0.4);
             messageContainer.setFitWidthToContent(true);
             messageContainer.setFitHeightToContent(true);
             messageContainer.setSpacing(1.0);
@@ -936,7 +934,6 @@ public class SkillsPanel extends CanvasPanel
             buttonContainer.setDirection(Direction.LEFT_TO_RIGHT);
             buttonContainer.setHorizontalContentAlignment(0.5);
             buttonContainer.setSpacing(10.0);
-            buttonContainer.setRenderZ(0.4);
             buttonContainer.setFitWidthToContent(true);
 
             ButtonControl yesButton = new ButtonControl()
@@ -957,9 +954,7 @@ public class SkillsPanel extends CanvasPanel
             yesButton.setWidth(50);
             yesButton.setHeight(20);
             yesButton.setBackgroundColour(randomColour());
-            yesButton.setRenderZ(0.4);
             yesButton.textBlock.setText(new BlocklingsTranslationTextComponent("skill.buy.yes"));
-            yesButton.textBlock.setRenderZ(0.4);
 
             ButtonControl noButton = new ButtonControl()
             {
@@ -978,9 +973,7 @@ public class SkillsPanel extends CanvasPanel
             noButton.setWidth(50);
             noButton.setHeight(20);
             noButton.setBackgroundColour(randomColour());
-            noButton.setRenderZ(0.4);
             noButton.textBlock.setText(new BlocklingsTranslationTextComponent("skill.buy.no"));
-            noButton.textBlock.setRenderZ(0.4);
 
             setVisibility(Visibility.COLLAPSED);
         }
@@ -1024,7 +1017,6 @@ public class SkillsPanel extends CanvasPanel
                     textBlock.setHorizontalAlignment(0.5);
                     textBlock.setFitWidthToContent(true);
                     textBlock.setWidthPercentage(null);
-                    textBlock.setRenderZ(0.4);
                 }
             }
         }

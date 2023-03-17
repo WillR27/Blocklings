@@ -311,12 +311,12 @@ public class Control extends BaseControl
         onRenderUpdate(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
         onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
 
-        matrixStack.popPose();
-
         for (BaseControl child : getChildrenCopy())
         {
             child.forwardRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
         }
+
+        matrixStack.popPose();
 
         undoScissor(scissorStack);
     }
