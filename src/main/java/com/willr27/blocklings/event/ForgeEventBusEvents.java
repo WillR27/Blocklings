@@ -50,7 +50,20 @@ public class ForgeEventBusEvents
     {
         if (event.getEntity() instanceof BlocklingEntity)
         {
-            float scale = ((BlocklingEntity) event.getEntity()).getScale();
+            BlocklingEntity blockling = (BlocklingEntity) event.getEntity();
+            float scale = blockling.getScale();
+
+            // If we have just spawned, the scale will not have been set. Assume then any scale less than or equal to 0
+            // is a new blockling and set the initial spawn scale. If this still has issues, we could set a "just spawned"
+            // flag in the constructor and check that instead. This was originally a fix for the Shrink mod reading the
+            // blocklings dimensions as 0.0 x 0.0 and making them appear invisible on the client.
+            if (scale <= 0.0f)
+            {
+                blockling.setScale(blockling.getRandom().nextFloat() * 0.5f + 0.45f, false);
+            }
+
+            scale = blockling.getScale();
+
             event.setNewSize(new EntitySize(scale * 1.0f, scale * 1.0f, true), true);
         }
     }
