@@ -4,12 +4,16 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.ITextProperties;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Contains useful methods related to guis.
@@ -68,6 +72,36 @@ public abstract class GuiUtil
      * @return whether the given key is currently pressed.
      */
     public abstract boolean isKeyDown(int key);
+
+    /**
+     * Trims the given text to fit within the given width and replaces the last characters with ellipsis.
+     *
+     * @param text the text to trim.
+     * @param width the width to trim the text to.
+     * @return the trimmed text.
+     */
+    @Nonnull
+    public abstract ITextProperties trimWithEllipsis(@Nonnull ITextProperties text, int width);
+
+    /**
+     * Trims the given text to fit within the given width.
+     *
+     * @param text the text to trim.
+     * @param width the width to trim the text to.
+     * @return the trimmed text.
+     */
+    @Nonnull
+    public abstract ITextProperties trim(@Nonnull ITextProperties text, int width);
+
+    /**
+     * Trims the given text to fit within the given width.
+     *
+     * @param text the text to split.
+     * @param width the width to split the text to.
+     * @return the split text.
+     */
+    @Nonnull
+    public abstract List<IReorderingProcessor> split(@Nonnull ITextProperties text, int width);
 
     /**
      * Renders an entity on the screen.

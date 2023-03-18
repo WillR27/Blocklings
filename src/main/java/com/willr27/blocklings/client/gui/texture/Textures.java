@@ -175,6 +175,9 @@ public class Textures
         public static final Texture MAXIMISE_BUTTON = new Texture(SKILLS, 0, 206, 11, 11);
         public static final Texture MAXIMISE_BUTTON_HOVERED = new Texture(SKILLS, 11, 206, 11, 11);
 
+        public static final Texture SKILL_NAME_BACKGROUND = new Texture(SKILLS, 0, 166, 200, 20);
+        public static final Texture SKILL_DESC_BACKGROUND = new Texture(SKILLS, 0, 186, 200, 20);
+
         public static final Texture STAT_SKILL_BACKGROUND = new Texture(SKILLS, 0, 217, 24, 24);
         public static final Texture AI_SKILL_BACKGROUND_HOVERED = new Texture(SKILLS, 24, 217, 24, 24);
         public static final Texture UTILITY_SKILL_BACKGROUND = new Texture(SKILLS, 48, 217, 24, 24);

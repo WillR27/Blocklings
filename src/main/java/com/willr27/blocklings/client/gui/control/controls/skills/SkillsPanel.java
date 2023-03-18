@@ -22,6 +22,8 @@ import com.willr27.blocklings.client.gui.util.ScissorBounds;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.client.gui3.util.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.blockling.attribute.Attribute;
+import com.willr27.blocklings.entity.blockling.attribute.BlocklingAttributes;
 import com.willr27.blocklings.entity.blockling.skill.Skill;
 import com.willr27.blocklings.entity.blockling.skill.SkillGroup;
 import com.willr27.blocklings.entity.blockling.skill.info.SkillGroupInfo;
@@ -30,6 +32,7 @@ import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.Tuple;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
@@ -40,6 +43,7 @@ import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -490,7 +494,7 @@ public class SkillsPanel extends CanvasPanel
     /**
      * Displays an individual skill.
      */
-    private class SkillControl extends TexturedControl
+    private class SkillControl extends Control
     {
         /**
          * The skill to display.
@@ -520,12 +524,122 @@ public class SkillsPanel extends CanvasPanel
          */
         public SkillControl(@Nonnull Skill skill, @Nonnull ConfirmationControl confirmationControl)
         {
-            super(skill.info.general.type.texture.toTexture());
+            super();
             this.skill = skill;
             this.confirmationControl = confirmationControl;
 
+            setWidth(skill.info.general.type.texture.toTexture().width);
+            setHeight(skill.info.general.type.texture.toTexture().height);
             setX(skill.info.gui.x - getWidth() / 2.0);
             setY(skill.info.gui.y - getHeight() / 2.0);
+
+            Control info = new Control()
+            {
+                @Override
+                protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+                {
+                    super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+
+                    Skill.State state = skill.getState();
+                    String name = skill.info.general.name.getString();
+                    List<String> description = com.willr27.blocklings.client.gui2.GuiUtil.splitText(font, skill.info.general.desc.getString(), (int) getWidth());
+
+                    if (state == Skill.State.LOCKED)
+                    {
+                        name = new BlocklingsTranslationTextComponent("skill.unknown").getString();
+                        description.clear();
+                        description.add("...");
+                    }
+                    else
+                    {
+                        Map<BlocklingAttributes.Level, Integer> levelRequirements = skill.info.requirements.levels;
+                        if (levelRequirements.size() > 0)
+                        {
+                            description.add("");
+                            description.add(new BlocklingsTranslationTextComponent("requirements").getString());
+
+                            if (levelRequirements.size() > 0)
+                            {
+                                for (BlocklingAttributes.Level level : levelRequirements.keySet())
+                                {
+                                    int value = levelRequirements.get(level);
+                                    Attribute<Integer> attribute = skill.blockling.getStats().getLevelAttribute(level);
+
+                                    String colour = attribute.getValue() >= value ? "" + TextFormatting.GREEN : "" + TextFormatting.RED;
+                                    description.add(colour + attribute.createTranslation("required", value).getString() + " " + TextFormatting.DARK_GRAY + "(" + skill.blockling.getStats().getLevelAttribute(level).getValue() + ")");
+                                }
+                            }
+                        }
+
+                        List<Skill> conflicts = skill.conflicts();
+                        if (!conflicts.isEmpty())
+                        {
+                            description.add("");
+                            description.add(new BlocklingsTranslationTextComponent("conflicts").getString());
+                            for (Skill conflict : conflicts)
+                            {
+                                description.add(TextFormatting.RED + conflict.info.general.name.getString());
+                            }
+                        }
+                    }
+
+                    RenderSystem.color3f(skill.info.gui.colour.getRed() / 255.0f, skill.info.gui.colour.getGreen() / 255.0f, skill.info.gui.colour.getBlue() / 255.0f);
+
+                    renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_NAME_BACKGROUND.width((int) (getWidthWithoutPadding() - 2)), 0, getPadding().top);
+                    renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_NAME_BACKGROUND.width(2).dx(Textures.Skills.SKILL_NAME_BACKGROUND.width - 2), getWidthWithoutPadding() - 2, getPadding().top);
+                }
+
+                @Override
+                protected void applyScissor(@Nonnull ScissorStack scissorStack)
+                {
+                    scissorStack.disable();
+                }
+
+                @Override
+                protected void undoScissor(@Nonnull ScissorStack scissorStack)
+                {
+
+                }
+            };
+            info.setParent(this);
+            info.setWidth(100.0);
+            info.setHeight(80.0);
+            info.setBackgroundColour(randomColour());
+            info.setInteractive(false);
+            info.setPadding(4.0, 2.0, 0.0, 0.0);
+
+            TexturedControl type = new TexturedControl(skill.info.general.type.texture.toTexture())
+            {
+                @Override
+                protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+                {
+                    matrixStack.translate(0.0, 0.0, 0.2);
+
+                    Skill.State state = skill.getState();
+                    Color colour = state.colour;
+
+                    if (isSelected)
+                    {
+                        RenderSystem.color3f(0.7f, 1.0f, 0.7f);
+                    }
+                    else if (skill.hasConflict() && state != Skill.State.LOCKED)
+                    {
+                        RenderSystem.color3f(0.8f, 0.6f, 0.6f);
+                    }
+                    else if (state == Skill.State.UNLOCKED && !skill.canBuy())
+                    {
+                        RenderSystem.color3f(0.8f, 0.6f, 0.6f);
+                    }
+                    else
+                    {
+                        RenderSystem.color3f(colour.getRed() / 255.0f, colour.getGreen() / 255.0f, colour.getBlue() / 255.0f);
+                    }
+
+                    super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                }
+            };
+            type.setParent(this);
+            type.setInteractive(false);
 
             TexturedControl icon = new TexturedControl(skill.info.gui.iconTexture.toTexture())
             {
@@ -560,34 +674,6 @@ public class SkillsPanel extends CanvasPanel
             icon.setHorizontalAlignment(0.5);
             icon.setVerticalAlignment(0.5);
             icon.setInteractive(false);
-        }
-
-        @Override
-        protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
-        {
-            matrixStack.translate(0.0, 0.0, 0.2);
-
-            Skill.State state = skill.getState();
-            Color colour = state.colour;
-
-            if (isSelected)
-            {
-                RenderSystem.color3f(0.7f, 1.0f, 0.7f);
-            }
-            else if (skill.hasConflict() && state != Skill.State.LOCKED)
-            {
-                RenderSystem.color3f(0.8f, 0.6f, 0.6f);
-            }
-            else if (state == Skill.State.UNLOCKED && !skill.canBuy())
-            {
-                RenderSystem.color3f(0.8f, 0.6f, 0.6f);
-            }
-            else
-            {
-                RenderSystem.color3f(colour.getRed() / 255.0f, colour.getGreen() / 255.0f, colour.getBlue() / 255.0f);
-            }
-
-            super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
         }
 
         @Override
@@ -1009,7 +1095,7 @@ public class SkillsPanel extends CanvasPanel
             {
                 messageContainer.clearChildren();
 
-                for (String line : com.willr27.blocklings.client.gui2.GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("skill.buy_confirmation", skill.info.general.name.getString()).getString(), (int) getWidth() - 20))
+                for (String line : com.willr27.blocklings.client.gui2.GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("skill.buy_confirmation", TextFormatting.LIGHT_PURPLE + skill.info.general.name.getString() + TextFormatting.WHITE).getString(), (int) getWidth() - 20))
                 {
                     TextBlockControl textBlock = new TextBlockControl();
                     textBlock.setParent(messageContainer);

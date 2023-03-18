@@ -6,8 +6,11 @@ import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.client.gui2.GuiUtil;
 import com.willr27.blocklings.util.DoubleUtil;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.ITextProperties;
+import net.minecraft.util.text.LanguageMap;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -80,7 +83,7 @@ public class TextBlockControl extends Control
         }
         else if (shouldFitWidthToContent())
         {
-            double textWidth = font.width(getText());
+            double textWidth = font.width(getTextString());
             width = textWidth + getPaddingWidth();
         }
 
@@ -169,29 +172,51 @@ public class TextBlockControl extends Control
     /**
      * @return gets the text to render (e.g. might be trimmed to fit).
      */
-    public ITextComponent getTextToRender()
+    public IReorderingProcessor getTextToRender()
     {
-        ITextComponent textToRender = text;
+        IReorderingProcessor textToRender = text.getVisualOrderText();
 
         if (shouldTrimText())
         {
-            textToRender = new StringTextComponent(GuiUtil.trimWithEllipses(font, getText(), (int) Math.round(getWidthWithoutPadding())));
+            textToRender = LanguageMap.getInstance().getVisualOrder(com.willr27.blocklings.client.gui3.util.GuiUtil.get().trimWithEllipsis(getText(), (int) Math.round(getWidthWithoutPadding())));
         }
 
         return textToRender;
     }
 
+    /**
+     * @return the text to render as a string.
+     */
     @Nonnull
-    public String getText()
+    public String getTextString()
     {
         return text.getString();
     }
 
+    /**
+     * @return the text to render.
+     */
+    @Nonnull
+    public ITextComponent getText()
+    {
+        return text;
+    }
+
+    /**
+     * Sets the text to render.
+     *
+     * @param text the text to render.
+     */
     public void setText(@Nonnull String text)
     {
         this.text = new StringTextComponent(text);
     }
 
+    /**
+     * Sets the text to render.
+     *
+     * @param text the text to render.
+     */
     public void setText(@Nonnull ITextComponent text)
     {
         this.text = text;

@@ -3,17 +3,21 @@ package com.willr27.blocklings.client.gui3.util;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.server.command.TextComponentHelper;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
  * Contains fully implemented methods for {@link GuiUtil}.
@@ -21,6 +25,12 @@ import javax.annotation.Nonnull;
 @OnlyIn(Dist.CLIENT)
 public class FullGuiUtil extends GuiUtil
 {
+    /**
+     * The instance of {@link Minecraft}.
+     */
+    @Nonnull
+    private static final Minecraft mc = Minecraft.getInstance();
+
     @Override
     public float getGuiScale()
     {
@@ -49,6 +59,34 @@ public class FullGuiUtil extends GuiUtil
     public boolean isKeyDown(int key)
     {
         return InputMappings.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), key);
+    }
+
+    @Nonnull
+    @Override
+    public ITextProperties trimWithEllipsis(@Nonnull ITextProperties text, int width)
+    {
+        if (text.getString().equals(trim(text, width).getString()))
+        {
+            return text;
+        }
+        else
+        {
+            return ITextProperties.composite(trim(text, width - mc.font.width("...")), new StringTextComponent("..."));
+        }
+    }
+
+    @Nonnull
+    @Override
+    public ITextProperties trim(@Nonnull ITextProperties text, int width)
+    {
+        return Minecraft.getInstance().font.substrByWidth(text, width);
+    }
+
+    @Nonnull
+    @Override
+    public List<IReorderingProcessor> split(@Nonnull ITextProperties text, int width)
+    {
+        return mc.font.split(text, width);
     }
 
     @Override

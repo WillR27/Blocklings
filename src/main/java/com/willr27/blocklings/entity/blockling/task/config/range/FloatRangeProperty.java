@@ -72,7 +72,7 @@ public class FloatRangeProperty extends RangeProperty<Float>
     @Nonnull
     public BaseControl createControl()
     {
-        return new FloatRangeControl(min, max, value)
+        FloatRangeControl range = new FloatRangeControl(min, max, value)
         {
             @Override
             public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
@@ -90,10 +90,15 @@ public class FloatRangeProperty extends RangeProperty<Float>
             @Override
             public void setValue(@Nonnull Float value, boolean updateGrabberPosition, boolean postEvent)
             {
+                value = Math.round(value * 10.0f) / 10.0f;
+
                 super.setValue(value, updateGrabberPosition, postEvent);
 
                 FloatRangeProperty.this.setValue(getValue(), true);
             }
         };
+        range.valueFieldControl.setWidth(26);
+
+        return range;
     }
 }

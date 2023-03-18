@@ -56,7 +56,7 @@ public abstract class RangeControl<T extends Number> extends Control
      * The control used to display the value.
      */
     @Nonnull
-    private final TextFieldControl valueFieldControl;
+    public final TextFieldControl valueFieldControl;
 
     /**
      * The control used to grab the slider.

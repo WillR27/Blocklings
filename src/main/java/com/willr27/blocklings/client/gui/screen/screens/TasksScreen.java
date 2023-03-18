@@ -165,7 +165,11 @@ public class TasksScreen extends TabbedScreen
         {
             if (!configNameField.isFocused() && currentTask != null)
             {
-                currentTask.setCustomName(configNameField.getText().trim());
+                if (!currentTask.getCustomName().equals(configNameField.getText().trim()))
+                {
+                    currentTask.setCustomName(configNameField.getText().trim());
+                }
+
                 configNameField.setText(currentTask.getCustomName());
             }
         });
@@ -234,7 +238,7 @@ public class TasksScreen extends TabbedScreen
         for (TaskType taskType : BlocklingTasks.TASK_TYPES)
         {
             List<IReorderingProcessor> tooltip = new ArrayList<>();
-            tooltip.add(taskType.name.withStyle(TextFormatting.GOLD).getVisualOrderText());
+            tooltip.add(taskType.name.copy().withStyle(TextFormatting.GOLD).getVisualOrderText());
             tooltip.add(StringTextComponent.EMPTY.getVisualOrderText());
             tooltip.addAll(GuiUtil.splitText(font, taskType.desc, 200).stream().map(s -> s.withStyle(TextFormatting.WHITE).getVisualOrderText()).collect(Collectors.toList()));
             ComboBoxControl.Item item = new ComboBoxControl.Item(taskType.name, taskType, taskType.texture.toTexture().dx(1).dy(1).dWidth(-2).dHeight(-2), tooltip);
@@ -250,7 +254,7 @@ public class TasksScreen extends TabbedScreen
         }
 
         List<IReorderingProcessor> tooltip = new ArrayList<>();
-        tooltip.add(BlocklingTasks.NULL.name.withStyle(TextFormatting.GOLD).getVisualOrderText());
+        tooltip.add(BlocklingTasks.NULL.name.copy().withStyle(TextFormatting.GOLD).getVisualOrderText());
         ComboBoxControl.Item item = new ComboBoxControl.Item(BlocklingTasks.NULL.name, BlocklingTasks.NULL, BlocklingTasks.NULL.texture.toTexture().dx(1).dy(1).dWidth(-2).dHeight(-2), tooltip);
 
         if (BlocklingTasks.NULL == task.getType())

@@ -85,16 +85,9 @@ public abstract class GuiControl extends AbstractGui
      * @param text the text to render.
      * @param colour the colour of the text.
      */
-    protected void renderShadowedText(@Nonnull MatrixStack matrixStack, @Nonnull ITextComponent text, int colour)
+    protected void renderShadowedText(@Nonnull MatrixStack matrixStack, @Nonnull IReorderingProcessor text, int colour)
     {
-        int a = (colour & 0xff000000) >> 24;
-        int r = ((colour & 0x00ff0000) >> 16) / 4;
-        int g = ((colour & 0x0000ff00) >> 8) / 4;
-        int b = (colour & 0x000000ff) / 4;
-        int shadow = (a << 24) | (r << 16) | (g << 8) | b;
-
-        font.draw(matrixStack, text, 1, 1, shadow);
-        font.draw(matrixStack, text, 0, 0, colour);
+        font.drawShadow(matrixStack, text, 0, 0, colour);
         RenderSystem.enableAlphaTest();
     }
 
@@ -105,16 +98,9 @@ public abstract class GuiControl extends AbstractGui
      * @param text the text to render.
      * @param colour the colour of the text.
      */
-    protected void renderShadowedText(@Nonnull MatrixStack matrixStack, @Nonnull ITextComponent text, int x, int y, int colour)
+    protected void renderShadowedText(@Nonnull MatrixStack matrixStack, @Nonnull IReorderingProcessor text, int x, int y, int colour)
     {
-        int a = (colour & 0xff000000) >> 24;
-        int r = ((colour & 0x00ff0000) >> 16) / 4;
-        int g = ((colour & 0x0000ff00) >> 8) / 4;
-        int b = (colour & 0x000000ff) / 4;
-        int shadow = (a << 24) | (r << 16) | (g << 8) | b;
-
-        font.draw(matrixStack, text, x + 1, y + 1, shadow);
-        font.draw(matrixStack, text, x, y, colour);
+        font.drawShadow(matrixStack, text, x, y, colour);
         RenderSystem.enableAlphaTest();
     }
 
@@ -125,7 +111,7 @@ public abstract class GuiControl extends AbstractGui
      * @param text the text to render.
      * @param colour the colour of the text.
      */
-    protected void renderText(@Nonnull MatrixStack matrixStack, @Nonnull ITextComponent text, int colour)
+    protected void renderText(@Nonnull MatrixStack matrixStack, @Nonnull IReorderingProcessor text, int colour)
     {
         font.draw(matrixStack, text, 0, 0, colour);
         RenderSystem.enableAlphaTest();
