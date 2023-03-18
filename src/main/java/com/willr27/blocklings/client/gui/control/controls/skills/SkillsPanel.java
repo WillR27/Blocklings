@@ -337,7 +337,7 @@ public class SkillsPanel extends CanvasPanel
                     int y = (int) -Math.floor(pixelDifY / pixelTileHeight) + j;
                     Random random = new Random(new Random(x).nextInt() * new Random(y).nextInt() + bonusRand);
 
-                    renderTexture(matrixStack, Textures.Skills.Combat.TILES.randomTile(random), renderLocationX, renderLocationY, getChildPixelScaleX(), getChildPixelScaleY());
+                    renderTexture(matrixStack, skillGroup.info.backgroundTexture.randomTile(random), renderLocationX, renderLocationY, getChildPixelScaleX(), getChildPixelScaleY());
                 }
             }
         }

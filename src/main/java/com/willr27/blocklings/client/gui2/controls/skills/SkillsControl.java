@@ -337,7 +337,7 @@ public class SkillsControl extends Control
      */
     private void renderBackground(@Nonnull MatrixStack matrixStack)
     {
-        GuiUtil.bindTexture(group.info.backgroundTexture);
+//        GuiUtil.bindTexture(group.info.backgroundTexture);
 
         for (int i = -1; i < tilesX + 1; i++)
         {

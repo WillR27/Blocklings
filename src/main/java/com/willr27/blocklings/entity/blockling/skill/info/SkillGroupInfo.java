@@ -1,5 +1,7 @@
 package com.willr27.blocklings.entity.blockling.skill.info;
 
+import com.willr27.blocklings.client.gui.texture.Texture;
+import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -28,7 +30,7 @@ public class SkillGroupInfo
      * The skill group's background texture.
      */
     @Nonnull
-    public final ResourceLocation backgroundTexture;
+    public final Textures.Skills.Tiles backgroundTexture;
 
     /**
      * The skill group's gui title.
@@ -41,7 +43,7 @@ public class SkillGroupInfo
      * @param key the skill group's key.
      * @param backgroundTexture the skill group's background texture.
      */
-    public SkillGroupInfo(@Nonnull String id, @Nonnull String key, @Nonnull ResourceLocation backgroundTexture)
+    public SkillGroupInfo(@Nonnull String id, @Nonnull String key, @Nonnull Textures.Skills.Tiles backgroundTexture)
     {
         this.id = UUID.fromString(id);
         this.key = key;

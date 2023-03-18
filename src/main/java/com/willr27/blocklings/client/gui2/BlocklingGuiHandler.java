@@ -198,9 +198,9 @@ public class BlocklingGuiHandler
             case EQUIPMENT_ID: return new EquipmentScreen(blockling, (EquipmentContainer) container);
             case GENERAL_ID: return new SkillsScreen(blockling, BlocklingSkills.Groups.GENERAL, TabbedUIControl.Tab.GENERAL);
             case COMBAT_ID: return new SkillsScreen(blockling, BlocklingSkills.Groups.COMBAT, TabbedUIControl.Tab.COMBAT);
-            case MINING_ID: return new com.willr27.blocklings.client.gui2.screens.SkillsScreen(blockling, BlocklingSkills.Groups.MINING);
-            case WOODCUTTING_ID: return new com.willr27.blocklings.client.gui2.screens.SkillsScreen(blockling, BlocklingSkills.Groups.WOODCUTTING);
-            case FARMING_ID: return new com.willr27.blocklings.client.gui2.screens.SkillsScreen(blockling, BlocklingSkills.Groups.FARMING);
+            case MINING_ID: return new SkillsScreen(blockling, BlocklingSkills.Groups.MINING, TabbedUIControl.Tab.MINING);
+            case WOODCUTTING_ID: return new SkillsScreen(blockling, BlocklingSkills.Groups.WOODCUTTING, TabbedUIControl.Tab.WOODCUTTING);
+            case FARMING_ID: return new SkillsScreen(blockling, BlocklingSkills.Groups.FARMING, TabbedUIControl.Tab.FARMING);
         }
 
         return null;
