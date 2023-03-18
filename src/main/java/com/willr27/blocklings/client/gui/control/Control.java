@@ -870,7 +870,7 @@ public class Control extends BaseControl
     }
 
     @Override
-    protected void onMouseScrolled(@Nonnull MouseScrolledEvent e)
+    public void onMouseScrolled(@Nonnull MouseScrolledEvent e)
     {
         double amountScrolled = 0.0;
         double amountToScroll = -10.0 * e.amount;

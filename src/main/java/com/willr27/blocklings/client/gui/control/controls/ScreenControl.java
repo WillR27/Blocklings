@@ -262,7 +262,7 @@ public class ScreenControl extends Control
     }
 
     @Override
-    protected void onMouseScrolled(@Nonnull MouseScrolledEvent e)
+    public void onMouseScrolled(@Nonnull MouseScrolledEvent e)
     {
 
     }

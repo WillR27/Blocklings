@@ -202,7 +202,7 @@ public abstract class BaseControl extends GuiControl
     abstract public void forwardGlobalMouseScrolled(@Nonnull MouseScrolledEvent e);
     abstract protected void onGlobalMouseScrolled(@Nonnull MouseScrolledEvent e);
     abstract public void forwardMouseScrolled(@Nonnull MouseScrolledEvent e);
-    abstract protected void onMouseScrolled(@Nonnull MouseScrolledEvent e);
+    abstract public void onMouseScrolled(@Nonnull MouseScrolledEvent e);
 
     abstract public void forwardGlobalKeyPressed(@Nonnull KeyPressedEvent e);
     abstract protected void onGlobalKeyPressed(@Nonnull KeyPressedEvent e);
@@ -1493,6 +1493,16 @@ public abstract class BaseControl extends GuiControl
         setScroll(x, getScrollY());
     }
 
+    public double getScrollPercentX()
+    {
+        return (getScrollX() - getMinScrollX()) / (getMaxScrollX() - getMinScrollX());
+    }
+
+    public void setScrollPercentX(double percent)
+    {
+        setScrollX(getMinScrollX() + (getMaxScrollX() - getMinScrollX()) * percent);
+    }
+
     public double getParentScrollY()
     {
         if (getParent() != null)
@@ -1511,6 +1521,16 @@ public abstract class BaseControl extends GuiControl
     public void setScrollY(double y)
     {
         setScroll(getScrollX(), y);
+    }
+
+    public double getScrollPercentY()
+    {
+        return (getScrollY() - getMinScrollY()) / (getMaxScrollY() - getMinScrollY());
+    }
+
+    public void setScrollPercentY(double percent)
+    {
+        setScrollY(getMinScrollY() + (getMaxScrollY() - getMinScrollY()) * percent);
     }
 
     /**

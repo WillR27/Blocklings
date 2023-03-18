@@ -57,7 +57,7 @@ public abstract class TabbedContainerScreen<T extends Container> extends Blockli
             }
 
             @Override
-            protected void onMouseScrolled(@Nonnull MouseScrolledEvent e)
+            public void onMouseScrolled(@Nonnull MouseScrolledEvent e)
             {
 
             }

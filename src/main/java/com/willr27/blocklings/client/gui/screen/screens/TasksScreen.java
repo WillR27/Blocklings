@@ -2,10 +2,7 @@ package com.willr27.blocklings.client.gui.screen.screens;
 
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.client.gui.control.controls.ComboBoxControl;
-import com.willr27.blocklings.client.gui.control.controls.TabbedUIControl;
-import com.willr27.blocklings.client.gui.control.controls.TextBlockControl;
-import com.willr27.blocklings.client.gui.control.controls.TextFieldControl;
+import com.willr27.blocklings.client.gui.control.controls.*;
 import com.willr27.blocklings.client.gui.control.controls.config.WhitelistConfigControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.GridPanel;
 import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
@@ -14,6 +11,7 @@ import com.willr27.blocklings.client.gui.control.controls.tasks.TaskControl;
 import com.willr27.blocklings.client.gui.control.event.events.FocusChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.ReorderEvent;
 import com.willr27.blocklings.client.gui.control.event.events.SelectionChangedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.TabChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.KeyPressedEvent;
 import com.willr27.blocklings.client.gui.properties.Direction;
 import com.willr27.blocklings.client.gui.properties.GridDefinition;
@@ -145,11 +143,10 @@ public class TasksScreen extends TabbedScreen
             }
         });
 
-        Control scrollBar = new Control();
-        tasksGrid.addChild(scrollBar, 0, 2);
-        scrollBar.setWidthPercentage(1.0);
-        scrollBar.setHeightPercentage(1.0);
-        scrollBar.setBackgroundColour(0xff00ff00);
+        ScrollbarControl tasksScrollbar = new ScrollbarControl();
+        tasksGrid.addChild(tasksScrollbar, 0, 2);
+        tasksScrollbar.setHeightPercentage(1.0);
+        tasksScrollbar.setAttachedControl(tasksPanel);
 
         configContainer = new Control();
         configContainer.setParent(tabbedUIControl.contentControl);
@@ -184,15 +181,17 @@ public class TasksScreen extends TabbedScreen
         configGrid.addColumnDefinition(GridDefinition.FIXED, 5.0);
         configGrid.addColumnDefinition(GridDefinition.FIXED, 12.0);
 
+        ScrollbarControl configScrollbar = new ScrollbarControl();
+        configGrid.addChild(configScrollbar, 0, 2);
+        configScrollbar.setHeightPercentage(1.0);
+        configScrollbar.setMargins(0.0, 1.0, 0.0, 1.0);
+
         configTabbedPanel = new TabbedPanel();
         configGrid.addChild(configTabbedPanel, 0, 0);
-
-        Control scrollBar2 = new Control();
-        configGrid.addChild(scrollBar2, 0, 2);
-        scrollBar2.setWidthPercentage(1.0);
-        scrollBar2.setHeightPercentage(1.0);
-        scrollBar2.setMargins(0.0, 1.0, 0.0, 1.0);
-        scrollBar2.setBackgroundColour(0xff00ff00);
+        configTabbedPanel.eventBus.subscribe((BaseControl c, TabChangedEvent e) ->
+        {
+            configScrollbar.setAttachedControl(e.containerControl);
+        });
 
         screenControl.eventBus.subscribe((BaseControl control, KeyPressedEvent e) ->
         {

@@ -392,7 +392,7 @@ public class SkillsPanel extends CanvasPanel
         }
 
         @Override
-        protected void onMouseScrolled(@Nonnull MouseScrolledEvent e)
+        public void onMouseScrolled(@Nonnull MouseScrolledEvent e)
         {
             double localMouseXBefore = toLocalX(e.mouseX);
             double localMouseYBefore = toLocalY(e.mouseY);

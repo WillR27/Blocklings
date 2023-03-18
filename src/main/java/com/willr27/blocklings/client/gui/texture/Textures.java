@@ -26,9 +26,6 @@ public class Textures
         public static final Texture NODE_UNPRESSED = new Texture(COMMON, 46, 0, 12, 12);
         public static final Texture NODE_PRESSED = new Texture(COMMON, 58, 0, 12, 12);
 
-        public static final Texture ROUND_GRABBER_UNPRESSED = new Texture(COMMON, 46, 0, 12, 12);
-        public static final Texture ROUND_GRABBER_PRESSED = new Texture(COMMON, 58, 0, 12, 12);
-
         public static final Texture SLIDER_BAR = new Texture(COMMON, 0, 88, 256, 4);
 
         public static class Scrollbar
@@ -37,7 +34,7 @@ public class Textures
             public static final Texture GRABBER_PRESSED = new Texture(COMMON, 12, 0, 12, 15);
         }
 
-        public static class DropDown
+        public static class ComboBox
         {
             public static final int BORDER_SIZE = 2;
 

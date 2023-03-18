@@ -7,7 +7,6 @@ import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.panels.GridPanel;
 import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
 import com.willr27.blocklings.client.gui.control.event.events.SelectionChangedEvent;
-import com.willr27.blocklings.client.gui.control.event.events.TryHoverEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseClickedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
 import com.willr27.blocklings.client.gui.properties.Direction;
@@ -20,7 +19,6 @@ import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.event.enchanting.EnchantmentLevelSetEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -270,7 +268,7 @@ public class ComboBoxControl extends StackPanel
             setWidthPercentage(1.0);
             setFitHeightToContent(true);
 
-            backgroundControl = new TexturedControl(Textures.Common.DropDown.UNSELECTED_BACKGROUND)
+            backgroundControl = new TexturedControl(Textures.Common.ComboBox.UNSELECTED_BACKGROUND)
             {
                 @Override
                 public void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
@@ -280,7 +278,7 @@ public class ComboBoxControl extends StackPanel
                         RenderSystem.color3f(0.7f, 0.9f, 1.0f);
                     }
 
-                    int borderSize = Textures.Common.DropDown.BORDER_SIZE;
+                    int borderSize = Textures.Common.ComboBox.BORDER_SIZE;
                     renderTextureAsBackground(matrixStack, getBackgroundTexture().width((int) (getWidth() - borderSize)));
                     renderTextureAsBackground(matrixStack, getBackgroundTexture().width(borderSize).dx(getBackgroundTexture().width - borderSize), getWidth() - borderSize, 0);
 
@@ -330,7 +328,7 @@ public class ComboBoxControl extends StackPanel
             nameControl.setMarginRight(3.0);
             nameControl.setWidthPercentage(1.0);
 
-            arrowControl = new TexturedControl(Textures.Common.DropDown.DOWN_ARROW);
+            arrowControl = new TexturedControl(Textures.Common.ComboBox.DOWN_ARROW);
             gridPanel.addChild(arrowControl, 0, 2);
             arrowControl.setVerticalAlignment(0.5);
             arrowControl.setMarginRight(5.0);
@@ -377,7 +375,7 @@ public class ComboBoxControl extends StackPanel
          */
         private void onSelected()
         {
-            backgroundControl.setBackgroundTexture(Textures.Common.DropDown.SELECTED_BACKGROUND);
+            backgroundControl.setBackgroundTexture(Textures.Common.ComboBox.SELECTED_BACKGROUND);
             gridPanel.setVerticalAlignment(0.5);
             arrowControl.setVisibility(Visibility.VISIBLE);
         }
@@ -387,7 +385,7 @@ public class ComboBoxControl extends StackPanel
          */
         private void onUnselected()
         {
-            backgroundControl.setBackgroundTexture(Textures.Common.DropDown.UNSELECTED_BACKGROUND);
+            backgroundControl.setBackgroundTexture(Textures.Common.ComboBox.UNSELECTED_BACKGROUND);
             gridPanel.setVerticalAlignment(0.0);
             arrowControl.setVisibility(Visibility.COLLAPSED);
         }
@@ -397,7 +395,7 @@ public class ComboBoxControl extends StackPanel
          */
         private void onExpanded()
         {
-            arrowControl.setBackgroundTexture(Textures.Common.DropDown.UP_ARROW);
+            arrowControl.setBackgroundTexture(Textures.Common.ComboBox.UP_ARROW);
         }
 
         /**
@@ -405,7 +403,7 @@ public class ComboBoxControl extends StackPanel
          */
         private void onCollapsed()
         {
-            arrowControl.setBackgroundTexture(Textures.Common.DropDown.DOWN_ARROW);
+            arrowControl.setBackgroundTexture(Textures.Common.ComboBox.DOWN_ARROW);
         }
 
         /**

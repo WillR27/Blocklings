@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.TextBlockControl;
+import com.willr27.blocklings.client.gui.control.event.events.TabChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
 import com.willr27.blocklings.client.gui.properties.Visibility;
 import com.willr27.blocklings.client.gui.texture.Texture;
@@ -249,14 +250,17 @@ public class TabbedPanel extends Control
             selectedTab.onSelected();
 
             containerContainer.getChildren().forEach(c -> c.setVisibility(Visibility.COLLAPSED));
-            getContainer(getTabIndex(getSelectedTab())).setVisibility(Visibility.VISIBLE);
+            BaseControl container = getContainer(getTabIndex(getSelectedTab()));
+            container.setVisibility(Visibility.VISIBLE);
+
+            eventBus.post(this, new TabChangedEvent(selectedTab, container));
         }
     }
 
     /**
      * An individual tab control.
      */
-    private class TabControl extends Control
+    public class TabControl extends Control
     {
         /**
          * The tab's name.
