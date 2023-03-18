@@ -3,7 +3,7 @@ package com.willr27.blocklings.client.gui.control.controls;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
-import com.willr27.blocklings.client.gui3.util.GuiUtil;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import net.minecraft.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

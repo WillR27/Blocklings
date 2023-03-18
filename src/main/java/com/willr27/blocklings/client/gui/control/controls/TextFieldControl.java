@@ -6,6 +6,7 @@ import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.event.events.SizeChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.*;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.util.math.vector.Matrix4f;
@@ -163,7 +164,7 @@ public class TextFieldControl extends Control
     @Override
     public void onKeyPressed(@Nonnull KeyPressedEvent e)
     {
-        if (e.keyCode == GLFW.GLFW_KEY_ENTER || e.keyCode == GLFW.GLFW_KEY_ESCAPE)
+        if (GuiUtil.get().isUnfocusTextFieldKey(e.keyCode))
         {
             if (getScreen() != null)
             {
@@ -174,7 +175,7 @@ public class TextFieldControl extends Control
         }
         else
         {
-            e.setIsHandled(textFieldWidget.keyPressed(e.keyCode, e.scanCode, e.modifiers));
+            e.setIsHandled(textFieldWidget.keyPressed(e.keyCode, e.scanCode, e.modifiers) || textFieldWidget.isFocused());
         }
     }
 

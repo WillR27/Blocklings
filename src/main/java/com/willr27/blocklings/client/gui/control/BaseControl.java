@@ -9,7 +9,7 @@ import com.willr27.blocklings.client.gui.control.event.events.TryDragEvent;
 import com.willr27.blocklings.client.gui.control.event.events.TryHoverEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.*;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
-import com.willr27.blocklings.client.gui3.util.GuiUtil;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

@@ -19,13 +19,14 @@ import com.willr27.blocklings.client.gui.properties.Visibility;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.ScissorBounds;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
-import com.willr27.blocklings.client.gui3.util.GuiUtil;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.attribute.Attribute;
 import com.willr27.blocklings.entity.blockling.attribute.BlocklingAttributes;
 import com.willr27.blocklings.entity.blockling.skill.Skill;
 import com.willr27.blocklings.entity.blockling.skill.SkillGroup;
 import com.willr27.blocklings.entity.blockling.skill.info.SkillGroupInfo;
+import com.willr27.blocklings.entity.blockling.skill.info.SkillGuiInfo;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraft.util.text.TextFormatting;
@@ -41,6 +42,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
+
+import static com.willr27.blocklings.entity.blockling.skill.info.SkillGuiInfo.ConnectionType.*;
 
 /**
  * Displays a set of skills in a dynamic window.
@@ -178,7 +181,7 @@ public class SkillsPanel extends CanvasPanel
     @Override
     public void onKeyPressed(@Nonnull KeyPressedEvent e)
     {
-        if (e.keyCode == GLFW.GLFW_KEY_ESCAPE && getParent() == getScreen())
+        if (GuiUtil.get().isCloseKey(e.keyCode) && getParent() == getScreen())
         {
             minimise();
 
@@ -529,8 +532,8 @@ public class SkillsPanel extends CanvasPanel
             this.skill = skill;
             this.confirmationControl = confirmationControl;
 
-            setWidth(skill.info.general.type.texture.toTexture().width);
-            setHeight(skill.info.general.type.texture.toTexture().height);
+            setWidth(skill.info.general.type.texture.width);
+            setHeight(skill.info.general.type.texture.height);
             setX(skill.info.gui.x - getWidth() / 2.0);
             setY(skill.info.gui.y - getHeight() / 2.0);
 
@@ -641,7 +644,7 @@ public class SkillsPanel extends CanvasPanel
             endLine.setHeight(3.0);
             endLine.setClipContentsToBounds(false);
 
-            TexturedControl type = new TexturedControl(skill.info.general.type.texture.toTexture())
+            TexturedControl type = new TexturedControl(skill.info.general.type.texture)
             {
                 @Override
                 protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
@@ -675,7 +678,7 @@ public class SkillsPanel extends CanvasPanel
             type.setInteractive(false);
             type.setClipContentsToBounds(null);
 
-            TexturedControl icon = new TexturedControl(skill.info.gui.iconTexture.toTexture())
+            TexturedControl icon = new TexturedControl(skill.info.gui.iconTexture)
             {
                 @Override
                 protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
@@ -719,7 +722,7 @@ public class SkillsPanel extends CanvasPanel
         {
             Skill.State state = skill.getState();
             String name = skill.info.general.name.getString();
-            List<String> description = com.willr27.blocklings.client.gui2.GuiUtil.splitText(font, skill.info.general.desc.getString(), 150);
+            List<String> description = GuiUtil.get().split(skill.info.general.desc.getString(), 150);
 
             if (state == Skill.State.LOCKED)
             {
@@ -839,7 +842,7 @@ public class SkillsPanel extends CanvasPanel
          * The connection type.
          */
         @Nonnull
-        private final com.willr27.blocklings.client.gui2.controls.skills.SkillControl.ConnectionType connectionType;
+        private final SkillGuiInfo.ConnectionType connectionType;
 
         /**
          * The path.
@@ -909,7 +912,7 @@ public class SkillsPanel extends CanvasPanel
 
             path = new Path();
 
-            if (connectionType == com.willr27.blocklings.client.gui2.controls.skills.SkillControl.ConnectionType.SINGLE_SHORTEST_FIRST || connectionType == com.willr27.blocklings.client.gui2.controls.skills.SkillControl.ConnectionType.SINGLE_LONGEST_FIRST)
+            if (connectionType == SINGLE_SHORTEST_FIRST || connectionType == SINGLE_LONGEST_FIRST)
             {
                 double startX = startSkillControl.getPixelMidX();
                 double startY = startSkillControl.getPixelMidY();
@@ -919,7 +922,7 @@ public class SkillsPanel extends CanvasPanel
                 double xDiff = endX - startX;
                 double yDiff = endY - startY;
 
-                if (Math.abs(xDiff) >= Math.abs(yDiff) && connectionType == com.willr27.blocklings.client.gui2.controls.skills.SkillControl.ConnectionType.SINGLE_LONGEST_FIRST)
+                if (Math.abs(xDiff) >= Math.abs(yDiff) && connectionType == SINGLE_LONGEST_FIRST)
                 {
                     path.add(new Position(startX, startY));
                     path.add(new Position(endX, startY));
@@ -942,7 +945,7 @@ public class SkillsPanel extends CanvasPanel
                 double xDiff = endX - startX;
                 double yDiff = endY - startY;
 
-                if (Math.abs(xDiff) >= Math.abs(yDiff) && connectionType == com.willr27.blocklings.client.gui2.controls.skills.SkillControl.ConnectionType.DOUBLE_LONGEST_SPLIT)
+                if (Math.abs(xDiff) >= Math.abs(yDiff) && connectionType == DOUBLE_LONGEST_SPLIT)
                 {
                     path.add(new Position(startX, startY));
                     path.add(new Position(endX - xDiff / 2.0, startY));
@@ -1172,7 +1175,7 @@ public class SkillsPanel extends CanvasPanel
         @Override
         public void onKeyPressed(@Nonnull KeyPressedEvent e)
         {
-            if (e.keyCode == GLFW.GLFW_KEY_ESCAPE && getVisibility() == Visibility.VISIBLE)
+            if (GuiUtil.get().isCloseKey(e.keyCode) && getVisibility() == Visibility.VISIBLE)
             {
                 setVisibility(Visibility.COLLAPSED);
 
@@ -1200,7 +1203,7 @@ public class SkillsPanel extends CanvasPanel
             {
                 messageContainer.clearChildren();
 
-                for (String line : com.willr27.blocklings.client.gui2.GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("skill.buy_confirmation", TextFormatting.LIGHT_PURPLE + skill.info.general.name.getString() + TextFormatting.WHITE).getString(), (int) getWidth() - 20))
+                for (String line : GuiUtil.get().split(new BlocklingsTranslationTextComponent("skill.buy_confirmation", TextFormatting.LIGHT_PURPLE + skill.info.general.name.getString() + TextFormatting.WHITE).getString(), (int) getWidth() - 20))
                 {
                     TextBlockControl textBlock = new TextBlockControl();
                     textBlock.setParent(messageContainer);

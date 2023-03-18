@@ -5,19 +5,18 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.client.gui.control.event.events.TryDragEvent;
 import com.willr27.blocklings.client.gui.control.event.events.TryHoverEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.*;
+import com.willr27.blocklings.client.gui.properties.Side;
 import com.willr27.blocklings.client.gui.properties.Visibility;
 import com.willr27.blocklings.client.gui.texture.Texture;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui.util.ScissorBounds;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
-import com.willr27.blocklings.client.gui2.GuiUtil;
-import com.willr27.blocklings.client.gui3.control.Side;
 import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -875,7 +874,7 @@ public class Control extends BaseControl
         double amountScrolled = 0.0;
         double amountToScroll = -10.0 * e.amount;
 
-        if (GuiUtil.isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL) || GuiUtil.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL))
+        if (GuiUtil.get().isControlKeyDown())
         {
             amountScrolled = scrollX(amountToScroll);
         }

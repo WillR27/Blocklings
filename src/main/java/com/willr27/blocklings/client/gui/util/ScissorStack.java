@@ -1,6 +1,5 @@
 package com.willr27.blocklings.client.gui.util;
 
-import com.willr27.blocklings.client.gui3.util.GuiUtil;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 

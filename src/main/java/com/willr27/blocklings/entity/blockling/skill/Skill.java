@@ -1,7 +1,7 @@
 package com.willr27.blocklings.entity.blockling.skill;
 
-import com.willr27.blocklings.client.gui2.GuiTexture;
-import com.willr27.blocklings.client.gui2.GuiTextures;
+import com.willr27.blocklings.client.gui.texture.Texture;
+import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.skill.info.SkillInfo;
 import com.willr27.blocklings.network.messages.SkillStateMessage;
@@ -243,14 +243,14 @@ public class Skill
          * The background texture for the skill type.
          */
         @Nonnull
-        public final GuiTexture texture;
+        public final Texture texture;
 
         /**
          * @param textureX the texture x index.
          */
         Type(int textureX)
         {
-            this.texture = new GuiTexture(GuiTextures.SKILLS_WIDGETS, textureX * 24, 0, 24, 24);
+            this.texture = new Texture(Textures.Skills.SKILLS, textureX * 24, 217, 24, 24);
         }
     }
 

@@ -3,13 +3,10 @@ package com.willr27.blocklings.client.gui.control;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.client.gui.texture.Texture;
-import com.willr27.blocklings.client.gui2.GuiTexture;
-import com.willr27.blocklings.client.gui2.GuiUtil;
-import com.willr27.blocklings.client.gui3.RenderArgs;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -55,7 +52,7 @@ public abstract class GuiControl extends AbstractGui
      */
     protected void renderTexture(@Nonnull MatrixStack matrixStack, @Nonnull Texture texture)
     {
-        GuiUtil.bindTexture(texture.resourceLocation);
+        GuiUtil.get().bindTexture(texture.resourceLocation);
         blit(matrixStack, 0, 0, texture.x, texture.y, texture.width, texture.height);
     }
 

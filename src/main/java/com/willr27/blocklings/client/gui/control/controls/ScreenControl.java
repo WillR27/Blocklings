@@ -11,7 +11,7 @@ import com.willr27.blocklings.client.gui.control.event.events.input.*;
 import com.willr27.blocklings.client.gui.screen.BlocklingsContainerScreen;
 import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
-import com.willr27.blocklings.client.gui3.util.GuiUtil;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -276,6 +276,10 @@ public class ScreenControl extends Control
         {
             getFocusedControl().forwardKeyPressed(e);
         }
+        else if (!e.isHandled())
+        {
+            forwardKeyPressed(e);
+        }
     }
 
     @Override
@@ -287,6 +291,10 @@ public class ScreenControl extends Control
         {
             getFocusedControl().forwardKeyReleased(e);
         }
+        else if (!e.isHandled())
+        {
+            forwardKeyReleased(e);
+        }
     }
 
     @Override
@@ -297,6 +305,10 @@ public class ScreenControl extends Control
         if (!e.isHandled() && getFocusedControl() != null)
         {
             getFocusedControl().forwardCharTyped(e);
+        }
+        else if (!e.isHandled())
+        {
+            forwardCharTyped(e);
         }
     }
 

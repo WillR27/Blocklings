@@ -1,8 +1,8 @@
 package com.willr27.blocklings.entity.blockling.attribute;
 
-import com.willr27.blocklings.client.gui3.GuiTextures;
-import com.willr27.blocklings.client.gui2.Colour;
-import com.willr27.blocklings.client.gui2.GuiTexture;
+import com.willr27.blocklings.client.gui.texture.Texture;
+import com.willr27.blocklings.client.gui.texture.Textures;
+import com.willr27.blocklings.client.gui.util.Colour;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.BlocklingHand;
 import com.willr27.blocklings.entity.blockling.BlocklingType;
@@ -755,17 +755,17 @@ public class BlocklingAttributes implements IReadWriteNBT
          */
         @Nonnull
         @OnlyIn(Dist.CLIENT)
-        public GuiTexture getXpBarBackgroundTexture()
+        public Texture getXpBarBackgroundTexture()
         {
             switch (this)
             {
-                case COMBAT: return GuiTextures.Stats.COMBAT_BAR_BACKGROUND;
-                case MINING: return GuiTextures.Stats.MINING_BAR_BACKGROUND;
-                case WOODCUTTING: return GuiTextures.Stats.WOODCUTTING_BAR_BACKGROUND;
-                case FARMING: return GuiTextures.Stats.FARMING_BAR_BACKGROUND;
+                case COMBAT: return Textures.Stats.COMBAT_BAR_BACKGROUND;
+                case MINING: return Textures.Stats.MINING_BAR_BACKGROUND;
+                case WOODCUTTING: return Textures.Stats.WOODCUTTING_BAR_BACKGROUND;
+                case FARMING: return Textures.Stats.FARMING_BAR_BACKGROUND;
             }
 
-            return GuiTextures.Stats.COMBAT_BAR_BACKGROUND;
+            return Textures.Stats.COMBAT_BAR_BACKGROUND;
         }
 
         /**
@@ -773,17 +773,17 @@ public class BlocklingAttributes implements IReadWriteNBT
          */
         @Nonnull
         @OnlyIn(Dist.CLIENT)
-        public GuiTexture getXpBarForegroundTexture()
+        public Texture getXpBarForegroundTexture()
         {
             switch (this)
             {
-                case COMBAT: return GuiTextures.Stats.COMBAT_BAR_FOREGROUND;
-                case MINING: return GuiTextures.Stats.MINING_BAR_FOREGROUND;
-                case WOODCUTTING: return GuiTextures.Stats.WOODCUTTING_BAR_FOREGROUND;
-                case FARMING: return GuiTextures.Stats.FARMING_BAR_FOREGROUND;
+                case COMBAT: return Textures.Stats.COMBAT_BAR_FOREGROUND;
+                case MINING: return Textures.Stats.MINING_BAR_FOREGROUND;
+                case WOODCUTTING: return Textures.Stats.WOODCUTTING_BAR_FOREGROUND;
+                case FARMING: return Textures.Stats.FARMING_BAR_FOREGROUND;
             }
 
-            return GuiTextures.Stats.COMBAT_BAR_FOREGROUND;
+            return Textures.Stats.COMBAT_BAR_FOREGROUND;
         }
 
         /**
@@ -791,17 +791,17 @@ public class BlocklingAttributes implements IReadWriteNBT
          */
         @Nonnull
         @OnlyIn(Dist.CLIENT)
-        public GuiTexture getLevelIconsTexture()
+        public Texture getLevelIconsTexture()
         {
             switch (this)
             {
-                case COMBAT: return GuiTextures.Stats.COMBAT_LEVEL_ICONS;
-                case MINING: return GuiTextures.Stats.MINING_LEVEL_ICONS;
-                case WOODCUTTING: return GuiTextures.Stats.WOODCUTTING_LEVEL_ICONS;
-                case FARMING: return GuiTextures.Stats.FARMING_LEVEL_ICONS;
+                case COMBAT: return Textures.Stats.COMBAT_LEVEL_ICONS;
+                case MINING: return Textures.Stats.MINING_LEVEL_ICONS;
+                case WOODCUTTING: return Textures.Stats.WOODCUTTING_LEVEL_ICONS;
+                case FARMING: return Textures.Stats.FARMING_LEVEL_ICONS;
             }
 
-            return GuiTextures.Stats.COMBAT_LEVEL_ICONS;
+            return Textures.Stats.COMBAT_LEVEL_ICONS;
         }
 
         /**

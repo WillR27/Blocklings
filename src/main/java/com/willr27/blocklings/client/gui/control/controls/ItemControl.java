@@ -2,8 +2,8 @@ package com.willr27.blocklings.client.gui.control.controls;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.Control;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
-import com.willr27.blocklings.client.gui2.GuiUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -43,7 +43,7 @@ public class ItemControl extends Control
         int x = (int) ((getPixelX() + getPixelWidth() / 2.0) / getGuiScale());
         int y = (int) ((getPixelY() + getPixelHeight() / 2.0) / getGuiScale());
 
-        GuiUtil.renderItemStack(matrixStack, itemStack, x, y, scale);
+        GuiUtil.get().renderItemStack(matrixStack, itemStack, x, y, scale);
     }
 
     /**

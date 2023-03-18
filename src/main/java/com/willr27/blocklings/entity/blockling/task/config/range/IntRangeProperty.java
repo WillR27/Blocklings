@@ -3,8 +3,7 @@ package com.willr27.blocklings.entity.blockling.task.config.range;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.controls.config.IntRangeControl;
-import com.willr27.blocklings.client.gui2.GuiUtil;
-import com.willr27.blocklings.client.gui3.control.Control;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.nbt.CompoundNBT;
@@ -17,6 +16,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Configures an int range property.
@@ -79,11 +79,11 @@ public class IntRangeProperty extends RangeProperty<Integer>
             {
                 if (!grabberControl.isPressed())
                 {
-                    List<StringTextComponent> tooltip = GuiUtil.splitText(font, desc, 200);
+                    List<StringTextComponent> tooltip = GuiUtil.get().split(desc.getString(), 200).stream().map(r -> new StringTextComponent(r)).collect(Collectors.toList());
                     tooltip.add(0, new StringTextComponent(""));
                     tooltip.add(0, new StringTextComponent(TextFormatting.GOLD + name.getString()));
 
-                    renderTooltip(matrixStack, mouseX, mouseY, GuiUtil.toReorderingProcessorList(tooltip));
+                    renderTooltip(matrixStack, mouseX, mouseY, tooltip.stream().map(t -> t.getVisualOrderText()).collect(Collectors.toList()));
                 }
             }
 

@@ -2,7 +2,6 @@ package com.willr27.blocklings.client.gui.control.controls.config;
 
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
-import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
 import com.willr27.blocklings.client.gui.properties.Flow;
 import com.willr27.blocklings.entity.blockling.whitelist.GoalWhitelist;
 import net.minecraft.util.ResourceLocation;

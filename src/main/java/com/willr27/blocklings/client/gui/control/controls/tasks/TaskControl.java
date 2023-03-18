@@ -6,15 +6,14 @@ import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.TextBlockControl;
 import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.GridPanel;
-import com.willr27.blocklings.client.gui.control.event.events.TryHoverEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseClickedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
 import com.willr27.blocklings.client.gui.properties.GridDefinition;
 import com.willr27.blocklings.client.gui.screen.screens.TasksScreen;
 import com.willr27.blocklings.client.gui.texture.Texture;
 import com.willr27.blocklings.client.gui.texture.Textures;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
-import com.willr27.blocklings.client.gui2.GuiUtil;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.task.Task;
@@ -76,7 +75,7 @@ public class TaskControl extends Control
         Control iconBackgroundControl = task != null ? new TexturedControl(Textures.Tasks.TASK_ICON_BACKGROUND_RAISED, Textures.Tasks.TASK_ICON_BACKGROUND_PRESSED) : new TexturedControl(Textures.Tasks.TASK_ADD_ICON_BACKGROUND);
         gridControl.addChild(iconBackgroundControl, 0, 0);
 
-        Control iconControl = new TexturedControl(task != null ? task.getType().texture.toTexture() : Textures.Tasks.TASK_CONFIG_ICON)
+        Control iconControl = new TexturedControl(task != null ? task.getType().texture : Textures.Tasks.TASK_CONFIG_ICON)
         {
             /**
              * The icon texture.
@@ -93,13 +92,13 @@ public class TaskControl extends Control
             @Override
             public void onHoverExit()
             {
-                iconTexture = task != null ? task.getType().texture.toTexture() : Textures.Tasks.TASK_CONFIG_ICON;
+                iconTexture = task != null ? task.getType().texture : Textures.Tasks.TASK_CONFIG_ICON;
             }
 
             @Override
             public void onDragStart(double mouseX, double mouseY)
             {
-                iconTexture = task != null ? task.getType().texture.toTexture() : Textures.Tasks.TASK_CONFIG_ICON;
+                iconTexture = task != null ? task.getType().texture : Textures.Tasks.TASK_CONFIG_ICON;
             }
 
             @Override
@@ -291,7 +290,7 @@ public class TaskControl extends Control
         {
             List<IReorderingProcessor> tooltip = new ArrayList<>();
             tooltip.add(new StringTextComponent(TextFormatting.GOLD + task.getCustomName()).getVisualOrderText());
-            tooltip.addAll(GuiUtil.splitText(font, task.getType().desc, 200).stream().map(s -> s.getVisualOrderText()).collect(Collectors.toList()));
+            tooltip.addAll(GuiUtil.get().split(task.getType().desc, 200).stream().collect(Collectors.toList()));
 
             renderTooltip(matrixStack, mouseX, mouseY, tooltip);
         }

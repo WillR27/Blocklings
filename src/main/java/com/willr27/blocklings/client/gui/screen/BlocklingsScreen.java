@@ -3,7 +3,7 @@ package com.willr27.blocklings.client.gui.screen;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.controls.ScreenControl;
 import com.willr27.blocklings.client.gui.control.event.events.input.*;
-import com.willr27.blocklings.client.gui3.util.GuiUtil;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.StringTextComponent;
@@ -110,7 +110,19 @@ public class BlocklingsScreen extends Screen
 
         screenControl.forwardGlobalKeyPressed(e);
 
-        return e.isHandled() || super.keyPressed(keyCode, scanCode, modifiers);
+        if (e.isHandled() || super.keyPressed(keyCode, scanCode, modifiers))
+        {
+            return true;
+        };
+
+        if (GuiUtil.get().isCloseKey(keyCode))
+        {
+            onClose();
+
+            return true;
+        }
+
+        return false;
     }
 
     @Override

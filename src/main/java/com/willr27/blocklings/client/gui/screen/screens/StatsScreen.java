@@ -3,7 +3,10 @@ package com.willr27.blocklings.client.gui.screen.screens;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.client.gui.control.controls.*;
+import com.willr27.blocklings.client.gui.control.controls.EntityControl;
+import com.willr27.blocklings.client.gui.control.controls.EnumeratingControl;
+import com.willr27.blocklings.client.gui.control.controls.TabbedUIControl;
+import com.willr27.blocklings.client.gui.control.controls.TextFieldControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.GridPanel;
 import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
 import com.willr27.blocklings.client.gui.control.controls.stats.EnumeratingStatControl;
@@ -13,10 +16,13 @@ import com.willr27.blocklings.client.gui.control.event.events.FocusChangedEvent;
 import com.willr27.blocklings.client.gui.properties.Direction;
 import com.willr27.blocklings.client.gui.properties.GridDefinition;
 import com.willr27.blocklings.client.gui.texture.Textures;
-import com.willr27.blocklings.client.gui2.GuiUtil;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.BlocklingHand;
 import com.willr27.blocklings.entity.blockling.attribute.BlocklingAttributes;
+import com.willr27.blocklings.entity.blockling.attribute.IModifiable;
+import com.willr27.blocklings.entity.blockling.attribute.IModifier;
+import com.willr27.blocklings.entity.blockling.attribute.Operation;
 import com.willr27.blocklings.item.BlocklingsItems;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.client.Minecraft;
@@ -31,8 +37,8 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.willr27.blocklings.client.gui3.screen.screens.StatsScreen.createModifiableFloatAttributeTooltip;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Stream.generate;
 
 /**
  * A screen to show the stats of a blockling.
@@ -181,32 +187,32 @@ public class StatsScreen extends TabbedScreen
 
                 List<String> splitText;
 
-                if (GuiUtil.isKeyDown(Minecraft.getInstance().options.keyShift.getKey().getValue()))
+                if (GuiUtil.get().isShiftKeyDown())
                 {
-                    splitText = GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("type.natural.desc").getString(), 200);
+                    splitText = GuiUtil.get().split(new BlocklingsTranslationTextComponent("type.natural.desc").getString(), 200);
                     splitText.stream().map(s -> new StringTextComponent(TextFormatting.DARK_GRAY + s).getVisualOrderText()).forEach(tooltip::add);
                 }
 
-                splitText = GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("type." + blockling.getNaturalBlocklingType().key + ".passive").getString(), 200);
+                splitText = GuiUtil.get().split(new BlocklingsTranslationTextComponent("type." + blockling.getNaturalBlocklingType().key + ".passive").getString(), 200);
                 splitText.stream().map(s -> new StringTextComponent(TextFormatting.AQUA + s).getVisualOrderText()).forEach(tooltip::add);
 
                 tooltip.add(new StringTextComponent(TextFormatting.GRAY + new BlocklingsTranslationTextComponent("type.name").getString() + TextFormatting.WHITE + blockling.getBlocklingType().name.getString()).getVisualOrderText());
 
-                if (GuiUtil.isKeyDown(Minecraft.getInstance().options.keyShift.getKey().getValue()))
+                if (GuiUtil.get().isShiftKeyDown())
                 {
-                    splitText = GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("type.desc").getString(), 200);
+                    splitText = GuiUtil.get().split(new BlocklingsTranslationTextComponent("type.desc").getString(), 200);
                     splitText.stream().map(s -> new StringTextComponent(TextFormatting.DARK_GRAY + s).getVisualOrderText()).forEach(tooltip::add);
                 }
 
-                splitText = GuiUtil.splitText(font, new BlocklingsTranslationTextComponent("type." + blockling.getBlocklingType().key + ".passive").getString(), 200);
+                splitText = GuiUtil.get().split(new BlocklingsTranslationTextComponent("type." + blockling.getBlocklingType().key + ".passive").getString(), 200);
                 splitText.stream().map(s -> new StringTextComponent(TextFormatting.AQUA + s).getVisualOrderText()).forEach(tooltip::add);
 
                 String foodsString = TextFormatting.GRAY + new BlocklingsTranslationTextComponent("type.foods").getString() + TextFormatting.WHITE + new BlocklingsTranslationTextComponent("type.foods.flowers").getString() + ", ";
                 foodsString += blockling.getBlocklingType().foods.stream().map(food -> food.getDescription().getString()).collect(joining(", "));
-                splitText = GuiUtil.splitText(font, foodsString, 200);
+                splitText = GuiUtil.get().split(foodsString, 200);
                 splitText.stream().map(s -> new StringTextComponent(s).getVisualOrderText()).forEach(tooltip::add);
 
-                if (!GuiUtil.isKeyDown(Minecraft.getInstance().options.keyShift.getKey().getValue()))
+                if (!GuiUtil.get().isShiftKeyDown())
                 {
                     tooltip.add(new StringTextComponent(TextFormatting.DARK_GRAY + "" + TextFormatting.ITALIC + new BlocklingsTranslationTextComponent("gui.more_info", Minecraft.getInstance().options.keyShift.getTranslatedKeyMessage().getString()).getString()).getVisualOrderText());
                 }
@@ -245,5 +251,50 @@ public class StatsScreen extends TabbedScreen
         XpBarControl farmingXpBarControl = new XpBarControl(blockling, BlocklingAttributes.Level.FARMING);
         farmingXpBarControl.setParent(levelsPanel);
         farmingXpBarControl.setHorizontalAlignment(0.5);
+    }
+
+    /**
+     * Creates a tooltip based on a modifiable float attribute and a colour.
+     *
+     * @param attribute the modifiable attribute.
+     * @param colour the colour for the attribute's value.
+     * @return the tooltip.
+     */
+    @Nonnull
+    public static List<ITextComponent> createModifiableFloatAttributeTooltip(@Nonnull IModifiable<Float> attribute, @Nonnull TextFormatting colour)
+    {
+        List<ITextComponent> tooltip = new ArrayList<>();
+
+        tooltip.add(new StringTextComponent(colour + attribute.getDisplayStringValueFunction().apply(attribute.getValue()) + " " + TextFormatting.GRAY + attribute.createTranslation("name").getString()));
+
+        appendModifiableFloatAttributeToTooltip(tooltip, attribute, 1);
+
+        return tooltip;
+    }
+
+    /**
+     * Appends to a tooltip based on a modifiable float attribute and a depth.
+     *
+     * @param tooltip the tooltip to append to.
+     * @param attribute the modifiable attribute.
+     * @param depth the current depth in terms of modifiers on modifiers.
+     */
+    public static void appendModifiableFloatAttributeToTooltip(@Nonnull List<ITextComponent> tooltip, @Nonnull IModifiable<Float> attribute, int depth)
+    {
+        for (IModifier<Float> modifier : attribute.getModifiers())
+        {
+            if (!modifier.isEnabled() || !modifier.isEffective())
+            {
+                continue;
+            }
+
+            String sign = modifier.getValue() < 0.0f && modifier.getOperation() == Operation.ADD ? "" : modifier.getValue() < 1.0f && modifier.getOperation() != Operation.ADD ? "" : "+";
+            tooltip.add(new StringTextComponent(TextFormatting.GRAY + generate(() -> " ").limit(depth).collect(joining()) + sign + modifier.getDisplayStringValueFunction().apply(modifier.getValue()) + " " + TextFormatting.DARK_GRAY + modifier.getDisplayStringNameSupplier().get()));
+
+            if (modifier instanceof IModifiable<?>)
+            {
+                appendModifiableFloatAttributeToTooltip(tooltip, (IModifiable<Float>) modifier, depth + 1);
+            }
+        }
     }
 }

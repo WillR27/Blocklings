@@ -3,13 +3,12 @@ package com.willr27.blocklings.client.gui.control.controls;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
-import com.willr27.blocklings.client.gui2.GuiUtil;
 import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.ITextProperties;
 import net.minecraft.util.text.LanguageMap;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -177,7 +176,7 @@ public class TextBlockControl extends Control
 
         if (shouldTrimText())
         {
-            textToRender = LanguageMap.getInstance().getVisualOrder(com.willr27.blocklings.client.gui3.util.GuiUtil.get().trimWithEllipsis(getText(), (int) Math.round(getWidthWithoutPadding())));
+            textToRender = LanguageMap.getInstance().getVisualOrder(GuiUtil.get().trimWithEllipsis(getText(), (int) Math.round(getWidthWithoutPadding())));
         }
 
         return textToRender;

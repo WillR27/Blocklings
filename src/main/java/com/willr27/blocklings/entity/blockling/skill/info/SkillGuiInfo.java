@@ -1,7 +1,6 @@
 package com.willr27.blocklings.entity.blockling.skill.info;
 
-import com.willr27.blocklings.client.gui2.GuiTexture;
-import com.willr27.blocklings.client.gui2.controls.skills.SkillControl;
+import com.willr27.blocklings.client.gui.texture.Texture;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
@@ -26,7 +25,7 @@ public class SkillGuiInfo
      * The connection type used to connect a skill with its parent.
      */
     @Nonnull
-    public final SkillControl.ConnectionType connectionType;
+    public final ConnectionType connectionType;
 
     /**
      * The skill's icon texture.
@@ -47,7 +46,7 @@ public class SkillGuiInfo
      * @param colour the skill's icon texture.
      * @param texture the skill's colour.
      */
-    public SkillGuiInfo(int x, int y, @Nonnull SkillControl.ConnectionType connectionType, int colour, @Nonnull SkillIconTexture texture)
+    public SkillGuiInfo(int x, int y, @Nonnull ConnectionType connectionType, int colour, @Nonnull SkillIconTexture texture)
     {
         this.x = x;
         this.y = y;
@@ -59,7 +58,7 @@ public class SkillGuiInfo
     /**
      * A skill's icon texture.
      */
-    public static class SkillIconTexture extends GuiTexture
+    public static class SkillIconTexture extends Texture
     {
         /**
          * The width and height of an icon.
@@ -75,5 +74,13 @@ public class SkillGuiInfo
         {
             super(texture, x * ICON_SIZE, y * ICON_SIZE, ICON_SIZE, ICON_SIZE);
         }
+    }
+
+    public enum ConnectionType
+    {
+        SINGLE_LONGEST_FIRST,
+        SINGLE_SHORTEST_FIRST,
+        DOUBLE_LONGEST_SPLIT,
+        DOUBLE_SHORTEST_SPLIT;
     }
 }

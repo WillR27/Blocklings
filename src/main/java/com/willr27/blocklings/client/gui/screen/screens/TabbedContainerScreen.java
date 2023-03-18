@@ -6,7 +6,6 @@ import com.willr27.blocklings.client.gui.control.event.events.input.MouseClicked
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrolledEvent;
 import com.willr27.blocklings.client.gui.screen.BlocklingsContainerScreen;
-import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraftforge.api.distmarker.Dist;

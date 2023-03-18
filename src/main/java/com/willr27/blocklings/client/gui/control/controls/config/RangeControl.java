@@ -9,16 +9,11 @@ import com.willr27.blocklings.client.gui.control.controls.panels.GridPanel;
 import com.willr27.blocklings.client.gui.control.event.events.FocusChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.ValueChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseClickedEvent;
-import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
-import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrolledEvent;
 import com.willr27.blocklings.client.gui.properties.GridDefinition;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
-import com.willr27.blocklings.client.gui2.GuiUtil;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.jline.utils.Log;
-import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 

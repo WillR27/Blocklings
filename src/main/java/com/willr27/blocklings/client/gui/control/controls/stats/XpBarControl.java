@@ -71,10 +71,10 @@ public class XpBarControl extends Control
         xpBarControl.setFitHeightToContent(true);
         xpBarControl.setVerticalAlignment(0.5);
 
-        TexturedControl xpBarBackgroundControl = new TexturedControl(level.getXpBarBackgroundTexture().toTexture());
+        TexturedControl xpBarBackgroundControl = new TexturedControl(level.getXpBarBackgroundTexture());
         xpBarBackgroundControl.setParent(xpBarControl);
 
-        TexturedControl xpBarForegroundControl = new TexturedControl(level.getXpBarForegroundTexture().toTexture())
+        TexturedControl xpBarForegroundControl = new TexturedControl(level.getXpBarForegroundTexture())
         {
             @Override
             public void onTick()
@@ -142,7 +142,7 @@ public class XpBarControl extends Control
          * The icons texture.
          */
         @Nonnull
-        private final Texture iconsTexture = level.getLevelIconsTexture().toTexture();
+        private final Texture iconsTexture = level.getLevelIconsTexture();
 
         /**
          * @param current whether the icon represents the current or next level.

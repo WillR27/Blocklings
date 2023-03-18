@@ -1,6 +1,6 @@
 package com.willr27.blocklings.entity.blockling.task;
 
-import com.willr27.blocklings.client.gui2.GuiTexture;
+import com.willr27.blocklings.client.gui.texture.Texture;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
@@ -16,10 +16,10 @@ public class TaskType
     public final TranslationTextComponent desc;
     public final boolean isUnlockedByDefault;
     public final boolean isActiveByDefault;
-    public final GuiTexture texture;
+    public final Texture texture;
     public final TriFunction<UUID, BlocklingEntity, BlocklingTasks, BlocklingGoal> createGoal;
 
-    public TaskType(String id, String key, boolean unlockedByDefault, boolean activeByDefault, GuiTexture texture, TriFunction<UUID, BlocklingEntity, BlocklingTasks, BlocklingGoal> createGoal)
+    public TaskType(String id, String key, boolean unlockedByDefault, boolean activeByDefault, Texture texture, TriFunction<UUID, BlocklingEntity, BlocklingTasks, BlocklingGoal> createGoal)
     {
         this.id = UUID.fromString(id);
         this.name = new GoalTranslationTextComponent(key + ".name");

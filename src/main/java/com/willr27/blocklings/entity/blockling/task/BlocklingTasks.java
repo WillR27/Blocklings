@@ -1,7 +1,7 @@
 package com.willr27.blocklings.entity.blockling.task;
 
-import com.willr27.blocklings.client.gui2.GuiTexture;
-import com.willr27.blocklings.client.gui2.GuiTextures;
+import com.willr27.blocklings.client.gui.texture.Texture;
+import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.entity.blockling.goal.goals.combat.BlocklingMeleeAttackHuntGoal;
@@ -42,19 +42,19 @@ import java.util.stream.Collectors;
 
 public class BlocklingTasks implements IReadWriteNBT
 {
-    public static final TaskType NULL = new TaskType("1c330075-19af-4c12-ac20-6de50e7b84a9", "null", false, false, new GuiTexture(GuiTextures.TASKS, 176, 166, 20, 20), ((i, b, t) -> null));
-    public static final TaskType MELEE_ATTACK_HURT_BY = new TaskType("2888dde5-f6ee-439d-ab8d-ea9a91470c64", "hurt_by_melee", true, true, new GuiTexture.GoalGuiTexture(3, 0), BlocklingMeleeAttackHurtByGoal::new);
-    public static final TaskType MELEE_ATTACK_OWNER_HURT_BY = new TaskType("72b27eb1-e5bd-48e0-b562-74dece3d144a", "owner_hurt_by_melee", false, false, new GuiTexture.GoalGuiTexture(5, 0), BlocklingMeleeAttackOwnerHurtByGoal::new);
-    public static final TaskType MELEE_ATTACK_OWNER_HURT = new TaskType("51d0ae15-8605-4240-a515-89f47b2f450a", "owner_hurt_melee", false, false, new GuiTexture.GoalGuiTexture(4, 0), BlocklingMeleeAttackOwnerHurtGoal::new);
-    public static final TaskType MELEE_ATTACK_HUNT = new TaskType("283e92b8-5cb8-4d19-afc7-88869a60a214", "hunt_melee", false, false, new GuiTexture.GoalGuiTexture(6, 0), BlocklingMeleeAttackHuntGoal::new);
-    public static final TaskType MINE = new TaskType("657c60cf-9fac-408e-ad8d-3335409301d6", "mine_ores", false, false, new GuiTexture.GoalGuiTexture(7, 0), BlocklingMineGoal::new);
-    public static final TaskType WOODCUT = new TaskType("9701e1f6-99e0-4772-88a1-906778499a8c", "chop_trees", false, false, new GuiTexture.GoalGuiTexture(8, 0), BlocklingWoodcutGoal::new);
-    public static final TaskType FARM = new TaskType("190bb949-6fb0-456b-9009-991c8db9be10", "farm_crops", false, false, new GuiTexture.GoalGuiTexture(9, 0), BlocklingFarmGoal::new);
-    public static final TaskType STORE_ITEMS = new TaskType("9e745b46-ecb7-4497-8324-b2da80cf10ef", "store_items", true, false, new GuiTexture.GoalGuiTexture(10, 0), BlocklingDepositContainerGoal::new);
-    public static final TaskType FIND_BLOCKLINGS = new TaskType("439c8877-ace6-4ffe-be76-d474aecf030f", "find_blocklings", false, false, new GuiTexture.GoalGuiTexture(10, 0), BlocklingFindBlocklingsGoal::new);
-    public static final TaskType SIT = new TaskType("d64385ca-9306-4e38-b4ac-5aa8800e5e02", "sit", true, false, new GuiTexture.GoalGuiTexture(0, 0), BlocklingSitGoal::new);
-    public static final TaskType FOLLOW = new TaskType("299ad70d-350b-43da-8f55-ec502ac360bd", "follow", true, false, new GuiTexture.GoalGuiTexture(1, 0), BlocklingFollowGoal::new);
-    public static final TaskType WANDER = new TaskType("39246a4f-3341-4e99-a3a6-450f9501daeb", "wander", true, true, new GuiTexture.GoalGuiTexture(2, 0), BlocklingWanderGoal::new);
+    public static final TaskType NULL = new TaskType("1c330075-19af-4c12-ac20-6de50e7b84a9", "null", false, false, new Texture(Textures.Tasks.TASKS, 176, 166, 20, 20), ((i, b, t) -> null));
+    public static final TaskType MELEE_ATTACK_HURT_BY = new TaskType("2888dde5-f6ee-439d-ab8d-ea9a91470c64", "hurt_by_melee", true, true, new GoalTexture(3, 0), BlocklingMeleeAttackHurtByGoal::new);
+    public static final TaskType MELEE_ATTACK_OWNER_HURT_BY = new TaskType("72b27eb1-e5bd-48e0-b562-74dece3d144a", "owner_hurt_by_melee", false, false, new GoalTexture(5, 0), BlocklingMeleeAttackOwnerHurtByGoal::new);
+    public static final TaskType MELEE_ATTACK_OWNER_HURT = new TaskType("51d0ae15-8605-4240-a515-89f47b2f450a", "owner_hurt_melee", false, false, new GoalTexture(4, 0), BlocklingMeleeAttackOwnerHurtGoal::new);
+    public static final TaskType MELEE_ATTACK_HUNT = new TaskType("283e92b8-5cb8-4d19-afc7-88869a60a214", "hunt_melee", false, false, new GoalTexture(6, 0), BlocklingMeleeAttackHuntGoal::new);
+    public static final TaskType MINE = new TaskType("657c60cf-9fac-408e-ad8d-3335409301d6", "mine_ores", false, false, new GoalTexture(7, 0), BlocklingMineGoal::new);
+    public static final TaskType WOODCUT = new TaskType("9701e1f6-99e0-4772-88a1-906778499a8c", "chop_trees", false, false, new GoalTexture(8, 0), BlocklingWoodcutGoal::new);
+    public static final TaskType FARM = new TaskType("190bb949-6fb0-456b-9009-991c8db9be10", "farm_crops", false, false, new GoalTexture(9, 0), BlocklingFarmGoal::new);
+    public static final TaskType STORE_ITEMS = new TaskType("9e745b46-ecb7-4497-8324-b2da80cf10ef", "store_items", true, false, new GoalTexture(10, 0), BlocklingDepositContainerGoal::new);
+    public static final TaskType FIND_BLOCKLINGS = new TaskType("439c8877-ace6-4ffe-be76-d474aecf030f", "find_blocklings", false, false, new GoalTexture(10, 0), BlocklingFindBlocklingsGoal::new);
+    public static final TaskType SIT = new TaskType("d64385ca-9306-4e38-b4ac-5aa8800e5e02", "sit", true, false, new GoalTexture(0, 0), BlocklingSitGoal::new);
+    public static final TaskType FOLLOW = new TaskType("299ad70d-350b-43da-8f55-ec502ac360bd", "follow", true, false, new GoalTexture(1, 0), BlocklingFollowGoal::new);
+    public static final TaskType WANDER = new TaskType("39246a4f-3341-4e99-a3a6-450f9501daeb", "wander", true, true, new GoalTexture(2, 0), BlocklingWanderGoal::new);
 
     /**
      * A global list of all task types.
@@ -538,6 +538,17 @@ public class BlocklingTasks implements IReadWriteNBT
         public RemoveTaskEvent(@Nonnull Task task)
         {
             this.task = task;
+        }
+    }
+
+    public static class GoalTexture extends Texture
+    {
+        public static final int ICON_SIZE = 20;
+        public static final int ICON_TEXTURE_Y = 186;
+
+        public GoalTexture(int x, int y)
+        {
+            super(Textures.Tasks.TASKS, x * ICON_SIZE, y * ICON_SIZE + ICON_TEXTURE_Y, ICON_SIZE, ICON_SIZE);
         }
     }
 }

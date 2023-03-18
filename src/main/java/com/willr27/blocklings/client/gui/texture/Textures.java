@@ -183,26 +183,31 @@ public class Textures
         public static class General
         {
             public static final Tiles TILES = new Tiles("textures/gui/skills_backgrounds/general.png");
+            public static final Tiles ICONS = new Tiles("textures/gui/skills_icons/general.png");
         }
 
         public static class Combat
         {
             public static final Tiles TILES = new Tiles("textures/gui/skills_backgrounds/combat.png");
+            public static final Tiles ICONS = new Tiles("textures/gui/skills_icons/combat.png");
         }
 
         public static class Mining
         {
             public static final Tiles TILES = new Tiles("textures/gui/skills_backgrounds/mining.png");
+            public static final Tiles ICONS = new Tiles("textures/gui/skills_icons/mining.png");
         }
 
         public static class Woodcutting
         {
             public static final Tiles TILES = new Tiles("textures/gui/skills_backgrounds/woodcutting.png");
+            public static final Tiles ICONS = new Tiles("textures/gui/skills_icons/woodcutting.png");
         }
 
         public static class Farming
         {
             public static final Tiles TILES = new Tiles("textures/gui/skills_backgrounds/farming.png");
+            public static final Tiles ICONS = new Tiles("textures/gui/skills_icons/farming.png");
         }
 
         public static class Tiles extends BlocklingsResourceLocation

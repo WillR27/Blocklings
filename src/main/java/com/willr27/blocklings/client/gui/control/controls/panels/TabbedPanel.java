@@ -12,7 +12,6 @@ import com.willr27.blocklings.client.gui.texture.Texture;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.ScissorBounds;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
-import com.willr27.blocklings.client.gui3.GuiTextures;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -65,8 +64,8 @@ public class TabbedPanel extends Control
     @Override
     public void measureChildren()
     {
-        tabContainer.doMeasure(getDesiredWidth(), GuiTextures.Common.Tab.TAB_SELECTED_BACKGROUND.height);
-        containerContainer.doMeasure(getDesiredWidth() - 2, getDesiredHeight() - GuiTextures.Common.Tab.FULLY_OPAQUE_HEIGHT - 1);
+        tabContainer.doMeasure(getDesiredWidth(), Textures.Common.Tab.TAB_SELECTED_BACKGROUND.height);
+        containerContainer.doMeasure(getDesiredWidth() - 2, getDesiredHeight() - Textures.Common.Tab.FULLY_OPAQUE_HEIGHT - 1);
     }
 
     @Override
@@ -77,7 +76,7 @@ public class TabbedPanel extends Control
         tabContainer.setPosition(0.0, 0.0);
         containerContainer.setWidth(containerContainer.getDesiredWidth());
         containerContainer.setHeight(containerContainer.getDesiredHeight());
-        containerContainer.setPosition(1.0, GuiTextures.Common.Tab.FULLY_OPAQUE_HEIGHT);
+        containerContainer.setPosition(1.0, Textures.Common.Tab.FULLY_OPAQUE_HEIGHT);
     }
 
     @Override
@@ -308,7 +307,7 @@ public class TabbedPanel extends Control
 
             if (isFirst() && isLast())
             {
-                renderTextureAsBackground(matrixStack, backgroundTexture.dx(GuiTextures.Common.Tab.EDGE_WIDTH).width((int) getWidth()));
+                renderTextureAsBackground(matrixStack, backgroundTexture.dx(Textures.Common.Tab.EDGE_WIDTH).width((int) getWidth()));
             }
             else if (isFirst())
             {
@@ -320,8 +319,8 @@ public class TabbedPanel extends Control
             }
             else
             {
-                renderTextureAsBackground(matrixStack, backgroundTexture.width((int) getWidth() - GuiTextures.Common.Tab.EDGE_WIDTH));
-                renderTextureAsBackground(matrixStack, backgroundTexture.dx(backgroundTexture.width - GuiTextures.Common.Tab.EDGE_WIDTH).width(GuiTextures.Common.Tab.EDGE_WIDTH), (int) (getWidth() - GuiTextures.Common.Tab.EDGE_WIDTH), 0);
+                renderTextureAsBackground(matrixStack, backgroundTexture.width((int) getWidth() - Textures.Common.Tab.EDGE_WIDTH));
+                renderTextureAsBackground(matrixStack, backgroundTexture.dx(backgroundTexture.width - Textures.Common.Tab.EDGE_WIDTH).width(Textures.Common.Tab.EDGE_WIDTH), (int) (getWidth() - Textures.Common.Tab.EDGE_WIDTH), 0);
             }
 
             RenderSystem.enableDepthTest();

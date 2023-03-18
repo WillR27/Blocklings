@@ -1,6 +1,5 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
-import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.controls.TabbedUIControl;
 import com.willr27.blocklings.client.gui.control.controls.skills.SkillsPanel;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;

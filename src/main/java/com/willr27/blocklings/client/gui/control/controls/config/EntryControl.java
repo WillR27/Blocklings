@@ -2,15 +2,11 @@ package com.willr27.blocklings.client.gui.control.controls.config;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.EntityControl;
 import com.willr27.blocklings.client.gui.control.controls.ItemControl;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
-import com.willr27.blocklings.client.gui.texture.Texture;
-import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
-import com.willr27.blocklings.client.gui2.GuiUtil;
 import com.willr27.blocklings.entity.blockling.whitelist.GoalWhitelist;
 import com.willr27.blocklings.entity.blockling.whitelist.Whitelist;
 import com.willr27.blocklings.util.EntityUtil;

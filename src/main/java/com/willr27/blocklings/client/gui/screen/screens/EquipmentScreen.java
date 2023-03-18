@@ -2,7 +2,7 @@ package com.willr27.blocklings.client.gui.screen.screens;
 
 import com.willr27.blocklings.client.gui.control.controls.EntityControl;
 import com.willr27.blocklings.client.gui.control.controls.TabbedUIControl;
-import com.willr27.blocklings.client.gui2.containers.EquipmentContainer;
+import com.willr27.blocklings.client.gui.containers.EquipmentContainer;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
