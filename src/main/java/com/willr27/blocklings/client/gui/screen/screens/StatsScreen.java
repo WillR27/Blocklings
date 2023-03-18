@@ -221,7 +221,7 @@ public class StatsScreen extends TabbedScreen
         entityControl.setScaleToBoundingBox(true);
         entityControl.setEntityScale(0.9f);
         entityControl.setOffsetY(-1.0f);
-        entityControl.setShouldScissor(false);
+        entityControl.setClipContentsToBounds(false);
         entityControl.setHorizontalAlignment(0.5);
         entityControl.setVerticalAlignment(0.5);
 

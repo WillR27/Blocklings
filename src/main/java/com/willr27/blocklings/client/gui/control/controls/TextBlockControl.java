@@ -67,7 +67,6 @@ public class TextBlockControl extends Control
         super();
 
         setInteractive(false);
-        setWidthPercentage(1.0);
         setFitHeightToContent(true);
     }
 

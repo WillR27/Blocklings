@@ -328,6 +328,7 @@ public class ComboBoxControl extends StackPanel
             nameControl.setVerticalAlignment(0.5);
             nameControl.setMarginLeft(4.0);
             nameControl.setMarginRight(3.0);
+            nameControl.setWidthPercentage(1.0);
 
             arrowControl = new TexturedControl(Textures.Common.DropDown.DOWN_ARROW);
             gridPanel.addChild(arrowControl, 0, 2);

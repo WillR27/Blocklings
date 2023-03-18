@@ -401,7 +401,7 @@ public class Control extends BaseControl
      */
     protected void applyScissor(@Nonnull ScissorStack scissorStack)
     {
-        if (shouldScissor())
+        if (shouldClipContentsToBounds())
         {
             scissorStack.push(new ScissorBounds((int) Math.round(getPixelX()), (int) Math.round(getPixelY()), (int) Math.round(getPixelWidth()), (int) Math.round(getPixelHeight())));
             scissorStack.enable();
@@ -417,7 +417,7 @@ public class Control extends BaseControl
      */
     protected void undoScissor(@Nonnull ScissorStack scissorStack)
     {
-        if (shouldScissor())
+        if (shouldClipContentsToBounds())
         {
             scissorStack.pop();
             scissorStack.disable();

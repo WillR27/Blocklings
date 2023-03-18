@@ -192,7 +192,7 @@ public class TabbedUIControl extends Control
 
             if (isSelected())
             {
-                matrixStack.translate(0.0, 0.0, 5.0);
+                matrixStack.translate(0.0, 0.0, 0.5);
 
                 renderTextureAsBackground(matrixStack, selectedBackgroundTexture);
                 renderTextureAsBackground(matrixStack, tab.iconTexture, tab.left ? 6 : 4, 3);

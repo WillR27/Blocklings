@@ -13,7 +13,6 @@ import com.willr27.blocklings.client.gui.util.ScissorBounds;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.client.gui3.GuiTextures;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -290,6 +289,7 @@ public class TabbedPanel extends Control
             tabNameTextBlock = new TextBlockControl();
             tabNameTextBlock.setParent(this);
             tabNameTextBlock.setText(name);
+            tabNameTextBlock.setWidthPercentage(1.0);
             tabNameTextBlock.setHorizontalAlignment(0.5);
             tabNameTextBlock.setVerticalAlignment(0.4);
             tabNameTextBlock.setHorizontalContentAlignment(0.5);
@@ -360,7 +360,7 @@ public class TabbedPanel extends Control
                 dy = getPixelScaleY();
             }
 
-            if (shouldScissor())
+            if (shouldClipContentsToBounds())
             {
                 scissorStack.push(new ScissorBounds((int) Math.round(getPixelX() + dx) , (int) Math.round(getPixelY() + dy), (int) Math.round(getPixelWidth() - dw), (int) Math.round(getPixelHeight() - dy)));
                 scissorStack.enable();

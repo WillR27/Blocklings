@@ -148,7 +148,7 @@ public class TestScreen extends BlocklingsScreen
         GridPanel gridPanel = new GridPanel();
         gridPanel.setDraggableX(true);
         gridPanel.setDraggableY(true);
-        gridPanel.setShouldScissor(false);
+        gridPanel.setClipContentsToBounds(false);
         gridPanel.setParent(screenControl);
         gridPanel.setPadding(10.0, 10.0, 10.0, 10.0);
         gridPanel.setInnerScale(0.5, 0.5);

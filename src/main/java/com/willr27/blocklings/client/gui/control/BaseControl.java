@@ -119,11 +119,19 @@ public abstract class BaseControl extends GuiControl
 
     private double dragThreshold = 4.0;
 
-    private double dragZ = 100.0;
+    /**
+     * The z value to render at when dragging. If null, use {@link #renderZ}.
+     */
+    @Nullable
+    private Double dragZ = 100.0;
 
     private boolean shouldBlockDrag = true;
 
-    private boolean shouldScissor = true;
+    /**
+     * Whether to clip its contents to its bounds. If null, inherit from parent.
+     */
+    @Nullable
+    private Boolean shouldClipContentsToBounds = true;
 
     private double renderZ = 0.0;
 
@@ -1846,10 +1854,10 @@ public abstract class BaseControl extends GuiControl
 
     public double getDragZ()
     {
-        return dragZ;
+        return dragZ != null ? dragZ : getRenderZ();
     }
 
-    public void setDragZ(double dragZ)
+    public void setDragZ(@Nullable Double dragZ)
     {
         this.dragZ = dragZ;
     }
@@ -1972,14 +1980,19 @@ public abstract class BaseControl extends GuiControl
         isReorderable = reorderable;
     }
 
-    public boolean shouldScissor()
+    public boolean shouldClipContentsToBounds()
     {
-        return shouldScissor;
+        if (shouldClipContentsToBounds != null)
+        {
+            return shouldClipContentsToBounds;
+        }
+
+        return getParent() != null ? getParent().shouldClipContentsToBounds() : true;
     }
 
-    public void setShouldScissor(boolean shouldScissor)
+    public void setClipContentsToBounds(@Nullable Boolean shouldClipContentsToBounds)
     {
-        this.shouldScissor = shouldScissor;
+        this.shouldClipContentsToBounds = shouldClipContentsToBounds;
     }
 
     public double getRenderZ()
