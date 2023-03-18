@@ -6,6 +6,8 @@ import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.skill.info.SkillInfo;
 import com.willr27.blocklings.network.messages.SkillStateMessage;
 import com.willr27.blocklings.network.messages.SkillTryBuyMessage;
+import com.willr27.blocklings.util.event.EventHandler;
+import com.willr27.blocklings.util.event.IEvent;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -39,6 +41,12 @@ public class Skill
      * The current state of the skill.
      */
     private State state;
+
+    /**
+     * Invoked when the skill's state changes.
+     */
+    @Nonnull
+    public final EventHandler<StateChangedEvent> onStateChanged = new EventHandler<>();
 
     /**
      * @param info the skill's info.
@@ -184,6 +192,8 @@ public class Skill
                 }
             }
         }
+
+        onStateChanged.handle(new StateChangedEvent());
     }
 
     /**
@@ -276,5 +286,13 @@ public class Skill
         {
             this.colour = new Color(colour);
         }
+    }
+
+    /**
+     * Called when the skill's state changes.
+     */
+    public static class StateChangedEvent implements IEvent
+    {
+
     }
 }

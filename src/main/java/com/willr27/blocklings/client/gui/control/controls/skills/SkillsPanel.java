@@ -532,6 +532,11 @@ public class SkillsPanel extends CanvasPanel
             this.skill = skill;
             this.confirmationControl = confirmationControl;
 
+            skill.onStateChanged.subscribe((e) ->
+            {
+                recreateInfo();
+            });
+
             setWidth(skill.info.general.type.texture.width);
             setHeight(skill.info.general.type.texture.height);
             setX(skill.info.gui.x - getWidth() / 2.0);
@@ -552,97 +557,14 @@ public class SkillsPanel extends CanvasPanel
                 }
             };
             info.setParent(this);
+            info.setMinWidth(130.0);
             info.setFitWidthToContent(true);
             info.setFitHeightToContent(true);
             info.setInteractive(false);
             info.setPadding(4.0, 2.0, 0.0, 0.0);
             info.setVisibility(Visibility.COLLAPSED);
 
-            Control nameBackground = new Control()
-            {
-                @Override
-                protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
-                {
-                    super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
-
-                    RenderSystem.color3f(skill.info.gui.colour.getRed() / 255.0f, skill.info.gui.colour.getGreen() / 255.0f, skill.info.gui.colour.getBlue() / 255.0f);
-
-                    renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_NAME_BACKGROUND.width((int) (getWidth() - 2)), 0, getPadding().top);
-                    renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_NAME_BACKGROUND.width(2).dx(Textures.Skills.SKILL_NAME_BACKGROUND.width - 2), getWidth() - 2, getPadding().top);
-                }
-            };
-            nameBackground.setParent(info);
-            nameBackground.setWidthPercentage(1.0);
-            nameBackground.setHeight(Textures.Skills.SKILL_NAME_BACKGROUND.height - 1);
-            nameBackground.setPaddingLeft(24.0);
-            nameBackground.setPaddingRight(5.0);
-            nameBackground.setRenderZ(0.2);
-            nameBackground.setClipContentsToBounds(false);
-
-            TextBlockControl nameText = new TextBlockControl();
-            nameText.setParent(nameBackground);
-            nameText.setText(skill.info.general.name);
-            nameText.setClipContentsToBounds(false);
-            nameText.setVerticalAlignment(0.55);
-            nameText.setFitWidthToContent(true);
-
-            Control emptyLine = new Control()
-            {
-                @Override
-                protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
-                {
-                    super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
-
-                    renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_DESC_BACKGROUND.width((int) (getParent().getWidthWithoutPadding() - 2)).height((int) getHeight() + 1).dy(2), 0, getPadding().top);
-                    renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_DESC_BACKGROUND.width(2).height((int) getHeight() + 1).dx(Textures.Skills.SKILL_DESC_BACKGROUND.width - 2).dy(2), getParent().getWidthWithoutPadding() - 2, getPadding().top);
-                }
-            };
-            emptyLine.setParent(info);
-            emptyLine.setWidthPercentage(1.0);
-            emptyLine.setHeight(2.0);
-            emptyLine.setClipContentsToBounds(false);
-
-            for (String string : getSkillDescription())
-            {
-                Control line = new Control()
-                {
-                    @Override
-                    protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
-                    {
-                        super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
-
-                        renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_DESC_BACKGROUND.width((int) (getParent().getWidthWithoutPadding() - 2)).height((int) getHeight()).dy(2), 0, getPadding().top);
-                        renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_DESC_BACKGROUND.width(2).height((int) getHeight()).dx(Textures.Skills.SKILL_DESC_BACKGROUND.width - 2).dy(2), getParent().getWidthWithoutPadding() - 2, getPadding().top);
-                    }
-                };
-                line.setParent(info);
-                line.setFitWidthToContent(true);
-                line.setFitHeightToContent(true);
-                line.setClipContentsToBounds(false);
-                line.setPadding(5.0, 1.0, 5.0, 0.0);
-
-                TextBlockControl text = new TextBlockControl();
-                text.setParent(line);
-                text.setText(string);
-                text.setFitWidthToContent(true);
-                text.setClipContentsToBounds(false);
-            }
-
-            Control endLine = new Control()
-            {
-                @Override
-                protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
-                {
-                    super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
-
-                    renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_DESC_BACKGROUND.width((int) (getParent().getWidthWithoutPadding() - 2)).height((int) getHeight()).dy((int) (Textures.Skills.SKILL_DESC_BACKGROUND.height - getHeight())), 0, getPadding().top);
-                    renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_DESC_BACKGROUND.width(2).height((int) getHeight()).dx(Textures.Skills.SKILL_DESC_BACKGROUND.width - 2).dy((int) (Textures.Skills.SKILL_DESC_BACKGROUND.height - getHeight())), getParent().getWidthWithoutPadding() - 2, getPadding().top);
-                }
-            };
-            endLine.setParent(info);
-            endLine.setWidthPercentage(1.0);
-            endLine.setHeight(3.0);
-            endLine.setClipContentsToBounds(false);
+            recreateInfo();
 
             TexturedControl type = new TexturedControl(skill.info.general.type.texture)
             {
@@ -712,6 +634,121 @@ public class SkillsPanel extends CanvasPanel
             icon.setVerticalAlignment(0.5);
             icon.setInteractive(false);
             icon.setClipContentsToBounds(null);
+        }
+
+        /**
+         * Recreates the info panel.
+         */
+        private void recreateInfo()
+        {
+            info.clearChildren();
+
+            Control nameBackground = new Control()
+            {
+                @Override
+                protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+                {
+                    super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+
+                    if (skill.areParentsBought())
+                    {
+                        RenderSystem.color3f(skill.info.gui.colour.getRed() / 255.0f, skill.info.gui.colour.getGreen() / 255.0f, skill.info.gui.colour.getBlue() / 255.0f);
+                    }
+                    else
+                    {
+                        RenderSystem.color3f(0.5f, 0.5f, 0.5f);
+                    }
+
+                    renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_NAME_BACKGROUND.width((int) (getWidth() - 2)), 0, getPadding().top);
+                    renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_NAME_BACKGROUND.width(2).dx(Textures.Skills.SKILL_NAME_BACKGROUND.width - 2), getWidth() - 2, getPadding().top);
+                }
+            };
+            nameBackground.setParent(info);
+            nameBackground.setWidthPercentage(1.0);
+            nameBackground.setHeight(Textures.Skills.SKILL_NAME_BACKGROUND.height - 1);
+            nameBackground.setPaddingLeft(24.0);
+            nameBackground.setPaddingRight(5.0);
+            nameBackground.setRenderZ(0.2);
+            nameBackground.setClipContentsToBounds(false);
+
+            TextBlockControl nameText = new TextBlockControl()
+            {
+                @Override
+                protected void onRenderUpdate(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+                {
+                    if (skill.areParentsBought())
+                    {
+                        setText(skill.info.general.name);
+                    }
+                    else
+                    {
+                        setText(new BlocklingsTranslationTextComponent("skill.unknown"));
+                    }
+                }
+            };
+            nameText.setParent(nameBackground);
+            nameText.setText(skill.info.general.name);
+            nameText.setClipContentsToBounds(false);
+            nameText.setVerticalAlignment(0.55);
+            nameText.setFitWidthToContent(true);
+
+            Control emptyLine = new Control()
+            {
+                @Override
+                protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+                {
+                    super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+
+                    renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_DESC_BACKGROUND.width((int) (getParent().getWidthWithoutPadding() - 2)).height((int) getHeight() + 1).dy(2), 0, getPadding().top);
+                    renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_DESC_BACKGROUND.width(2).height((int) getHeight() + 1).dx(Textures.Skills.SKILL_DESC_BACKGROUND.width - 2).dy(2), getParent().getWidthWithoutPadding() - 2, getPadding().top);
+                }
+            };
+            emptyLine.setParent(info);
+            emptyLine.setWidthPercentage(1.0);
+            emptyLine.setHeight(2.0);
+            emptyLine.setClipContentsToBounds(false);
+
+            for (String string : getSkillDescription())
+            {
+                Control line = new Control()
+                {
+                    @Override
+                    protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+                    {
+                        super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+
+                        renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_DESC_BACKGROUND.width((int) (getParent().getWidthWithoutPadding() - 2)).height((int) getHeight()).dy(2), 0, getPadding().top);
+                        renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_DESC_BACKGROUND.width(2).height((int) getHeight()).dx(Textures.Skills.SKILL_DESC_BACKGROUND.width - 2).dy(2), getParent().getWidthWithoutPadding() - 2, getPadding().top);
+                    }
+                };
+                line.setParent(info);
+                line.setFitWidthToContent(true);
+                line.setFitHeightToContent(true);
+                line.setClipContentsToBounds(false);
+                line.setPadding(5.0, 1.0, 5.0, 0.0);
+
+                TextBlockControl text = new TextBlockControl();
+                text.setParent(line);
+                text.setText(string);
+                text.setFitWidthToContent(true);
+                text.setClipContentsToBounds(false);
+            }
+
+            Control endLine = new Control()
+            {
+                @Override
+                protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+                {
+                    super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+
+                    renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_DESC_BACKGROUND.width((int) (getParent().getWidthWithoutPadding() - 2)).height((int) getHeight()).dy((int) (Textures.Skills.SKILL_DESC_BACKGROUND.height - getHeight())), 0, getPadding().top);
+                    renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_DESC_BACKGROUND.width(2).height((int) getHeight()).dx(Textures.Skills.SKILL_DESC_BACKGROUND.width - 2).dy((int) (Textures.Skills.SKILL_DESC_BACKGROUND.height - getHeight())), getParent().getWidthWithoutPadding() - 2, getPadding().top);
+                }
+            };
+            endLine.setParent(info);
+            endLine.setWidthPercentage(1.0);
+            endLine.setHeight(3.0);
+            endLine.setClipContentsToBounds(false);
         }
 
         /**
