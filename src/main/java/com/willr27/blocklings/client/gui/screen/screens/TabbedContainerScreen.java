@@ -73,8 +73,8 @@ public abstract class TabbedContainerScreen<T extends Container> extends Blockli
         super.init();
 
         screenControl.measureAndArrange();
-        topPos = (int) (tabbedUIControl.getPixelY() / tabbedUIControl.getGuiScale()) + 5;
         leftPos = (int) (tabbedUIControl.getPixelX() / tabbedUIControl.getGuiScale()) + 29;
+        topPos = (int) (tabbedUIControl.getPixelY() / tabbedUIControl.getGuiScale()) + 25;
     }
 
     @Override

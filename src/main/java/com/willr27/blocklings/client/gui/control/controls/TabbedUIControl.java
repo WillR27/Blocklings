@@ -2,14 +2,17 @@ package com.willr27.blocklings.client.gui.control.controls;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.Control;
+import com.willr27.blocklings.client.gui.control.controls.panels.GridPanel;
 import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseClickedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrolledEvent;
+import com.willr27.blocklings.client.gui.properties.GridDefinition;
 import com.willr27.blocklings.client.gui.texture.Texture;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.client.gui2.BlocklingGuiHandler;
+import com.willr27.blocklings.client.gui3.control.controls.GridControl;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.client.Minecraft;
@@ -25,7 +28,7 @@ import static com.willr27.blocklings.client.gui.texture.Textures.Tabs.*;
  * A control for all tabbed blockling controls.
  */
 @OnlyIn(Dist.CLIENT)
-public class TabbedUIControl extends Control
+public class TabbedUIControl extends GridPanel
 {
     /**
      * The associated blockling.
@@ -62,18 +65,29 @@ public class TabbedUIControl extends Control
         this.selectedTab = selectedTab;
 
         setWidth(234);
-        setHeight(166);
+        setHeight(186);
         setHorizontalAlignment(0.5);
-        setVerticalAlignment(0.5);
+        setVerticalAlignment(0.41);
         setShouldSnapToScreenCoords(true);
+        addRowDefinition(GridDefinition.FIXED, 20.0);
+        addRowDefinition(GridDefinition.RATIO, 1.0);
+        addColumnDefinition(GridDefinition.RATIO, 1.0);
+
+        TextBlockControl titleControl = new TextBlockControl();
+        addChild(titleControl, 0, 0);
+        titleControl.setText(selectedTab.name);
+        titleControl.setFitWidthToContent(true);
+        titleControl.setHorizontalAlignment(0.5);
+        titleControl.setVerticalAlignment(0.5);
 
         backgroundControl = new TexturedControl(selectedTab.backgroundTexture);
-        backgroundControl.setParent(this);
+        addChild(backgroundControl, 1, 0);
         backgroundControl.setHorizontalAlignment(0.5);
+        backgroundControl.setVerticalAlignment(1.0);
         backgroundControl.setInteractive(false);
 
         StackPanel leftTabsPanel = new StackPanel();
-        leftTabsPanel.setParent(this);
+        addChild(leftTabsPanel, 1, 0);
         leftTabsPanel.setWidth(32);
         leftTabsPanel.setHeight(156.0);
         leftTabsPanel.setVerticalAlignment(0.5);
@@ -81,7 +95,7 @@ public class TabbedUIControl extends Control
         leftTabsPanel.setHorizontalContentAlignment(1.0);
 
         StackPanel rightTabsPanel = new StackPanel();
-        rightTabsPanel.setParent(this);
+        addChild(rightTabsPanel, 1, 0);
         rightTabsPanel.setWidth(32);
         rightTabsPanel.setHeight(156.0);
         rightTabsPanel.setHorizontalAlignment(1.0);
@@ -121,11 +135,12 @@ public class TabbedUIControl extends Control
 
             }
         };
-        contentControl.setParent(this);
+        addChild(contentControl, 1, 0);
         contentControl.setWidth(160);
         contentControl.setHeight(150);
         contentControl.setHorizontalAlignment(0.5);
-        contentControl.setVerticalAlignment(0.5);
+        contentControl.setVerticalAlignment(1.0);
+        contentControl.setMarginBottom(8.0);
     }
 
     @Override

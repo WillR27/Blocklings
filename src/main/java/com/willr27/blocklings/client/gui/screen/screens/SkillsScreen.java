@@ -32,9 +32,8 @@ public class SkillsScreen extends TabbedScreen
         super(blockling, selectedTab);
         this.skillGroupInfo = skillGroupInfo;
 
-        BaseControl backgroundParent = tabbedUIControl.backgroundControl.getParent();
         tabbedUIControl.backgroundControl.setParent(null);
-        tabbedUIControl.backgroundControl.setParent(backgroundParent);
+        tabbedUIControl.addChild(tabbedUIControl.backgroundControl, 1, 0);
         tabbedUIControl.backgroundControl.setRenderZ(0.3);
         tabbedUIControl.contentControl.setPadding(1.0);
 
