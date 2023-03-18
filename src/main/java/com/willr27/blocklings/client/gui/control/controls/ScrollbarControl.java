@@ -66,8 +66,8 @@ public class ScrollbarControl extends Control
 
                             if (isDragging())
                             {
-                                double minPixelY = getParent().toPixelY(0.0);
-                                double maxPixelY = getParent().toPixelY(getParent().getHeight() - getHeight());
+                                double minPixelY = getParent().toPixelY(0.0 + getHeight() / 2.0);
+                                double maxPixelY = getParent().toPixelY(getParent().getHeight() - getHeight() / 2.0);
                                 double percentage = ((mouseY - getHeight() / 2.0) - minPixelY) / (maxPixelY - minPixelY);
 
                                 getAttachedControl().setScrollPercentY(percentage);
@@ -95,6 +95,7 @@ public class ScrollbarControl extends Control
         };
         grabber.setParent(this);
         grabber.setDraggableY(true);
+        grabber.setDragThreshold(0.0);
     }
 
     @Override
