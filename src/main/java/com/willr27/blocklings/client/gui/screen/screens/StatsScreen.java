@@ -10,6 +10,7 @@ import com.willr27.blocklings.client.gui.control.controls.TextFieldControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.GridPanel;
 import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
 import com.willr27.blocklings.client.gui.control.controls.stats.EnumeratingStatControl;
+import com.willr27.blocklings.client.gui.control.controls.stats.HealthBarControl;
 import com.willr27.blocklings.client.gui.control.controls.stats.StatControl;
 import com.willr27.blocklings.client.gui.control.controls.stats.XpBarControl;
 import com.willr27.blocklings.client.gui.control.event.events.FocusChangedEvent;
@@ -88,12 +89,19 @@ public class StatsScreen extends TabbedScreen
         statsGridPanel.setWidthPercentage(1.0);
         statsGridPanel.setHeightPercentage(1.0);
         statsGridPanel.setMargins(1.0, 0.0, 1.0, 1.0);
+        statsGridPanel.addRowDefinition(GridDefinition.AUTO, 1.0);
         statsGridPanel.addRowDefinition(GridDefinition.RATIO, 1.0);
         statsGridPanel.addRowDefinition(GridDefinition.AUTO, 1.0);
         statsGridPanel.addColumnDefinition(GridDefinition.RATIO, 1.0);
 
+        HealthBarControl healthBarControl = new HealthBarControl(blockling);
+        statsGridPanel.addChild(healthBarControl, 0, 0);
+        healthBarControl.setHorizontalAlignment(0.5);
+        healthBarControl.setVerticalAlignment(0.5);
+        healthBarControl.setMarginTop(6.0);
+
         Control statsContainer = new Control();
-        statsGridPanel.addChild(statsContainer, 0, 0);
+        statsGridPanel.addChild(statsContainer, 1, 0);
         statsContainer.setWidthPercentage(1.0);
         statsContainer.setHeightPercentage(1.0);
 
@@ -116,7 +124,7 @@ public class StatsScreen extends TabbedScreen
         EnumeratingControl combatStats = new EnumeratingStatControl(new BlocklingsTranslationTextComponent("stats.attack.name"));
         combatStats.setParent(leftStatsControl);
         combatStats.setHorizontalAlignment(0.0);
-        combatStats.setVerticalAlignment(0.25);
+        combatStats.setVerticalAlignment(0.22);
         combatStats.addControl(new StatControl(
                 Textures.Stats.ATTACK_DAMAGE_MAIN,
                 () -> stats.mainHandAttackDamage.displayStringValueFunction.apply(stats.mainHandAttackDamage.getValue()),
@@ -135,7 +143,7 @@ public class StatsScreen extends TabbedScreen
         EnumeratingControl defenceStats = new EnumeratingStatControl(new BlocklingsTranslationTextComponent("stats.defence.name"));
         defenceStats.setParent(leftStatsControl);
         defenceStats.setHorizontalAlignment(0.0);
-        defenceStats.setVerticalAlignment(0.75);
+        defenceStats.setVerticalAlignment(0.72);
         defenceStats.addControl(new StatControl(
                 Textures.Stats.ARMOUR,
                 () -> stats.armour.displayStringValueFunction.apply(stats.armour.getValue()),
@@ -152,7 +160,7 @@ public class StatsScreen extends TabbedScreen
         EnumeratingControl gatherStats = new EnumeratingStatControl(new BlocklingsTranslationTextComponent("stats.gathering.name"));
         gatherStats.setParent(rightStatsControl);
         gatherStats.setHorizontalAlignment(1.0);
-        gatherStats.setVerticalAlignment(0.25);
+        gatherStats.setVerticalAlignment(0.22);
         gatherStats.addControl(new StatControl(
                 Textures.Stats.MINING_SPEED,
                 () -> stats.miningSpeed.displayStringValueFunction.apply(stats.miningSpeed.getValue()),
@@ -169,7 +177,7 @@ public class StatsScreen extends TabbedScreen
         EnumeratingControl movementStats = new EnumeratingStatControl(new BlocklingsTranslationTextComponent("stats.movement.name"));
         movementStats.setParent(rightStatsControl);
         movementStats.setHorizontalAlignment(1.0);
-        movementStats.setVerticalAlignment(0.75);
+        movementStats.setVerticalAlignment(0.72);
         movementStats.addControl(new StatControl(
                 Textures.Stats.MOVE_SPEED,
                 () -> stats.moveSpeed.displayStringValueFunction.apply(stats.moveSpeed.getValue()),
@@ -229,10 +237,10 @@ public class StatsScreen extends TabbedScreen
         entityControl.setOffsetY(-1.0f);
         entityControl.setClipContentsToBounds(false);
         entityControl.setHorizontalAlignment(0.5);
-        entityControl.setVerticalAlignment(0.5);
+        entityControl.setVerticalAlignment(0.47);
 
         StackPanel levelsPanel = new StackPanel();
-        statsGridPanel.addChild(levelsPanel, 1, 0);
+        statsGridPanel.addChild(levelsPanel, 2, 0);
         levelsPanel.setWidthPercentage(1.0);
         levelsPanel.setFitHeightToContent(true);
         levelsPanel.setDirection(Direction.TOP_TO_BOTTOM);
