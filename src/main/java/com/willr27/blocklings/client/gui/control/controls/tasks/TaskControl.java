@@ -258,6 +258,19 @@ public class TaskControl extends Control
         Control addRemoveControl = new TexturedControl(task == null ? Textures.Tasks.TASK_ADD_ICON : Textures.Tasks.TASK_REMOVE_ICON)
         {
             @Override
+            protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+            {
+                if (isPressed() && !isDragging() && getPressedBackgroundTexture() != null)
+                {
+                    renderTextureAsBackground(matrixStack, getPressedBackgroundTexture(), 4, 4);
+                }
+                else
+                {
+                    renderTextureAsBackground(matrixStack, getBackgroundTexture(), 4, 4);
+                }
+            }
+
+            @Override
             public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
             {
                 renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent(task == null ? "task.ui.add" : "task.ui.remove"));
@@ -281,6 +294,10 @@ public class TaskControl extends Control
             }
         };
         gridControl.addChild(addRemoveControl, 0, 2);
+        addRemoveControl.setFitWidthToContent(false);
+        addRemoveControl.setFitHeightToContent(false);
+        addRemoveControl.setWidth(17);
+        addRemoveControl.setHeight(20);
     }
 
     @Override

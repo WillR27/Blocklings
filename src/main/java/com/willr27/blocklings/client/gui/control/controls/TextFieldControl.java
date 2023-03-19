@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.event.events.SizeChangedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.TextChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.*;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
@@ -47,12 +48,26 @@ public class TextFieldControl extends Control
     private double textFieldYRemainder = 0.0;
 
     /**
+     * The colour of the text field's border.
+     */
+    private int borderColour = 0xffdddddd;
+
+    /**
+     * The colour of the text field's border when focused.
+     */
+    private int borderFocusedColour = 0xffaaaaaa;
+
+    /**
      */
     public TextFieldControl()
     {
         super();
 
         textFieldWidget.setBordered(false);
+        textFieldWidget.setResponder((text) ->
+        {
+            setText(text);
+        });
 
         eventBus.subscribe((BaseControl control, SizeChangedEvent e) ->
         {
@@ -63,6 +78,7 @@ public class TextFieldControl extends Control
         setVerticalContentAlignment(0.5);
         setPadding(6, 3, 6, 3);
         setHeight(20.0);
+        setBackgroundColour(0xff111111);
     }
 
     /**
@@ -96,7 +112,7 @@ public class TextFieldControl extends Control
 
         if (shouldRenderBackground())
         {
-            renderRectangleAsBackground(matrixStack, 0xff111111, 1, 1, (int) (getWidth() - 2), (int) (getHeight() - 2));
+            renderRectangleAsBackground(matrixStack, getBackgroundColourInt(), 1, 1, (int) (getWidth() - 2), (int) (getHeight() - 2));
         }
 
         float z = isDraggingOrAncestor() ? (float) getDraggedControl().getDragZ() : (float) getRenderZ();
@@ -122,10 +138,11 @@ public class TextFieldControl extends Control
 
         if (shouldRenderBackground)
         {
-            renderRectangleAsBackground(matrixStack, isFocused() ? 0xffdddddd : 0xffaaaaaa, 0, 0, 1, getHeight());
-            renderRectangleAsBackground(matrixStack, isFocused() ? 0xffdddddd : 0xffaaaaaa, getWidth() - 1, 0, 1, getHeight());
-            renderRectangleAsBackground(matrixStack, isFocused() ? 0xffdddddd : 0xffaaaaaa, 0, 0, getWidth(), 1);
-            renderRectangleAsBackground(matrixStack, isFocused() ? 0xffdddddd : 0xffaaaaaa, 0, getHeight() - 1, getWidth(), 1);
+            int borderColour = isFocused() ? getBorderFocusedColour() : getBorderColour();
+            renderRectangleAsBackground(matrixStack, borderColour, 0, 0, 1, getHeight());
+            renderRectangleAsBackground(matrixStack, borderColour, getWidth() - 1, 0, 1, getHeight());
+            renderRectangleAsBackground(matrixStack, borderColour, 0, 0, getWidth(), 1);
+            renderRectangleAsBackground(matrixStack, borderColour, 0, getHeight() - 1, getWidth(), 1);
         }
     }
 
@@ -230,8 +247,15 @@ public class TextFieldControl extends Control
 
     public void setText(@Nonnull String text)
     {
-        textFieldWidget.setValue(text);
-        textFieldWidget.moveCursorToStart();
+        String oldText = textFieldWidget.getValue();
+
+        if (!oldText.equals(text))
+        {
+            textFieldWidget.setValue(text);
+            textFieldWidget.moveCursorToStart();
+        }
+
+        eventBus.post(this, new TextChangedEvent(oldText, text));
     }
 
     public void setText(@Nonnull ITextComponent text)
@@ -261,6 +285,38 @@ public class TextFieldControl extends Control
     public void setShouldRenderBackground(boolean shouldRenderBackground)
     {
         this.shouldRenderBackground = shouldRenderBackground;
+    }
+
+    /**
+     * @return the text field's border colour.
+     */
+    public int getBorderColour()
+    {
+        return borderColour;
+    }
+
+    /**
+     * Sets the text field's border colour.
+     */
+    public void setBorderColour(int borderColour)
+    {
+        this.borderColour = borderColour;
+    }
+
+    /**
+     * @return the text field's border colour when focused.
+     */
+    public int getBorderFocusedColour()
+    {
+        return borderFocusedColour;
+    }
+
+    /**
+     * Sets the text field's border colour when focused.
+     */
+    public void setBorderFocusedColour(int borderFocusedColour)
+    {
+        this.borderFocusedColour = borderFocusedColour;
     }
 }
 

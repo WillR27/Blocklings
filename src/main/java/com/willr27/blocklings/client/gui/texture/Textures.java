@@ -26,6 +26,11 @@ public class Textures
         public static final Texture NODE_UNPRESSED = new Texture(COMMON, 46, 0, 12, 12);
         public static final Texture NODE_PRESSED = new Texture(COMMON, 58, 0, 12, 12);
 
+        public static final Texture SEARCH_ICON = new Texture(COMMON, 70, 0, 14, 14);
+
+        public static final Texture PLUS_ICON = new Texture(COMMON, 84, 0, 12, 12);
+        public static final Texture CROSS_ICON = new Texture(COMMON, 96, 0, 10, 10);
+
         public static final Texture SLIDER_BAR = new Texture(COMMON, 0, 88, 256, 4);
 
         public static class Scrollbar
@@ -150,8 +155,8 @@ public class Textures
         public static final Texture TASK_ICON_BACKGROUND_PRESSED = new Texture(TASKS, 20, 166, 20, 20);
         public static final Texture TASK_NAME_BACKGROUND = new Texture(TASKS, 41, 166, 96, 20);
         public static final Texture TASK_ADD_ICON_BACKGROUND = new Texture(TASKS, 176, 0, 20, 20);
-        public static final Texture TASK_ADD_ICON = new Texture(TASKS, 136, 166, 17, 20);
-        public static final Texture TASK_REMOVE_ICON = new Texture(TASKS, 156, 166, 17, 20);
+        public static final Texture TASK_ADD_ICON = new Texture(TASKS, 140, 170, 12, 12);
+        public static final Texture TASK_REMOVE_ICON = new Texture(TASKS, 160, 170, 12, 12);
         public static final Texture TASK_CONFIG_ICON = new Texture(TASKS, 176, 166, 20, 20);
 
         public static final Texture ENTRY_UNSELECTED = new Texture(WHITELIST, 0, 166, 30, 30);

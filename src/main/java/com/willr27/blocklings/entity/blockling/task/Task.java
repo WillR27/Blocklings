@@ -1,15 +1,22 @@
 package com.willr27.blocklings.entity.blockling.task;
 
+import com.willr27.blocklings.client.gui.control.BaseControl;
+import com.willr27.blocklings.client.gui.control.controls.config.WhitelistConfigControl;
+import com.willr27.blocklings.client.gui.control.controls.panels.TabbedPanel;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
+import com.willr27.blocklings.entity.blockling.whitelist.GoalWhitelist;
 import com.willr27.blocklings.network.messages.TaskCustomNameMessage;
 import com.willr27.blocklings.network.messages.TaskPriorityMessage;
 import com.willr27.blocklings.network.messages.TaskSwapPriorityMessage;
 import com.willr27.blocklings.network.messages.TaskTypeMessage;
 import com.willr27.blocklings.util.event.EventHandler;
 import com.willr27.blocklings.util.event.HandleableEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 public class Task
@@ -20,16 +27,49 @@ public class Task
     @Nonnull
     public final EventHandler<TypeChangedEvent> onTypeChanged = new EventHandler<>();
 
+    /**
+     * The task's id.
+     */
+    @Nonnull
     public final UUID id;
+
+    /**
+     * The associated blockling.
+     */
+    @Nonnull
     public final BlocklingEntity blockling;
+
+    /**
+     * The associated blockling tasks.
+     */
+    @Nonnull
     public final BlocklingTasks tasks;
 
+    /**
+     * The task's type.
+     */
+    @Nonnull
     private TaskType type;
+
+    /**
+     * The task's custom name.
+     */
+    @Nonnull
     private String customName = "";
 
+    /**
+     * The task's goal.
+     */
+    @Nullable
     private BlocklingGoal goal;
 
-    public Task(UUID id, TaskType type, BlocklingEntity blockling, BlocklingTasks tasks)
+    /**
+     * @param id the task's id.
+     * @param type the task's type.
+     * @param blockling the associated blockling.
+     * @param tasks the associated blockling tasks.
+     */
+    public Task(@Nonnull UUID id, @Nonnull TaskType type, @Nonnull BlocklingEntity blockling, @Nonnull BlocklingTasks tasks)
     {
         this.id = id != null ? id : UUID.randomUUID();
         this.blockling = blockling;
@@ -38,22 +78,40 @@ public class Task
         setType(type, false);
     }
 
+    /**
+     * @return whether the task is configured.
+     */
     public boolean isConfigured()
     {
         return type != BlocklingTasks.NULL;
     }
 
+    /**
+     * @return whether the task is active.
+     */
+    @Nonnull
     public TaskType getType()
     {
         return type;
     }
 
-    public void setType(TaskType type)
+    /**
+     * Sets the task's type.
+     *
+     * @param type the new type.
+     */
+    public void setType(@Nonnull TaskType type)
     {
         setType(type, true);
     }
 
-    public void setType(TaskType type, boolean sync)
+    /**
+     * Sets the task's type.
+     *
+     * @param type the new type.
+     * @param sync whether to sync the change with the client/server.
+     */
+    public void setType(@Nonnull TaskType type, boolean sync)
     {
         if (this.type == type)
         {
@@ -76,22 +134,41 @@ public class Task
         onTypeChanged.handle(new TypeChangedEvent(this, prevType));
     }
 
+    /**
+     * @return the task's underlying custom name text, not necessarily what is displayed.
+     */
+    @Nonnull
     public String getActualCustomName()
     {
         return customName;
     }
 
+    /**
+     * @return the task's custom name, or the task's type name if no custom name is set.
+     */
+    @Nonnull
     public String getCustomName()
     {
         return !customName.equals("") ? customName : type.name.getString();
     }
 
-    public void setCustomName(String customName)
+    /**
+     * Sets the task's custom name.
+     *
+     * @param customName the new custom name.
+     */
+    public void setCustomName(@Nonnull String customName)
     {
         setCustomName(customName, true);
     }
 
-    public void setCustomName(String customName, boolean sync)
+    /**
+     * Sets the task's custom name.
+     *
+     * @param customName the new custom name.
+     * @param sync whether to sync the change with the client/server.
+     */
+    public void setCustomName(@Nonnull String customName, boolean sync)
     {
         this.customName = customName;
 
@@ -101,22 +178,40 @@ public class Task
         }
     }
 
+    /**
+     * @return the task's goal.
+     */
+    @Nullable
     public BlocklingGoal getGoal()
     {
         return goal;
     }
 
+    /**
+     * @return the task's priority.
+     */
     public int getPriority()
     {
         return tasks.getTaskPriority(this);
     }
 
-    public void swapPriority(Task task)
+    /**
+     * Swaps the task's priority with another task.
+     *
+     * @param task the task to swap with.
+     */
+    public void swapPriority(@Nonnull Task task)
     {
         swapPriority(task, true);
     }
 
-    public void swapPriority(Task task, boolean sync)
+    /**
+     * Swaps the task's priority with another task.
+     *
+     * @param task the task to swap with.
+     * @param sync whether to sync the change with the client/server.
+     */
+    public void swapPriority(@Nonnull Task task, boolean sync)
     {
         tasks.swapTaskPriorities(this, task);
 
@@ -126,11 +221,22 @@ public class Task
         }
     }
 
+    /**
+     * Sets the task's priority.
+     *
+     * @param priority the new priority.
+     */
     public void setPriority(int priority)
     {
         setPriority(priority, true);
     }
 
+    /**
+     * Sets the task's priority.
+     *
+     * @param priority the new priority.
+     * @param sync whether to sync the change with the client/server.
+     */
     public void setPriority(int priority, boolean sync)
     {
         tasks.setGoalPriority(this, priority);

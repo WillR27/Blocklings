@@ -1,8 +1,14 @@
 package com.willr27.blocklings.entity.blockling.goal.goals.container;
 
+import com.willr27.blocklings.client.gui.control.BaseControl;
+import com.willr27.blocklings.client.gui.control.controls.config.ItemsSelectionControl;
+import com.willr27.blocklings.client.gui.control.controls.panels.TabbedPanel;
+import com.willr27.blocklings.client.gui.control.event.events.ItemAddedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.ItemRemovedEvent;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.inventory.AbstractInventory;
+import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -39,6 +45,11 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal
         super(id, blockling, tasks);
 
         itemsToDeposit.add(Items.WHEAT);
+        itemsToDeposit.add(Items.COAL);
+        itemsToDeposit.add(Items.IRON_INGOT);
+        itemsToDeposit.add(Items.GOLD_INGOT);
+        itemsToDeposit.add(Items.DIAMOND);
+        itemsToDeposit.add(Items.EMERALD);
     }
 
     @Override
@@ -50,6 +61,7 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal
             boolean depositedAnItem = false;
 
             for (Direction direction : Direction.values())
+//            Direction direction = Direction.SOUTH;
             {
                 IItemHandler itemHandler = getTarget().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(null);
 
@@ -204,5 +216,28 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal
         }
 
         return false;
+    }
+
+    @Nonnull
+    @Override
+    public void addConfigTabControls(@Nonnull TabbedPanel tabbedPanel)
+    {
+        super.addConfigTabControls(tabbedPanel);
+
+        BaseControl itemsContainer = tabbedPanel.addTab(new BlocklingsTranslationTextComponent("config.items"));
+        itemsContainer.setCanScrollVertically(true);
+
+        ItemsSelectionControl itemsSelectionControl = new ItemsSelectionControl();
+        itemsSelectionControl.setParent(itemsContainer);
+        itemsSelectionControl.setMargins(5.0, 9.0, 5.0, 5.0);
+        itemsSelectionControl.setItems(itemsToDeposit);
+        itemsSelectionControl.eventBus.subscribe((BaseControl c, ItemAddedEvent e) ->
+        {
+            itemsToDeposit.add(e.item);
+        });
+        itemsSelectionControl.eventBus.subscribe((BaseControl c, ItemRemovedEvent e) ->
+        {
+            itemsToDeposit.remove(e.item);
+        });
     }
 }

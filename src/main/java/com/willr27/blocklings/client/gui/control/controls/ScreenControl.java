@@ -147,6 +147,11 @@ public class ScreenControl extends Control
         super.arrange();
     }
 
+    public boolean isInMeasureQueue(@Nullable BaseControl control)
+    {
+        return measureList.contains(control);
+    }
+
     public void addToMeasureQueue(@Nonnull BaseControl control)
     {
         if (!measureList.contains(control))
@@ -158,6 +163,11 @@ public class ScreenControl extends Control
     public void removeFromMeasureQueue(@Nullable BaseControl control)
     {
         measureList.remove(control);
+    }
+
+    public boolean isInArrangeQueue(@Nullable BaseControl control)
+    {
+        return arrangeList.contains(control);
     }
 
     public void addToArrangeQueue(@Nonnull BaseControl control)
@@ -182,6 +192,7 @@ public class ScreenControl extends Control
         double mouseX = GuiUtil.get().getPixelMouseX();
         double mouseY = GuiUtil.get().getPixelMouseY();
 
+        ScissorStack scissorStack = new ScissorStack();
         TryHoverEvent e = new TryHoverEvent(mouseX, mouseY);
 
         forwardHover(e);
@@ -203,7 +214,7 @@ public class ScreenControl extends Control
         matrixStack.pushPose();
         matrixStack.scale(1.0f / guiScale, 1.0f / guiScale, 1.0f);
 
-        forwardRender(matrixStack, new ScissorStack(), mouseX, mouseY, partialTicks);
+        forwardRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
 
         matrixStack.popPose();
 
@@ -235,7 +246,7 @@ public class ScreenControl extends Control
     @Override
     protected void onMouseClicked(@Nonnull MouseClickedEvent e)
     {
-
+        e.setIsHandled(true);
     }
 
     @Override
@@ -251,7 +262,7 @@ public class ScreenControl extends Control
     @Override
     protected void onMouseReleased(@Nonnull MouseReleasedEvent e)
     {
-
+        e.setIsHandled(true);
     }
 
     @Override
@@ -399,12 +410,14 @@ public class ScreenControl extends Control
         if (previousFocusedControl != null)
         {
             previousFocusedControl.eventBus.post(previousFocusedControl, new FocusChangedEvent(previousFocus));
+            eventBus.post(previousFocusedControl, new FocusChangedEvent(previousFocus));
             previousFocusedControl.onUnfocused();
         }
 
         if (focusedControl != null)
         {
             focusedControl.eventBus.post(focusedControl, new FocusChangedEvent(previousFocus));
+            eventBus.post(focusedControl, new FocusChangedEvent(previousFocus));
             focusedControl.onFocused();
         }
     }

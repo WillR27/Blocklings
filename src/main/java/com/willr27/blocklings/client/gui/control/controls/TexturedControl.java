@@ -140,7 +140,7 @@ public class TexturedControl extends Control
     {
         super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
 
-        if (isPressed() && getPressedBackgroundTexture() != null)
+        if (isPressed() && !isDragging() && getPressedBackgroundTexture() != null)
         {
             renderTextureAsBackground(matrixStack, pressedBackgroundTexture);
         }

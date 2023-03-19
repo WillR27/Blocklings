@@ -8,6 +8,7 @@ import com.willr27.blocklings.client.gui.control.event.events.input.*;
 import com.willr27.blocklings.client.gui.properties.Side;
 import com.willr27.blocklings.client.gui.properties.Visibility;
 import com.willr27.blocklings.client.gui.texture.Texture;
+import com.willr27.blocklings.client.gui.util.Colour;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui.util.ScissorBounds;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
@@ -147,11 +148,16 @@ public class Control extends BaseControl
     @Override
     public void doArrange()
     {
+        // Don't arrange if any children need measuring.
+        if (getChildrenCopy().stream().anyMatch(control -> control.isMeasureDirty() && !control.isCollapsedOrAncestor()))
+        {
+            return;
+        }
+
         setArranging(true);
         arrange();
         setArranging(false);
         markArrangeDirty(false);
-        calculateScroll();
 
         for (BaseControl child : getChildrenCopy())
         {
@@ -162,6 +168,8 @@ public class Control extends BaseControl
 
             child.doArrange();
         }
+
+        calculateScroll();
     }
 
     @Override
@@ -297,7 +305,8 @@ public class Control extends BaseControl
             return;
         }
 
-        RenderSystem.color3f(1.0f, 1.0f, 1.0f);
+        Colour colour = getForegroundColour();
+        RenderSystem.color4f(colour.getR(), colour.getG(), colour.getB(), colour.getA());
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.defaultAlphaFunc();
@@ -332,7 +341,7 @@ public class Control extends BaseControl
 //        if (!(this instanceof ScreenControl)) renderRectangle(matrixStack, getPixelX(), getPixelY(), (int) getPixelWidth(), (int) getPixelHeight(), 0xff000000);
 //        matrixStack.pushPose();
 //        matrixStack.translate(0.0f, 0.0f, 1.0f);
-        renderRectangle(matrixStack, getPixelX() + getPixelPadding().left, getPixelY() + getPixelPadding().top, (int) getPixelWidthWithoutPadding(), (int) getPixelHeightWithoutPadding(), getBackgroundColour());
+        renderRectangle(matrixStack, getPixelX() + getPixelPadding().left, getPixelY() + getPixelPadding().top, (int) getPixelWidthWithoutPadding(), (int) getPixelHeightWithoutPadding(), getBackgroundColourInt());
 //        matrixStack.popPose();
     }
 
@@ -354,7 +363,7 @@ public class Control extends BaseControl
 
     protected void renderBackgroundColour(@Nonnull MatrixStack matrixStack)
     {
-        renderRectangleAsBackground(matrixStack, getBackgroundColour());
+        renderRectangleAsBackground(matrixStack, getBackgroundColourInt());
     }
 
     protected void renderTextureAsBackground(@Nonnull MatrixStack matrixStack, @Nonnull Texture texture)
@@ -436,16 +445,24 @@ public class Control extends BaseControl
             return;
         }
 
+        if (isDragging())
+        {
+            return;
+        }
+
         if (!contains(e.mouseX, e.mouseY))
         {
             return;
         }
 
-        for (BaseControl child : getReverseChildrenCopy())
+        if (areChildrenInteractive())
         {
-            if (!e.isHandled())
+            for (BaseControl child : getReverseChildrenCopy())
             {
-                child.forwardHover(e);
+                if (!e.isHandled())
+                {
+                    child.forwardHover(e);
+                }
             }
         }
 
@@ -505,16 +522,19 @@ public class Control extends BaseControl
             return;
         }
 
-        if (!contains(e.mouseX, e.mouseY))
+        if (!contains(e.mouseX, e.mouseY) && !isPressed())
         {
             return;
         }
 
-        for (BaseControl child : getReverseChildrenCopy())
+        if (areChildrenInteractive())
         {
-            if (!e.isHandled())
+            for (BaseControl child : getReverseChildrenCopy())
             {
-                child.forwardTryDrag(e);
+                if (!e.isHandled())
+                {
+                    child.forwardTryDrag(e);
+                }
             }
         }
 
@@ -560,33 +580,40 @@ public class Control extends BaseControl
             setPixelY(mouseY - getPixelHeight() / 2.0);
         }
 
-        List<Side> atParentBounds = getParentBoundsAt();
+        BaseControl scrollFromDragControl = getScrollFromDragControl();
+
+        if (scrollFromDragControl == null)
+        {
+            return;
+        }
+
+        List<Side> atParentBounds = getBoundsAt(scrollFromDragControl);
         double scrollAmount = 10.0 * partialTicks;
 
         if (isDraggableX())
         {
             if (atParentBounds.contains(Side.LEFT))
             {
-                if (getParent().canScrollHorizontally())
+                if (scrollFromDragControl.canScrollHorizontally())
                 {
-                    getParent().scrollX(scrollAmount * -1);
+                    scrollFromDragControl.scrollX(scrollAmount * -1);
                 }
 
-                if (getParent().shouldBlockDrag())
+                if (scrollFromDragControl.shouldBlockDrag())
                 {
-                    setX(getParent().toLocalX(getParent().getPixelX()) / getParent().getInnerScale().x + getParent().getScrollX());
+                    setX(getParent().toLocalX(scrollFromDragControl.getPixelX()) / getParent().getInnerScale().x + (scrollFromDragControl == getParent() ? getParent().getScrollX() : 0.0));
                 }
             }
             else if (atParentBounds.contains(Side.RIGHT))
             {
-                if (getParent().canScrollHorizontally())
+                if (scrollFromDragControl.canScrollHorizontally())
                 {
-                    getParent().scrollX(scrollAmount);
+                    scrollFromDragControl.scrollX(scrollAmount);
                 }
 
-                if (getParent().shouldBlockDrag())
+                if (scrollFromDragControl.shouldBlockDrag())
                 {
-                    setX(getParent().toLocalX(getParent().getPixelX() + getParent().getPixelWidth()) / getParent().getInnerScale().x - getWidth() + getParent().getScrollX());
+                    setX(getParent().toLocalX(scrollFromDragControl.getPixelX() + scrollFromDragControl.getPixelWidth()) / getParent().getInnerScale().x - getWidth() + (scrollFromDragControl == getParent() ? getParent().getScrollX() : 0.0));
                 }
             }
         }
@@ -595,55 +622,55 @@ public class Control extends BaseControl
         {
             if (atParentBounds.contains(Side.TOP))
             {
-                if (getParent().canScrollVertically())
+                if (scrollFromDragControl.canScrollVertically())
                 {
-                    getParent().scrollY(scrollAmount * -1);
+                    scrollFromDragControl.scrollY(scrollAmount * -1);
                 }
 
-                if (getParent().shouldBlockDrag())
+                if (scrollFromDragControl.shouldBlockDrag())
                 {
-                    setY(getParent().toLocalY(getParent().getPixelY()) / getParent().getInnerScale().y + getParent().getScrollY());
+                    setY(getParent().toLocalY(scrollFromDragControl.getPixelY()) / getParent().getInnerScale().y + (scrollFromDragControl == getParent() ? getParent().getScrollY() : 0.0));
                 }
             }
             else if (atParentBounds.contains(Side.BOTTOM))
             {
-                if (getParent().canScrollVertically())
+                if (scrollFromDragControl.canScrollVertically())
                 {
-                    getParent().scrollY(scrollAmount);
+                    scrollFromDragControl.scrollY(scrollAmount);
                 }
 
-                if (getParent().shouldBlockDrag())
+                if (scrollFromDragControl.shouldBlockDrag())
                 {
-                    setY(getParent().toLocalY(getParent().getPixelY() + getParent().getPixelHeight()) / getParent().getInnerScale().y - getHeight() + getParent().getScrollY());
+                    setY(getParent().toLocalY(scrollFromDragControl.getPixelY() + scrollFromDragControl.getPixelHeight()) / getParent().getInnerScale().y - getHeight() + (scrollFromDragControl == getParent() ? getParent().getScrollY() : 0.0));
                 }
             }
         }
     }
 
     /**
-     * @return the sides of the parent the control is currently at or exceeding, null if not.
+     * @return the sides of the given control this control is currently at or exceeding, null if not.
      */
     @Nonnull
-    public List<Side> getParentBoundsAt()
+    public List<Side> getBoundsAt(@Nonnull BaseControl control)
     {
         List<Side> sides = new ArrayList<>();
 
-        if (getPixelX() <= getParent().getPixelX())
+        if (getPixelX() <= control.getPixelX())
         {
             sides.add(Side.LEFT);
         }
 
-        if (getPixelX() + getPixelWidth() >= getParent().getPixelX() + getParent().getPixelWidth())
+        if (getPixelX() + getPixelWidth() >= control.getPixelX() + control.getPixelWidth())
         {
             sides.add(Side.RIGHT);
         }
 
-        if (getPixelY() <= getParent().getPixelY())
+        if (getPixelY() <= control.getPixelY())
         {
             sides.add(Side.TOP);
         }
 
-        if (getPixelY() + getPixelHeight() >= getParent().getPixelY() + getParent().getPixelHeight())
+        if (getPixelY() + getPixelHeight() >= control.getPixelY() + control.getPixelHeight())
         {
             sides.add(Side.BOTTOM);
         }
@@ -701,11 +728,14 @@ public class Control extends BaseControl
             return;
         }
 
-        for (BaseControl child : getReverseChildrenCopy())
+        if (areChildrenInteractive())
         {
-            if (child.contains(e.mouseX, e.mouseY))
+            for (BaseControl child : getReverseChildrenCopy())
             {
-                child.forwardMouseClicked(e);
+                if (child.contains(e.mouseX, e.mouseY))
+                {
+                    child.forwardMouseClicked(e);
+                }
             }
         }
 
@@ -720,7 +750,7 @@ public class Control extends BaseControl
                 if (e.isHandled())
                 {
                     setIsPressed(true);
-                    setIsFocused(true);
+                    setFocused(true);
                 }
             }
         }
@@ -778,11 +808,14 @@ public class Control extends BaseControl
             return;
         }
 
-        for (BaseControl child : getReverseChildrenCopy())
+        if (areChildrenInteractive())
         {
-            if (child.contains(e.mouseX, e.mouseY))
+            for (BaseControl child : getReverseChildrenCopy())
             {
-                child.forwardMouseReleased(e);
+                if (child.contains(e.mouseX, e.mouseY))
+                {
+                    child.forwardMouseReleased(e);
+                }
             }
         }
 
@@ -849,11 +882,14 @@ public class Control extends BaseControl
             return;
         }
 
-        for (BaseControl child : getReverseChildrenCopy())
+        if (areChildrenInteractive())
         {
-            if (!e.isHandled())
+            for (BaseControl child : getReverseChildrenCopy())
             {
-                child.forwardMouseScrolled(e);
+                if (!e.isHandled())
+                {
+                    child.forwardMouseScrolled(e);
+                }
             }
         }
 
@@ -1092,6 +1128,11 @@ public class Control extends BaseControl
     @Override
     protected void onChildPositionSizeChanged(@Nonnull BaseControl child)
     {
+        if (shouldFitToContent())
+        {
+            markMeasureDirty(true);
+        }
+
         if (!isArranging())
         {
             markArrangeDirty(true);

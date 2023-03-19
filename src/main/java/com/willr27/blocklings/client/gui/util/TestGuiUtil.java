@@ -129,7 +129,7 @@ public class TestGuiUtil extends GuiUtil
     }
 
     @Override
-    public void renderItemStack(@Nonnull MatrixStack matrixStack, @Nonnull ItemStack stack, int x, int y, float scale)
+    public void renderItemStack(@Nonnull MatrixStack matrixStack, @Nonnull ItemStack stack, int x, int y, double z, float scale)
     {
 
     }

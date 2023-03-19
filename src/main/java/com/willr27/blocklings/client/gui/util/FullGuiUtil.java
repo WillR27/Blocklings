@@ -198,7 +198,7 @@ public class FullGuiUtil extends GuiUtil
     }
 
     @Override
-    public void renderItemStack(@Nonnull MatrixStack matrixStack, @Nonnull ItemStack stack, int x, int y, float scale)
+    public void renderItemStack(@Nonnull MatrixStack matrixStack, @Nonnull ItemStack stack, int x, int y, double z, float scale)
     {
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         RenderSystem.pushMatrix();
@@ -209,8 +209,8 @@ public class FullGuiUtil extends GuiUtil
         RenderSystem.defaultAlphaFunc();
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.translatef((float)x, (float)y, 100.0F);
+//        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.translatef((float)x, (float)y, (float) z + 7.0f);
         RenderSystem.scalef(1.0F, -1.0F, 1.0F);
         RenderSystem.scalef(scale, scale, scale);
         MatrixStack matrixstack = new MatrixStack();

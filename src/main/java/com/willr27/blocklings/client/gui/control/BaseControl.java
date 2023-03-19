@@ -8,6 +8,7 @@ import com.willr27.blocklings.client.gui.control.controls.ScreenControl;
 import com.willr27.blocklings.client.gui.control.event.events.TryDragEvent;
 import com.willr27.blocklings.client.gui.control.event.events.TryHoverEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.*;
+import com.willr27.blocklings.client.gui.util.Colour;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.util.DoubleUtil;
@@ -29,6 +30,12 @@ public abstract class BaseControl extends GuiControl
 
     @Nonnull
     public final ControlEventBus eventBus = new ControlEventBus();
+
+    /**
+     * The event bus that events fired on the screen are forwarded to.
+     */
+    @Nonnull
+    public final ControlEventBus screenEventBus = new ControlEventBus();
 
     private boolean isMeasuring = false;
 
@@ -111,6 +118,8 @@ public abstract class BaseControl extends GuiControl
 
     private boolean isInteractive = true;
 
+    private boolean areChildrenInteractive = true;
+
     private boolean isReorderable = true;
 
     private boolean isDraggableX = false;
@@ -123,9 +132,15 @@ public abstract class BaseControl extends GuiControl
      * The z value to render at when dragging. If null, use {@link #renderZ}.
      */
     @Nullable
-    private Double dragZ = 100.0;
+    private Double dragZ = 50.0;
 
     private boolean shouldBlockDrag = true;
+
+    /**
+     * The control that will scroll when this control is dragged beyond its bounds.
+     */
+    @Nullable
+    private BaseControl ScrollFromDragControl = null;
 
     /**
      * Whether to clip its contents to its bounds. If null, inherit from parent.
@@ -135,7 +150,11 @@ public abstract class BaseControl extends GuiControl
 
     private double renderZ = 0.0;
 
-    private int backgroundColour = 0x00000000;
+    @Nonnull
+    private Colour foregroundColour = new Colour(0xffffffff);
+
+    @Nonnull
+    private Colour backgroundColour = new Colour(0x00000000);
 
     /**
      * Calls {@link #measureSelf(double, double)} then {@link #measureChildren()} while also setting
@@ -238,6 +257,11 @@ public abstract class BaseControl extends GuiControl
         isMeasuring = measuring;
     }
 
+    public boolean isMeasureDirty()
+    {
+        return getScreen() == null || getScreen().isInMeasureQueue(this);
+    }
+
     public void markMeasureDirty(boolean isDirty)
     {
         if (getScreen() != null)
@@ -269,6 +293,11 @@ public abstract class BaseControl extends GuiControl
     public void setArranging(boolean arranging)
     {
         isArranging = arranging;
+    }
+
+    public boolean isArrangeDirty()
+    {
+        return getScreen() == null || getScreen().isInArrangeQueue(this);
     }
 
     public void markArrangeDirty(boolean isDirty)
@@ -355,8 +384,10 @@ public abstract class BaseControl extends GuiControl
             child.getParent().removeChild(child);
         }
 
+        child.removeChainedScreenBus();
         children.add(child);
         child.parent = this;
+        child.addChainedScreenBus();
 
         markMeasureDirty(true);
         markArrangeDirty(true);
@@ -393,8 +424,10 @@ public abstract class BaseControl extends GuiControl
             return;
         }
 
+        controlToInsert.removeChainedScreenBus();
         children.add(beforeIndex, controlToInsert);
         controlToInsert.parent = this;
+        controlToInsert.addChainedScreenBus();
 
         markMeasureDirty(true);
         markArrangeDirty(true);
@@ -431,8 +464,10 @@ public abstract class BaseControl extends GuiControl
             return;
         }
 
+        controlToInsert.removeChainedScreenBus();
         children.add(afterIndex + 1, controlToInsert);
         controlToInsert.parent = this;
+        controlToInsert.addChainedScreenBus();
 
         markMeasureDirty(true);
         markArrangeDirty(true);
@@ -467,8 +502,10 @@ public abstract class BaseControl extends GuiControl
             throw new IllegalArgumentException("The given index is out of bounds.");
         }
 
+        controlToInsert.removeChainedScreenBus();
         children.add(index, controlToInsert);
         controlToInsert.parent = this;
+        controlToInsert.addChainedScreenBus();
 
         markMeasureDirty(true);
         markArrangeDirty(true);
@@ -501,8 +538,10 @@ public abstract class BaseControl extends GuiControl
             return;
         }
 
+        child.removeChainedScreenBus();
         children.remove(child);
         child.parent = null;
+        child.addChainedScreenBus();
 
         markMeasureDirty(true);
         markArrangeDirty(true);
@@ -516,9 +555,46 @@ public abstract class BaseControl extends GuiControl
         }
     }
 
+    /**
+     * Adds a screen bus to the control.
+     */
+    private void addChainedScreenBus()
+    {
+        if (getScreen() != null)
+        {
+            getScreen().eventBus.addChainedBus(screenEventBus);
+
+            for (BaseControl child : getChildren())
+            {
+                child.addChainedScreenBus();
+            }
+        }
+    }
+
+    /**
+     * Remove the chained screen bus.
+     */
+    private void removeChainedScreenBus()
+    {
+        if (getScreen() != null)
+        {
+            getScreen().eventBus.removeChainedBus(screenEventBus);
+
+            for (BaseControl child : getChildren())
+            {
+                child.removeChainedScreenBus();
+            }
+        }
+    }
+
     public int getTreeDepth()
     {
         return getParent() != null ? getParent().getTreeDepth() + 1 : 0;
+    }
+
+    public boolean isThisOrAncestor(@Nullable BaseControl control)
+    {
+        return control == this || isAncestor(control);
     }
 
     public boolean isAncestor(@Nullable BaseControl control)
@@ -544,6 +620,11 @@ public abstract class BaseControl extends GuiControl
         }
 
         return getParent().isAncestor(this);
+    }
+
+    public boolean isThisOrDescendant(@Nullable BaseControl control)
+    {
+        return control == this || isDescendant(control);
     }
 
     public boolean isDescendant(@Nullable BaseControl control)
@@ -787,6 +868,11 @@ public abstract class BaseControl extends GuiControl
         if (!isMeasuring())
         {
             markMeasureDirty(true);
+        }
+
+        if (getScreen() == null)
+        {
+            setDesiredSize(width, height);
         }
 
         if (getParent() != null)
@@ -1777,7 +1863,7 @@ public abstract class BaseControl extends GuiControl
         return getFocusedControl() == this;
     }
 
-    public void setIsFocused(boolean isFocused)
+    public void setFocused(boolean isFocused)
     {
         if (isFocused && isInteractive() && isFocusable())
         {
@@ -1870,6 +1956,17 @@ public abstract class BaseControl extends GuiControl
     public void setShouldBlockDrag(boolean shouldBlockDrag)
     {
         this.shouldBlockDrag = shouldBlockDrag;
+    }
+
+    @Nullable
+    public BaseControl getScrollFromDragControl()
+    {
+        return ScrollFromDragControl != null ? ScrollFromDragControl : getParent();
+    }
+
+    public void setScrollFromDragControl(@Nullable BaseControl scrollFromDragControl)
+    {
+        this.ScrollFromDragControl = scrollFromDragControl;
     }
 
     public double getDragZ()
@@ -1976,18 +2073,43 @@ public abstract class BaseControl extends GuiControl
 
         if (!isFocusable() && isFocused())
         {
-            setIsFocused(false);
+            setFocused(false);
         }
     }
 
     public boolean isInteractive()
     {
-        return isInteractive;
+        return isInteractive && !isNoninteractiveFromAncestor();
     }
 
     public void setInteractive(boolean isInteractive)
     {
         this.isInteractive = isInteractive;
+    }
+
+    public boolean isNoninteractiveFromAncestor()
+    {
+        if (getParent() == null)
+        {
+            return false;
+        }
+
+        if (!getParent().areChildrenInteractive())
+        {
+            return true;
+        }
+
+        return getParent().isNoninteractiveFromAncestor();
+    }
+
+    public boolean areChildrenInteractive()
+    {
+        return areChildrenInteractive;
+    }
+
+    public void setChildrenInteractive(boolean areChildrenInteractive)
+    {
+        this.areChildrenInteractive = areChildrenInteractive;
     }
 
     public boolean isReorderable()
@@ -2025,14 +2147,46 @@ public abstract class BaseControl extends GuiControl
         this.renderZ = renderZ;
     }
 
-    public int getBackgroundColour()
+    @Nonnull
+    public Colour getForegroundColour()
+    {
+        return foregroundColour;
+    }
+
+    public int getForegroundColourInt()
+    {
+        return foregroundColour.argb();
+    }
+
+    public void setForegroundColour(@Nonnull Colour foregroundColour)
+    {
+        this.foregroundColour = foregroundColour;
+    }
+
+    public void setForegroundColour(int foregroundColour)
+    {
+        setForegroundColour(new Colour(foregroundColour));
+    }
+
+    @Nonnull
+    public Colour getBackgroundColour()
     {
         return backgroundColour;
     }
 
-    public void setBackgroundColour(int backgroundColour)
+    public int getBackgroundColourInt()
+    {
+        return backgroundColour.argb();
+    }
+
+    public void setBackgroundColour(@Nonnull Colour backgroundColour)
     {
         this.backgroundColour = backgroundColour;
+    }
+
+    public void setBackgroundColour(int backgroundColour)
+    {
+        setBackgroundColour(new Colour(backgroundColour));
     }
 
     /**

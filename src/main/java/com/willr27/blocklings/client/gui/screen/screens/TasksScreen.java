@@ -3,7 +3,6 @@ package com.willr27.blocklings.client.gui.screen.screens;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.*;
-import com.willr27.blocklings.client.gui.control.controls.config.WhitelistConfigControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.GridPanel;
 import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
 import com.willr27.blocklings.client.gui.control.controls.panels.TabbedPanel;
@@ -24,14 +23,12 @@ import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.task.Task;
 import com.willr27.blocklings.entity.blockling.task.TaskType;
 import com.willr27.blocklings.entity.blockling.task.config.Property;
-import com.willr27.blocklings.entity.blockling.whitelist.GoalWhitelist;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -283,21 +280,7 @@ public class TasksScreen extends TabbedScreen
                 propertyControl.setMarginTop(3.0);
             }
 
-            if (!task.getGoal().whitelists.isEmpty())
-            {
-                for (GoalWhitelist whitelist : task.getGoal().whitelists)
-                {
-                    if (whitelist.isUnlocked())
-                    {
-                        BaseControl whitelistContainer = configTabbedPanel.addTab(whitelist.name);
-                        whitelistContainer.setPadding(4.0, 10.0, 4.0, 4.0);
-                        whitelistContainer.setCanScrollVertically(true);
-
-                        WhitelistConfigControl whitelistConfigControl = new WhitelistConfigControl(whitelist);
-                        whitelistConfigControl.setParent(whitelistContainer);
-                    }
-                }
-            }
+            task.getGoal().addConfigTabControls(configTabbedPanel);
         }
     }
 

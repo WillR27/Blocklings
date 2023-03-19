@@ -102,6 +102,11 @@
   "blocklings.task.farm_crops.desc": "Your blockling will farm nearby crops if they have a hoe equipped.",
   "blocklings.task.find_blocklings.name": "Find Blocklings",
   "blocklings.task.find_blocklings.desc": "Your blockling will lead you to nearby blocklings with the same natural type as your blockling's primary type.",
+  "blocklings.task.deposit_items.name": "Deposit Items",
+  "blocklings.task.deposit_items.desc": "Your blockling will put items from their inventory into nearby containers.",
+
+  "blocklings.config.add_item": "Add Item",
+  "blocklings.config.items": "Items",
 
   "blocklings.whitelist.targets": "Targets",
   "blocklings.whitelist.ores": "Ores",

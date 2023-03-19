@@ -156,7 +156,7 @@ public class FlowPanel extends Control
             double availableWidth = ((getDesiredWidth() - getPaddingWidth()) / getInnerScale().x) - child.getMarginWidth();
             double availableHeight = ((getDesiredHeight() - getPaddingHeight()) / getInnerScale().y) - child.getMarginHeight();
 
-            if (getDirection().isHorizontal)
+            if (getOverflowDirection().isHorizontal)
             {
                 availableWidth = Double.POSITIVE_INFINITY;
                 availableHeight -= child.getMarginHeight() + getPaddingHeight();
@@ -812,53 +812,53 @@ public class FlowPanel extends Control
 
                 if (getDirection() == Direction.LEFT_TO_RIGHT)
                 {
-                    if (closestSide == Side.LEFT && !isDraggedBeforeClosest)
+                    if (closestSide == Side.LEFT)
                     {
-                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, true));
+                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, isDraggedBeforeClosest));
                         insertChildBefore(draggedControl, closestControl);
                     }
-                    else if (closestSide == Side.RIGHT && isDraggedBeforeClosest)
+                    else if (closestSide == Side.RIGHT)
                     {
-                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, false));
+                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, isDraggedBeforeClosest));
                         insertChildAfter(draggedControl, closestControl);
                     }
                 }
                 else if (getDirection() == Direction.RIGHT_TO_LEFT)
                 {
-                    if (closestSide == Side.LEFT && isDraggedBeforeClosest)
+                    if (closestSide == Side.LEFT)
                     {
-                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, false));
+                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, !isDraggedBeforeClosest));
                         insertChildAfter(draggedControl, closestControl);
                     }
-                    else if (closestSide == Side.RIGHT && !isDraggedBeforeClosest)
+                    else if (closestSide == Side.RIGHT)
                     {
-                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, true));
+                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, !isDraggedBeforeClosest));
                         insertChildBefore(draggedControl, closestControl);
                     }
                 }
                 else if (getDirection() == Direction.TOP_TO_BOTTOM)
                 {
-                    if (closestSide == Side.TOP && !isDraggedBeforeClosest)
+                    if (closestSide == Side.TOP)
                     {
-                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, true));
+                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, isDraggedBeforeClosest));
                         insertChildBefore(draggedControl, closestControl);
                     }
                     else if (closestSide == Side.BOTTOM && isDraggedBeforeClosest)
                     {
-                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, false));
+                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, isDraggedBeforeClosest));
                         insertChildAfter(draggedControl, closestControl);
                     }
                 }
                 else if (getDirection() == Direction.BOTTOM_TO_TOP)
                 {
-                    if (closestSide == Side.TOP && isDraggedBeforeClosest)
+                    if (closestSide == Side.TOP)
                     {
-                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, false));
+                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, !isDraggedBeforeClosest));
                         insertChildAfter(draggedControl, closestControl);
                     }
-                    else if (closestSide == Side.BOTTOM && !isDraggedBeforeClosest)
+                    else if (closestSide == Side.BOTTOM)
                     {
-                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, true));
+                        eventBus.post(this, new ReorderEvent(draggedControl, closestControl, !isDraggedBeforeClosest));
                         insertChildBefore(draggedControl, closestControl);
                     }
                 }

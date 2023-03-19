@@ -1,5 +1,8 @@
 package com.willr27.blocklings.entity.blockling.goal;
 
+import com.willr27.blocklings.client.gui.control.BaseControl;
+import com.willr27.blocklings.client.gui.control.controls.config.WhitelistConfigControl;
+import com.willr27.blocklings.client.gui.control.controls.panels.TabbedPanel;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.task.Task;
@@ -10,6 +13,8 @@ import com.willr27.blocklings.util.BlockUtil;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -114,6 +119,27 @@ public abstract class BlocklingGoal extends Goal
     }
 
     /**
+     * Creates and adds the config tabs for the goal.
+     */
+    @Nonnull
+    @OnlyIn(Dist.CLIENT)
+    public void addConfigTabControls(@Nonnull TabbedPanel tabbedPanel)
+    {
+        for (GoalWhitelist whitelist : whitelists)
+        {
+            if (whitelist.isUnlocked())
+            {
+                BaseControl whitelistContainer = tabbedPanel.addTab(whitelist.name);
+                whitelistContainer.setPadding(4.0, 10.0, 4.0, 4.0);
+                whitelistContainer.setCanScrollVertically(true);
+
+                WhitelistConfigControl whitelistConfigControl = new WhitelistConfigControl(whitelist);
+                whitelistConfigControl.setParent(whitelistContainer);
+            }
+        }
+    }
+
+    /**
      * @return the current state of the goal.
      */
     @Nonnull
@@ -149,20 +175,20 @@ public abstract class BlocklingGoal extends Goal
     }
 
     /**
-     * @return true if the blockling is within range of the center of the given block pos.
-     */
-    public boolean isInRange(@Nonnull BlockPos blockPos, float rangeSq)
-    {
-        return BlockUtil.distanceSq(blockling.blockPosition(), blockPos) <= rangeSq;
-    }
-
-    /**
      * @return the associated task.
      */
     @Nonnull
     public Task getTask()
     {
         return tasks.getTask(id);
+    }
+
+    /**
+     * @return true if the blockling is within range of the center of the given block pos.
+     */
+    public boolean isInRange(@Nonnull BlockPos blockPos, float rangeSq)
+    {
+        return BlockUtil.distanceSq(blockling.blockPosition(), blockPos) <= rangeSq;
     }
 
     /**

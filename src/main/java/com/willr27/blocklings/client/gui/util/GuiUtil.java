@@ -180,8 +180,9 @@ public abstract class GuiUtil
      * @param x the screen x position to render the item stack at.
      * @param y the screen y position to render the item stack at.
      * @param scale the scale to render the item stack at (scale of 1 means 1/16 block to 1 screen pixel).
+     * @param z the z position to render the item stack at.
      */
-    public abstract void renderItemStack(@Nonnull MatrixStack matrixStack, @Nonnull ItemStack stack, int x, int y, float scale);
+    public abstract void renderItemStack(@Nonnull MatrixStack matrixStack, @Nonnull ItemStack stack, int x, int y, double z, float scale);
 
     public static void enableScissor()
     {

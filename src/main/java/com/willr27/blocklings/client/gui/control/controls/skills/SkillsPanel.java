@@ -32,7 +32,6 @@ import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -316,7 +315,7 @@ public class SkillsPanel extends CanvasPanel
         @Override
         protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
         {
-            renderRectangle(matrixStack, getMinPixelX(), getMinPixelY(), (int) (getMaxPixelX() - getMinPixelX()), (int) (getMaxPixelY() - getMinPixelY()), getBackgroundColour());
+            renderRectangle(matrixStack, getMinPixelX(), getMinPixelY(), (int) (getMaxPixelX() - getMinPixelX()), (int) (getMaxPixelY() - getMinPixelY()), getBackgroundColourInt());
             renderRectangle(matrixStack, toPixelX(-5.0), toPixelY(-5.0), (int) 10, (int) 10, 0xff00ff00);
 
             double pixelTileWidth = 16.0 * getChildPixelScaleX();
@@ -1227,7 +1226,7 @@ public class SkillsPanel extends CanvasPanel
 
             if (visibility == Visibility.VISIBLE)
             {
-                setIsFocused(true);
+                setFocused(true);
             }
         }
 
