@@ -145,6 +145,43 @@ public abstract class GuiUtil
     public abstract List<String> split(@Nonnull String text, int width);
 
     /**
+     * @return the width of the given text.
+     */
+    public abstract int getTextWidth(@Nonnull String text);
+
+    /**
+     * @return the width of the given text.
+     */
+    public abstract int getTextWidth(@Nonnull IReorderingProcessor text);
+
+    /**
+     * @return the line height of the current font renderer.
+     */
+    public abstract int getLineHeight();
+
+    /**
+     * Renders shadowed text.
+     *
+     * @param matrixStack the matrix stack.
+     * @param text the text to render.
+     * @param x the x position to render the text at.
+     * @param y the y position to render the text at.
+     * @param color the color to render the text in.
+     */
+    public abstract void renderShadowedText(@Nonnull MatrixStack matrixStack, @Nonnull IReorderingProcessor text, int x, int y, int color);
+
+    /**
+     * Renders shadowed text.
+     *
+     * @param matrixStack the matrix stack.
+     * @param text the text to render.
+     * @param x the x position to render the text at.
+     * @param y the y position to render the text at.
+     * @param color the color to render the text in.
+     */
+    public abstract void renderText(@Nonnull MatrixStack matrixStack, @Nonnull IReorderingProcessor text, int x, int y, int color);
+
+    /**
      * Binds the given texture.
      *
      * @param texture the texture to bind.

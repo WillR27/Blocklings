@@ -137,6 +137,36 @@ public class FullGuiUtil extends GuiUtil
     }
 
     @Override
+    public int getTextWidth(@Nonnull String text)
+    {
+        return mc.font.width(text);
+    }
+
+    @Override
+    public int getTextWidth(@Nonnull IReorderingProcessor text)
+    {
+        return mc.font.width(text);
+    }
+
+    @Override
+    public int getLineHeight()
+    {
+        return mc.font.lineHeight;
+    }
+
+    @Override
+    public void renderShadowedText(@Nonnull MatrixStack matrixStack, @Nonnull IReorderingProcessor text, int x, int y, int color)
+    {
+        mc.font.drawShadow(matrixStack, text, x, y, color);
+    }
+
+    @Override
+    public void renderText(@Nonnull MatrixStack matrixStack, @Nonnull IReorderingProcessor text, int x, int y, int color)
+    {
+        mc.font.draw(matrixStack, text, x, y, color);
+    }
+
+    @Override
     public void bindTexture(@Nonnull ResourceLocation texture)
     {
         mc.getTextureManager().bind(texture);

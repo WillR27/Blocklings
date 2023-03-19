@@ -45,7 +45,7 @@ public abstract class BaseControl extends GuiControl
     private BaseControl parent = null;
 
     @Nonnull
-    private final List<BaseControl> children = new ArrayList<>();
+    private final LinkedList<BaseControl> children = new LinkedList<>();
 
     @Nonnull
     private final Scale innerScale = new Scale(1.0, 1.0);
@@ -323,12 +323,23 @@ public abstract class BaseControl extends GuiControl
 //        }
 //    }
 
+    /**
+     * @return the screen that this control is attached to.
+     */
     @Nullable
     public BaseControl getParent()
     {
         return parent;
     }
 
+    /**
+     * Sets the parent of this control. This will also add this control to the parent's children list.
+     * If the parent is null, this control will be removed from the parent's children list. If the
+     * parent is the same as the current parent, this method will do nothing. If the parent is not
+     * null, this control will be removed from the current parent's children list.
+     *
+     * @param parent the new parent.
+     */
     public void setParent(@Nullable BaseControl parent)
     {
         if (getParent() == parent)
@@ -349,16 +360,28 @@ public abstract class BaseControl extends GuiControl
         }
     }
 
+    /**
+     * @return the children list.
+     */
+    @Nonnull
     public List<BaseControl> getChildren()
     {
         return children;
     }
 
+    /**
+     * @return a copy of the children list.
+     */
+    @Nonnull
     public List<BaseControl> getChildrenCopy()
     {
         return new ArrayList<>(children);
     }
 
+    /**
+     * @return a copy of the children list, but in reverse order.
+     */
+    @Nonnull
     public List<BaseControl> getReverseChildrenCopy()
     {
         List<BaseControl> reverseChildren = new ArrayList<>(children);
@@ -367,11 +390,21 @@ public abstract class BaseControl extends GuiControl
         return reverseChildren;
     }
 
+    /**
+     * @param child the child to check.
+     * @return true if the given control is a child of this control.
+     */
     public boolean isChild(@Nonnull BaseControl child)
     {
         return getChildren().contains(child);
     }
 
+    /**
+     * Adds the given control as a child of this control. If the control is already a child of this control,
+     * nothing will happen. If the control is a child of another control, it will be removed from that control.
+     *
+     * @param child the control to add.
+     */
     public void addChild(@Nonnull BaseControl child)
     {
         if (getChildren().contains(child))
@@ -393,117 +426,109 @@ public abstract class BaseControl extends GuiControl
         markArrangeDirty(true);
     }
 
+    /**
+     * Inserts the given control at the given index. If the control is already a child of this control,
+     * it will be moved. If the control is a child of another control, it will be removed from that control.
+     *
+     * @param controlToInsert the control to insert.
+     * @param controlToInsertBefore the control to insert before.
+     */
     public void insertChildBefore(@Nonnull BaseControl controlToInsert, @Nonnull BaseControl controlToInsertBefore)
     {
-        int index = children.indexOf(controlToInsert);
-
-        if (index != -1)
-        {
-            children.remove(index);
-        }
-
         int beforeIndex = children.indexOf(controlToInsertBefore);
 
         if (beforeIndex == -1)
         {
-            if (index != -1)
-            {
-                children.add(index, controlToInsert);
-            }
-
             throw new IllegalArgumentException("The given control to insert before is not a child of this control.");
         }
 
-        if (index == beforeIndex)
-        {
-            if (index != -1)
-            {
-                children.add(index, controlToInsert);
-            }
-
-            return;
-        }
-
-        controlToInsert.removeChainedScreenBus();
-        children.add(beforeIndex, controlToInsert);
-        controlToInsert.parent = this;
-        controlToInsert.addChainedScreenBus();
-
-        markMeasureDirty(true);
-        markArrangeDirty(true);
-    }
-
-    public void insertChildAfter(@Nonnull BaseControl controlToInsert, @Nonnull BaseControl controlToInsertAfter)
-    {
         int index = children.indexOf(controlToInsert);
 
-        if (index != -1)
+        if (index == -1)
         {
-            children.remove(index);
+            insertChildAt(controlToInsert, beforeIndex);
         }
-
-        int afterIndex = children.indexOf(controlToInsertAfter);
-
-        if (afterIndex == -1)
+        else
         {
-            if (index != -1)
-            {
-                children.add(index, controlToInsert);
-            }
-
-            throw new IllegalArgumentException("The given control to insert after is not a child of this control.");
+            insertChildAt(controlToInsert, index > beforeIndex ? beforeIndex : beforeIndex - 1);
         }
-
-        if (afterIndex + 1 == index)
-        {
-            if (index != -1)
-            {
-                children.add(index, controlToInsert);
-            }
-
-            return;
-        }
-
-        controlToInsert.removeChainedScreenBus();
-        children.add(afterIndex + 1, controlToInsert);
-        controlToInsert.parent = this;
-        controlToInsert.addChainedScreenBus();
 
         markMeasureDirty(true);
         markArrangeDirty(true);
     }
 
     /**
-     * Inserts the given control at the given index.
+     * Inserts the given control at the given index. If the control is already a child of this control,
+     * it will be moved. If the control is a child of another control, it will be removed from that control.
+     *
+     * @param controlToInsert the control to insert
+     * @param controlToInsertAfter the control to insert after.
+     */
+    public void insertChildAfter(@Nonnull BaseControl controlToInsert, @Nonnull BaseControl controlToInsertAfter)
+    {
+        int afterIndex = children.indexOf(controlToInsertAfter);
+
+        if (afterIndex == -1)
+        {
+            throw new IllegalArgumentException("The given control to insert after is not a child of this control.");
+        }
+
+        int index = children.indexOf(controlToInsert);
+
+        if (index == -1)
+        {
+            insertChildAt(controlToInsert, afterIndex + 1);
+        }
+        else
+        {
+            insertChildAt(controlToInsert, index < afterIndex ? afterIndex : afterIndex + 1);
+        }
+
+        markMeasureDirty(true);
+        markArrangeDirty(true);
+    }
+
+    /**
+     * Inserts the given control at the given index. If the control is already a child of this control,
+     * it will be moved. If the control is a child of another control, it will be removed from that control.
+     * If the control's current index is less than the given index, the controls below the given index will
+     * move down. If the control's current index is greater than the given index, the controls above the
+     * given index will move up. If the control is not a child of this control, it will be added as a child
+     * and the controls at or above the given index will move up.
+     * <br><br>
+     * E.g. if the control is currently at index 2, and the given index is 4, the control will be moved
+     * to index 4, and the controls at index 3 and 4 will move down to index 2 and 3 respectively.
+     * If the control is currently at index 4, and the given index is 2, the control will be moved to
+     * index 2, and the controls at index 2 and 3 will move up to index 3 and 4 respectively.
      *
      * @param controlToInsert the control to insert.
      * @param index the index to insert the control at.
      */
     public void insertChildAt(@Nonnull BaseControl controlToInsert, int index)
     {
-        int currentIndex = children.indexOf(controlToInsert);
-
-        if (currentIndex != -1)
-        {
-            children.remove(currentIndex);
-
-            if (currentIndex < index)
-            {
-                index--;
-            }
-        }
-        else if (controlToInsert.getParent() != null)
-        {
-            controlToInsert.getParent().removeChild(controlToInsert);
-        }
-
         if (index < 0 || index > children.size())
         {
             throw new IllegalArgumentException("The given index is out of bounds.");
         }
 
-        controlToInsert.removeChainedScreenBus();
+        int indexOfControlToInsert = children.indexOf(controlToInsert);
+
+        if (indexOfControlToInsert != -1)
+        {
+            children.set(indexOfControlToInsert, null);
+            children.remove(null);
+        }
+        else
+        {
+            if (controlToInsert.getParent() != null)
+            {
+                controlToInsert.getParent().removeChild(controlToInsert);
+            }
+        }
+
         children.add(index, controlToInsert);
+
+        controlToInsert.removeChainedScreenBus();
         controlToInsert.parent = this;
         controlToInsert.addChainedScreenBus();
 
@@ -512,7 +537,9 @@ public abstract class BaseControl extends GuiControl
     }
 
     /**
-     * Inserts the given control at the first index.
+     * Inserts the given control at the beginning of the list of children. If the control is already a child
+     * of this control, it will be moved to the beginning of the list of children. If the control is a child
+     * of another control, it will be removed from that control.
      *
      * @param controlToInsert the control to insert.
      */
@@ -522,24 +549,33 @@ public abstract class BaseControl extends GuiControl
     }
 
     /**
-     * Inserts the given control at the last index.
+     * Inserts the given control at the end of the list of children. If the control is already a child
+     * of this control, it will be moved to the end of the list of children. If the control is a child
+     * of another control, it will be removed from that control.
      *
      * @param controlToInsert the control to insert.
      */
     public void insertChildLast(@Nonnull BaseControl controlToInsert)
     {
-        insertChildAt(controlToInsert, children.size());
+        insertChildAt(controlToInsert, children.contains(controlToInsert) ? children.size() - 1 : children.size());
     }
 
-    public void removeChild(@Nonnull BaseControl child)
+    /**
+     * Removes the given child from this control. If the given child is not a child of this control,
+     * nothing will happen.
+     *
+     * @param child the child to remove.
+     */
+    public void removeChild(@Nullable BaseControl child)
     {
         if (!getChildren().contains(child))
         {
             return;
         }
 
-        child.removeChainedScreenBus();
         children.remove(child);
+
+        child.removeChainedScreenBus();
         child.parent = null;
         child.addChainedScreenBus();
 

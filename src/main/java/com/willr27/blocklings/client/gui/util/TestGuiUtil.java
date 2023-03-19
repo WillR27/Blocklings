@@ -111,6 +111,36 @@ public class TestGuiUtil extends GuiUtil
     }
 
     @Override
+    public int getTextWidth(@Nonnull String text)
+    {
+        return 0;
+    }
+
+    @Override
+    public int getTextWidth(@Nonnull IReorderingProcessor text)
+    {
+        return 0;
+    }
+
+    @Override
+    public int getLineHeight()
+    {
+        return 0;
+    }
+
+    @Override
+    public void renderShadowedText(@Nonnull MatrixStack matrixStack, @Nonnull IReorderingProcessor text, int x, int y, int color)
+    {
+
+    }
+
+    @Override
+    public void renderText(@Nonnull MatrixStack matrixStack, @Nonnull IReorderingProcessor text, int x, int y, int color)
+    {
+
+    }
+
+    @Override
     public void bindTexture(@Nonnull ResourceLocation texture)
     {
 

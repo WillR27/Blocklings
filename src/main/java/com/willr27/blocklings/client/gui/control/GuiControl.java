@@ -23,12 +23,6 @@ import java.util.List;
 public abstract class GuiControl extends AbstractGui
 {
     /**
-     * The font renderer.
-     */
-    @Nonnull
-    public final FontRenderer font = Minecraft.getInstance().font;
-
-    /**
      * Renders a rectangle with a solid colour at the given position with the size.
      *
      * @param matrixStack the matrix stack.
@@ -84,7 +78,7 @@ public abstract class GuiControl extends AbstractGui
      */
     protected void renderShadowedText(@Nonnull MatrixStack matrixStack, @Nonnull IReorderingProcessor text, int colour)
     {
-        font.drawShadow(matrixStack, text, 0, 0, colour);
+        GuiUtil.get().renderShadowedText(matrixStack, text, 0, 0, colour);
         RenderSystem.enableAlphaTest();
     }
 
@@ -97,7 +91,7 @@ public abstract class GuiControl extends AbstractGui
      */
     protected void renderShadowedText(@Nonnull MatrixStack matrixStack, @Nonnull IReorderingProcessor text, int x, int y, int colour)
     {
-        font.drawShadow(matrixStack, text, x, y, colour);
+        GuiUtil.get().renderShadowedText(matrixStack, text, x, y, colour);
         RenderSystem.enableAlphaTest();
     }
 
@@ -110,7 +104,7 @@ public abstract class GuiControl extends AbstractGui
      */
     protected void renderText(@Nonnull MatrixStack matrixStack, @Nonnull IReorderingProcessor text, int colour)
     {
-        font.draw(matrixStack, text, 0, 0, colour);
+        GuiUtil.get().renderText(matrixStack, text, 0, 0, colour);
         RenderSystem.enableAlphaTest();
     }
 

@@ -57,7 +57,7 @@ public class TextBlockControl extends Control
     /**
      * The line height.
      */
-    private int lineHeight = font.lineHeight;
+    private int lineHeight = GuiUtil.get().getLineHeight();
 
     /**
      */
@@ -81,7 +81,7 @@ public class TextBlockControl extends Control
         }
         else if (shouldFitWidthToContent())
         {
-            double textWidth = font.width(getTextString());
+            double textWidth = GuiUtil.get().getTextWidth(getTextString());
             width = textWidth + getPaddingWidth();
         }
 
@@ -116,7 +116,7 @@ public class TextBlockControl extends Control
         double horizontalAlignment = getHorizontalContentAlignment() != null ? getHorizontalContentAlignment() : 0.0;
         double verticalAlignment = getVerticalContentAlignment() != null ? getVerticalContentAlignment() : 0.0;
 
-        textScreenX = (float) (getPixelX() / getGuiScale() + (screenWidth - font.width(getTextToRender())) * horizontalAlignment);
+        textScreenX = (float) (getPixelX() / getGuiScale() + (screenWidth - GuiUtil.get().getTextWidth(getTextToRender())) * horizontalAlignment);
         textScreenY = (float) (getPixelY() / getGuiScale() + (screenHeight - getLineHeight()) * verticalAlignment);
 
         float x = (float) (Math.round(textScreenX * getGuiScale()) / getGuiScale());
@@ -292,7 +292,7 @@ public class TextBlockControl extends Control
      */
     public void useDefaultLineHeight()
     {
-        setLineHeight(font.lineHeight);
+        setLineHeight(GuiUtil.get().getLineHeight());
     }
 
     /**
@@ -300,6 +300,6 @@ public class TextBlockControl extends Control
      */
     public void useDescenderlessLineHeight()
     {
-        setLineHeight(font.lineHeight - 1);
+        setLineHeight(GuiUtil.get().getLineHeight() - 1);
     }
 }

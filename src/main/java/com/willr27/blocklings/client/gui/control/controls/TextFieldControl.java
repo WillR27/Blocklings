@@ -9,6 +9,7 @@ import com.willr27.blocklings.client.gui.control.event.events.TextChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.*;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
@@ -35,7 +36,7 @@ public class TextFieldControl extends Control
      * The underlying {@link TextFieldWidget};
      */
     @Nonnull
-    protected final TextFieldWidget textFieldWidget = new TextFieldWidget(font, 0, 0, 100, font.lineHeight - 1, new StringTextComponent("message?"));
+    protected final TextFieldWidget textFieldWidget = new TextFieldWidget(Minecraft.getInstance().font, 0, 0, 100, GuiUtil.get().getLineHeight() - 1, new StringTextComponent("message?"));
 
     /**
      * The amount to offset the text field's x position by.
@@ -88,7 +89,7 @@ public class TextFieldControl extends Control
     {
         textFieldWidget.setWidth((int) Math.min(getPixelWidthWithoutPadding() / getGuiScale(), (getPixelWidthWithoutPadding() / getGuiScale())));
 
-        double screenX = ((getPixelX() / getGuiScale()) + Math.max(0.0, getWidthWithoutPadding() - font.width(getText())) * getHorizontalContentAlignment()) + getPadding().left;
+        double screenX = ((getPixelX() / getGuiScale()) + Math.max(0.0, getWidthWithoutPadding() - GuiUtil.get().getTextWidth(getText())) * getHorizontalContentAlignment()) + getPadding().left;
         double screenY = ((getPixelY() / getGuiScale()) + (getHeightWithoutPadding() - textFieldWidget.getHeight()) * getVerticalContentAlignment()) + getPadding().top;
         textFieldWidget.x = (int) screenX;
         textFieldWidget.y = (int) screenY;
