@@ -7,7 +7,6 @@ import com.willr27.blocklings.client.gui.control.controls.panels.TabbedPanel;
 import com.willr27.blocklings.client.gui.control.event.events.ItemAddedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.ItemMovedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.ItemRemovedEvent;
-import com.willr27.blocklings.client.gui.control.event.events.ReorderEvent;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.config.OrderedItemSet;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
@@ -17,7 +16,6 @@ import com.willr27.blocklings.util.Version;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -35,6 +33,16 @@ import java.util.UUID;
  */
 public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implements OrderedItemSet.IOrderedItemSetProvider
 {
+    /**
+     * The amount of items that can be deposited per second.
+     */
+    private int depositAmount = 1;
+
+    /**
+     * The timer used to determine when to deposit items.
+     */
+    private int depositTimer = 0;
+
     /**
      * The list of items to use as a whitelist/blacklist.
      */
@@ -97,26 +105,45 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
     @Override
     protected void tickGoal()
     {
+        if (depositTimer < 20)
+        {
+            depositTimer++;
+
+            return;
+        }
+
         if (isInRangeOfPathTargetPos())
         {
             AbstractInventory inv = blockling.getEquipment();
-            boolean depositedAnItem = false;
+            int remainingDepositAmount = getDepositAmount();
 
             for (Direction direction : Direction.values())
 //            Direction direction = Direction.SOUTH;
             {
+                // If we have deposited all the items we can then stop.
+                if (remainingDepositAmount <= 0)
+                {
+                    break;
+                }
+
                 IItemHandler itemHandler = getTarget().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(null);
 
-//                for (Item item : itemsSet)
-                Item item = itemsSet.getItems().get(0);
+                for (Item item : itemsSet)
+//                Item item = itemsSet.getItems().get(0);
                 {
+                    // If we have deposited all the items we can then stop.
+                    if (remainingDepositAmount <= 0)
+                    {
+                        break;
+                    }
+
                     // Skip any items that are not in the blockling's inventory.
                     if (!hasItemToDeposit(item))
                     {
                         continue;
                     }
 
-                    int startingCount = inv.count(new ItemStack(item));
+                    int startingCount = Math.min(getDepositAmount(), inv.count(new ItemStack(item)));
                     ItemStack stackToDeposit = new ItemStack(item, startingCount);
 
                     if (stackToDeposit.isEmpty())
@@ -131,22 +158,26 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
                         stackToDeposit = itemHandler.insertItem(slot, stackToDeposit, false);
                     }
 
-                    // If the count has decreased then at least one item was deposited.
-                    if (stackToDeposit.getCount() < startingCount)
-                    {
-                        inv.take(new ItemStack(item, startingCount - stackToDeposit.getCount()));
+                    int amountDeposited = startingCount - stackToDeposit.getCount();
 
-                        depositedAnItem = true;
+                    // If the count has decreased then at least one item was deposited.
+                    if (amountDeposited > 0)
+                    {
+                        inv.take(new ItemStack(item, amountDeposited));
+
+                        remainingDepositAmount -= amountDeposited;
                     }
                 }
             }
 
             // If no items were deposited then try other targets before this one again.
-            if (!depositedAnItem)
+            if (remainingDepositAmount == getDepositAmount())
             {
                 markTargetBad();
             }
         }
+
+        depositTimer = 0;
     }
 
     @Override
@@ -263,13 +294,6 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
 
     @Nonnull
     @Override
-    public OrderedItemSet getItemSet()
-    {
-        return itemsSet;
-    }
-
-    @Nonnull
-    @Override
     public void addConfigTabControls(@Nonnull TabbedPanel tabbedPanel)
     {
         super.addConfigTabControls(tabbedPanel);
@@ -300,5 +324,28 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
                 itemsSet.moveAfter(e.movedItem, e.closestItem);
             }
         });
+    }
+
+    @Nonnull
+    @Override
+    public OrderedItemSet getItemSet()
+    {
+        return itemsSet;
+    }
+
+    /**
+     * @return the number of items to deposit every second.
+     */
+    public int getDepositAmount()
+    {
+        return depositAmount;
+    }
+
+    /**
+     * @param depositAmount the number of items to deposit every second.
+     */
+    public void setDepositAmount(int depositAmount)
+    {
+        this.depositAmount = depositAmount;
     }
 }
