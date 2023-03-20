@@ -1944,7 +1944,7 @@ public abstract class BaseControl extends GuiControl
         return getPressedControl() == this;
     }
 
-    public void setIsPressed(boolean isPressed)
+    public void setPressed(boolean isPressed)
     {
         if (isPressed && isPressable())
         {
@@ -2162,7 +2162,7 @@ public abstract class BaseControl extends GuiControl
 
         if (!isPressable() && isPressed())
         {
-            setIsPressed(false);
+            setPressed(false);
         }
     }
 

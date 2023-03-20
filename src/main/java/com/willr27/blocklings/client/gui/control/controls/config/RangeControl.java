@@ -120,7 +120,7 @@ public abstract class RangeControl<T extends Number> extends Control
             protected void onMouseClicked(@Nonnull MouseClickedEvent e)
             {
                 grabberControl.setIsDragging(true);
-                grabberControl.setIsPressed(true);
+                grabberControl.setPressed(true);
 
                 e.setIsHandled(true);
             }

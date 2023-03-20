@@ -104,7 +104,7 @@ public class ScrollbarControl extends Control
         if (grabber.isInteractive())
         {
             grabber.setIsDragging(true);
-            grabber.setIsPressed(true);
+            grabber.setPressed(true);
 
             e.setIsHandled(true);
         }

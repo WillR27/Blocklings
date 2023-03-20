@@ -30,7 +30,7 @@ public class ReorderEvent implements IEvent
     /**
      * @param draggedControl the dragged control.
      * @param closestControl the closest control.
-     * @param insertBefore whether to insert the dragged control before the closest control.
+     * @param insertBefore whether to insert the dragged control before or after the closest control.
      */
     public ReorderEvent(BaseControl draggedControl, BaseControl closestControl, boolean insertBefore)
     {

@@ -17,7 +17,7 @@ import com.willr27.blocklings.entity.blockling.goal.goals.misc.BlocklingFollowGo
 import com.willr27.blocklings.entity.blockling.goal.goals.misc.BlocklingSitGoal;
 import com.willr27.blocklings.entity.blockling.goal.goals.misc.BlocklingWanderGoal;
 import com.willr27.blocklings.entity.blockling.task.config.Property;
-import com.willr27.blocklings.entity.blockling.whitelist.GoalWhitelist;
+import com.willr27.blocklings.entity.blockling.goal.config.whitelist.GoalWhitelist;
 import com.willr27.blocklings.network.messages.TaskCreateMessage;
 import com.willr27.blocklings.network.messages.TaskRemoveMessage;
 import com.willr27.blocklings.network.messages.TaskTypeIsUnlockedMessage;
@@ -200,6 +200,8 @@ public class BlocklingTasks implements IReadWriteNBT
                 taskTag.put("whitelists", whitelistsTag);
                 taskTag.put("properties", propertiesTag);
                 taskTag.putInt("state", task.getGoal().getState().ordinal());
+
+                task.getGoal().writeToNBT(taskTag);
             }
 
             taskListTag.put(task.id.toString(), taskTag);
@@ -212,7 +214,7 @@ public class BlocklingTasks implements IReadWriteNBT
     }
 
     @Override
-    public void readFromNBT(@Nonnull CompoundNBT tasksTag, @Nonnull Version versionTag)
+    public void readFromNBT(@Nonnull CompoundNBT tasksTag, @Nonnull Version tagVersion)
     {
         CompoundNBT unlockedTypesTag = (CompoundNBT) tasksTag.get("unlocked_task_types");
 
@@ -257,7 +259,7 @@ public class BlocklingTasks implements IReadWriteNBT
 
                         if (whitelistTag != null)
                         {
-                            whitelist.readFromNBT(whitelistTag, versionTag);
+                            whitelist.readFromNBT(whitelistTag, tagVersion);
                         }
                     }
 
@@ -272,11 +274,13 @@ public class BlocklingTasks implements IReadWriteNBT
                             task.getGoal().properties.stream()
                                     .filter(property -> property.id.equals(propertyTag.getUUID("id")))
                                     .findFirst()
-                                    .ifPresent(property -> property.readFromNBT(propertyTag, versionTag));
+                                    .ifPresent(property -> property.readFromNBT(propertyTag, tagVersion));
                         }
                     }
 
                     task.getGoal().setState(BlocklingGoal.State.values()[taskTag.getInt("state")], false);
+
+                    task.getGoal().readFromNBT(taskTag, tagVersion);
                 }
             }
 
@@ -313,6 +317,8 @@ public class BlocklingTasks implements IReadWriteNBT
                     property.encode(buf);
                 }
 
+                task.getGoal().encode(buf);
+
                 buf.writeEnum(task.getGoal().getState());
             }
         }
@@ -348,6 +354,8 @@ public class BlocklingTasks implements IReadWriteNBT
                 {
                     property.decode(buf);
                 }
+
+                task.getGoal().decode(buf);
 
                 task.getGoal().setState(buf.readEnum(BlocklingGoal.State.class), false);
             }

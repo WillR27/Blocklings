@@ -246,7 +246,7 @@ public class ScreenControl extends Control
     @Override
     protected void onMouseClicked(@Nonnull MouseClickedEvent e)
     {
-        e.setIsHandled(true);
+
     }
 
     @Override
@@ -262,7 +262,7 @@ public class ScreenControl extends Control
     @Override
     protected void onMouseReleased(@Nonnull MouseReleasedEvent e)
     {
-        e.setIsHandled(true);
+
     }
 
     @Override

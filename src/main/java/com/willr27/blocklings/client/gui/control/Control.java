@@ -766,7 +766,7 @@ public class Control extends BaseControl
 
                 if (e.isHandled())
                 {
-                    setIsPressed(true);
+                    setPressed(true);
                     setFocused(true);
                 }
             }

@@ -1,19 +1,13 @@
 package com.willr27.blocklings.entity.blockling.task;
 
-import com.willr27.blocklings.client.gui.control.BaseControl;
-import com.willr27.blocklings.client.gui.control.controls.config.WhitelistConfigControl;
-import com.willr27.blocklings.client.gui.control.controls.panels.TabbedPanel;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
-import com.willr27.blocklings.entity.blockling.whitelist.GoalWhitelist;
 import com.willr27.blocklings.network.messages.TaskCustomNameMessage;
 import com.willr27.blocklings.network.messages.TaskPriorityMessage;
 import com.willr27.blocklings.network.messages.TaskSwapPriorityMessage;
 import com.willr27.blocklings.network.messages.TaskTypeMessage;
 import com.willr27.blocklings.util.event.EventHandler;
 import com.willr27.blocklings.util.event.HandleableEvent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

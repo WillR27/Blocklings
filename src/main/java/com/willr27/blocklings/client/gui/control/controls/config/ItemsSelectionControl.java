@@ -8,8 +8,7 @@ import com.willr27.blocklings.client.gui.control.controls.TextFieldControl;
 import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
 import com.willr27.blocklings.client.gui.control.controls.panels.GridPanel;
-import com.willr27.blocklings.client.gui.control.event.events.FocusChangedEvent;
-import com.willr27.blocklings.client.gui.control.event.events.TextChangedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.*;
 import com.willr27.blocklings.client.gui.control.event.events.input.KeyPressedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
 import com.willr27.blocklings.client.gui.properties.Flow;
@@ -26,6 +25,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A control used to select items.
@@ -69,6 +69,13 @@ public class ItemsSelectionControl extends Control
         itemsPanel.setHorizontalSpacing(2.0);
         itemsPanel.setVerticalSpacing(2.0);
         itemsPanel.setClipContentsToBounds(false);
+        itemsPanel.eventBus.subscribe((BaseControl c, ReorderEvent e) ->
+        {
+            ItemControl itemControl = (ItemControl) e.draggedControl.getChildren().get(0);
+            ItemControl closestItemControl = (ItemControl) e.closestControl.getChildren().get(0);
+
+            eventBus.post(this, new ItemMovedEvent(itemControl.getItem(), closestItemControl.getItem(), e.insertBefore));
+        });
 
         addBackground = new TexturedControl(Textures.Tasks.TASK_ICON_BACKGROUND_RAISED, Textures.Tasks.TASK_ICON_BACKGROUND_PRESSED)
         {
@@ -154,7 +161,13 @@ public class ItemsSelectionControl extends Control
      */
     public void setItems(@Nonnull List<Item> items)
     {
-        itemsPanel.clearChildren();
+        for (BaseControl child : itemsPanel.getChildren())
+        {
+            if (child instanceof ItemControl)
+            {
+                itemsPanel.removeChild(child);
+            }
+        }
 
         for (Item item : items)
         {
@@ -214,6 +227,8 @@ public class ItemsSelectionControl extends Control
                 if (isPressed())
                 {
                     setParent(null);
+
+                    ItemsSelectionControl.this.eventBus.post(ItemsSelectionControl.this, new ItemRemovedEvent(item));
 
                     e.setIsHandled(true);
                 }
@@ -368,6 +383,8 @@ public class ItemsSelectionControl extends Control
                         {
                             addItem(item);
                             closeItemSearch();
+
+                            ItemsSelectionControl.this.eventBus.post(ItemsSelectionControl.this, new ItemAddedEvent(item));
 
                             e.setIsHandled(true);
                         }

@@ -109,7 +109,17 @@ public class BlocklingsContainerScreen<T extends Container> extends ContainerScr
 
         screenControl.forwardMouseClicked(e);
 
-        return e.isHandled() || super.mouseClicked(screenMouseX, screenMouseY, button);
+        if (e.isHandled() || super.mouseClicked(screenMouseX, screenMouseY, button))
+        {
+            return true;
+        }
+        else
+        {
+            screenControl.setPressed(true);
+            screenControl.setFocused(true);
+
+            return false;
+        }
     }
 
     @Override

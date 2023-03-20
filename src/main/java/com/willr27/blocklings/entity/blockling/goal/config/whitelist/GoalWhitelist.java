@@ -1,4 +1,4 @@
-package com.willr27.blocklings.entity.blockling.whitelist;
+package com.willr27.blocklings.entity.blockling.goal.config.whitelist;
 
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;

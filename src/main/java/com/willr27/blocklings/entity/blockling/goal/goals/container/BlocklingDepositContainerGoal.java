@@ -1,18 +1,25 @@
 package com.willr27.blocklings.entity.blockling.goal.goals.container;
 
+import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.controls.config.ItemsSelectionControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.TabbedPanel;
 import com.willr27.blocklings.client.gui.control.event.events.ItemAddedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.ItemMovedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.ItemRemovedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.ReorderEvent;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
+import com.willr27.blocklings.entity.blockling.goal.config.OrderedItemSet;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.inventory.AbstractInventory;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import com.willr27.blocklings.util.Version;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -21,35 +28,70 @@ import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 /**
  * Finds nearby containers and deposits items into them.
  */
-public class BlocklingDepositContainerGoal extends BlocklingContainerGoal
+public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implements OrderedItemSet.IOrderedItemSetProvider
 {
     /**
-     * The list of items to try to deposit.
+     * The list of items to use as a whitelist/blacklist.
      */
-    private final List<Item> itemsToDeposit = new ArrayList<>();
+    @Nonnull
+    public final OrderedItemSet itemsSet;
 
     /**
-     * @param id        the id associated with the goal's task.
+     * @param taskId the taskId associated with the goal's task.
      * @param blockling the blockling.
-     * @param tasks     the blockling tasks.
+     * @param tasks the blockling tasks.
      */
-    public BlocklingDepositContainerGoal(@Nonnull UUID id, @Nonnull BlocklingEntity blockling, @Nonnull BlocklingTasks tasks)
+    public BlocklingDepositContainerGoal(@Nonnull UUID taskId, @Nonnull BlocklingEntity blockling, @Nonnull BlocklingTasks tasks)
     {
-        super(id, blockling, tasks);
+        super(taskId, blockling, tasks);
 
-        itemsToDeposit.add(Items.WHEAT);
-        itemsToDeposit.add(Items.COAL);
-        itemsToDeposit.add(Items.IRON_INGOT);
-        itemsToDeposit.add(Items.GOLD_INGOT);
-        itemsToDeposit.add(Items.DIAMOND);
-        itemsToDeposit.add(Items.EMERALD);
+        itemsSet = new OrderedItemSet(this);
+    }
+
+    @Override
+    public void writeToNBT(@Nonnull CompoundNBT taskTag)
+    {
+        super.writeToNBT(taskTag);
+
+        taskTag.put("item_set", itemsSet.writeToNBT());
+    }
+
+    @Override
+    public void readFromNBT(@Nonnull CompoundNBT taskTag, @Nonnull Version tagVersion)
+    {
+        super.readFromNBT(taskTag, tagVersion);
+
+        CompoundNBT itemSetTag = taskTag.getCompound("item_set");
+
+        if (itemSetTag != null)
+        {
+            itemsSet.readFromNBT(itemSetTag, tagVersion);
+        }
+        else
+        {
+            Blocklings.LOGGER.warn("Could not find item set for deposit container goal!");
+        }
+    }
+
+    @Override
+    public void encode(@Nonnull PacketBuffer buf)
+    {
+        super.encode(buf);
+
+        itemsSet.encode(buf);
+    }
+
+    @Override
+    public void decode(@Nonnull PacketBuffer buf)
+    {
+        super.decode(buf);
+
+        itemsSet.decode(buf);
     }
 
     @Override
@@ -65,7 +107,8 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal
             {
                 IItemHandler itemHandler = getTarget().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(null);
 
-                for (Item item : itemsToDeposit)
+//                for (Item item : itemsSet)
+                Item item = itemsSet.getItems().get(0);
                 {
                     // Skip any items that are not in the blockling's inventory.
                     if (!hasItemToDeposit(item))
@@ -207,7 +250,7 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal
      */
     public boolean hasItemsToDeposit()
     {
-        for (Item item : itemsToDeposit)
+        for (Item item : itemsSet)
         {
             if (hasItemToDeposit(item))
             {
@@ -216,6 +259,13 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal
         }
 
         return false;
+    }
+
+    @Nonnull
+    @Override
+    public OrderedItemSet getItemSet()
+    {
+        return itemsSet;
     }
 
     @Nonnull
@@ -230,14 +280,25 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal
         ItemsSelectionControl itemsSelectionControl = new ItemsSelectionControl();
         itemsSelectionControl.setParent(itemsContainer);
         itemsSelectionControl.setMargins(5.0, 9.0, 5.0, 5.0);
-        itemsSelectionControl.setItems(itemsToDeposit);
+        itemsSelectionControl.setItems(itemsSet.getItems());
         itemsSelectionControl.eventBus.subscribe((BaseControl c, ItemAddedEvent e) ->
         {
-            itemsToDeposit.add(e.item);
+            itemsSet.add(e.item);
         });
         itemsSelectionControl.eventBus.subscribe((BaseControl c, ItemRemovedEvent e) ->
         {
-            itemsToDeposit.remove(e.item);
+            itemsSet.remove(e.item);
+        });
+        itemsSelectionControl.eventBus.subscribe((BaseControl c, ItemMovedEvent e) ->
+        {
+            if (e.insertBefore)
+            {
+                itemsSet.moveBefore(e.movedItem, e.closestItem);
+            }
+            else
+            {
+                itemsSet.moveAfter(e.movedItem, e.closestItem);
+            }
         });
     }
 }
