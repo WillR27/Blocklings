@@ -281,6 +281,23 @@ public class Control extends BaseControl
     }
 
     @Override
+    public void forwardClose()
+    {
+        for (BaseControl child : getChildrenCopy())
+        {
+            child.forwardClose();
+        }
+
+        onClose();
+    }
+
+    @Override
+    public void onClose()
+    {
+        clearEventBuses(false);
+    }
+
+    @Override
     public void forwardTick()
     {
         for (BaseControl child : getChildrenCopy())

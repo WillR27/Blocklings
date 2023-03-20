@@ -8,6 +8,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -306,11 +307,17 @@ public class GridPanel extends Control
     }
 
     @Override
-    public void removeChild(@Nonnull BaseControl child)
+    public void removeChild(@Nullable BaseControl child)
+    {
+        removeChild(child, false);
+    }
+
+    @Override
+    public void removeChild(@Nonnull BaseControl child, boolean preserveEventSubscribers)
     {
         cells.remove(child);
 
-        super.removeChild(child);
+        super.removeChild(child, preserveEventSubscribers);
     }
 
     /**

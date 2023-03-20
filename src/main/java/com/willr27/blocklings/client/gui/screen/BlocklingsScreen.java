@@ -51,6 +51,14 @@ public class BlocklingsScreen extends Screen
     }
 
     @Override
+    public void onClose()
+    {
+        super.onClose();
+
+        screenControl.forwardClose();
+    }
+
+    @Override
     public void tick()
     {
         screenControl.forwardTick();

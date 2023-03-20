@@ -185,6 +185,16 @@ public abstract class BaseControl extends GuiControl
 
     protected abstract void calculateScroll();
 
+    /**
+     * Forwards the call to {@link #onClose()} to each child control. This should be called when the screen is closed.
+     */
+    public abstract void forwardClose();
+
+    /**
+     * Called when the attached screen is closed.
+     */
+    public abstract void onClose();
+
     public abstract void forwardTick();
     public abstract void onTick();
 
@@ -247,6 +257,25 @@ public abstract class BaseControl extends GuiControl
 
     abstract public boolean contains(double pixelX, double pixelY);
 
+    /**
+     * Clears the event buses.
+     *
+     * @param forwardToChildren whether to forward the call to each child control.
+     */
+    protected void clearEventBuses(boolean forwardToChildren)
+    {
+        if (forwardToChildren)
+        {
+            for (BaseControl child : getChildren())
+            {
+                child.clearEventBuses(true);
+            }
+        }
+
+        eventBus.clear();
+        screenEventBus.clear();
+    }
+
     public boolean isMeasuring()
     {
         return isMeasuring;
@@ -276,14 +305,6 @@ public abstract class BaseControl extends GuiControl
             }
         }
     }
-
-//    public void markParentMeasureDirty(boolean isDirty)
-//    {
-//        if (getParent() != null)
-//        {
-//            getParent().markMeasureDirty(isDirty);
-//        }
-//    }
 
     public boolean isArranging()
     {
@@ -315,14 +336,6 @@ public abstract class BaseControl extends GuiControl
         }
     }
 
-//    public void markParentArrangeDirty(boolean isDirty)
-//    {
-//        if (getParent() != null)
-//        {
-//            getParent().markArrangeDirty(isDirty);
-//        }
-//    }
-
     /**
      * @return the screen that this control is attached to.
      */
@@ -336,11 +349,32 @@ public abstract class BaseControl extends GuiControl
      * Sets the parent of this control. This will also add this control to the parent's children list.
      * If the parent is null, this control will be removed from the parent's children list. If the
      * parent is the same as the current parent, this method will do nothing. If the parent is not
-     * null, this control will be removed from the current parent's children list.
+     * null, this control will be removed from the current parent's children list. This method will also
+     * remove the event subscribers of this control from the current parent's event bus. If you want to
+     * preserve the event subscribers, use {@link #setParent(BaseControl, boolean)}.
      *
      * @param parent the new parent.
      */
     public void setParent(@Nullable BaseControl parent)
+    {
+        setParent(parent, false);
+    }
+
+    /**
+     * Sets the parent of this control. This will also add this control to the parent's children list.
+     * If the parent is null, this control will be removed from the parent's children list. If the
+     * parent is the same as the current parent, this method will do nothing. If the parent is not
+     * null, this control will be removed from the current parent's children list.
+     *<br><br>
+     * {@code preserveEventSubscribers} is used to preserve the event subscribers of this control when
+     * removing the parent. Normally, event subscribers are removed when the parent is removed to avoid
+     * memory leaks. But if you are removing the parent temporarily, you can use this parameter to
+     * preserve the event subscribers.
+     *
+     * @param parent the new parent.
+     * @param preserveEventSubscribers if true, the event subscribers will be preserved.
+     */
+    public void setParent(@Nullable BaseControl parent, boolean preserveEventSubscribers)
     {
         if (getParent() == parent)
         {
@@ -355,7 +389,7 @@ public abstract class BaseControl extends GuiControl
         {
             if (getParent() != null)
             {
-                getParent().removeChild(this);
+                getParent().removeChild(this, preserveEventSubscribers);
             }
         }
     }
@@ -414,7 +448,7 @@ public abstract class BaseControl extends GuiControl
 
         if (child.getParent() != null)
         {
-            child.getParent().removeChild(child);
+            child.getParent().removeChild(child, true);
         }
 
         child.removeChainedScreenBus();
@@ -522,7 +556,7 @@ public abstract class BaseControl extends GuiControl
         {
             if (controlToInsert.getParent() != null)
             {
-                controlToInsert.getParent().removeChild(controlToInsert);
+                controlToInsert.getParent().removeChild(controlToInsert, true);
             }
         }
 
@@ -562,11 +596,28 @@ public abstract class BaseControl extends GuiControl
 
     /**
      * Removes the given child from this control. If the given child is not a child of this control,
-     * nothing will happen.
+     * nothing will happen. This will also remove the event subscribers of the child. If you want to preserve
+     * the event subscribers of the child, use {@link #removeChild(BaseControl, boolean)}.
      *
      * @param child the child to remove.
      */
     public void removeChild(@Nullable BaseControl child)
+    {
+        removeChild(child, false);
+    }
+
+    /**
+     * Removes the given child from this control. If the given child is not a child of this control,
+     * nothing will happen.
+     * <br><br>
+     * {@code preserveEventSubscribers} is used to preserve the event subscribers of the child when
+     * removing the control. This is useful when you want to remove the control from the parent, but
+     * still want to receive events from the child.
+     *
+     * @param child the child to remove.
+     * @param preserveEventSubscribers whether to preserve the event subscribers of the child.
+     */
+    public void removeChild(@Nullable BaseControl child, boolean preserveEventSubscribers)
     {
         if (!getChildren().contains(child))
         {
@@ -575,19 +626,36 @@ public abstract class BaseControl extends GuiControl
 
         children.remove(child);
 
+        if (!preserveEventSubscribers)
+        {
+            child.clearEventBuses(true);
+        }
+
         child.removeChainedScreenBus();
         child.parent = null;
-        child.addChainedScreenBus();
 
         markMeasureDirty(true);
         markArrangeDirty(true);
     }
 
+    /**
+     * Removes all children from this control. This will also remove the event subscribers of the children.
+     */
     public void clearChildren()
+    {
+        clearChildren(false);
+    }
+
+    /**
+     * Removes all children from this control.
+     *
+     * @param preserveEventSubscribers whether to preserve the event subscribers of the children.
+     */
+    public void clearChildren(boolean preserveEventSubscribers)
     {
         for (BaseControl child : getChildrenCopy())
         {
-            removeChild(child);
+            removeChild(child, preserveEventSubscribers);
         }
     }
 

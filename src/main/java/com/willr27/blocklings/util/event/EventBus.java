@@ -83,6 +83,31 @@ public class EventBus<S>
     }
 
     /**
+     * Clears the event bus of all subscribers and chained buses.
+     */
+    public void clear()
+    {
+        subscribers.clear();
+        chainedBuses.clear();
+    }
+
+    /**
+     * @return the number of subscribers.
+     */
+    public int getSubscriberCount()
+    {
+        return subscribers.size();
+    }
+
+    /**
+     * @return the number of chained buses.
+     */
+    public int getChainedBusCount()
+    {
+        return chainedBuses.size();
+    }
+
+    /**
      * @param <E> gets the event class from the subscriber.
      */
     private <E extends IEvent> Class<E> getEventClass(BiConsumer<S, E> consumer)
