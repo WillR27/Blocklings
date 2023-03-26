@@ -188,7 +188,7 @@ public class ItemsSelectionControl extends Control
         itemControl.setItem(item);
         itemControl.setWidthPercentage(1.0);
         itemControl.setHeightPercentage(1.0);
-        itemControl.setItemScale(0.7f);
+        itemControl.setItemScale(0.8f);
 
         Control itemOverlay = new Control();
         itemOverlay.setWidthPercentage(1.0);
