@@ -20,6 +20,7 @@ import com.willr27.blocklings.client.gui.texture.Texture;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.entity.blockling.goal.goals.container.ContainerInfo;
+import com.willr27.blocklings.util.BlockUtil;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -36,6 +37,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -430,7 +432,7 @@ public class ContainerControl extends GridPanel
         itemSearch.setShouldPropagateDrag(false);
         itemSearch.setRenderZ(0.1);
         itemSearch.setVisibility(Visibility.COLLAPSED);
-        itemSearch.setSearchableItems(Registry.BLOCK.stream().map(Block::asItem).collect(Collectors.toList()));
+        itemSearch.setSearchableItems(BlockUtil.CONTAINERS.get().stream().map(Block::asItem).collect(Collectors.toList()));
         itemSearch.eventBus.subscribe((BaseControl c, ItemAddedEvent e) ->
         {
             setBlock(Block.byItem(e.item));
@@ -537,7 +539,15 @@ public class ContainerControl extends GridPanel
         eventBus.post(this, new ValueChangedEvent<>(oldContainerInfo, containerInfo));
     }
 
-    private static boolean handleContainerSelect(@Nonnull PlayerEntity player, @Nonnull Hand hand, @Nullable BlockPos blockPos)
+    /**
+     * Handles the container select event.
+     *
+     * @param player the player.
+     * @param isFinal whether this is the final call from the original event.
+     * @param blockPos the block position.
+     * @return whether the event should be cancelled.
+     */
+    private static boolean handleContainerSelect(@Nonnull PlayerEntity player, boolean isFinal, @Nullable BlockPos blockPos)
     {
         if (!player.level.isClientSide())
         {
@@ -547,8 +557,11 @@ public class ContainerControl extends GridPanel
             {
                 boolean wereConfiguring = cap.isConfiguring;
 
-                // This will be called for both hands, so only set to false once the offhand is done.
-                cap.isConfiguring = hand != Hand.OFF_HAND;
+                // This can be called for both hands, so we need to make sure we only stop configuring if we are actually done.
+                if (isFinal)
+                {
+                    cap.isConfiguring = false;
+                }
 
                 if (wereConfiguring)
                 {
@@ -562,7 +575,16 @@ public class ContainerControl extends GridPanel
         {
             if (blockPos != null)
             {
-                currentlyConfiguredContainerControl.onContainerSelectFromWorld(player.level.getBlockState(blockPos).getBlock(), blockPos);
+                Block block = player.level.getBlockState(blockPos).getBlock();
+
+                if (BlockUtil.isContainer(block))
+                {
+                    currentlyConfiguredContainerControl.onContainerSelectFromWorld(block, blockPos);
+                }
+                else
+                {
+                    currentlyConfiguredContainerControl.setParent(null);
+                }
             }
             else
             {
@@ -585,7 +607,7 @@ public class ContainerControl extends GridPanel
     @SubscribeEvent
     public static void onPlayerContainerSelect(@Nonnull PlayerInteractEvent.RightClickBlock event)
     {
-        event.setCanceled(handleContainerSelect(event.getPlayer(), event.getHand(), event.getPos()));
+        event.setCanceled(handleContainerSelect(event.getPlayer(), event.getHand() == Hand.OFF_HAND, event.getPos()));
     }
 
     /**
@@ -594,6 +616,15 @@ public class ContainerControl extends GridPanel
     @SubscribeEvent
     public static void onPlayerContainerSelectCancel(@Nonnull PlayerInteractEvent.LeftClickBlock event)
     {
-        event.setCanceled(handleContainerSelect(event.getPlayer(), event.getHand(), null));
+        event.setCanceled(handleContainerSelect(event.getPlayer(), true, null));
+    }
+
+    /**
+     * Handles a player cancelling container selection when configuring from the UI.
+     */
+    @SubscribeEvent
+    public static void onPlayerContainerSelectCancel(@Nonnull PlayerInteractEvent.EntityInteract event)
+    {
+        handleContainerSelect(event.getPlayer(), event.getHand() == Hand.OFF_HAND, null);
     }
 }

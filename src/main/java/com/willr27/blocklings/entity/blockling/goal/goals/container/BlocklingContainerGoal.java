@@ -20,6 +20,7 @@ import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.network.messages.GoalMessage;
+import com.willr27.blocklings.util.BlockUtil;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.block.Block;

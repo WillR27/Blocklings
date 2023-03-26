@@ -3,15 +3,20 @@ package com.willr27.blocklings.util;
 import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.config.BlocklingsConfig;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.util.Lazy;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,6 +27,72 @@ import java.util.*;
  */
 public class BlockUtil
 {
+    /**
+     * The most recent world to load (used to then lazy load the list of valid containers).
+     */
+    @Nullable
+    public static World latestWorld;
+
+    /**
+     * The list of blocks that are considered containers.
+     */
+    @Nonnull
+    public static Lazy<List<Block>> CONTAINERS = Lazy.of(BlockUtil::createContainersList);
+
+    /**
+     * @return the set of blocks that are regarded as containers.
+     */
+    @Nonnull
+    public static List<Block> createContainersList()
+    {
+        Blocklings.LOGGER.info("Creating valid containers set.");
+
+        if (latestWorld == null)
+        {
+            Blocklings.LOGGER.error("Tried to initialise valid containers set before a world was loaded!");
+
+            return new ArrayList<>();
+        }
+
+        List<Block> containers = new ArrayList<>();
+        BlockPos posToReplace = new BlockPos(0, 0, 0);
+
+        for (Block block : Registry.BLOCK)
+        {
+//            BlockState currentState = latestWorld.getBlockState(posToReplace);
+            TileEntity tileEntity = block.defaultBlockState().createTileEntity(latestWorld);
+
+            if (tileEntity == null)
+            {
+                continue;
+            }
+
+            for (Direction direction : Direction.values())
+            {
+                // If the block has an item handler capability, it is considered a container.
+                if (tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).isPresent())
+                {
+                    containers.add(block);
+
+                    break;
+                }
+            }
+        }
+
+        return containers;
+    }
+
+    /**
+     * Checks if the given block is a container.
+     *
+     * @param block the block to check.
+     * @return true if the block is a container, false otherwise.
+     */
+    public static boolean isContainer(@Nonnull Block block)
+    {
+        return CONTAINERS.get().contains(block);
+    }
+
     /**
      * The list of blocks that are considered ores.
      */

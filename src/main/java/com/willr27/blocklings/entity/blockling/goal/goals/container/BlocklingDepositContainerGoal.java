@@ -171,10 +171,6 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
                 return false;
             }
 
-//                Blocks.CHEST.defaultBlockState().hasTileEntity();
-//                TileEntity tileEntity = Blocks.CHEST.defaultBlockState().createTileEntity(world);
-//                IItemHandler iItemHandler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(null);
-
             for (Item item : itemsSet)
             {
                 // If we have deposited all the items we can then stop.
@@ -319,12 +315,13 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
             return false;
         }
 
-        TileEntity tileEntity = world.getBlockEntity(containerInfo.getBlockPos());
-
-        if (!(tileEntity instanceof IInventory))
-        {
-            return false;
-        }
+        // Might not be needed if we just check for an item handler capability.
+//        TileEntity tileEntity = world.getBlockEntity(containerInfo.getBlockPos());
+//
+//        if (!(tileEntity instanceof IInventory))
+//        {
+//            return false;
+//        }
 
         if (badTargets.contains(containerInfo))
         {
