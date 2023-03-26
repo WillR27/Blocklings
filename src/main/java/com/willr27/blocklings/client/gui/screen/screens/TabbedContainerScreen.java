@@ -40,6 +40,7 @@ public abstract class TabbedContainerScreen<T extends Container> extends Blockli
         background.setWidthPercentage(1.0);
         background.setHeightPercentage(1.0);
         background.setBackgroundColour(0xaa000000);
+        background.setDebugName("Screen Background");
 
         tabbedUIControl = new TabbedUIControl(blockling, selectedTab)
         {

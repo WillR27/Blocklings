@@ -51,12 +51,12 @@ public class TextFieldControl extends Control
     /**
      * The colour of the text field's border.
      */
-    private int borderColour = 0xffdddddd;
+    private int borderColour = 0xffcccccc;
 
     /**
      * The colour of the text field's border when focused.
      */
-    private int borderFocusedColour = 0xffaaaaaa;
+    private int borderFocusedColour = 0xffffffff;
 
     /**
      */
@@ -65,6 +65,7 @@ public class TextFieldControl extends Control
         super();
 
         textFieldWidget.setBordered(false);
+        textFieldWidget.setFilter(this::isValidText);
         textFieldWidget.setResponder((text) ->
         {
             setText(text);
@@ -132,6 +133,7 @@ public class TextFieldControl extends Control
         MatrixStack textFieldMatrixStack = new MatrixStack();
         textFieldMatrixStack.translate(textFieldXRemainder, textFieldYRemainder, z);
         textFieldWidget.renderButton(textFieldMatrixStack, (int) Math.round(mouseX), (int) Math.round(mouseY), partialTicks);
+        RenderSystem.enableDepthTest();
 
         // Reset the color to white so that the rest of the GUI renders properly.
         // The text field renders a blue highlight which can cascade into other controls.
@@ -240,6 +242,24 @@ public class TextFieldControl extends Control
         return super.getVerticalContentAlignment() != null ? super.getVerticalContentAlignment() : 0.5;
     }
 
+    /**
+     * @param text the text to validate.
+     * @return whether the text is valid.
+     */
+    protected boolean isValidText(@Nonnull String text)
+    {
+        return true;
+    }
+
+    /**
+     * Processes the text before it is set.
+     */
+    @Nonnull
+    protected String processText(@Nonnull String text)
+    {
+        return text;
+    }
+
     @Nonnull
     public String getText()
     {
@@ -248,6 +268,8 @@ public class TextFieldControl extends Control
 
     public void setText(@Nonnull String text)
     {
+        text = processText(text);
+
         String oldText = textFieldWidget.getValue();
 
         if (!oldText.equals(text))

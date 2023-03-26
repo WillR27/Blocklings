@@ -35,6 +35,7 @@ public abstract class TabbedScreen extends BlocklingsScreen
         background.setWidthPercentage(1.0);
         background.setHeightPercentage(1.0);
         background.setBackgroundColour(0xaa000000);
+        background.setDebugName("Screen Background");
 
         tabbedUIControl = new TabbedUIControl(blockling, selectedTab);
         tabbedUIControl.setParent(screenControl);

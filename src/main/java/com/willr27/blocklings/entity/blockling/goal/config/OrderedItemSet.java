@@ -278,7 +278,7 @@ public class OrderedItemSet implements Iterable<Item>
     /**
      * A base class for item set messages.
      */
-    private static abstract class ItemMessage<T extends BlocklingMessage<T>> extends GoalMessage<T>
+    private static abstract class ItemMessage<T extends BlocklingMessage<T>> extends GoalMessage<T, IOrderedItemSetProvider>
     {
         /**
          * The item.
@@ -320,16 +320,9 @@ public class OrderedItemSet implements Iterable<Item>
         }
 
         @Override
-        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling, @Nonnull BlocklingGoal goal)
+        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling, @Nonnull IOrderedItemSetProvider goal)
         {
-            if (goal instanceof IOrderedItemSetProvider)
-            {
-                handle(player, blockling, ((IOrderedItemSetProvider) goal).getItemSet());
-            }
-            else
-            {
-                Blocklings.LOGGER.warn("Received item set message for goal that does not provide an item set: " + goal);
-            }
+            handle(player, blockling, ((IOrderedItemSetProvider) goal).getItemSet());
         }
 
         /**

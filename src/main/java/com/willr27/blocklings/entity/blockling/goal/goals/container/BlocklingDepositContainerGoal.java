@@ -1,12 +1,17 @@
 package com.willr27.blocklings.entity.blockling.goal.goals.container;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.client.gui.control.BaseControl;
+import com.willr27.blocklings.client.gui.control.Control;
+import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
+import com.willr27.blocklings.client.gui.control.controls.config.ContainerControl;
 import com.willr27.blocklings.client.gui.control.controls.config.ItemsSelectionControl;
+import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
 import com.willr27.blocklings.client.gui.control.controls.panels.TabbedPanel;
-import com.willr27.blocklings.client.gui.control.event.events.ItemAddedEvent;
-import com.willr27.blocklings.client.gui.control.event.events.ItemMovedEvent;
-import com.willr27.blocklings.client.gui.control.event.events.ItemRemovedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.*;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
+import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.config.OrderedItemSet;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
@@ -50,9 +55,9 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
     public final OrderedItemSet itemsSet;
 
     /**
-     * @param taskId the taskId associated with the goal's task.
+     * @param taskId    the taskId associated with the goal's task.
      * @param blockling the blockling.
-     * @param tasks the blockling tasks.
+     * @param tasks     the blockling tasks.
      */
     public BlocklingDepositContainerGoal(@Nonnull UUID taskId, @Nonnull BlocklingEntity blockling, @Nonnull BlocklingTasks tasks)
     {
@@ -114,64 +119,10 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
 
         if (isInRangeOfPathTargetPos())
         {
-            AbstractInventory inv = blockling.getEquipment();
-            int remainingDepositAmount = getDepositAmount();
-
-            for (Direction direction : Direction.values())
-//            Direction direction = Direction.SOUTH;
-            {
-                // If we have deposited all the items we can then stop.
-                if (remainingDepositAmount <= 0)
-                {
-                    break;
-                }
-
-                IItemHandler itemHandler = getTarget().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(null);
-
-                for (Item item : itemsSet)
-//                Item item = itemsSet.getItems().get(0);
-                {
-                    // If we have deposited all the items we can then stop.
-                    if (remainingDepositAmount <= 0)
-                    {
-                        break;
-                    }
-
-                    // Skip any items that are not in the blockling's inventory.
-                    if (!hasItemToDeposit(item))
-                    {
-                        continue;
-                    }
-
-                    int startingCount = Math.min(getDepositAmount(), inv.count(new ItemStack(item)));
-                    ItemStack stackToDeposit = new ItemStack(item, startingCount);
-
-                    if (stackToDeposit.isEmpty())
-                    {
-                        continue;
-                    }
-
-                    // Loop through all slots or until the stack is empty.
-                    for (int slot = 0; slot < itemHandler.getSlots() && !stackToDeposit.isEmpty(); slot++)
-                    {
-                        // Try insert as many items as possible and update the stack to be the remainder.
-                        stackToDeposit = itemHandler.insertItem(slot, stackToDeposit, false);
-                    }
-
-                    int amountDeposited = startingCount - stackToDeposit.getCount();
-
-                    // If the count has decreased then at least one item was deposited.
-                    if (amountDeposited > 0)
-                    {
-                        inv.take(new ItemStack(item, amountDeposited));
-
-                        remainingDepositAmount -= amountDeposited;
-                    }
-                }
-            }
+            boolean depositedAnItem = tryDepositItemsToContainer(getTarget(), false);
 
             // If no items were deposited then try other targets before this one again.
-            if (remainingDepositAmount == getDepositAmount())
+            if (!depositedAnItem)
             {
                 markTargetBad();
             }
@@ -179,6 +130,93 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
 
         depositTimer = 0;
     }
+
+    /**
+     * Tries to add items from the blockling's inventory to the given container.
+     *
+     * @param containerInfo the container to add the item to.
+     * @param simulate      whether to simulate the action.
+     * @return true if an item was added, false otherwise.
+     */
+    private boolean tryDepositItemsToContainer(@Nonnull ContainerInfo containerInfo, boolean simulate)
+    {
+        AbstractInventory inv = blockling.getEquipment();
+        int remainingDepositAmount = getDepositAmount();
+
+        for (Direction direction : containerInfo.getSides())
+//            Direction direction = Direction.SOUTH;
+        {
+            // If we have deposited all the items we can then stop.
+            if (remainingDepositAmount <= 0)
+            {
+                break;
+            }
+
+            TileEntity tileEntity = containerAsTileEntity(containerInfo);
+
+            if (tileEntity == null)
+            {
+                return false;
+            }
+
+            IItemHandler itemHandler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(null);
+
+            if (itemHandler == null)
+            {
+                return false;
+            }
+
+//                Blocks.CHEST.defaultBlockState().hasTileEntity();
+//                TileEntity tileEntity = Blocks.CHEST.defaultBlockState().createTileEntity(world);
+//                IItemHandler iItemHandler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(null);
+
+            for (Item item : itemsSet)
+            {
+                // If we have deposited all the items we can then stop.
+                if (remainingDepositAmount <= 0)
+                {
+                    break;
+                }
+
+                // Skip any items that are not in the blockling's inventory.
+                if (!hasItemToDeposit(item))
+                {
+                    continue;
+                }
+
+                int startingCount = Math.min(getDepositAmount(), inv.count(new ItemStack(item)));
+                ItemStack stackToDeposit = new ItemStack(item, startingCount);
+
+                if (stackToDeposit.isEmpty())
+                {
+                    continue;
+                }
+
+                // Loop through all slots or until the stack is empty.
+                for (int slot = 0; slot < itemHandler.getSlots() && !stackToDeposit.isEmpty(); slot++)
+                {
+                    // Try insert as many items as possible and update the stack to be the remainder.
+                    stackToDeposit = itemHandler.insertItem(slot, stackToDeposit, simulate);
+                }
+
+                int amountDeposited = startingCount - stackToDeposit.getCount();
+
+                // If the count has decreased then at least one item was deposited.
+                if (amountDeposited > 0)
+                {
+                    if (!simulate)
+                    {
+                        inv.take(new ItemStack(item, amountDeposited));
+                    }
+
+                    remainingDepositAmount -= amountDeposited;
+                }
+            }
+        }
+
+        return remainingDepositAmount < getDepositAmount();
+    }
+
 
     @Override
     public boolean tryRecalcTarget()
@@ -193,13 +231,29 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
 
         final int range = 8;
 
-        for (BlockPos testPos : BlockPos.betweenClosed(blockling.blockPosition().offset(-range, -range, -range), blockling.blockPosition().offset(range, range, range)))
-        {
-            TileEntity tileEntity = world.getBlockEntity(testPos);
+//        for (BlockPos testPos : BlockPos.betweenClosed(blockling.blockPosition().offset(-range, -range, -range), blockling.blockPosition().offset(range, range, range)))
+//        {
+//            TileEntity tileEntity = world.getBlockEntity(testPos);
+//
+//            if (isValidTarget(tileEntity))
+//            {
+//                setTarget(tileEntity);
+//                setPathTargetPos(null, null);
+//
+//                return true;
+//            }
+//        }
 
-            if (isValidTarget(tileEntity))
+        for (ContainerInfo containerInfo : containerInfos)
+        {
+            if (!isInRange(containerInfo.getBlockPos(), range * range))
             {
-                setTarget(tileEntity);
+                continue;
+            }
+
+            if (isValidTarget(containerInfo))
+            {
+                setTarget(containerInfo);
                 setPathTargetPos(null, null);
 
                 return true;
@@ -248,19 +302,31 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
     }
 
     @Override
-    public boolean isValidTarget(@Nullable TileEntity tileEntity)
+    public boolean isValidTarget(@Nullable ContainerInfo containerInfo)
     {
-        if (tileEntity == null)
+        if (containerInfo == null)
         {
             return false;
         }
+
+        if (!containerInfo.isConfigured())
+        {
+            return false;
+        }
+
+        TileEntity tileEntity = world.getBlockEntity(containerInfo.getBlockPos());
 
         if (!(tileEntity instanceof IInventory))
         {
             return false;
         }
 
-        if (badTargets.contains(tileEntity))
+        if (badTargets.contains(containerInfo))
+        {
+            return false;
+        }
+
+        if (!tryDepositItemsToContainer(containerInfo, true))
         {
             return false;
         }
@@ -324,6 +390,94 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
                 itemsSet.moveAfter(e.movedItem, e.closestItem);
             }
         });
+
+        BaseControl containersContainer = tabbedPanel.addTab(new BlocklingsTranslationTextComponent("config.containers"));
+        containersContainer.setCanScrollVertically(true);
+
+        StackPanel stackPanel = new StackPanel();
+        stackPanel.setParent(containersContainer);
+        stackPanel.setWidthPercentage(1.0);
+        stackPanel.setFitHeightToContent(true);
+        stackPanel.setMargins(5.0, 9.0, 5.0, 5.0);
+        stackPanel.setSpacing(4.0);
+        stackPanel.setClipContentsToBounds(false);
+        stackPanel.eventBus.subscribe((BaseControl c, ReorderEvent e) ->
+        {
+            int movedIndex = stackPanel.getChildren().indexOf(e.draggedControl);
+            int closestIndex = stackPanel.getChildren().indexOf(e.closestControl);
+
+            moveContainerInfo(movedIndex, closestIndex + (e.insertBefore ? 0 : 1));
+        });
+
+        for (ContainerInfo containerInfo : containerInfos)
+        {
+            ContainerControl containerControl = new ContainerControl(containerInfo);
+            stackPanel.addChild(containerControl);
+            containerControl.setWidthPercentage(1.0);
+            containerControl.setDraggableY(true);
+            containerControl.setScrollFromDragControl(containersContainer);
+            containerControl.eventBus.subscribe((BaseControl c, ValueChangedEvent<ContainerInfo> e2) ->
+            {
+                setContainerInfo(containerInfos.indexOf(e2.newValue), e2.newValue);
+            });
+            containerControl.eventBus.subscribe((BaseControl c, ParentChangedEvent e2) ->
+            {
+                // When the container control is removed, remove the container info too.
+                if (e2.newParent == null)
+                {
+                    removeContainerInfo(containerInfos.indexOf(((ContainerControl) c).containerInfo));
+                }
+            });
+        }
+
+        Control addContainerContainer = new Control();
+        addContainerContainer.setParent(stackPanel);
+        addContainerContainer.setWidthPercentage(1.0);
+        addContainerContainer.setFitHeightToContent(true);
+        addContainerContainer.setReorderable(false);
+
+        TexturedControl addContainerButton = new TexturedControl(Textures.Common.PLUS_ICON)
+        {
+            @Override
+            public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+            {
+                renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent("config.add_container"));
+            }
+
+            @Override
+            protected void onMouseReleased(@Nonnull MouseReleasedEvent e)
+            {
+                if (isPressed())
+                {
+                    ContainerInfo containerInfo = new ContainerInfo();
+                    addContainerInfo(containerInfo);
+
+                    ContainerControl containerControl = new ContainerControl(containerInfo);
+                    stackPanel.insertChildBefore(containerControl, addContainerContainer);
+                    containerControl.setWidthPercentage(1.0);
+                    containerControl.setDraggableY(true);
+                    containerControl.setScrollFromDragControl(containersContainer);
+                    containerControl.eventBus.subscribe((BaseControl c, ValueChangedEvent<ContainerInfo> e2) ->
+                    {
+                        setContainerInfo(containerInfos.indexOf(e2.newValue), e2.newValue);
+                    });
+                    containerControl.eventBus.subscribe((BaseControl c, ParentChangedEvent e2) ->
+                    {
+                        // When the container control is removed, remove the container info too.
+                        if (e2.newParent == null)
+                        {
+                            removeContainerInfo(containerInfos.indexOf(((ContainerControl) c).containerInfo));
+                        }
+                    });
+                    containerControl.onFirstAdded();
+
+                    e.setIsHandled(true);
+                }
+            }
+        };
+        addContainerButton.setParent(addContainerContainer);
+        addContainerButton.setHorizontalAlignment(0.5);
+        addContainerButton.setMargins(0.0, 1.0, 0.0, 1.0);
     }
 
     @Nonnull

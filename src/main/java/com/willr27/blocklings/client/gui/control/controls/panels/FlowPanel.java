@@ -63,6 +63,12 @@ public class FlowPanel extends Control
                 double childMinX = (childControl.getX() - childControl.getMargin().left) * getInnerScale().x;
                 double childMaxX = (childControl.getX() + childControl.getWidth() + childControl.getMargin().right) * getInnerScale().x;
 
+                if (childControl.isDragging())
+                {
+                    childMinX = Math.min(childMinX, childControl.getPreDragX() - childControl.getMargin().left * getInnerScale().x);
+                    childMaxX = Math.max(childMaxX, childControl.getPreDragX() + childControl.getWidth() + childControl.getMargin().right * getInnerScale().x);
+                }
+
                 if (childMinX < minX)
                 {
                     minX = childMinX;
@@ -106,6 +112,12 @@ public class FlowPanel extends Control
 
                 double childMinY = (childControl.getY() - childControl.getMargin().top) * getInnerScale().y;
                 double childY = (childControl.getY() + childControl.getHeight() + childControl.getMargin().bottom) * getInnerScale().y;
+
+                if (childControl.isDragging())
+                {
+                    childMinY = Math.min(childMinY, childControl.getPreDragY() - childControl.getMargin().top * getInnerScale().y);
+                    childY = Math.max(childY, childControl.getPreDragY() + childControl.getHeight() + childControl.getMargin().bottom * getInnerScale().y);
+                }
 
                 if (childMinY < minY)
                 {
@@ -340,8 +352,14 @@ public class FlowPanel extends Control
                 }
             }
 
-            control.setX(controlX);
-            control.setY(controlY);
+            if (control.isDragging())
+            {
+                control.setPreDragPosition(controlX, controlY);
+            }
+            else
+            {
+                control.setPosition(controlX, controlY);
+            }
 
             controlsInLine.add(control);
 

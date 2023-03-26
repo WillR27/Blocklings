@@ -107,6 +107,16 @@
 
   "blocklings.config.add_item": "Add Item",
   "blocklings.config.items": "Items",
+  "blocklings.config.blank_container": "Blank",
+  "blocklings.config.containers": "Containers",
+  "blocklings.config.add_container": "Add Container",
+
+  "blocklings.direction.front": "Front",
+  "blocklings.direction.back": "Back",
+  "blocklings.direction.left": "Left",
+  "blocklings.direction.right": "Right",
+  "blocklings.direction.top": "Top",
+  "blocklings.direction.bottom": "Bottom",
 
   "blocklings.whitelist.targets": "Targets",
   "blocklings.whitelist.ores": "Ores",

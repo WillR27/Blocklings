@@ -136,11 +136,28 @@ public class TexturedControl extends Control
     }
 
     @Override
+    public void measureChildren()
+    {
+        for (BaseControl child : getChildrenCopy())
+        {
+            if (child.getVisibility() == Visibility.COLLAPSED)
+            {
+                continue;
+            }
+
+            double availableWidth = ((getDesiredWidth() - getPaddingWidth()) / getInnerScale().x) - child.getMarginWidth();
+            double availableHeight = ((getDesiredHeight() - getPaddingHeight()) / getInnerScale().y) - child.getMarginHeight();
+
+            child.doMeasure(availableWidth, availableHeight);
+        }
+    }
+
+    @Override
     protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
     {
         super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
 
-        if (isPressed() && !isDragging() && getPressedBackgroundTexture() != null)
+        if (isPressed() && !isDraggingOrAncestor() && getPressedBackgroundTexture() != null)
         {
             renderTextureAsBackground(matrixStack, pressedBackgroundTexture);
         }

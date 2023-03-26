@@ -50,7 +50,8 @@ public class EventBus<S>
 
         if (consumers != null)
         {
-            for (BiConsumer<S, ? extends IEvent> consumer : consumers)
+            // Copy to prevent concurrent modification exceptions.
+            for (BiConsumer<S, ? extends IEvent> consumer : new ArrayList<>(consumers))
             {
                 ((BiConsumer<S, E>) consumer).accept(sender, event);
             }

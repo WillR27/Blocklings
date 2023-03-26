@@ -7,7 +7,12 @@ import com.willr27.blocklings.client.gui.util.GuiUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldVertexBufferUploader;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -36,6 +41,45 @@ public abstract class GuiControl extends AbstractGui
     {
         fill(matrixStack, (int) Math.round(x), (int) Math.round(y), (int) Math.round(x + width), (int) Math.round(y + height), colour);
         RenderSystem.enableBlend();
+    }
+
+    /**
+     * Renders a rectangle with the given width and height centered on the given position.
+     *
+     * @param matrixStack the matrix stack.
+     * @param x the x position to render at.
+     * @param y the y position to render at.
+     * @param width the width of the rectangle.
+     * @param height the height of the rectangle.
+     * @param colour the colour of the rectangle.
+     */
+    public void renderCenteredRectangle(@Nonnull MatrixStack matrixStack, double x, double y, double width, double height, int colour)
+    {
+        Matrix4f matrix = matrixStack.last().pose();
+
+        float x1 = (float) (x - width / 2.0);
+        float y1 = (float) (y - height / 2.0);
+        float x2 = (float) (x + width / 2.0);
+        float y2 = (float) (y + height / 2.0);
+
+        float f3 = (float)(colour >> 24 & 255) / 255.0F;
+        float f = (float)(colour >> 16 & 255) / 255.0F;
+        float f1 = (float)(colour >> 8 & 255) / 255.0F;
+        float f2 = (float)(colour & 255) / 255.0F;
+
+        BufferBuilder bufferbuilder = Tessellator.getInstance().getBuilder();
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        bufferbuilder.vertex(matrix, x1, y2, 0.0F).color(f, f1, f2, f3).endVertex();
+        bufferbuilder.vertex(matrix, x2, y2, 0.0F).color(f, f1, f2, f3).endVertex();
+        bufferbuilder.vertex(matrix, x2, y1, 0.0F).color(f, f1, f2, f3).endVertex();
+        bufferbuilder.vertex(matrix, x1, y1, 0.0F).color(f, f1, f2, f3).endVertex();
+        bufferbuilder.end();
+        WorldVertexBufferUploader.end(bufferbuilder);
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
     }
 
     /**

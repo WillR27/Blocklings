@@ -15,6 +15,7 @@ import com.willr27.blocklings.client.gui.util.GuiUtil;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -402,22 +403,21 @@ public class ScreenControl extends Control
             return;
         }
 
-        boolean previousFocus = focusedControl == control;
         BaseControl previousFocusedControl = focusedControl;
 
         focusedControl = control;
 
         if (previousFocusedControl != null)
         {
-            previousFocusedControl.eventBus.post(previousFocusedControl, new FocusChangedEvent(previousFocus));
-            eventBus.post(previousFocusedControl, new FocusChangedEvent(previousFocus));
+            previousFocusedControl.eventBus.post(previousFocusedControl, new FocusChangedEvent(true, false));
+            eventBus.post(previousFocusedControl, new FocusChangedEvent(true, false));
             previousFocusedControl.onUnfocused();
         }
 
         if (focusedControl != null)
         {
-            focusedControl.eventBus.post(focusedControl, new FocusChangedEvent(previousFocus));
-            eventBus.post(focusedControl, new FocusChangedEvent(previousFocus));
+            focusedControl.eventBus.post(focusedControl, new FocusChangedEvent(false, true));
+            eventBus.post(focusedControl, new FocusChangedEvent(false, true));
             focusedControl.onFocused();
         }
     }
@@ -440,6 +440,7 @@ public class ScreenControl extends Control
 
             if (control != null)
             {
+                control.setPreDragPosition(control.getX(), control.getY());
                 control.onDragStart(GuiUtil.get().getPixelMouseX(), GuiUtil.get().getPixelMouseY());
             }
         }

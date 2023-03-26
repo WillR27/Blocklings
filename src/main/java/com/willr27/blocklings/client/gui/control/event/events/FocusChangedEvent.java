@@ -16,10 +16,17 @@ public class FocusChangedEvent implements IEvent
     public final boolean oldFocus;
 
     /**
-     * @param oldFocus the old focus state of the control.
+     * The new focus state of the control.
      */
-    public FocusChangedEvent(boolean oldFocus)
+    public final boolean newFocus;
+
+    /**
+     * @param oldFocus the old focus state of the control.
+     * @param newFocus the new focus state of the control.
+     */
+    public FocusChangedEvent(boolean oldFocus, boolean newFocus)
     {
         this.oldFocus = oldFocus;
+        this.newFocus = newFocus;
     }
 }

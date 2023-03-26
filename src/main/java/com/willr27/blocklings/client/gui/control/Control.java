@@ -18,6 +18,7 @@ import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -539,7 +540,7 @@ public class Control extends BaseControl
             return;
         }
 
-        if (!contains(e.mouseX, e.mouseY) && !isPressed())
+        if (!contains(e.mouseX, e.mouseY) && !isPressedOrDescendant())
         {
             return;
         }
@@ -557,24 +558,32 @@ public class Control extends BaseControl
 
         if (!e.isHandled() && getParent() != null)
         {
-            if (isPressed() && isDraggable())
+            if (isPressedOrDescendant())
             {
-                double pixelDragDifX = e.mouseX - getScreen().getPressedStartPixelX();
-                double pixelDragDifY = e.mouseY - getScreen().getPressedStartPixelY();
-                double localDragDifX = pixelDragDifX / getPixelScaleX();
-                double localDragDifY = pixelDragDifY / getPixelScaleY();
-                double absLocalDragDifX = Math.abs(localDragDifX);
-                double absLocalDragDifY = Math.abs(localDragDifY);
-
-                boolean isDraggedX = absLocalDragDifX >= getDragThreshold();
-                boolean isDraggedY = absLocalDragDifY >= getDragThreshold();
-
-                if (isDraggedX || isDraggedY)
+                if (isDraggable())
                 {
-                    setIsDragging(true);
-                    e.setIsHandled(true);
+                    double pixelDragDifX = e.mouseX - getScreen().getPressedStartPixelX();
+                    double pixelDragDifY = e.mouseY - getScreen().getPressedStartPixelY();
+                    double localDragDifX = pixelDragDifX / getPixelScaleX();
+                    double localDragDifY = pixelDragDifY / getPixelScaleY();
+                    double absLocalDragDifX = Math.abs(localDragDifX);
+                    double absLocalDragDifY = Math.abs(localDragDifY);
+
+                    boolean isDraggedX = absLocalDragDifX >= getDragThreshold();
+                    boolean isDraggedY = absLocalDragDifY >= getDragThreshold();
+
+                    if (isDraggedX || isDraggedY)
+                    {
+                        setIsDragging(true);
+                        e.setIsHandled(true);
+                    }
                 }
             }
+        }
+
+        if (!e.isHandled() && isPressedOrDescendant())
+        {
+            e.setIsHandled(!shouldPropagateDrag());
         }
     }
 
@@ -714,16 +723,10 @@ public class Control extends BaseControl
 
         for (BaseControl child : getReverseChildrenCopy())
         {
-            if (!e.isHandled())
-            {
-                child.forwardGlobalMouseClicked(e);
-            }
+            child.forwardGlobalMouseClicked(e);
         }
 
-        if (!e.isHandled())
-        {
-            onGlobalMouseClicked(e);
-        }
+        onGlobalMouseClicked(e);
     }
 
     @Override
@@ -789,16 +792,10 @@ public class Control extends BaseControl
 
         for (BaseControl child : getReverseChildrenCopy())
         {
-            if (!e.isHandled())
-            {
-                child.forwardGlobalMouseReleased(e);
-            }
+            child.forwardGlobalMouseReleased(e);
         }
 
-        if (!e.isHandled())
-        {
-            onGlobalMouseReleased(e);
-        }
+        onGlobalMouseReleased(e);
     }
 
     @Override
@@ -863,16 +860,10 @@ public class Control extends BaseControl
 
         for (BaseControl child : getReverseChildrenCopy())
         {
-            if (!e.isHandled())
-            {
-                child.forwardGlobalMouseScrolled(e);
-            }
+            child.forwardGlobalMouseScrolled(e);
         }
 
-        if (!e.isHandled())
-        {
-            onGlobalMouseScrolled(e);
-        }
+        onGlobalMouseScrolled(e);
     }
 
     @Override
@@ -951,16 +942,10 @@ public class Control extends BaseControl
     {
         for (BaseControl child : getReverseChildrenCopy())
         {
-            if (!e.isHandled())
-            {
-                child.forwardGlobalKeyPressed(e);
-            }
+            child.forwardGlobalKeyPressed(e);
         }
 
-        if (!e.isHandled())
-        {
-            onGlobalKeyPressed(e);
-        }
+        onGlobalKeyPressed(e);
     }
 
     @Override
@@ -1004,16 +989,10 @@ public class Control extends BaseControl
     {
         for (BaseControl child : getReverseChildrenCopy())
         {
-            if (!e.isHandled())
-            {
-                child.forwardGlobalKeyReleased(e);
-            }
+            child.forwardGlobalKeyReleased(e);
         }
 
-        if (!e.isHandled())
-        {
-            onGlobalKeyReleased(e);
-        }
+        onGlobalKeyReleased(e);
     }
 
     @Override
@@ -1057,16 +1036,10 @@ public class Control extends BaseControl
     {
         for (BaseControl child : getReverseChildrenCopy())
         {
-            if (!e.isHandled())
-            {
-                child.forwardGlobalCharTyped(e);
-            }
+            child.forwardGlobalCharTyped(e);
         }
 
-        if (!e.isHandled())
-        {
-            onGlobalCharTyped(e);
-        }
+        onGlobalCharTyped(e);
     }
 
     @Override

@@ -71,6 +71,7 @@ public class TabbedUIControl extends GridPanel
         addRowDefinition(GridDefinition.FIXED, 20.0);
         addRowDefinition(GridDefinition.RATIO, 1.0);
         addColumnDefinition(GridDefinition.RATIO, 1.0);
+        setDebugName("Tabbed UI Control");
 
         TextBlockControl titleControl = new TextBlockControl();
         addChild(titleControl, 0, 0);
@@ -229,7 +230,10 @@ public class TabbedUIControl extends GridPanel
         @Override
         protected void onMouseReleased(@Nonnull MouseReleasedEvent e)
         {
-            blockling.guiHandler.openGui(tab.guiId, Minecraft.getInstance().player);
+            if (isPressed())
+            {
+                blockling.guiHandler.openGui(tab.guiId, Minecraft.getInstance().player);
+            }
 
             e.setIsHandled(true);
         }

@@ -20,6 +20,9 @@ public class Textures
     {
         public static final ResourceLocation COMMON = new BlocklingsResourceLocation("textures/gui/common_widgets.png");
 
+        public static final Texture BAR_RAISED = new Texture(COMMON, 0, 48, 256, 20);
+        public static final Texture BAR_FLAT = new Texture(COMMON, 0, 68, 256, 20);
+
         public static final Texture BUTTON = new Texture(WIDGETS_LOCATION, 0, 66, 200, 20);
         public static final Texture BUTTON_HOVERED = new Texture(WIDGETS_LOCATION, 0, 86, 200, 20);
 
@@ -46,8 +49,8 @@ public class Textures
             public static final Texture DOWN_ARROW = new Texture(COMMON, 24, 0, 11, 7);
             public static final Texture UP_ARROW = new Texture(COMMON, 35, 0, 11, 7);
 
-            public static final Texture SELECTED_BACKGROUND = new Texture(COMMON, 0, 48, 256, 20);
-            public static final Texture UNSELECTED_BACKGROUND = new Texture(COMMON, 0, 69, 256, 19);
+            public static final Texture SELECTED_BACKGROUND = BAR_RAISED;
+            public static final Texture UNSELECTED_BACKGROUND = BAR_FLAT.dy(1).dHeight(-1);
         }
 
         public static class Tab

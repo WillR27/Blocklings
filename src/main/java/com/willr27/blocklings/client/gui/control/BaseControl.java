@@ -1,12 +1,9 @@
 package com.willr27.blocklings.client.gui.control;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.willr27.blocklings.client.gui.control.event.events.PositionChangedEvent;
-import com.willr27.blocklings.client.gui.control.event.events.SizeChangedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.*;
 import com.willr27.blocklings.client.gui.properties.*;
 import com.willr27.blocklings.client.gui.control.controls.ScreenControl;
-import com.willr27.blocklings.client.gui.control.event.events.TryDragEvent;
-import com.willr27.blocklings.client.gui.control.event.events.TryHoverEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.*;
 import com.willr27.blocklings.client.gui.util.Colour;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
@@ -14,6 +11,7 @@ import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -36,6 +34,12 @@ public abstract class BaseControl extends GuiControl
      */
     @Nonnull
     public final ControlEventBus screenEventBus = new ControlEventBus();
+
+    /**
+     * A string used as a debug name for this control.
+     */
+    @Nonnull
+    private String debugName = "Control";
 
     private boolean isMeasuring = false;
 
@@ -79,6 +83,12 @@ public abstract class BaseControl extends GuiControl
 
     @Nonnull
     private final Position position = new Position(0.0, 0.0);
+
+    /**
+     * The position of the control before it was dragged.
+     */
+    @Nonnull
+    private final Position preDragPosition = new Position(0.0, 0.0);
 
     private boolean shouldSnapToScreenCoords = false;
 
@@ -137,10 +147,15 @@ public abstract class BaseControl extends GuiControl
     private boolean shouldBlockDrag = true;
 
     /**
+     * Whether to propagate the drag event to the parent control if this control doesn't handle it.
+     */
+    private boolean shouldPropagateDrag = true;
+
+    /**
      * The control that will scroll when this control is dragged beyond its bounds.
      */
     @Nullable
-    private BaseControl ScrollFromDragControl = null;
+    private BaseControl scrollFromDragControl = null;
 
     /**
      * Whether to clip its contents to its bounds. If null, inherit from parent.
@@ -451,10 +466,14 @@ public abstract class BaseControl extends GuiControl
             child.getParent().removeChild(child, true);
         }
 
+        BaseControl oldParent = child.getParent();
+
         child.removeChainedScreenBus();
         children.add(child);
         child.parent = this;
         child.addChainedScreenBus();
+
+        child.eventBus.post(child, new ParentChangedEvent(oldParent, this));
 
         markMeasureDirty(true);
         markArrangeDirty(true);
@@ -545,6 +564,7 @@ public abstract class BaseControl extends GuiControl
             throw new IllegalArgumentException("The given index is out of bounds.");
         }
 
+        BaseControl oldParent = controlToInsert.getParent();
         int indexOfControlToInsert = children.indexOf(controlToInsert);
 
         if (indexOfControlToInsert != -1)
@@ -565,6 +585,11 @@ public abstract class BaseControl extends GuiControl
         controlToInsert.removeChainedScreenBus();
         controlToInsert.parent = this;
         controlToInsert.addChainedScreenBus();
+
+        if (this != oldParent)
+        {
+            controlToInsert.eventBus.post(controlToInsert, new ParentChangedEvent(oldParent, this));
+        }
 
         markMeasureDirty(true);
         markArrangeDirty(true);
@@ -624,15 +649,19 @@ public abstract class BaseControl extends GuiControl
             return;
         }
 
+        BaseControl oldParent = child.getParent();
+
         children.remove(child);
+
+        child.removeChainedScreenBus();
+        child.parent = null;
+
+        child.eventBus.post(child, new ParentChangedEvent(oldParent, null));
 
         if (!preserveEventSubscribers)
         {
             child.clearEventBuses(true);
         }
-
-        child.removeChainedScreenBus();
-        child.parent = null;
 
         markMeasureDirty(true);
         markArrangeDirty(true);
@@ -1476,6 +1505,32 @@ public abstract class BaseControl extends GuiControl
         return getPixelY() + getPixelHeight();
     }
 
+    public double getPreDragX()
+    {
+        return preDragPosition.x;
+    }
+
+    public double getPreDragY()
+    {
+        return preDragPosition.y;
+    }
+
+    public void setPreDragPosition(double x, double y)
+    {
+        preDragPosition.x = x;
+        preDragPosition.y = y;
+    }
+
+    public double getPreDragPixelX()
+    {
+        return toPixelX(getPreDragPixelX());
+    }
+
+    public double getPreDragPixelY()
+    {
+        return toPixelY(getPreDragPixelY());
+    }
+
     public boolean shouldSnapToScreenCoords()
     {
         return shouldSnapToScreenCoords;
@@ -1923,6 +1978,11 @@ public abstract class BaseControl extends GuiControl
 
     public void setIsHovered(boolean isHovered)
     {
+        if (getScreen() == null)
+        {
+            return;
+        }
+
         if (isHovered && isHoverable())
         {
             getScreen().setHoveredControl(this);
@@ -1946,6 +2006,11 @@ public abstract class BaseControl extends GuiControl
 
     public void setPressed(boolean isPressed)
     {
+        if (getScreen() == null)
+        {
+            return;
+        }
+
         if (isPressed && isPressable())
         {
             getScreen().setPressedControl(this);
@@ -1954,6 +2019,26 @@ public abstract class BaseControl extends GuiControl
         {
             getScreen().setPressedControl(null);
         }
+    }
+
+    public boolean isAncestorPressed()
+    {
+        return isAncestor(getPressedControl());
+    }
+
+    public boolean isPressedOrAncestor()
+    {
+        return isPressed() || isAncestorPressed();
+    }
+
+    public boolean isDescendantPressed()
+    {
+        return isDescendant(getPressedControl());
+    }
+
+    public boolean isPressedOrDescendant()
+    {
+        return isPressed() || isDescendantPressed();
     }
 
     @Nullable
@@ -1969,6 +2054,11 @@ public abstract class BaseControl extends GuiControl
 
     public void setFocused(boolean isFocused)
     {
+        if (getScreen() == null)
+        {
+            return;
+        }
+
         if (isFocused && isInteractive() && isFocusable())
         {
             getScreen().setFocusedControl(this);
@@ -2007,6 +2097,11 @@ public abstract class BaseControl extends GuiControl
 
     public void setIsDragging(boolean isDragging)
     {
+        if (getScreen() == null)
+        {
+            return;
+        }
+
         if (isDragging)
         {
             getScreen().setDraggedControl(this);
@@ -2065,12 +2160,12 @@ public abstract class BaseControl extends GuiControl
     @Nullable
     public BaseControl getScrollFromDragControl()
     {
-        return ScrollFromDragControl != null ? ScrollFromDragControl : getParent();
+        return scrollFromDragControl != null ? scrollFromDragControl : getParent();
     }
 
     public void setScrollFromDragControl(@Nullable BaseControl scrollFromDragControl)
     {
-        this.ScrollFromDragControl = scrollFromDragControl;
+        this.scrollFromDragControl = scrollFromDragControl;
     }
 
     public double getDragZ()
@@ -2081,6 +2176,22 @@ public abstract class BaseControl extends GuiControl
     public void setDragZ(@Nullable Double dragZ)
     {
         this.dragZ = dragZ;
+    }
+
+    /**
+     * @return whether the drag event should be propagated to the parent control if not handled by this control.
+     */
+    public boolean shouldPropagateDrag()
+    {
+        return shouldPropagateDrag;
+    }
+
+    /**
+     * Sets whether the drag event should be propagated to the parent control if not handled by this control.
+     */
+    public void setShouldPropagateDrag(boolean shouldPropagateDrag)
+    {
+        this.shouldPropagateDrag = shouldPropagateDrag;
     }
 
     public boolean isAncestorCollapsed()
@@ -2377,5 +2488,22 @@ public abstract class BaseControl extends GuiControl
     public int randomInt(int max)
     {
     	return random.nextInt(max);
+    }
+
+    @Nonnull
+    public String getDebugName()
+    {
+        return debugName + "   " + getClass().getSimpleName();
+    }
+
+    public void setDebugName(@Nonnull String debugName)
+    {
+        this.debugName = debugName;
+    }
+
+    @Override
+    public String toString()
+    {
+        return getDebugName();
     }
 }

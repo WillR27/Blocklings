@@ -10,6 +10,7 @@ import com.willr27.blocklings.entity.blockling.attribute.attributes.numbers.IntA
 import com.willr27.blocklings.entity.blockling.attribute.attributes.numbers.ModifiableFloatAttribute;
 import com.willr27.blocklings.entity.blockling.attribute.attributes.numbers.ModifiableIntAttribute;
 import com.willr27.blocklings.entity.blockling.goal.config.OrderedItemSet;
+import com.willr27.blocklings.entity.blockling.goal.goals.container.BlocklingContainerGoal;
 import com.willr27.blocklings.entity.blockling.task.config.Property;
 import com.willr27.blocklings.network.messages.*;
 import net.minecraft.entity.player.PlayerEntity;
@@ -91,6 +92,9 @@ public class NetworkHandler
         registerMessage(WhitelistAllMessage.class);
         registerMessage(WhitelistIsUnlockedMessage.class);
         registerMessage(WhitelistSingleMessage.class);
+        registerMessage(BlocklingContainerGoal.ContainerGoalContainerAddRemoveMessage.class);
+        registerMessage(BlocklingContainerGoal.ContainerGoalContainerMessage.class);
+        registerMessage(BlocklingContainerGoal.ContainerGoalContainerMoveMessage.class);
     }
 
     /**

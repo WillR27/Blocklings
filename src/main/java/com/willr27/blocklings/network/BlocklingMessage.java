@@ -124,6 +124,7 @@ public abstract class BlocklingMessage<T extends BlocklingMessage<T>> extends Me
 
             ctx.get().setPacketHandled(true);
         });
+
         context.setPacketHandled(true);
     }
 

@@ -110,12 +110,6 @@ public class ItemsSelectionControl extends Control
         itemSearchControl = new ItemSearchControl()
         {
             @Override
-            protected void measureSelf(double availableWidth, double availableHeight)
-            {
-                super.measureSelf(availableWidth, availableHeight);
-            }
-
-            @Override
             public void onKeyPressed(@Nonnull KeyPressedEvent e)
             {
                 openItemSearch();
@@ -125,6 +119,14 @@ public class ItemsSelectionControl extends Control
         };
         itemsPanel.insertChildFirst(itemSearchControl);
         itemSearchControl.setVisibility(Visibility.COLLAPSED);
+        itemSearchControl.setFilter((Item item) -> itemsPanel.getChildren().stream().noneMatch(b -> b.getChildren().stream().anyMatch(c -> c instanceof ItemControl && ((ItemControl) c).getItem() == item)));
+        itemSearchControl.eventBus.subscribe((BaseControl c, ItemAddedEvent e) ->
+        {
+            addItem(e.item);
+            closeItemSearch();
+
+            eventBus.post(this, new ItemAddedEvent(e.item));
+        });
 
         screenEventBus.subscribe((BaseControl c, FocusChangedEvent e) ->
         {
@@ -186,7 +188,7 @@ public class ItemsSelectionControl extends Control
         itemControl.setItem(item);
         itemControl.setWidthPercentage(1.0);
         itemControl.setHeightPercentage(1.0);
-        itemControl.setItemScale(0.5f);
+        itemControl.setItemScale(0.7f);
 
         Control itemOverlay = new Control();
         itemOverlay.setWidthPercentage(1.0);
@@ -252,157 +254,5 @@ public class ItemsSelectionControl extends Control
         itemControl.setParent(itemBackground);
         crossIcon.setParent(itemBackground);
         itemOverlay.setParent(itemControl);
-    }
-
-    /**
-     * A control used to search for and select an item.
-     */
-    private class ItemSearchControl extends GridPanel
-    {
-        /**
-         * The panel containing the list of items.
-         */
-        @Nonnull
-        private final FlowPanel itemsContainer;
-
-        /**
-         * The search field.
-         */
-        @Nonnull
-        private final TextFieldControl searchField;
-
-        /**
-         */
-        public ItemSearchControl()
-        {
-            super();
-
-            setWidthPercentage(1.0);
-            setFitHeightToContent(true);
-
-            addRowDefinition(GridDefinition.AUTO, 1.0);
-            addRowDefinition(GridDefinition.AUTO, 1.0);
-            addColumnDefinition(GridDefinition.RATIO, 1.0);
-
-            GridPanel searchPanel = new GridPanel();
-            addChild(searchPanel, 0, 0);
-            searchPanel.setWidthPercentage(1.0);
-            searchPanel.setFitHeightToContent(true);
-            searchPanel.addRowDefinition(GridDefinition.RATIO, 1.0);
-            searchPanel.addColumnDefinition(GridDefinition.AUTO, 1.0);
-            searchPanel.addColumnDefinition(GridDefinition.RATIO, 1.0);
-
-            TexturedControl searchBackground = new TexturedControl(Textures.Tasks.TASK_ICON_BACKGROUND_RAISED.dWidth(-1));
-            searchPanel.addChild(searchBackground, 0, 0);
-
-            TexturedControl searchIcon = new TexturedControl(Textures.Common.SEARCH_ICON);
-            searchIcon.setParent(searchBackground);
-            searchIcon.setVerticalAlignment(0.5);
-            searchIcon.setMarginLeft(3.0);
-
-            searchField = new TextFieldControl();
-            searchPanel.addChild(searchField, 0, 1);
-            searchField.setWidthPercentage(1.0);
-            searchField.setBackgroundColour(0xff191919);
-            searchField.setBorderColour(0xff373737);
-            searchField.setBorderFocusedColour(searchField.getBorderColour());
-
-            Control itemsContainerContainer = new Control();
-            addChild(itemsContainerContainer, 1, 0);
-            itemsContainerContainer.setWidthPercentage(1.0);
-            itemsContainerContainer.setFitHeightToContent(true);
-            itemsContainerContainer.setBackgroundColour(searchField.getBorderColour());
-
-            itemsContainer = new FlowPanel();
-            itemsContainer.setParent(itemsContainerContainer);
-            itemsContainer.setWidthPercentage(1.0);
-            itemsContainer.setFitHeightToContent(true);
-            itemsContainer.setBackgroundColour(searchField.getBackgroundColour());
-            itemsContainer.setMargins(1.0, 0.0, 1.0 ,1.0);
-
-            searchField.eventBus.subscribe((BaseControl c, TextChangedEvent e) ->
-            {
-                updateItems(e.newText);
-            });
-        }
-
-        @Override
-        public void onFocused()
-        {
-            searchField.setFocused(true);
-        }
-
-        @Override
-        public void setVisibility(@Nonnull Visibility visibility)
-        {
-            super.setVisibility(visibility);
-
-            searchField.setText("");
-        }
-
-        /**
-         * Updates the list of items.
-         */
-        private void updateItems(@Nonnull String searchText)
-        {
-            itemsContainer.clearChildren();
-
-            int i = 0;
-
-            for (Item item : Registry.ITEM)
-            {
-                if (new ItemStack(item).isEmpty() || !new ItemStack(item).getHoverName().getString().toLowerCase().contains(searchText.toLowerCase()) || itemsPanel.getChildren().stream().anyMatch(b -> b.getChildren().stream().anyMatch(c -> c instanceof ItemControl && ((ItemControl) c).getItem() == item)))
-                {
-                    continue;
-                }
-
-                ItemControl itemControl = new ItemControl()
-                {
-                    @Override
-                    public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
-                    {
-                        renderTooltip(matrixStack, mouseX, mouseY, getItemStack().getHoverName());
-                    }
-
-                    @Override
-                    public void onHoverEnter()
-                    {
-                        setForegroundColour(0x44ffffff);
-                    }
-
-                    @Override
-                    public void onHoverExit()
-                    {
-                        setForegroundColour(0x00000000);
-                    }
-
-                    @Override
-                    protected void onMouseReleased(@Nonnull MouseReleasedEvent e)
-                    {
-                        if (isPressed())
-                        {
-                            addItem(item);
-                            closeItemSearch();
-
-                            ItemsSelectionControl.this.eventBus.post(ItemsSelectionControl.this, new ItemAddedEvent(item));
-
-                            e.setIsHandled(true);
-                        }
-                    }
-                };
-                itemControl.setParent(itemsContainer);
-                itemControl.setWidth(16.0);
-                itemControl.setHeight(16.0);
-                itemControl.setItemScale(1.0f);
-                itemControl.setItem(item);
-
-                i++;
-
-                if (i > 100)
-                {
-                    break;
-                }
-            }
-        }
     }
 }

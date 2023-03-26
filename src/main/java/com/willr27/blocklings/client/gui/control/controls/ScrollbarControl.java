@@ -84,7 +84,14 @@ public class ScrollbarControl extends Control
             {
                 if (isInteractive())
                 {
-                    super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                    if (isPressed() && getPressedBackgroundTexture() != null)
+                    {
+                        renderTextureAsBackground(matrixStack, getPressedBackgroundTexture());
+                    }
+                    else
+                    {
+                        renderTextureAsBackground(matrixStack, getBackgroundTexture());
+                    }
                 }
                 else
                 {

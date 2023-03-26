@@ -38,10 +38,328 @@ public class GridPanel extends Control
         double availableWidth = (getDesiredWidth() - getPaddingWidth()) / getInnerScale().x;
         double availableHeight = (getDesiredHeight() - getPaddingHeight()) / getInnerScale().y;
 
-        rowHeights = new double[rowDefinitions.size()];
-        columnWidths = new double[columnDefinitions.size()];
+        rowHeights = createRowHeights();
+        columnWidths = createColumnWidths();
 
-        // Get the fixed row heights.
+        populateFixedRowHeights(rowHeights);
+        populateFixedColumnWidths(columnWidths);
+
+        // Measure all the fixed rows and subtract their height from the available height.
+        availableHeight = measureFixedRows(availableHeight);
+
+        // Measure all the fixed columns and subtract their width from the available width.
+        availableWidth = measureFixedColumns(availableWidth);
+
+        // Measure all the auto rows with fixed sized children and subtract their height from the available height.
+        availableHeight = measureAutoRowsWithFixedSizedChildren(availableHeight);
+
+        // Measure all the auto columns with fixed sized children and subtract their width from the available width.
+        availableWidth = measureAutoColumnsWithFixedSizedChildren(availableWidth);
+
+        // Measure all the auto rows with percentage sized children.
+        measureAutoRowsWithPercentageSizedChildren(availableHeight);
+
+        // Measure all the auto columns with percentage sized children.
+        measureAutoColumnsWithPercentageSizedChildren(availableWidth);
+
+        // Measure all the ratio rows and columns.
+        measureRatioCells(availableWidth, availableHeight);
+    }
+
+    private void measureRatioCells(double availableWidth, double availableHeight)
+    {
+        double totalRowRatio = rowDefinitions.stream().filter(d -> d.definition == GridDefinition.RATIO).mapToDouble(d -> d.value).sum();
+        double totalColumnRatio = columnDefinitions.stream().filter(d -> d.definition == GridDefinition.RATIO).mapToDouble(d -> d.value).sum();
+
+        for (int row = 0; row < rowHeights.length; row++)
+        {
+            GridDefinition rowDefinition = getRowDefinition(row);
+
+            if (rowDefinition != GridDefinition.RATIO)
+            {
+                continue;
+            }
+
+            double rowHeight = availableHeight * (rowDefinitions.get(row).value / totalRowRatio);
+
+            for (BaseControl controlInRow : getRowControls(row))
+            {
+                if (controlInRow.getVisibility() == Visibility.COLLAPSED)
+                {
+                    continue;
+                }
+
+                controlInRow.doMeasure(-1.0, rowHeight - controlInRow.getMarginHeight());
+            }
+
+            rowHeights[row] = rowHeight;
+        }
+
+        for (int col = 0; col < columnWidths.length; col++)
+        {
+            GridDefinition columnDefinition = getColumnDefinition(col);
+
+            if (columnDefinition != GridDefinition.RATIO)
+            {
+                continue;
+            }
+
+            double columnWidth = availableWidth * (columnDefinitions.get(col).value / totalColumnRatio);
+
+            for (BaseControl controlInColumn : getColumnControls(col))
+            {
+                if (controlInColumn.getVisibility() == Visibility.COLLAPSED)
+                {
+                    continue;
+                }
+
+                controlInColumn.doMeasure(columnWidth - controlInColumn.getMarginWidth(), -1.0);
+            }
+
+            columnWidths[col] = columnWidth;
+        }
+    }
+
+    private void measureAutoColumnsWithPercentageSizedChildren(double availableWidth)
+    {
+        for (int col = 0; col < columnWidths.length; col++)
+        {
+            GridDefinition columnDefinition = getColumnDefinition(col);
+
+            if (columnDefinition != GridDefinition.AUTO)
+            {
+                continue;
+            }
+
+            for (BaseControl controlInColumn : getColumnControls(col))
+            {
+                if (controlInColumn.getVisibility() == Visibility.COLLAPSED)
+                {
+                    continue;
+                }
+
+                if (controlInColumn.getWidthPercentage() == null)
+                {
+                    continue;
+                }
+
+                double columnWidth = columnWidths[col];
+                columnWidth = columnWidth == -1.0 ? availableWidth : columnWidth;
+
+                controlInColumn.doMeasure(columnWidth - controlInColumn.getMarginWidth(), -1.0);
+            }
+        }
+    }
+
+    private void measureAutoRowsWithPercentageSizedChildren(double availableHeight)
+    {
+        for (int row = 0; row < rowHeights.length; row++)
+        {
+            GridDefinition rowDefinition = getRowDefinition(row);
+
+            if (rowDefinition != GridDefinition.AUTO)
+            {
+                continue;
+            }
+
+            for (BaseControl controlInRow : getRowControls(row))
+            {
+                if (controlInRow.getVisibility() == Visibility.COLLAPSED)
+                {
+                    continue;
+                }
+
+                if (controlInRow.getHeightPercentage() == null)
+                {
+                    continue;
+                }
+
+                double rowHeight = rowHeights[row];
+                rowHeight = rowHeight == -1.0 ? availableHeight : rowHeight;
+
+                controlInRow.doMeasure(-1.0, rowHeight - controlInRow.getMarginHeight());
+            }
+        }
+    }
+
+    private double measureAutoColumnsWithFixedSizedChildren(double availableWidth)
+    {
+        for (int col = 0; col < columnWidths.length; col++)
+        {
+            GridDefinition columnDefinition = getColumnDefinition(col);
+
+            if (columnDefinition != GridDefinition.AUTO)
+            {
+                continue;
+            }
+
+            double maxColumnWidth = -1.0;
+
+            for (BaseControl controlInColumn : getColumnControls(col))
+            {
+                if (controlInColumn.getVisibility() == Visibility.COLLAPSED)
+                {
+                    continue;
+                }
+
+                if (controlInColumn.getWidthPercentage() != null)
+                {
+                    continue;
+                }
+
+                controlInColumn.doMeasure(availableWidth - controlInColumn.getMarginWidth(), -1.0);
+
+                double desiredWidth = controlInColumn.getDesiredWidth() + controlInColumn.getMarginWidth();
+
+                if (desiredWidth > maxColumnWidth)
+                {
+                    maxColumnWidth = desiredWidth;
+                }
+            }
+
+            availableWidth -= maxColumnWidth == -1.0 ? 0.0 : maxColumnWidth;
+            availableWidth = Math.max(0.0, availableWidth);
+
+            if (maxColumnWidth > columnWidths[col])
+            {
+                columnWidths[col] = maxColumnWidth;
+            }
+        }
+
+        return availableWidth;
+    }
+
+    private double measureAutoRowsWithFixedSizedChildren(double availableHeight)
+    {
+        for (int row = 0; row < rowHeights.length; row++)
+        {
+            GridDefinition rowDefinition = getRowDefinition(row);
+
+            if (rowDefinition != GridDefinition.AUTO)
+            {
+                continue;
+            }
+
+            double maxRowHeight = -1.0;
+
+            for (BaseControl controlInRow : getRowControls(row))
+            {
+                if (controlInRow.getVisibility() == Visibility.COLLAPSED)
+                {
+                    continue;
+                }
+
+                if (controlInRow.getHeightPercentage() != null)
+                {
+                    continue;
+                }
+
+                controlInRow.doMeasure(-1.0, availableHeight - controlInRow.getMarginHeight());
+
+                double desiredHeight = controlInRow.getDesiredHeight() + controlInRow.getMarginHeight();
+
+                if (desiredHeight > maxRowHeight)
+                {
+                    maxRowHeight = desiredHeight;
+                }
+            }
+
+            availableHeight -= maxRowHeight == -1.0 ? 0.0 : maxRowHeight;
+            availableHeight = Math.max(0.0, availableHeight);
+
+            if (maxRowHeight > rowHeights[row])
+            {
+                rowHeights[row] = maxRowHeight;
+            }
+        }
+
+        return availableHeight;
+    }
+
+    private double measureFixedColumns(double availableWidth)
+    {
+        for (int col = 0; col < columnWidths.length; col++)
+        {
+            GridDefinition columnDefinition = getColumnDefinition(col);
+
+            if (columnDefinition != GridDefinition.FIXED)
+            {
+                continue;
+            }
+
+            double columnWidth = columnWidths[col];
+
+            for (BaseControl controlInColumn : getColumnControls(col))
+            {
+                if (controlInColumn.getVisibility() == Visibility.COLLAPSED)
+                {
+                    continue;
+                }
+
+                controlInColumn.doMeasure(columnWidth - controlInColumn.getMarginWidth(), -1.0);
+            }
+
+            availableWidth -= columnWidth;
+        }
+
+        return availableWidth;
+    }
+
+    private double measureFixedRows(double availableHeight)
+    {
+        for (int row = 0; row < rowHeights.length; row++)
+        {
+            GridDefinition rowDefinition = getRowDefinition(row);
+
+            if (rowDefinition != GridDefinition.FIXED)
+            {
+                continue;
+            }
+
+            double rowHeight = rowHeights[row];
+
+            for (BaseControl controlInRow : getRowControls(row))
+            {
+                if (controlInRow.getVisibility() == Visibility.COLLAPSED)
+                {
+                    continue;
+                }
+
+                controlInRow.doMeasure(-1.0, rowHeight - controlInRow.getMarginHeight());
+            }
+
+            availableHeight -= rowHeight;
+        }
+
+        return availableHeight;
+    }
+
+    private double[] createRowHeights()
+    {
+        double[] rowHeights = new double[rowDefinitions.size()];
+
+        for (int i = 0; i < rowHeights.length; i++)
+        {
+            rowHeights[i] = -1.0;
+        }
+
+        return rowHeights;
+    }
+
+    private double[] createColumnWidths()
+    {
+        double[] columnWidths = new double[columnDefinitions.size()];
+
+        for (int i = 0; i < columnWidths.length; i++)
+        {
+            columnWidths[i] = -1.0;
+        }
+
+        return columnWidths;
+    }
+
+    private void populateFixedRowHeights(double[] rowHeights)
+    {
         int i = 0;
         for (Definition definition : rowDefinitions)
         {
@@ -52,9 +370,11 @@ public class GridPanel extends Control
 
             i++;
         }
+    }
 
-        // Get the fixed column widths.
-        i = 0;
+    private void populateFixedColumnWidths(double[] columnWidths)
+    {
+        int i = 0;
         for (Definition definition : columnDefinitions)
         {
             if (definition.definition == GridDefinition.FIXED)
@@ -63,151 +383,6 @@ public class GridPanel extends Control
             }
 
             i++;
-        }
-
-        // Measure all children inside fixed/auto cells.
-        for (int row = 0; row < rowHeights.length; row++)
-        {
-            for (int col = 0; col < columnWidths.length; col++)
-            {
-                GridDefinition rowDefinition = getRowDefinition(row);
-                GridDefinition columnDefinition = getColumnDefinition(col);
-
-                if (columnDefinition != GridDefinition.RATIO)
-                {
-                    double remainingWidth = availableWidth - Arrays.stream(columnWidths).sum();
-                    remainingWidth += columnWidths[col];
-
-                    for (BaseControl control : getCellControls(row, col))
-                    {
-                        if (control.getVisibility() == Visibility.COLLAPSED)
-                        {
-                            continue;
-                        }
-
-                        // Get cell dimensions if available.
-                        double availableCellWidth = columnWidths[col];
-
-                        // Get remaining space for an auto sized column.
-                        if (columnDefinition == GridDefinition.AUTO)
-                        {
-                            availableCellWidth = Math.max(0.0, remainingWidth);
-                        }
-
-                        control.doMeasure(availableCellWidth, -1.0);
-
-                        double desiredWidth = control.getDesiredWidth() + control.getMarginWidth();
-
-                        // Update the current column width.
-                        if (desiredWidth > columnWidths[col])
-                        {
-                            columnWidths[col] = desiredWidth;
-                        }
-                    }
-                }
-
-                if (rowDefinition != GridDefinition.RATIO)
-                {
-                    double remainingHeight = availableHeight - Arrays.stream(rowHeights).sum();
-                    remainingHeight += rowHeights[row];
-
-                    for (BaseControl control : getCellControls(row, col))
-                    {
-                        if (control.getVisibility() == Visibility.COLLAPSED)
-                        {
-                            continue;
-                        }
-
-                        // Get cell dimensions if available.
-                        double availableCellHeight = rowHeights[row];
-
-                        // Get remaining space for an auto sized row.
-                        if (rowDefinition == GridDefinition.AUTO)
-                        {
-                            availableCellHeight = Math.max(0.0, remainingHeight);
-                        }
-
-                        control.doMeasure(-1.0, availableCellHeight);
-
-                        double desiredHeight = control.getDesiredHeight() + control.getMarginHeight();
-
-                        // Update the current row height.
-                        if (desiredHeight > rowHeights[row])
-                        {
-                            rowHeights[row] = desiredHeight;
-                        }
-                    }
-                }
-            }
-        }
-
-        double totalRowRatio = rowDefinitions.stream().filter(d -> d.definition == GridDefinition.RATIO).mapToDouble(d -> d.value).sum();
-        double totalColumnRatio = columnDefinitions.stream().filter(d -> d.definition == GridDefinition.RATIO).mapToDouble(d -> d.value).sum();
-        double sumOfNonRatioRowHeights = 0.0;
-        double sumOfNonRatioColumnWidths = 0.0;
-
-        i = 0;
-        for (Definition definition : rowDefinitions)
-        {
-            if (definition.definition != GridDefinition.RATIO)
-            {
-                sumOfNonRatioRowHeights += rowHeights[i];
-            }
-
-            i++;
-        }
-
-        i = 0;
-        for (Definition definition : columnDefinitions)
-        {
-            if (definition.definition != GridDefinition.RATIO)
-            {
-                sumOfNonRatioColumnWidths += columnWidths[i];
-            }
-
-            i++;
-        }
-
-        double remainingWidth = availableWidth - sumOfNonRatioColumnWidths;
-        double remainingHeight = availableHeight - sumOfNonRatioRowHeights;
-
-        for (int row = 0; row < rowHeights.length; row++)
-        {
-            for (int col = 0; col < columnWidths.length; col++)
-            {
-                GridDefinition rowDefinition = getRowDefinition(row);
-                GridDefinition columnDefinition = getColumnDefinition(col);
-
-                if (rowDefinition != GridDefinition.RATIO && columnDefinition != GridDefinition.RATIO)
-                {
-                    continue;
-                }
-
-                // Get the height for a ratio sized row.
-                if (rowDefinition == GridDefinition.RATIO)
-                {
-                    rowHeights[row] = Math.max(0.0, remainingHeight * (rowDefinitions.get(row).value / totalRowRatio));
-                }
-
-                // Get the width for a ratio sized column.
-                if (columnDefinition == GridDefinition.RATIO)
-                {
-                    columnWidths[col] = Math.max(0.0, remainingWidth * (columnDefinitions.get(col).value / totalColumnRatio));
-                }
-
-                for (BaseControl control : getCellControls(row, col))
-                {
-                    if (control.getVisibility() == Visibility.COLLAPSED)
-                    {
-                        continue;
-                    }
-
-                    double availableCellWidth = columnWidths[col];
-                    double availableCellHeight = rowHeights[row];
-
-                    control.doMeasure(availableCellWidth - control.getMarginWidth(), availableCellHeight - control.getMarginHeight());
-                }
-            }
         }
     }
 
@@ -249,6 +424,40 @@ public class GridPanel extends Control
         {
             GridCell cell = cells.get(control);
             if (cell.row == row && cell.column == column)
+            {
+                controls.add(control);
+            }
+        }
+
+        return controls;
+    }
+
+    @Nonnull
+    private List<BaseControl> getRowControls(int row)
+    {
+        List<BaseControl> controls = new ArrayList<>();
+
+        for (BaseControl control : cells.keySet())
+        {
+            GridCell cell = cells.get(control);
+            if (cell.row == row)
+            {
+                controls.add(control);
+            }
+        }
+
+        return controls;
+    }
+
+    @Nonnull
+    private List<BaseControl> getColumnControls(int column)
+    {
+        List<BaseControl> controls = new ArrayList<>();
+
+        for (BaseControl control : cells.keySet())
+        {
+            GridCell cell = cells.get(control);
+            if (cell.column == column)
             {
                 controls.add(control);
             }
