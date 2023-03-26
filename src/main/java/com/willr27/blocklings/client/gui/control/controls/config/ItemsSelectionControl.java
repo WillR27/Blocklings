@@ -82,7 +82,7 @@ public class ItemsSelectionControl extends Control
             @Override
             public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
             {
-                renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent("config.add_item"));
+                renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent("config.item.add"));
             }
 
             @Override

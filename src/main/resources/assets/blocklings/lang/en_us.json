@@ -106,9 +106,10 @@
   "blocklings.task.deposit_items.name": "Deposit Items",
   "blocklings.task.deposit_items.desc": "Your blockling will put items from their inventory into nearby containers.",
 
-  "blocklings.config.add_item": "Add Item",
+  "blocklings.config.search.too_many_results": "Too many results...",
   "blocklings.config.items": "Items",
-  "blocklings.config.blank_container": "Blank",
+  "blocklings.config.item.add": "Add Item",
+  "blocklings.config.container.blank": "Blank",
   "blocklings.config.containers": "Containers",
   "blocklings.config.container.add": "Add Container",
   "blocklings.config.container.add.help": "Click the plus, then right click on the container you want to add. Left click a block to cancel. Alternatively, hold %s to add manually.",

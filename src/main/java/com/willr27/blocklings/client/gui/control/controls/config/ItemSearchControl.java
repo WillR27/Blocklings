@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.ItemControl;
+import com.willr27.blocklings.client.gui.control.controls.TextBlockControl;
 import com.willr27.blocklings.client.gui.control.controls.TextFieldControl;
 import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.FlowPanel;
@@ -14,17 +15,20 @@ import com.willr27.blocklings.client.gui.control.event.events.input.MouseRelease
 import com.willr27.blocklings.client.gui.properties.GridDefinition;
 import com.willr27.blocklings.client.gui.properties.Visibility;
 import com.willr27.blocklings.client.gui.texture.Textures;
+import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.registry.Registry;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * A control used to search for and select an item.
@@ -45,6 +49,12 @@ class ItemSearchControl extends GridPanel
     private final TextFieldControl searchField;
 
     /**
+     * The too many results message.
+     */
+    @Nonnull
+    private final TextBlockControl tooManyResultsMessage;
+
+    /**
      * The list of items available to search from. If null, defaults to all items.
      */
     @Nullable
@@ -55,6 +65,12 @@ class ItemSearchControl extends GridPanel
      */
     @Nonnull
     private Predicate<Item> filter = item -> true;
+
+    /**
+     * The maximum number of items to display. Any items that are an exact match for the search criteria
+     * will also be displayed regardless of the number of items displayed.
+     */
+    private int maxItems = 256;
 
     /**
      */
@@ -105,6 +121,13 @@ class ItemSearchControl extends GridPanel
         itemsContainer.setBackgroundColour(searchField.getBackgroundColour());
         itemsContainer.setMargins(1.0, 0.0, 1.0 ,1.0);
 
+        tooManyResultsMessage = new TextBlockControl();
+        tooManyResultsMessage.setWidthPercentage(1.0);
+        tooManyResultsMessage.setText(new BlocklingsTranslationTextComponent("config.search.too_many_results"));
+        tooManyResultsMessage.setShouldRenderShadow(false);
+        tooManyResultsMessage.setPadding(2.0, 1.0 ,2.0 ,1.0);
+        tooManyResultsMessage.setVerticalContentAlignment(0.5);
+
         searchField.eventBus.subscribe((BaseControl c, TextChangedEvent e) ->
         {
             updateItems(e.newText);
@@ -131,18 +154,51 @@ class ItemSearchControl extends GridPanel
     private void updateItems(@Nonnull String searchText)
     {
         itemsContainer.clearChildren();
+        tooManyResultsMessage.setParent(null);
 
-        int i = 0;
+        int itemCount = 0;
+        int missingItems = 0;
 
         Iterable<Item> items = searchableItems == null ? Registry.ITEM : searchableItems;
+        List<Item> itemsToAdd = new ArrayList<>();
 
         for (Item item : items)
         {
-            if (new ItemStack(item).isEmpty() || !new ItemStack(item).getHoverName().getString().toLowerCase().contains(searchText.toLowerCase()) || !filter.test(item))
+            ItemStack stack = new ItemStack(item);
+
+            // Don't display empty items.
+            if (stack.isEmpty())
             {
                 continue;
             }
 
+            // Don't display items that don't match the search criteria.
+            if (!stack.getHoverName().getString().toLowerCase().contains(searchText.toLowerCase()))
+            {
+                continue;
+            }
+
+            // Don't display more items than the max unless they exactly match the search criteria.
+            if (itemCount >= maxItems && !stack.getHoverName().getString().toLowerCase().equals(searchText.toLowerCase()))
+            {
+                missingItems++;
+
+                continue;
+            }
+
+            // Don't display items that don't match the filter.
+            if (!filter.test(item))
+            {
+                continue;
+            }
+
+            itemsToAdd.add(item);
+
+            itemCount++;
+        }
+
+        for (Item item : itemsToAdd.stream().sorted((item1, item2) -> new ItemStack(item1).getHoverName().getString().compareToIgnoreCase(new ItemStack(item2).getHoverName().getString())).collect(Collectors.toList()))
+        {
             ItemControl itemControl = new ItemControl()
             {
                 @Override
@@ -179,13 +235,11 @@ class ItemSearchControl extends GridPanel
             itemControl.setHeight(16.0);
             itemControl.setItemScale(1.0f);
             itemControl.setItem(item);
+        }
 
-            i++;
-
-            if (i > 100)
-            {
-                break;
-            }
+        if (missingItems > 0)
+        {
+            itemsContainer.insertChildLast(tooManyResultsMessage);
         }
     }
 
@@ -225,5 +279,23 @@ class ItemSearchControl extends GridPanel
     public void setFilter(@Nonnull Predicate<Item> filter)
     {
         this.filter = filter;
+    }
+
+    /**
+     * @return the maximum number of items to display.
+     */
+    public int getMaxItems()
+    {
+        return maxItems;
+    }
+
+    /**
+     * Sets the maximum number of items to display.
+     *
+     * @param maxItems the maximum number of items to display.
+     */
+    public void setMaxItems(int maxItems)
+    {
+        this.maxItems = maxItems;
     }
 }

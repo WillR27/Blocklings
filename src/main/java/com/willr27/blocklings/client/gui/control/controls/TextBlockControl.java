@@ -116,8 +116,8 @@ public class TextBlockControl extends Control
         double horizontalAlignment = getHorizontalContentAlignment() != null ? getHorizontalContentAlignment() : 0.0;
         double verticalAlignment = getVerticalContentAlignment() != null ? getVerticalContentAlignment() : 0.0;
 
-        textScreenX = (float) (getPixelX() / getGuiScale() + (screenWidth - GuiUtil.get().getTextWidth(getTextToRender())) * horizontalAlignment);
-        textScreenY = (float) (getPixelY() / getGuiScale() + (screenHeight - getLineHeight()) * verticalAlignment);
+        textScreenX = (float) (getPixelX() / getGuiScale() + (screenWidth - GuiUtil.get().getTextWidth(getTextToRender())) * horizontalAlignment + getPadding().left);
+        textScreenY = (float) (getPixelY() / getGuiScale() + (screenHeight - getLineHeight()) * verticalAlignment + getPadding().top);
 
         float x = (float) (Math.round(textScreenX * getGuiScale()) / getGuiScale());
         float y = (float) (Math.round(textScreenY * getGuiScale()) / getGuiScale());
@@ -274,7 +274,7 @@ public class TextBlockControl extends Control
      */
     public int getLineHeight()
     {
-        return lineHeight;
+        return lineHeight - (shouldRenderShadow() ? 0 : 1);
     }
 
     /**

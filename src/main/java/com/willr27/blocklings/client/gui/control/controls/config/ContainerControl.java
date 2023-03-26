@@ -252,7 +252,7 @@ public class ContainerControl extends GridPanel
 
         name = new TextBlockControl();
         nameGrid.addChild(name, 0, 0);
-        name.setText(new BlocklingsTranslationTextComponent("config.blank_container"));
+        name.setText(new BlocklingsTranslationTextComponent("config.container.blank"));
         name.setWidthPercentage(1.0);
         name.setMarginLeft(4.0);
 
