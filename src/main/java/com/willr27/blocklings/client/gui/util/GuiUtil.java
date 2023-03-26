@@ -2,7 +2,6 @@ package com.willr27.blocklings.client.gui.util;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.texture.Texture;
-import net.minecraft.block.Block;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
@@ -18,7 +17,6 @@ import org.lwjgl.opengl.GL11;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Contains useful methods related to guis.
@@ -91,7 +89,7 @@ public abstract class GuiUtil
     /**
      * @return whether the shift key is currently pressed.
      */
-    public abstract boolean isShiftKeyDown();
+    public abstract boolean isCrouchKeyDown();
 
     /**
      * @param key the key to check.

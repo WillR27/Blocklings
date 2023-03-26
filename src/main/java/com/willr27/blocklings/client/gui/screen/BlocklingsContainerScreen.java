@@ -66,7 +66,7 @@ public class BlocklingsContainerScreen<T extends Container> extends ContainerScr
     {
         super.onClose();
 
-        screenControl.forwardClose();
+        screenControl.forwardClose(screenControl.shouldReallyClose());
     }
 
     @Override

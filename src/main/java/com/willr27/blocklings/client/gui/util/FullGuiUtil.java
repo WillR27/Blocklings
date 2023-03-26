@@ -85,7 +85,7 @@ public class FullGuiUtil extends GuiUtil
     }
 
     @Override
-    public boolean isShiftKeyDown()
+    public boolean isCrouchKeyDown()
     {
         return isKeyDown(mc.options.keyShift);
     }

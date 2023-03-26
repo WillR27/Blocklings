@@ -66,7 +66,7 @@ public class TestGuiUtil extends GuiUtil
     }
 
     @Override
-    public boolean isShiftKeyDown()
+    public boolean isCrouchKeyDown()
     {
         return false;
     }

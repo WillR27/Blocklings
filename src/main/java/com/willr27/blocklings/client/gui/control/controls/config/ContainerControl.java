@@ -2,6 +2,8 @@ package com.willr27.blocklings.client.gui.control.controls.config;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.willr27.blocklings.Blocklings;
+import com.willr27.blocklings.capabilities.ContainerConfigureCapability;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.BlockControl;
@@ -20,23 +22,46 @@ import com.willr27.blocklings.entity.blockling.goal.goals.container.ContainerInf
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.stream.Collectors;
 
 /**
  * A control used to configure a container.
  */
 @OnlyIn(Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = Blocklings.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ContainerControl extends GridPanel
 {
+    /**
+     * The container control being configured in the world.
+     */
+    @Nullable
+    public static ContainerControl currentlyConfiguredContainerControl = null;
+
+    /**
+     * The screen to go back to once the container is configured from the world.
+     */
+    @Nullable
+    public static Screen screenToGoBackTo = null;
+
     /**
      * The grid used to display the dropdown.
      */
@@ -84,6 +109,24 @@ public class ContainerControl extends GridPanel
      */
     @Nonnull
     public final ContainerInfo containerInfo;
+
+    /**
+     * The x location.
+     */
+    @Nonnull
+    private final IntFieldControl xLocation;
+
+    /**
+     * The y location.
+     */
+    @Nonnull
+    private final IntFieldControl yLocation;
+
+    /**
+     * The z location.
+     */
+    @Nonnull
+    private final IntFieldControl zLocation;
 
     /**
      */
@@ -282,7 +325,7 @@ public class ContainerControl extends GridPanel
         xLabel.setMarginRight(4.0);
         xLabel.setVerticalAlignment(0.5);
 
-        IntFieldControl xLocation = new IntFieldControl();
+        xLocation = new IntFieldControl();
         xGrid.addChild(xLocation, 0, 1);
         xLocation.setWidthPercentage(1.0);
         xLocation.setText(new StringTextComponent("1000"));
@@ -313,7 +356,7 @@ public class ContainerControl extends GridPanel
         yLabel.setMarginRight(4.0);
         yLabel.setVerticalAlignment(0.5);
 
-        IntFieldControl yLocation = new IntFieldControl();
+        yLocation = new IntFieldControl();
         yGrid.addChild(yLocation, 0, 1);
         yLocation.setWidthPercentage(1.0);
         yLocation.setText(new StringTextComponent("1000"));
@@ -344,7 +387,7 @@ public class ContainerControl extends GridPanel
         zLabel.setMarginRight(4.0);
         zLabel.setVerticalAlignment(0.5);
 
-        IntFieldControl zLocation = new IntFieldControl();
+        zLocation = new IntFieldControl();
         zGrid.addChild(zLocation, 0, 1);
         zLocation.setWidthPercentage(1.0);
         zLocation.setText(new StringTextComponent("1000"));
@@ -397,11 +440,11 @@ public class ContainerControl extends GridPanel
     }
 
     @Override
-    public void onClose()
+    public void onClose(boolean isRealClose)
     {
-        super.onClose();
+        super.onClose(isRealClose);
 
-        if (!containerInfo.isConfigured())
+        if (isRealClose && containerInfo.getBlock() == Blocks.AIR)
         {
             setParent(null);
         }
@@ -428,6 +471,20 @@ public class ContainerControl extends GridPanel
                 setParent(null);
             }
         });
+    }
+
+    /**
+     * Called when the container is selected from the world.
+     *
+     * @param block the block.
+     * @param blockPos the block position.
+     */
+    public void onContainerSelectFromWorld(@Nonnull Block block, BlockPos blockPos)
+    {
+        xLocation.setValue(blockPos.getX());
+        yLocation.setValue(blockPos.getY());
+        zLocation.setValue(blockPos.getZ());
+        setBlock(block);
     }
 
     /**
@@ -477,5 +534,65 @@ public class ContainerControl extends GridPanel
         ContainerInfo oldContainerInfo = new ContainerInfo(containerInfo);
         containerInfo.setBlock(block);
         eventBus.post(this, new ValueChangedEvent<>(oldContainerInfo, containerInfo));
+    }
+
+    private static boolean handleContainerSelect(@Nonnull PlayerEntity player, @Nonnull Hand hand, @Nullable BlockPos blockPos)
+    {
+        if (!player.level.isClientSide())
+        {
+            ContainerConfigureCapability cap = player.getCapability(ContainerConfigureCapability.CAPABILITY).orElse(null);
+
+            if (cap != null)
+            {
+                boolean wereConfiguring = cap.isConfiguring;
+
+                // This will be called for both hands, so only set to false once the offhand is done.
+                cap.isConfiguring = hand != Hand.OFF_HAND;
+
+                if (wereConfiguring)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        else if (currentlyConfiguredContainerControl != null)
+        {
+            if (blockPos != null)
+            {
+                currentlyConfiguredContainerControl.onContainerSelectFromWorld(player.level.getBlockState(blockPos).getBlock(), blockPos);
+            }
+            else
+            {
+                currentlyConfiguredContainerControl.setParent(null);
+            }
+
+            Minecraft.getInstance().setScreen(screenToGoBackTo);
+            currentlyConfiguredContainerControl = null;
+            screenToGoBackTo = null;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Handles a player selecting a container when configuring from the UI.
+     */
+    @SubscribeEvent
+    public static void onPlayerContainerSelect(@Nonnull PlayerInteractEvent.RightClickBlock event)
+    {
+        event.setCanceled(handleContainerSelect(event.getPlayer(), event.getHand(), event.getPos()));
+    }
+
+    /**
+     * Handles a player cancelling container selection when configuring from the UI.
+     */
+    @SubscribeEvent
+    public static void onPlayerContainerSelectCancel(@Nonnull PlayerInteractEvent.LeftClickBlock event)
+    {
+        event.setCanceled(handleContainerSelect(event.getPlayer(), event.getHand(), null));
     }
 }

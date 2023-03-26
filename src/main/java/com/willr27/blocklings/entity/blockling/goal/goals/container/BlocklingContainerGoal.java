@@ -1,11 +1,28 @@
 package com.willr27.blocklings.entity.blockling.goal.goals.container;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.willr27.blocklings.capabilities.ContainerConfigureCapability;
+import com.willr27.blocklings.client.gui.control.BaseControl;
+import com.willr27.blocklings.client.gui.control.Control;
+import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
+import com.willr27.blocklings.client.gui.control.controls.config.ContainerControl;
+import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
+import com.willr27.blocklings.client.gui.control.controls.panels.TabbedPanel;
+import com.willr27.blocklings.client.gui.control.event.events.ParentChangedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.ReorderEvent;
+import com.willr27.blocklings.client.gui.control.event.events.ValueChangedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
+import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
+import com.willr27.blocklings.client.gui.texture.Textures;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.network.messages.GoalMessage;
+import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.CompoundNBT;
@@ -19,7 +36,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 /**
  * A base class for handling goals that involve moving to and interacting with containers.
@@ -168,6 +185,12 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
     {
         containerInfos.add(containerInfo);
 
+            PlayerEntity player = (PlayerEntity) blockling.getOwner();
+            player.getCapability(ContainerConfigureCapability.CAPABILITY).ifPresent(cap ->
+            {
+                cap.isConfiguring = true;
+            });
+
         if (sync)
         {
             new ContainerGoalContainerAddRemoveMessage(blockling, id, containerInfos.size() - 1, true).sync();
@@ -257,6 +280,107 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
         {
             new ContainerGoalContainerMoveMessage(blockling, id, fromIndex, toIndex).sync();
         }
+    }
+
+    @Nonnull
+    @Override
+    public void addConfigTabControls(@Nonnull TabbedPanel tabbedPanel)
+    {
+        super.addConfigTabControls(tabbedPanel);
+
+        BaseControl containersContainer = tabbedPanel.addTab(new BlocklingsTranslationTextComponent("config.containers"));
+        containersContainer.setCanScrollVertically(true);
+
+        StackPanel stackPanel = new StackPanel();
+        stackPanel.setParent(containersContainer);
+        stackPanel.setWidthPercentage(1.0);
+        stackPanel.setFitHeightToContent(true);
+        stackPanel.setMargins(5.0, 9.0, 5.0, 5.0);
+        stackPanel.setSpacing(4.0);
+        stackPanel.setClipContentsToBounds(false);
+        stackPanel.eventBus.subscribe((BaseControl c, ReorderEvent e) ->
+        {
+            int movedIndex = stackPanel.getChildren().indexOf(e.draggedControl);
+            int closestIndex = stackPanel.getChildren().indexOf(e.closestControl);
+
+            moveContainerInfo(movedIndex, closestIndex + (e.insertBefore ? 0 : 1));
+        });
+
+        Control addContainerContainer = new Control();
+        addContainerContainer.setParent(stackPanel);
+        addContainerContainer.setWidthPercentage(1.0);
+        addContainerContainer.setFitHeightToContent(true);
+        addContainerContainer.setReorderable(false);
+
+        // A function used to add a container control to the stack panel.
+        Function<ContainerInfo, ContainerControl> addContainerControl = (ContainerInfo containerInfo) ->
+        {
+            ContainerControl containerControl = new ContainerControl(containerInfo);
+            stackPanel.insertChildBefore(containerControl, addContainerContainer);
+            containerControl.setWidthPercentage(1.0);
+            containerControl.setDraggableY(true);
+            containerControl.setScrollFromDragControl(containersContainer);
+            containerControl.eventBus.subscribe((BaseControl c, ValueChangedEvent<ContainerInfo> e2) ->
+            {
+                setContainerInfo(containerInfos.indexOf(e2.newValue), e2.newValue);
+            });
+            containerControl.eventBus.subscribe((BaseControl c, ParentChangedEvent e2) ->
+            {
+                // When the container control is removed, remove the container info too.
+                if (e2.newParent == null)
+                {
+                    removeContainerInfo(containerInfos.indexOf(((ContainerControl) c).containerInfo));
+                }
+            });
+
+            return containerControl;
+        };
+
+        // Add the existing container infos.
+        for (ContainerInfo containerInfo : containerInfos)
+        {
+            addContainerControl.apply(containerInfo);
+        }
+
+        TexturedControl addContainerButton = new TexturedControl(Textures.Common.PLUS_ICON)
+        {
+            @Override
+            public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+            {
+                renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent("config.add_container"));
+            }
+
+            @Override
+            protected void onMouseReleased(@Nonnull MouseReleasedEvent e)
+            {
+                if (isPressed())
+                {
+                    ContainerInfo containerInfo = new ContainerInfo();
+                    addContainerInfo(containerInfo);
+
+                    ContainerControl containerControl = addContainerControl.apply(containerInfo);
+
+                    // If the user is pressing crouch, then show the item search control.
+                    if (GuiUtil.get().isCrouchKeyDown())
+                    {
+                        containerControl.onFirstAdded();
+                    }
+                    else
+                    {
+                        ContainerControl.currentlyConfiguredContainerControl = containerControl;
+                        ContainerControl.screenToGoBackTo = Minecraft.getInstance().screen;
+                        getScreen().setShouldReallyClose(false);
+                        ContainerControl.screenToGoBackTo.onClose();
+                        getScreen().setShouldReallyClose(true);
+                    }
+
+                    e.setIsHandled(true);
+                }
+            }
+        };
+        addContainerButton.setParent(addContainerContainer);
+        addContainerButton.setHorizontalAlignment(0.5);
+        addContainerButton.setMargins(0.0, 1.0, 0.0, 1.0);
     }
 
     /**

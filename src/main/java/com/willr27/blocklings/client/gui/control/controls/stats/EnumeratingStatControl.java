@@ -70,7 +70,7 @@ public class EnumeratingStatControl extends EnumeratingControl<StatControl>
                 subTooltip.set(0, new StringTextComponent(subTooltip.get(0).getString().substring(0, 2) + TextFormatting.ITALIC + subTooltip.get(0).getString().substring(2)));
             }
 
-            if (GuiUtil.get().isShiftKeyDown())
+            if (GuiUtil.get().isCrouchKeyDown())
             {
                 tooltip.addAll(subTooltip);
             }
@@ -80,7 +80,7 @@ public class EnumeratingStatControl extends EnumeratingControl<StatControl>
             }
         }
 
-        if (!GuiUtil.get().isShiftKeyDown())
+        if (!GuiUtil.get().isCrouchKeyDown())
         {
             tooltip.add(new StringTextComponent(TextFormatting.DARK_GRAY + "" + TextFormatting.ITALIC + new BlocklingsTranslationTextComponent("gui.more_info", Minecraft.getInstance().options.keyShift.getTranslatedKeyMessage().getString()).getString()));
         }

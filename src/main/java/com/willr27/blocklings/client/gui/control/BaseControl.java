@@ -201,14 +201,18 @@ public abstract class BaseControl extends GuiControl
     protected abstract void calculateScroll();
 
     /**
-     * Forwards the call to {@link #onClose()} to each child control. This should be called when the screen is closed.
+     * Forwards the call to {@link #onClose(boolean)} to each child control. This should be called when the screen is closed.
+     *
+     * @param isRealClose whether the screen is being properly closed, or only temporarily hidden.
      */
-    public abstract void forwardClose();
+    public abstract void forwardClose(boolean isRealClose);
 
     /**
      * Called when the attached screen is closed.
+     *
+     * @param isRealClose whether the screen is being properly closed, or only temporarily hidden.
      */
-    public abstract void onClose();
+    public abstract void onClose(boolean isRealClose);
 
     public abstract void forwardTick();
     public abstract void onTick();

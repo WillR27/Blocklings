@@ -195,7 +195,7 @@ public class StatsScreen extends TabbedScreen
 
                 List<String> splitText;
 
-                if (GuiUtil.get().isShiftKeyDown())
+                if (GuiUtil.get().isCrouchKeyDown())
                 {
                     splitText = GuiUtil.get().split(new BlocklingsTranslationTextComponent("type.natural.desc").getString(), 200);
                     splitText.stream().map(s -> new StringTextComponent(TextFormatting.DARK_GRAY + s).getVisualOrderText()).forEach(tooltip::add);
@@ -206,7 +206,7 @@ public class StatsScreen extends TabbedScreen
 
                 tooltip.add(new StringTextComponent(TextFormatting.GRAY + new BlocklingsTranslationTextComponent("type.name").getString() + TextFormatting.WHITE + blockling.getBlocklingType().name.getString()).getVisualOrderText());
 
-                if (GuiUtil.get().isShiftKeyDown())
+                if (GuiUtil.get().isCrouchKeyDown())
                 {
                     splitText = GuiUtil.get().split(new BlocklingsTranslationTextComponent("type.desc").getString(), 200);
                     splitText.stream().map(s -> new StringTextComponent(TextFormatting.DARK_GRAY + s).getVisualOrderText()).forEach(tooltip::add);
@@ -220,7 +220,7 @@ public class StatsScreen extends TabbedScreen
                 splitText = GuiUtil.get().split(foodsString, 200);
                 splitText.stream().map(s -> new StringTextComponent(s).getVisualOrderText()).forEach(tooltip::add);
 
-                if (!GuiUtil.get().isShiftKeyDown())
+                if (!GuiUtil.get().isCrouchKeyDown())
                 {
                     tooltip.add(new StringTextComponent(TextFormatting.DARK_GRAY + "" + TextFormatting.ITALIC + new BlocklingsTranslationTextComponent("gui.more_info", Minecraft.getInstance().options.keyShift.getTranslatedKeyMessage().getString()).getString()).getVisualOrderText());
                 }

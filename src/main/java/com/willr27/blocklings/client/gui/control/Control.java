@@ -282,20 +282,23 @@ public class Control extends BaseControl
     }
 
     @Override
-    public void forwardClose()
+    public void forwardClose(boolean isRealClose)
     {
         for (BaseControl child : getChildrenCopy())
         {
-            child.forwardClose();
+            child.forwardClose(isRealClose);
         }
 
-        onClose();
+        onClose(isRealClose);
     }
 
     @Override
-    public void onClose()
+    public void onClose(boolean isRealClose)
     {
-        clearEventBuses(false);
+        if (isRealClose)
+        {
+            clearEventBuses(false);
+        }
     }
 
     @Override

@@ -11,13 +11,16 @@ import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
 import com.willr27.blocklings.client.gui.control.controls.panels.TabbedPanel;
 import com.willr27.blocklings.client.gui.control.event.events.*;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
+import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
 import com.willr27.blocklings.client.gui.texture.Textures;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.config.OrderedItemSet;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.inventory.AbstractInventory;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import com.willr27.blocklings.util.Version;
+import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -32,6 +35,8 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Finds nearby containers and deposits items into them.
@@ -390,94 +395,6 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
                 itemsSet.moveAfter(e.movedItem, e.closestItem);
             }
         });
-
-        BaseControl containersContainer = tabbedPanel.addTab(new BlocklingsTranslationTextComponent("config.containers"));
-        containersContainer.setCanScrollVertically(true);
-
-        StackPanel stackPanel = new StackPanel();
-        stackPanel.setParent(containersContainer);
-        stackPanel.setWidthPercentage(1.0);
-        stackPanel.setFitHeightToContent(true);
-        stackPanel.setMargins(5.0, 9.0, 5.0, 5.0);
-        stackPanel.setSpacing(4.0);
-        stackPanel.setClipContentsToBounds(false);
-        stackPanel.eventBus.subscribe((BaseControl c, ReorderEvent e) ->
-        {
-            int movedIndex = stackPanel.getChildren().indexOf(e.draggedControl);
-            int closestIndex = stackPanel.getChildren().indexOf(e.closestControl);
-
-            moveContainerInfo(movedIndex, closestIndex + (e.insertBefore ? 0 : 1));
-        });
-
-        for (ContainerInfo containerInfo : containerInfos)
-        {
-            ContainerControl containerControl = new ContainerControl(containerInfo);
-            stackPanel.addChild(containerControl);
-            containerControl.setWidthPercentage(1.0);
-            containerControl.setDraggableY(true);
-            containerControl.setScrollFromDragControl(containersContainer);
-            containerControl.eventBus.subscribe((BaseControl c, ValueChangedEvent<ContainerInfo> e2) ->
-            {
-                setContainerInfo(containerInfos.indexOf(e2.newValue), e2.newValue);
-            });
-            containerControl.eventBus.subscribe((BaseControl c, ParentChangedEvent e2) ->
-            {
-                // When the container control is removed, remove the container info too.
-                if (e2.newParent == null)
-                {
-                    removeContainerInfo(containerInfos.indexOf(((ContainerControl) c).containerInfo));
-                }
-            });
-        }
-
-        Control addContainerContainer = new Control();
-        addContainerContainer.setParent(stackPanel);
-        addContainerContainer.setWidthPercentage(1.0);
-        addContainerContainer.setFitHeightToContent(true);
-        addContainerContainer.setReorderable(false);
-
-        TexturedControl addContainerButton = new TexturedControl(Textures.Common.PLUS_ICON)
-        {
-            @Override
-            public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
-            {
-                renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent("config.add_container"));
-            }
-
-            @Override
-            protected void onMouseReleased(@Nonnull MouseReleasedEvent e)
-            {
-                if (isPressed())
-                {
-                    ContainerInfo containerInfo = new ContainerInfo();
-                    addContainerInfo(containerInfo);
-
-                    ContainerControl containerControl = new ContainerControl(containerInfo);
-                    stackPanel.insertChildBefore(containerControl, addContainerContainer);
-                    containerControl.setWidthPercentage(1.0);
-                    containerControl.setDraggableY(true);
-                    containerControl.setScrollFromDragControl(containersContainer);
-                    containerControl.eventBus.subscribe((BaseControl c, ValueChangedEvent<ContainerInfo> e2) ->
-                    {
-                        setContainerInfo(containerInfos.indexOf(e2.newValue), e2.newValue);
-                    });
-                    containerControl.eventBus.subscribe((BaseControl c, ParentChangedEvent e2) ->
-                    {
-                        // When the container control is removed, remove the container info too.
-                        if (e2.newParent == null)
-                        {
-                            removeContainerInfo(containerInfos.indexOf(((ContainerControl) c).containerInfo));
-                        }
-                    });
-                    containerControl.onFirstAdded();
-
-                    e.setIsHandled(true);
-                }
-            }
-        };
-        addContainerButton.setParent(addContainerContainer);
-        addContainerButton.setHorizontalAlignment(0.5);
-        addContainerButton.setMargins(0.0, 1.0, 0.0, 1.0);
     }
 
     @Nonnull

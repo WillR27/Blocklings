@@ -15,7 +15,6 @@ import com.willr27.blocklings.client.gui.util.GuiUtil;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -54,6 +53,11 @@ public class ScreenControl extends Control
 
     @Nullable
     private BaseControl draggedControl;
+
+    /**
+     * Whether the screen should really close and wipe all event subscribers.
+     */
+    private boolean shouldReallyClose = true;
 
     public void measureAndArrange()
     {
@@ -466,5 +470,23 @@ public class ScreenControl extends Control
     public void setPressedStartPixelY(double pressedStartPixelY)
     {
         this.pressedStartPixelY = pressedStartPixelY;
+    }
+
+    /**
+     * @return Whether the screen should really close or not.
+     */
+    public boolean shouldReallyClose()
+    {
+        return shouldReallyClose;
+    }
+
+    /**
+     * Sets whether the screen should really close or not.
+     *
+     * @param shouldReallyClose Whether the screen should really close or not.
+     */
+    public void setShouldReallyClose(boolean shouldReallyClose)
+    {
+        this.shouldReallyClose = shouldReallyClose;
     }
 }
