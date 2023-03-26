@@ -416,7 +416,7 @@ public class ContainerControl extends GridPanel
         sidePriority.setBlock(containerInfo.getBlock());
         sidePriority.setSelectedDirections(containerInfo.getSides());
         Quaternion rotationQuat = Quaternion.ONE.copy();
-        rotationQuat.mul(Vector3f.XP.rotationDegrees( 15.0f));
+        rotationQuat.mul(Vector3f.XP.rotationDegrees( 30.0f));
         rotationQuat.mul(Vector3f.YP.rotationDegrees(-45.0f));
         sidePriority.setRotationQuat(rotationQuat);
         sidePriority.eventBus.subscribe((BaseControl c, BlockSideSelectionControl.DirectionListChangedEvent e) ->
