@@ -15,6 +15,7 @@ import com.willr27.blocklings.client.gui.control.event.events.input.MouseRelease
 import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
+import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
@@ -31,7 +32,9 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -43,6 +46,11 @@ import java.util.function.Function;
  */
 public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<ContainerInfo>
 {
+    /**
+     * The maximum number of containers that the blockling can interact with.
+     */
+    public static final int MAX_CONTAINERS = 10;
+
     /**
      * The list of containers that the blockling can interact with in priority order.
      */
@@ -163,6 +171,14 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
     public IInventory tileEntityAsInventory(@Nullable TileEntity tileEntity)
     {
         return (IInventory) tileEntity;
+    }
+
+    /**
+     * @return whether the container list is full.
+     */
+    public boolean isContainerListFull()
+    {
+        return containerInfos.size() >= MAX_CONTAINERS;
     }
 
     /**
@@ -345,15 +361,31 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
         TexturedControl addContainerButton = new TexturedControl(Textures.Common.PLUS_ICON)
         {
             @Override
+            protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+            {
+                if (isContainerListFull())
+                {
+                    renderTextureAsBackground(matrixStack, Textures.Common.PLUS_ICON_DISABLED);
+                }
+                else
+                {
+                    super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                }
+            }
+
+            @Override
             public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
             {
-                renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent("config.add_container"));
+                List<IReorderingProcessor> tooltip = new ArrayList<>();
+                tooltip.add(new BlocklingsTranslationTextComponent("config.add_container").withStyle(isContainerListFull() ? TextFormatting.GRAY : TextFormatting.WHITE).getVisualOrderText());
+                tooltip.add(new BlocklingsTranslationTextComponent("config.container_amount", containerInfos.size(), MAX_CONTAINERS).withStyle(TextFormatting.GRAY).getVisualOrderText());
+                renderTooltip(matrixStack, mouseX, mouseY, tooltip);
             }
 
             @Override
             protected void onMouseReleased(@Nonnull MouseReleasedEvent e)
             {
-                if (isPressed())
+                if (isPressed() && !isContainerListFull())
                 {
                     ContainerInfo containerInfo = new ContainerInfo(BlockPos.ZERO, Blocks.AIR, Arrays.asList(Direction.UP, Direction.WEST, Direction.EAST, Direction.SOUTH, Direction.NORTH, Direction.DOWN));
                     addContainerInfo(containerInfo);

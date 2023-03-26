@@ -111,6 +111,7 @@
   "blocklings.config.blank_container": "Blank",
   "blocklings.config.containers": "Containers",
   "blocklings.config.add_container": "Add Container",
+  "blocklings.config.container_amount": "Containers: %d/%d",
 
   "blocklings.direction.front": "Front",
   "blocklings.direction.back": "Back",
