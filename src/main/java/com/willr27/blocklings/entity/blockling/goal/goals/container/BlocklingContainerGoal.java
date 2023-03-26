@@ -21,6 +21,7 @@ import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.network.messages.GoalMessage;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import com.willr27.blocklings.util.Version;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,13 +30,12 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -355,7 +355,7 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
             {
                 if (isPressed())
                 {
-                    ContainerInfo containerInfo = new ContainerInfo();
+                    ContainerInfo containerInfo = new ContainerInfo(BlockPos.ZERO, Blocks.AIR, Arrays.asList(Direction.UP, Direction.WEST, Direction.EAST, Direction.SOUTH, Direction.NORTH, Direction.DOWN));
                     addContainerInfo(containerInfo);
 
                     ContainerControl containerControl = addContainerControl.apply(containerInfo);
