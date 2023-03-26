@@ -2,6 +2,7 @@ package com.willr27.blocklings.client.gui;
 
 import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.client.gui.control.controls.TabbedUIControl;
+import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
 import com.willr27.blocklings.client.gui.screen.screens.*;
 import com.willr27.blocklings.client.gui.containers.EquipmentContainer;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
@@ -52,6 +53,26 @@ public class BlocklingGuiHandler
     public BlocklingGuiHandler(@Nonnull BlocklingEntity blockling)
     {
         this.blockling = blockling;
+    }
+
+    /**
+     * Opens the given screen on the client.
+     */
+    public static void openScreen(@Nonnull Screen screen)
+    {
+        Minecraft.getInstance().setScreen(screen);
+
+        if (screen instanceof BlocklingsScreen)
+        {
+            BlocklingsScreen blocklingsScreen = (BlocklingsScreen) screen;
+
+            // If the blockling is dead or dying, properly close the gui in case it was closed without the proper onClose() call.
+            // This might happen when configuring a container and the blockling dies.
+            if (blocklingsScreen.blockling.isDeadOrDying())
+            {
+                blocklingsScreen.onClose();
+            }
+        }
     }
 
     /**

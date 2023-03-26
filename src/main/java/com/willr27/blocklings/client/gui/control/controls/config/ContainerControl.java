@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.capabilities.ContainerConfigureCapability;
+import com.willr27.blocklings.client.gui.BlocklingGuiHandler;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.BlockControl;
@@ -568,7 +569,7 @@ public class ContainerControl extends GridPanel
                 currentlyConfiguredContainerControl.setParent(null);
             }
 
-            Minecraft.getInstance().setScreen(screenToGoBackTo);
+            BlocklingGuiHandler.openScreen(screenToGoBackTo);
             currentlyConfiguredContainerControl = null;
             screenToGoBackTo = null;
 
