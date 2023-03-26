@@ -32,6 +32,7 @@ public class Textures
         public static final Texture SEARCH_ICON = new Texture(COMMON, 70, 0, 14, 14);
 
         public static final Texture PLUS_ICON = new Texture(COMMON, 84, 0, 12, 12);
+        public static final Texture PLUS_ICON_DISABLED = new Texture(COMMON, 106, 0, 12, 12);
         public static final Texture CROSS_ICON = new Texture(COMMON, 96, 0, 10, 10);
 
         public static final Texture SLIDER_BAR = new Texture(COMMON, 0, 88, 256, 4);

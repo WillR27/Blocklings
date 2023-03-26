@@ -42,6 +42,8 @@ import java.util.stream.Collectors;
 
 public class BlocklingTasks implements IReadWriteNBT
 {
+    public static final int MAX_TASKS = 30;
+
     public static final TaskType NULL = new TaskType("1c330075-19af-4c12-ac20-6de50e7b84a9", "null", false, false, new Texture(Textures.Tasks.TASKS, 176, 166, 20, 20), ((i, b, t) -> null));
     public static final TaskType MELEE_ATTACK_HURT_BY = new TaskType("2888dde5-f6ee-439d-ab8d-ea9a91470c64", "hurt_by_melee", true, true, new GoalTexture(3, 0), BlocklingMeleeAttackHurtByGoal::new);
     public static final TaskType MELEE_ATTACK_OWNER_HURT_BY = new TaskType("72b27eb1-e5bd-48e0-b562-74dece3d144a", "owner_hurt_by_melee", false, false, new GoalTexture(5, 0), BlocklingMeleeAttackOwnerHurtByGoal::new);
@@ -360,6 +362,14 @@ public class BlocklingTasks implements IReadWriteNBT
                 task.getGoal().setState(buf.readEnum(BlocklingGoal.State.class), false);
             }
         }
+    }
+
+    /**
+     * @return Whether the task list is full.
+     */
+    public boolean isTaskListFull()
+    {
+        return prioritisedTasks.size() >= MAX_TASKS;
     }
 
     public TaskList getPrioritisedTasks()

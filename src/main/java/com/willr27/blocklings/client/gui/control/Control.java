@@ -16,6 +16,7 @@ import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jline.utils.Log;
@@ -23,6 +24,7 @@ import org.jline.utils.Log;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A base class for all controls.
@@ -410,6 +412,19 @@ public class Control extends BaseControl
         List<IReorderingProcessor> tooltip2 = new ArrayList<>();
         tooltip2.add(tooltip.getVisualOrderText());
         renderTooltip(matrixStack, mouseX, mouseY, getPixelScaleX(), getPixelScaleY(), tooltip2);
+    }
+
+    /**
+     * Renders a tooltip at the mouse position.
+     *
+     * @param matrixStack the matrix stack.
+     * @param tooltip the tooltip to render.
+     * @param mouseX the mouse x position.
+     * @param mouseY the mouse y position.
+     */
+    public void renderTooltip(@Nonnull MatrixStack matrixStack, @Nonnull List<? extends ITextComponent> tooltip, double mouseX, double mouseY)
+    {
+        Minecraft.getInstance().screen.renderTooltip(matrixStack, tooltip.stream().map(t -> t.getVisualOrderText()).collect(Collectors.toList()), (int) (mouseX / getPixelScaleX()), (int) (mouseY / getPixelScaleY()));
     }
 
     /**

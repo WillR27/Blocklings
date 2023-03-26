@@ -1,6 +1,7 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.*;
@@ -19,6 +20,7 @@ import com.willr27.blocklings.client.gui.properties.GridDefinition;
 import com.willr27.blocklings.client.gui.properties.Visibility;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
+import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
@@ -28,9 +30,12 @@ import com.willr27.blocklings.entity.blockling.task.config.Property;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -129,15 +134,31 @@ public class TasksScreen extends TabbedScreen
         TexturedControl addTaskButton = new TexturedControl(Textures.Common.PLUS_ICON)
         {
             @Override
+            protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+            {
+                if (blockling.getTasks().isTaskListFull())
+                {
+                    renderTextureAsBackground(matrixStack, Textures.Common.PLUS_ICON_DISABLED);
+                }
+                else
+                {
+                    super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                }
+            }
+
+            @Override
             public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
             {
-                renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent("task.ui.add"));
+                List<IReorderingProcessor> tooltip = new ArrayList<>();
+                tooltip.add(new BlocklingsTranslationTextComponent("task.ui.add").withStyle(blockling.getTasks().isTaskListFull() ? TextFormatting.GRAY : TextFormatting.WHITE).getVisualOrderText());
+                tooltip.add(new BlocklingsTranslationTextComponent("task.ui.task_amount", blockling.getTasks().getPrioritisedTasks().size(), BlocklingTasks.MAX_TASKS).withStyle(TextFormatting.GRAY).getVisualOrderText());
+                renderTooltip(matrixStack, mouseX, mouseY, tooltip);
             }
 
             @Override
             protected void onMouseReleased(@Nonnull MouseReleasedEvent e)
             {
-                if (isPressed())
+                if (isPressed() && !blockling.getTasks().isTaskListFull())
                 {
                     blockling.getTasks().createTask(BlocklingTasks.NULL);
 
