@@ -287,7 +287,6 @@ public class TasksScreen extends TabbedScreen
         {
             List<IReorderingProcessor> tooltip = new ArrayList<>();
             tooltip.add(taskType.name.copy().withStyle(TextFormatting.GOLD).getVisualOrderText());
-            tooltip.add(StringTextComponent.EMPTY.getVisualOrderText());
             tooltip.addAll(GuiUtil.get().split(taskType.desc.getString(), 200).stream().map(s -> new StringTextComponent(s).getVisualOrderText()).collect(Collectors.toList()));
             ComboBoxControl.Item item = new ComboBoxControl.Item(taskType.name, taskType, taskType.texture.dx(1).dy(1).dWidth(-2).dHeight(-2), tooltip);
 

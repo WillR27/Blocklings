@@ -104,7 +104,7 @@
   "blocklings.task.find_blocklings.name": "Find Blocklings",
   "blocklings.task.find_blocklings.desc": "Your blockling will lead you to nearby blocklings with the same natural type as your blockling's primary type.",
   "blocklings.task.deposit_items.name": "Deposit Items",
-  "blocklings.task.deposit_items.desc": "Your blockling will put items from their inventory into nearby containers.",
+  "blocklings.task.deposit_items.desc": "Your blockling will deposit items from their inventory into nearby containers.",
 
   "blocklings.config.search.too_many_results": "Too many results...",
   "blocklings.config.items": "Items",
