@@ -1,5 +1,6 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.*;
@@ -12,6 +13,7 @@ import com.willr27.blocklings.client.gui.control.event.events.ReorderEvent;
 import com.willr27.blocklings.client.gui.control.event.events.SelectionChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.TabChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.KeyPressedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
 import com.willr27.blocklings.client.gui.properties.Direction;
 import com.willr27.blocklings.client.gui.properties.GridDefinition;
 import com.willr27.blocklings.client.gui.properties.Visibility;
@@ -118,24 +120,53 @@ public class TasksScreen extends TabbedScreen
             tasksPanel.addChild(taskControl);
         }
 
-        TaskControl addTaskControl = new TaskControl(null, this);
-        tasksPanel.addChild(addTaskControl);
+        Control addTaskContainer = new Control();
+        tasksPanel.addChild(addTaskContainer);
+        addTaskContainer.setWidthPercentage(1.0);
+        addTaskContainer.setFitHeightToContent(true);
+        addTaskContainer.setReorderable(false);
+
+        TexturedControl addTaskButton = new TexturedControl(Textures.Common.PLUS_ICON)
+        {
+            @Override
+            public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+            {
+                renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent("task.ui.add"));
+            }
+
+            @Override
+            protected void onMouseReleased(@Nonnull MouseReleasedEvent e)
+            {
+                if (isPressed())
+                {
+                    blockling.getTasks().createTask(BlocklingTasks.NULL);
+
+                    e.setIsHandled(true);
+                }
+            }
+        };
+        addTaskContainer.addChild(addTaskButton);
+        addTaskButton.setHorizontalAlignment(0.5);
+        addTaskButton.setMargins(0.0, 1.0, 0.0, 1.0);
 
         blockling.getTasks().onCreateTask.subscribe((e) ->
         {
             TaskControl taskControl = new TaskControl(e.task, this);
-            tasksPanel.insertChildBefore(taskControl, addTaskControl);
+            tasksPanel.insertChildBefore(taskControl, addTaskContainer);
         });
 
         blockling.getTasks().onRemoveTask.subscribe((e) ->
         {
             for (BaseControl control : tasksPanel.getChildrenCopy())
             {
-                TaskControl taskControl = (TaskControl) control;
-
-                if (e.task.equals(taskControl.task))
+                if (control instanceof TaskControl)
                 {
-                    tasksPanel.removeChild(control);
+                    TaskControl taskControl = (TaskControl) control;
+
+                    if (e.task.equals(taskControl.task))
+                    {
+                        tasksPanel.removeChild(control);
+                    }
                 }
             }
         });

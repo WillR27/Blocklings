@@ -39,21 +39,20 @@ public class TaskControl extends Control
     /**
      * The associated task (null if used to add a task).
      */
-    @Nullable
+    @Nonnull
     public final Task task;
 
     /**
      * @param task the associated task.
      */
-    public TaskControl(@Nullable Task task, @Nonnull TasksScreen tasksScreen)
+    public TaskControl(@Nonnull Task task, @Nonnull TasksScreen tasksScreen)
     {
         super();
         this.task = task;
 
         setWidthPercentage(1.0);
         setFitHeightToContent(true);
-        setDraggableY(task != null);
-        setReorderable(task != null);
+        setDraggableY(true);
 
         GridPanel gridControl = new GridPanel()
         {
@@ -72,10 +71,10 @@ public class TaskControl extends Control
         gridControl.addColumnDefinition(GridDefinition.AUTO, 1.0);
         gridControl.setHoverable(false);
 
-        Control iconBackgroundControl = task != null ? new TexturedControl(Textures.Tasks.TASK_ICON_BACKGROUND_RAISED, Textures.Tasks.TASK_ICON_BACKGROUND_PRESSED) : new TexturedControl(Textures.Tasks.TASK_ADD_ICON_BACKGROUND);
+        Control iconBackgroundControl = new TexturedControl(Textures.Tasks.TASK_ICON_BACKGROUND_RAISED, Textures.Tasks.TASK_ICON_BACKGROUND_PRESSED);
         gridControl.addChild(iconBackgroundControl, 0, 0);
 
-        Control iconControl = new TexturedControl(task != null ? task.getType().texture : Textures.Tasks.TASK_CONFIG_ICON)
+        Control iconControl = new TexturedControl(task.getType().texture)
         {
             /**
              * The icon texture.
@@ -92,13 +91,13 @@ public class TaskControl extends Control
             @Override
             public void onHoverExit()
             {
-                iconTexture = task != null ? task.getType().texture : Textures.Tasks.TASK_CONFIG_ICON;
+                iconTexture = task.getType().texture;
             }
 
             @Override
             public void onDragStart(double mouseX, double mouseY)
             {
-                iconTexture = task != null ? task.getType().texture : Textures.Tasks.TASK_CONFIG_ICON;
+                iconTexture = task.getType().texture;
             }
 
             @Override
@@ -110,10 +109,7 @@ public class TaskControl extends Control
             @Override
             public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
             {
-                if (task != null)
-                {
-                    renderTooltip(matrixStack, mouseX, mouseY, getPixelScaleX(), getPixelScaleY(), new BlocklingsTranslationTextComponent("task.ui.configure"));
-                }
+                renderTooltip(matrixStack, mouseX, mouseY, getPixelScaleX(), getPixelScaleY(), new BlocklingsTranslationTextComponent("task.ui.configure"));
             }
 
             @Override
@@ -125,7 +121,7 @@ public class TaskControl extends Control
             @Override
             protected void onMouseReleased(@Nonnull MouseReleasedEvent e)
             {
-                if (!isDraggingOrAncestor() && task != null)
+                if (!isDraggingOrAncestor())
                 {
                     tasksScreen.openConfig(task);
                 }
@@ -161,7 +157,7 @@ public class TaskControl extends Control
             @Override
             public void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
-                if (task != null && task.isConfigured())
+                if (task.isConfigured())
                 {
                     if (task.getGoal().getState() == BlocklingGoal.State.DISABLED)
                     {
@@ -181,7 +177,7 @@ public class TaskControl extends Control
                     RenderSystem.color3f(0.6f, 0.6f, 0.6f);
                 }
 
-                if (task != null && task.isConfigured() && task.getGoal().getState() == BlocklingGoal.State.DISABLED)
+                if (task.isConfigured() && task.getGoal().getState() == BlocklingGoal.State.DISABLED)
                 {
                     renderTextureAsBackground(matrixStack, getPressedBackgroundTexture());
                 }
@@ -196,7 +192,7 @@ public class TaskControl extends Control
             @Override
             public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
             {
-                if (task != null && task.isConfigured())
+                if (task.isConfigured())
                 {
                     if (task.getGoal().getState() == BlocklingGoal.State.DISABLED)
                     {
@@ -214,7 +210,7 @@ public class TaskControl extends Control
             {
                 if (isPressed() && !isDraggingOrAncestor())
                 {
-                    if (task != null && task.isConfigured())
+                    if (task.isConfigured())
                     {
                         if (task.getGoal().getState() == BlocklingGoal.State.DISABLED)
                         {
@@ -239,7 +235,7 @@ public class TaskControl extends Control
             @Override
             public void onTick()
             {
-                setText(task == null ? BlocklingTasks.NULL.name : new StringTextComponent(task.getCustomName()));
+                setText(new StringTextComponent(task.getCustomName()));
             }
 
             @Override
@@ -255,7 +251,7 @@ public class TaskControl extends Control
         taskNameControl.setInteractive(false);
         taskNameControl.onTick();
 
-        Control addRemoveControl = new TexturedControl(task == null ? Textures.Tasks.TASK_ADD_ICON : Textures.Tasks.TASK_REMOVE_ICON)
+        Control removeControl = new TexturedControl(Textures.Tasks.TASK_REMOVE_ICON)
         {
             @Override
             protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
@@ -273,7 +269,7 @@ public class TaskControl extends Control
             @Override
             public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
             {
-                renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent(task == null ? "task.ui.add" : "task.ui.remove"));
+                renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent("task.ui.remove"));
             }
 
             @Override
@@ -281,35 +277,25 @@ public class TaskControl extends Control
             {
                 if (isPressed() && !isDraggingOrAncestor())
                 {
-                    if (task == null)
-                    {
-                        tasksScreen.blockling.getTasks().createTask(BlocklingTasks.NULL);
-                    }
-                    else
-                    {
-                        getParent().removeChild(this);
-                        task.blockling.getTasks().removeTask(task);
-                    }
+                    getParent().removeChild(this);
+                    task.blockling.getTasks().removeTask(task);
                 }
             }
         };
-        gridControl.addChild(addRemoveControl, 0, 2);
-        addRemoveControl.setFitWidthToContent(false);
-        addRemoveControl.setFitHeightToContent(false);
-        addRemoveControl.setWidth(17);
-        addRemoveControl.setHeight(20);
+        gridControl.addChild(removeControl, 0, 2);
+        removeControl.setFitWidthToContent(false);
+        removeControl.setFitHeightToContent(false);
+        removeControl.setWidth(17);
+        removeControl.setHeight(20);
     }
 
     @Override
     public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
     {
-        if (task != null)
-        {
-            List<IReorderingProcessor> tooltip = new ArrayList<>();
-            tooltip.add(new StringTextComponent(TextFormatting.GOLD + task.getCustomName()).getVisualOrderText());
-            tooltip.addAll(GuiUtil.get().split(task.getType().desc, 200).stream().collect(Collectors.toList()));
+        List<IReorderingProcessor> tooltip = new ArrayList<>();
+        tooltip.add(new StringTextComponent(TextFormatting.GOLD + task.getCustomName()).getVisualOrderText());
+        tooltip.addAll(GuiUtil.get().split(task.getType().desc, 200).stream().collect(Collectors.toList()));
 
-            renderTooltip(matrixStack, mouseX, mouseY, tooltip);
-        }
+        renderTooltip(matrixStack, mouseX, mouseY, tooltip);
     }
 }
