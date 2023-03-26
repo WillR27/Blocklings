@@ -110,8 +110,9 @@
   "blocklings.config.items": "Items",
   "blocklings.config.blank_container": "Blank",
   "blocklings.config.containers": "Containers",
-  "blocklings.config.add_container": "Add Container",
-  "blocklings.config.container_amount": "Containers: %d/%d",
+  "blocklings.config.container.add": "Add Container",
+  "blocklings.config.container.add.help": "Click the plus, then right click on the container you want to add. Left click a block to cancel. Alternatively, hold %s to add manually.",
+  "blocklings.config.container.amount": "Containers: %d/%d",
 
   "blocklings.direction.front": "Front",
   "blocklings.direction.back": "Back",

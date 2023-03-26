@@ -34,12 +34,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * A base class for handling goals that involve moving to and interacting with containers.
@@ -377,8 +379,10 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
             public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
             {
                 List<IReorderingProcessor> tooltip = new ArrayList<>();
-                tooltip.add(new BlocklingsTranslationTextComponent("config.add_container").withStyle(isContainerListFull() ? TextFormatting.GRAY : TextFormatting.WHITE).getVisualOrderText());
-                tooltip.add(new BlocklingsTranslationTextComponent("config.container_amount", containerInfos.size(), MAX_CONTAINERS).withStyle(TextFormatting.GRAY).getVisualOrderText());
+                tooltip.add(new BlocklingsTranslationTextComponent("config.container.add").withStyle(isContainerListFull() ? TextFormatting.GRAY : TextFormatting.WHITE).getVisualOrderText());
+                tooltip.add(new BlocklingsTranslationTextComponent("config.container.amount", containerInfos.size(), MAX_CONTAINERS).withStyle(TextFormatting.GRAY).getVisualOrderText());
+                tooltip.add(StringTextComponent.EMPTY.getVisualOrderText());
+                tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslationTextComponent("config.container.add.help", new StringTextComponent(Minecraft.getInstance().options.keyShift.getTranslatedKeyMessage().getString()).withStyle(TextFormatting.ITALIC)).withStyle(TextFormatting.GRAY), 200));
                 renderTooltip(matrixStack, mouseX, mouseY, tooltip);
             }
 
