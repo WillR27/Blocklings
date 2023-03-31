@@ -207,7 +207,7 @@ public class ComboBoxControl extends StackPanel
 
         if (postEvent)
         {
-            eventBus.post(this, new SelectionChangedEvent(previousItemControl.item, selectedItemControl.item));
+            eventBus.post(this, new SelectionChangedEvent<>(previousItemControl.item, selectedItemControl.item));
         }
     }
 

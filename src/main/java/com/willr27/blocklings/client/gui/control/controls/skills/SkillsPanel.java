@@ -1165,6 +1165,7 @@ public class SkillsPanel extends CanvasPanel
             buttonContainer.setHorizontalContentAlignment(0.5);
             buttonContainer.setSpacing(10.0);
             buttonContainer.setFitWidthToContent(true);
+            buttonContainer.setFitHeightToContent(true);
 
             ButtonControl yesButton = new ButtonControl()
             {

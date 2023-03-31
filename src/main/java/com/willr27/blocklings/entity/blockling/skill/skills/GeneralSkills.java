@@ -2,10 +2,12 @@ package com.willr27.blocklings.entity.blockling.skill.skills;
 
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.entity.blockling.attribute.BlocklingAttributes;
+import com.willr27.blocklings.entity.blockling.goal.goals.container.BlocklingContainerGoal;
 import com.willr27.blocklings.entity.blockling.skill.Skill;
 import com.willr27.blocklings.entity.blockling.skill.SkillGroup;
 import com.willr27.blocklings.entity.blockling.skill.info.*;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
+import com.willr27.blocklings.entity.blockling.task.Task;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -116,6 +118,45 @@ public class GeneralSkills
             skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.FIND_BLOCKLINGS, true);
         }
     };
+    public static final SkillInfo COURIER = new SkillInfo("077e318e-ed55-4fd4-9639-2344fd4a3e02",
+            new SkillGeneralInfo(Skill.Type.AI, "general.courier"),
+            new SkillDefaultsInfo(Skill.State.UNLOCKED),
+            new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.TOTAL, 75); }}),
+            new SkillGuiInfo(-50, 100, SkillGuiInfo.ConnectionType.SINGLE_LONGEST_FIRST, 0xffc72d, new SkillGuiInfo.SkillIconTexture(Textures.Skills.General.ICONS, 8, 0)))
+    {
+        @Override
+        public void onBuy(@Nonnull Skill skill)
+        {
+            skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.DEPOSIT_ITEMS, true);
+        }
+    };
+
+    public static final SkillInfo ADVANCED_COURIER = new SkillInfo("e65e6b8d-8217-4934-b302-e8a79588f97a",
+            new SkillGeneralInfo(Skill.Type.OTHER, "general.advanced_courier"),
+            new SkillDefaultsInfo(Skill.State.LOCKED),
+            new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.TOTAL, 100); }}),
+            new SkillGuiInfo(50, 100, SkillGuiInfo.ConnectionType.SINGLE_LONGEST_FIRST, 0x00ed83, new SkillGuiInfo.SkillIconTexture(Textures.Skills.General.ICONS, 9, 0)))
+    {
+        @Override
+        public void onBuy(@Nonnull Skill skill)
+        {
+            for (Task task : skill.blockling.getTasks().getPrioritisedTasks())
+            {
+                if (task.isConfigured() && task.getGoal() instanceof BlocklingContainerGoal)
+                {
+                    BlocklingContainerGoal goal = (BlocklingContainerGoal) task.getGoal();
+                    goal.itemConfigurationTypeProperty.setEnabled(true);
+                }
+            }
+        }
+
+        @Override
+        @Nonnull
+        public List<SkillInfo> parents()
+        {
+            return Collections.singletonList(COURIER);
+        }
+    };
 
     public static final List<Function<SkillGroup, Skill>> SKILLS = new ArrayList<Function<SkillGroup, Skill>>()
     {{
@@ -127,5 +168,7 @@ public class GeneralSkills
         add(group -> new Skill(SPEED_3, group));
         add(group -> new Skill(AUTOSWITCH, group));
         add(group -> new Skill(FIND_BLOCKLINGS, group));
+        add(group -> new Skill(COURIER, group));
+        add(group -> new Skill(ADVANCED_COURIER, group));
     }};
 }

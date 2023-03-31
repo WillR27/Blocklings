@@ -7,10 +7,7 @@ import com.willr27.blocklings.capabilities.ContainerConfigureCapability;
 import com.willr27.blocklings.client.gui.BlocklingGuiHandler;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.client.gui.control.controls.BlockControl;
-import com.willr27.blocklings.client.gui.control.controls.IntFieldControl;
-import com.willr27.blocklings.client.gui.control.controls.TextBlockControl;
-import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
+import com.willr27.blocklings.client.gui.control.controls.*;
 import com.willr27.blocklings.client.gui.control.controls.panels.GridPanel;
 import com.willr27.blocklings.client.gui.control.event.events.*;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
@@ -18,32 +15,37 @@ import com.willr27.blocklings.client.gui.properties.GridDefinition;
 import com.willr27.blocklings.client.gui.properties.Visibility;
 import com.willr27.blocklings.client.gui.texture.Texture;
 import com.willr27.blocklings.client.gui.texture.Textures;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.entity.blockling.goal.goals.container.ContainerInfo;
 import com.willr27.blocklings.util.BlockUtil;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import com.willr27.blocklings.util.event.ValueChangedEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -117,19 +119,19 @@ public class ContainerControl extends GridPanel
      * The x location.
      */
     @Nonnull
-    private final IntFieldControl xLocation;
+    private final NullableIntFieldControl xLocation;
 
     /**
      * The y location.
      */
     @Nonnull
-    private final IntFieldControl yLocation;
+    private final NullableIntFieldControl yLocation;
 
     /**
      * The z location.
      */
     @Nonnull
-    private final IntFieldControl zLocation;
+    private final NullableIntFieldControl zLocation;
 
     /**
      */
@@ -155,6 +157,12 @@ public class ContainerControl extends GridPanel
 
         TexturedControl iconBackground = new TexturedControl(Textures.Tasks.TASK_ICON_BACKGROUND_RAISED, Textures.Tasks.TASK_ICON_BACKGROUND_PRESSED)
         {
+            @Override
+            public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+            {
+                renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent("config.container.remove", new ItemStack(containerInfo.getBlock()).getHoverName().getString()));
+            }
+
             @Override
             public void onHoverEnter()
             {
@@ -404,7 +412,46 @@ public class ContainerControl extends GridPanel
             eventBus.post(this, new ValueChangedEvent<>(oldContainerInfo, containerInfo));
         });
 
-        sidePriority = new BlockSideSelectionControl();
+        sidePriority = new BlockSideSelectionControl()
+        {
+            @Override
+            public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+            {
+                Direction mouseOverDirection = getDirectionMouseIsOver();
+                BlocklingsTranslationTextComponent name = new BlocklingsTranslationTextComponent("config.container.side_priority.name");
+
+                if (mouseOverDirection != null)
+                {
+                    switch (mouseOverDirection)
+                    {
+                        case NORTH:
+                            name.append(new BlocklingsTranslationTextComponent("config.container.side_priority.side", new BlocklingsTranslationTextComponent("direction.front")));
+                            break;
+                        case SOUTH:
+                            name.append(new BlocklingsTranslationTextComponent("config.container.side_priority.side", new BlocklingsTranslationTextComponent("direction.back")));
+                            break;
+                        case WEST:
+                            name.append(new BlocklingsTranslationTextComponent("config.container.side_priority.side", new BlocklingsTranslationTextComponent("direction.left")));
+                            break;
+                        case EAST:
+                            name.append(new BlocklingsTranslationTextComponent("config.container.side_priority.side", new BlocklingsTranslationTextComponent("direction.right")));
+                            break;
+                        case UP:
+                            name.append(new BlocklingsTranslationTextComponent("config.container.side_priority.side", new BlocklingsTranslationTextComponent("direction.top")));
+                            break;
+                        case DOWN:
+                            name.append(new BlocklingsTranslationTextComponent("config.container.side_priority.side", new BlocklingsTranslationTextComponent("direction.bottom")));
+                            break;
+                    }
+                }
+
+                List<IReorderingProcessor> tooltip = new ArrayList<>();
+                tooltip.add(name.withStyle(TextFormatting.WHITE).getVisualOrderText());
+                tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslationTextComponent("config.container.side_priority.desc").withStyle(TextFormatting.GRAY), 200));
+
+                renderTooltip(matrixStack, mouseX, mouseY, tooltip);
+            }
+        };
         dropdownGrid.addChild(sidePriority, 0, 1);
         sidePriority.setWidthPercentage(1.0);
         sidePriority.setHeightPercentage(1.0);
@@ -625,6 +672,6 @@ public class ContainerControl extends GridPanel
     @SubscribeEvent
     public static void onPlayerContainerSelectCancel(@Nonnull PlayerInteractEvent.EntityInteract event)
     {
-        handleContainerSelect(event.getPlayer(), event.getHand() == Hand.OFF_HAND, null);
+        handleContainerSelect(event.getPlayer(), true, null);
     }
 }

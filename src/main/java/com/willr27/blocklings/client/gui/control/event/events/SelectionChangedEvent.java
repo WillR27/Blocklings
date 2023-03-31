@@ -12,25 +12,25 @@ import javax.annotation.Nullable;
  * An event used when a selection changes.
  */
 @OnlyIn(Dist.CLIENT)
-public class SelectionChangedEvent implements IEvent
+public class SelectionChangedEvent<T> implements IEvent
 {
     /**
      * The previosly selected item.
      */
     @Nullable
-    public final ComboBoxControl.Item previousItem;
+    public final T previousItem;
 
     /**
      * The newly selected item.
      */
     @Nullable
-    public final ComboBoxControl.Item newItem;
+    public final T newItem;
 
     /**
      * @param previousItem the previously selected item.
      * @param newItem the newly selected item.
      */
-    public SelectionChangedEvent(@Nullable ComboBoxControl.Item previousItem, @Nullable ComboBoxControl.Item newItem)
+    public SelectionChangedEvent(@Nullable T previousItem, @Nullable T newItem)
     {
         this.previousItem = previousItem;
         this.newItem = newItem;

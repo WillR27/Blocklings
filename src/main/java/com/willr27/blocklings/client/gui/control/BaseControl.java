@@ -55,7 +55,7 @@ public abstract class BaseControl extends GuiControl
     private final Scale innerScale = new Scale(1.0, 1.0);
 
     @Nonnull
-    private final Size desiredSize = new Size(100.0, 30.0);
+    private final Size desiredSize = new Size(0.0, 0.0);
 
     @Nonnull
     private final Size minSize = new Size(0.0, 0.0);
@@ -2164,7 +2164,31 @@ public abstract class BaseControl extends GuiControl
     @Nullable
     public BaseControl getScrollFromDragControl()
     {
-        return scrollFromDragControl != null ? scrollFromDragControl : getParent();
+        if (scrollFromDragControl != null)
+        {
+            return scrollFromDragControl;
+        }
+        else if (getParent() != null)
+        {
+            BaseControl parent = getParent();
+
+            while (parent != null && parent.scrollFromDragControl == null)
+            {
+                parent = parent.getParent();
+            }
+
+            if (parent != null)
+            {
+                BaseControl ancestorScrollFromDragControl = parent.scrollFromDragControl;
+
+                if (ancestorScrollFromDragControl != null)
+                {
+                    return ancestorScrollFromDragControl;
+                }
+            }
+        }
+
+        return getParent();
     }
 
     public void setScrollFromDragControl(@Nullable BaseControl scrollFromDragControl)
@@ -2174,7 +2198,7 @@ public abstract class BaseControl extends GuiControl
 
     public double getDragZ()
     {
-        return dragZ != null ? dragZ : getRenderZ();
+        return dragZ != null ? dragZ + getRenderZ() : getRenderZ();
     }
 
     public void setDragZ(@Nullable Double dragZ)

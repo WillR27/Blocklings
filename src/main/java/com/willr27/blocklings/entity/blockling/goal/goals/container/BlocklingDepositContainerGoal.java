@@ -1,27 +1,18 @@
 package com.willr27.blocklings.entity.blockling.goal.goals.container;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.client.gui.control.BaseControl;
-import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
-import com.willr27.blocklings.client.gui.control.controls.config.ContainerControl;
-import com.willr27.blocklings.client.gui.control.controls.config.ItemsSelectionControl;
-import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
+import com.willr27.blocklings.client.gui.control.controls.config.ItemsConfigurationControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.TabbedPanel;
 import com.willr27.blocklings.client.gui.control.event.events.*;
-import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
-import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
-import com.willr27.blocklings.client.gui.texture.Textures;
-import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
-import com.willr27.blocklings.entity.blockling.goal.config.OrderedItemSet;
+import com.willr27.blocklings.entity.blockling.goal.config.ItemInfo;
+import com.willr27.blocklings.entity.blockling.goal.config.OrderedItemInfoSet;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
+import com.willr27.blocklings.entity.blockling.task.config.ItemConfigurationTypeProperty;
 import com.willr27.blocklings.inventory.AbstractInventory;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import com.willr27.blocklings.util.Version;
-import net.minecraft.client.Minecraft;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -35,13 +26,11 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.UUID;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Finds nearby containers and deposits items into them.
  */
-public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implements OrderedItemSet.IOrderedItemSetProvider
+public class BlocklingDepositContainerGoal extends BlocklingContainerGoal
 {
     /**
      * The amount of items that can be deposited per second.
@@ -54,12 +43,6 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
     private int depositTimer = 0;
 
     /**
-     * The list of items to use as a whitelist/blacklist.
-     */
-    @Nonnull
-    public final OrderedItemSet itemsSet;
-
-    /**
      * @param taskId    the taskId associated with the goal's task.
      * @param blockling the blockling.
      * @param tasks     the blockling tasks.
@@ -67,8 +50,6 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
     public BlocklingDepositContainerGoal(@Nonnull UUID taskId, @Nonnull BlocklingEntity blockling, @Nonnull BlocklingTasks tasks)
     {
         super(taskId, blockling, tasks);
-
-        itemsSet = new OrderedItemSet(this);
     }
 
     @Override
@@ -76,7 +57,7 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
     {
         super.writeToNBT(taskTag);
 
-        taskTag.put("item_set", itemsSet.writeToNBT());
+        taskTag.put("item_set", itemInfoSet.writeToNBT());
     }
 
     @Override
@@ -86,9 +67,9 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
 
         CompoundNBT itemSetTag = taskTag.getCompound("item_set");
 
-        if (itemSetTag != null)
+        if (taskTag.contains("item_set"))
         {
-            itemsSet.readFromNBT(itemSetTag, tagVersion);
+            itemInfoSet.readFromNBT(itemSetTag, tagVersion);
         }
         else
         {
@@ -101,7 +82,7 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
     {
         super.encode(buf);
 
-        itemsSet.encode(buf);
+        itemInfoSet.encode(buf);
     }
 
     @Override
@@ -109,7 +90,7 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
     {
         super.decode(buf);
 
-        itemsSet.decode(buf);
+        itemInfoSet.decode(buf);
     }
 
     @Override
@@ -148,8 +129,14 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
         AbstractInventory inv = blockling.getEquipment();
         int remainingDepositAmount = getDepositAmount();
 
-        for (Direction direction : containerInfo.getSides())
-//            Direction direction = Direction.SOUTH;
+        TileEntity tileEntity = containerAsTileEntity(containerInfo);
+
+        if (tileEntity == null)
+        {
+            return false;
+        }
+
+        for (ItemInfo itemInfo : itemInfoSet)
         {
             // If we have deposited all the items we can then stop.
             if (remainingDepositAmount <= 0)
@@ -157,41 +144,63 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
                 break;
             }
 
-            TileEntity tileEntity = containerAsTileEntity(containerInfo);
+            int startInventoryAmount = itemInfo.getStartInventoryAmount() != null ? itemInfo.getStartInventoryAmount() : 0;
+            int startContainerAmount = itemInfo.getStartContainerAmount() != null ? itemInfo.getStartContainerAmount() : Integer.MAX_VALUE;
+            int stopInventoryAmount = itemInfo.getStopInventoryAmount() != null ? itemInfo.getStopInventoryAmount() : 0;
+            int stopContainerAmount = itemInfo.getStopContainerAmount() != null ? itemInfo.getStopContainerAmount() : Integer.MAX_VALUE;
 
-            if (tileEntity == null)
+            Item item = itemInfo.getItem();
+
+            // Skip any items that are not in the blockling's inventory.
+            if (itemConfigurationTypeProperty.getType() == ItemConfigurationTypeProperty.Type.SIMPLE && !hasItemToDeposit(item))
             {
-                return false;
+                continue;
             }
 
-            IItemHandler itemHandler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(null);
-
-            if (itemHandler == null)
+            for (Direction direction : containerInfo.getSides())
             {
-                return false;
-            }
+                IItemHandler itemHandler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(null);
 
-            for (Item item : itemsSet)
-            {
+                if (itemHandler == null)
+                {
+                    return false;
+                }
+
+                // If we are using the advanced configuration check the item's inventory and container amounts.
+                if (itemConfigurationTypeProperty.getType() == ItemConfigurationTypeProperty.Type.ADVANCED)
+                {
+                    int inventoryAmount = countItemsToDeposit(item);
+                    int containerAmount = countItemsInContainer(itemHandler, item);
+
+                    // If the task is currently executing then we want to check if the stop amounts have been reached.
+                    if (getState() == State.ACTIVE)
+                    {
+                        if (inventoryAmount <= stopInventoryAmount || containerAmount >= stopContainerAmount)
+                        {
+                            continue;
+                        }
+                    }
+                    // If the task is not currently executing then we want to check if the start amounts have been reached.
+                    else
+                    {
+                        if (inventoryAmount <= startInventoryAmount || containerAmount >= startContainerAmount)
+                        {
+                            continue;
+                        }
+                    }
+
+                    // Make sure we don't deposit more items than the user has configured.
+                    remainingDepositAmount = Math.min(remainingDepositAmount, Math.min(inventoryAmount - stopInventoryAmount, stopContainerAmount - containerAmount));
+                }
+
                 // If we have deposited all the items we can then stop.
                 if (remainingDepositAmount <= 0)
                 {
                     break;
                 }
 
-                // Skip any items that are not in the blockling's inventory.
-                if (!hasItemToDeposit(item))
-                {
-                    continue;
-                }
-
-                int startingCount = Math.min(getDepositAmount(), inv.count(new ItemStack(item)));
-                ItemStack stackToDeposit = new ItemStack(item, startingCount);
-
-                if (stackToDeposit.isEmpty())
-                {
-                    continue;
-                }
+                int startingStackToDepositCount = Math.min(remainingDepositAmount, inv.count(new ItemStack(item)));
+                ItemStack stackToDeposit = new ItemStack(item, startingStackToDepositCount);
 
                 // Loop through all slots or until the stack is empty.
                 for (int slot = 0; slot < itemHandler.getSlots() && !stackToDeposit.isEmpty(); slot++)
@@ -200,7 +209,7 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
                     stackToDeposit = itemHandler.insertItem(slot, stackToDeposit, simulate);
                 }
 
-                int amountDeposited = startingCount - stackToDeposit.getCount();
+                int amountDeposited = startingStackToDepositCount - stackToDeposit.getCount();
 
                 // If the count has decreased then at least one item was deposited.
                 if (amountDeposited > 0)
@@ -217,7 +226,6 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
 
         return remainingDepositAmount < getDepositAmount();
     }
-
 
     @Override
     public boolean tryRecalcTarget()
@@ -315,14 +323,6 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
             return false;
         }
 
-        // Might not be needed if we just check for an item handler capability.
-//        TileEntity tileEntity = world.getBlockEntity(containerInfo.getBlockPos());
-//
-//        if (!(tileEntity instanceof IInventory))
-//        {
-//            return false;
-//        }
-
         if (badTargets.contains(containerInfo))
         {
             return false;
@@ -334,6 +334,41 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
         }
 
         return true;
+    }
+
+    /**
+     * Counts the number of items in the container.
+     *
+     * @param containerItemHandler the container to count the items in.
+     * @param item the item to count.
+     * @return the number of items in the container.
+     */
+    public int countItemsInContainer(@Nonnull IItemHandler containerItemHandler, @Nonnull Item item)
+    {
+        int count = 0;
+
+        for (int slot = 0; slot < containerItemHandler.getSlots(); slot++)
+        {
+            ItemStack stack = containerItemHandler.getStackInSlot(slot);
+
+            if (stack.getItem() == item)
+            {
+                count += stack.getCount();
+            }
+        }
+
+        return count;
+    }
+
+    /**
+     * Counts the number of items in the blockling's inventory.
+     *
+     * @param item the item to count.
+     * @return the number of items in the blockling's inventory.
+     */
+    public int countItemsToDeposit(@Nonnull Item item)
+    {
+        return blockling.getEquipment().count(new ItemStack(item));
     }
 
     /**
@@ -349,56 +384,15 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal implem
      */
     public boolean hasItemsToDeposit()
     {
-        for (Item item : itemsSet)
+        for (ItemInfo itemInfo : itemInfoSet)
         {
-            if (hasItemToDeposit(item))
+            if (hasItemToDeposit(itemInfo.getItem()))
             {
                 return true;
             }
         }
 
         return false;
-    }
-
-    @Nonnull
-    @Override
-    public void addConfigTabControls(@Nonnull TabbedPanel tabbedPanel)
-    {
-        super.addConfigTabControls(tabbedPanel);
-
-        BaseControl itemsContainer = tabbedPanel.addTab(new BlocklingsTranslationTextComponent("config.items"));
-        itemsContainer.setCanScrollVertically(true);
-
-        ItemsSelectionControl itemsSelectionControl = new ItemsSelectionControl();
-        itemsSelectionControl.setParent(itemsContainer);
-        itemsSelectionControl.setMargins(5.0, 9.0, 5.0, 5.0);
-        itemsSelectionControl.setItems(itemsSet.getItems());
-        itemsSelectionControl.eventBus.subscribe((BaseControl c, ItemAddedEvent e) ->
-        {
-            itemsSet.add(e.item);
-        });
-        itemsSelectionControl.eventBus.subscribe((BaseControl c, ItemRemovedEvent e) ->
-        {
-            itemsSet.remove(e.item);
-        });
-        itemsSelectionControl.eventBus.subscribe((BaseControl c, ItemMovedEvent e) ->
-        {
-            if (e.insertBefore)
-            {
-                itemsSet.moveBefore(e.movedItem, e.closestItem);
-            }
-            else
-            {
-                itemsSet.moveAfter(e.movedItem, e.closestItem);
-            }
-        });
-    }
-
-    @Nonnull
-    @Override
-    public OrderedItemSet getItemSet()
-    {
-        return itemsSet;
     }
 
     /**

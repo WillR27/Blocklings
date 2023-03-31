@@ -49,6 +49,11 @@ public abstract class Property implements IReadWriteNBT
     public final ITextComponent desc;
 
     /**
+     * Whether the property is enabled.
+     */
+    private boolean isEnabled = true;
+
+    /**
      * @param id the id of the property (used for syncing between serialising\deserialising).
      * @param goal the associated task's goal.
      * @param name the name of the property.
@@ -66,6 +71,7 @@ public abstract class Property implements IReadWriteNBT
     public CompoundNBT writeToNBT(@Nonnull CompoundNBT propertyTag)
     {
         propertyTag.putUUID("id", id);
+        propertyTag.putBoolean("is_enabled", isEnabled);
 
         return propertyTag;
     }
@@ -73,7 +79,7 @@ public abstract class Property implements IReadWriteNBT
     @Override
     public void readFromNBT(@Nonnull CompoundNBT propertyTag, @Nonnull Version tagVersion)
     {
-
+        setEnabled(propertyTag.getBoolean("is_enabled"), false);
     }
 
     /**
@@ -83,7 +89,7 @@ public abstract class Property implements IReadWriteNBT
      */
     public void encode(@Nonnull PacketBuffer buf)
     {
-
+        buf.writeBoolean(isEnabled);
     }
 
     /**
@@ -93,7 +99,41 @@ public abstract class Property implements IReadWriteNBT
      */
     public void decode(@Nonnull PacketBuffer buf)
     {
+        setEnabled(buf.readBoolean(), false);
+    }
 
+    /**
+     * @return whether the property is enabled.
+     */
+    public boolean isEnabled()
+    {
+        return isEnabled;
+    }
+
+    /**
+     * Sets whether the property is enabled and syncs to the client/server.
+     *
+     * @param enabled whether the property is enabled.
+     */
+    public void setEnabled(boolean enabled)
+    {
+        isEnabled = enabled;
+    }
+
+    /**
+     * Sets whether the property is enabled.
+     *
+     * @param enabled whether the property is enabled.
+     * @param sync whether to sync to the client/server.
+     */
+    public void setEnabled(boolean enabled, boolean sync)
+    {
+        isEnabled = enabled;
+
+        if (sync)
+        {
+            new TaskPropertyMessage(this).sync();
+        }
     }
 
     /**

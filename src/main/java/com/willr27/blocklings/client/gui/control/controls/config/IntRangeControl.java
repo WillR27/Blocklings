@@ -32,6 +32,6 @@ public class IntRangeControl extends RangeControl<Integer>
     @Override
     protected Integer calculateValue(double percentage)
     {
-        return min + (int) ((max - min) * percentage);
+        return Math.toIntExact(Math.round(min + ((max - min) * percentage)));
     }
 }

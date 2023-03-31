@@ -7,15 +7,17 @@ import com.willr27.blocklings.client.gui.control.controls.TextFieldControl;
 import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.GridPanel;
 import com.willr27.blocklings.client.gui.control.event.events.FocusChangedEvent;
-import com.willr27.blocklings.client.gui.control.event.events.ValueChangedEvent;
+import com.willr27.blocklings.util.event.ValueChangedEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseClickedEvent;
 import com.willr27.blocklings.client.gui.properties.GridDefinition;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A control used to display and edit a range.
@@ -86,7 +88,7 @@ public abstract class RangeControl<T extends Number> extends Control
         valueFieldControl = new TextFieldControl();
         gridPanel.addChild(valueFieldControl, 0, 1);
         valueFieldControl.setWidth(24.0);
-        valueFieldControl.setText(startingValue.toString());
+        valueFieldControl.setHeight(16.0);
         valueFieldControl.setHorizontalContentAlignment(0.5);
         valueFieldControl.eventBus.subscribe((BaseControl c, FocusChangedEvent e) ->
         {
@@ -100,7 +102,14 @@ public abstract class RangeControl<T extends Number> extends Control
             }
         });
 
-        Control sliderContainerControl = new Control();
+        Control sliderContainerControl = new Control()
+        {
+            @Override
+            protected void arrange()
+            {
+                super.arrange();
+            }
+        };
         gridPanel.addChild(sliderContainerControl, 0, 0);
         sliderContainerControl.setWidthPercentage(1.0);
         sliderContainerControl.setHeightPercentage(1.0);
@@ -140,9 +149,24 @@ public abstract class RangeControl<T extends Number> extends Control
                 {
                     double minPixelX = getParent().toPixelX(0.0);
                     double maxPixelX = getParent().toPixelX(getParent().getWidth() - getWidth());
-                    double percentage = ((mouseX - getWidth() / 2.0) - minPixelX) / (maxPixelX - minPixelX);
+                    double percentage = (mouseX - (getPixelWidth() / 2.0) - minPixelX) / (maxPixelX - minPixelX);
 
                     setValue(calculateValue(percentage), false, false);
+                }
+            }
+
+            @Override
+            protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+            {
+                super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+
+                if (isPressed() && getPressedBackgroundTexture() != null)
+                {
+                    renderTextureAsBackground(matrixStack, getPressedBackgroundTexture());
+                }
+                else
+                {
+                    renderTextureAsBackground(matrixStack, getBackgroundTexture());
                 }
             }
 
@@ -150,6 +174,12 @@ public abstract class RangeControl<T extends Number> extends Control
             public void onDragEnd()
             {
                 setValue(getValue(), true, true);
+            }
+
+            @Override
+            public void setHorizontalAlignment(@Nullable Double horizontalAlignment)
+            {
+                super.setHorizontalAlignment(horizontalAlignment);
             }
         };
         grabberControl.setParent(sliderContainerControl);
@@ -208,10 +238,7 @@ public abstract class RangeControl<T extends Number> extends Control
             value = max;
         }
 
-        if (this.value == value)
-        {
-            return;
-        }
+        boolean hasValueChanged = this.value == value;
 
         T oldValue = this.value;
 
@@ -224,7 +251,7 @@ public abstract class RangeControl<T extends Number> extends Control
             updateGrabberPosition();
         }
 
-        if (postEvent)
+        if (postEvent && hasValueChanged)
         {
             eventBus.post(this, new ValueChangedEvent(oldValue, value));
         }

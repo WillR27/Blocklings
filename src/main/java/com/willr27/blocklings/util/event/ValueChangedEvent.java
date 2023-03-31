@@ -1,4 +1,4 @@
-package com.willr27.blocklings.client.gui.control.event.events;
+package com.willr27.blocklings.util.event;
 
 import com.willr27.blocklings.util.event.IEvent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * An event used when a value is changed within a control.
+ * An event used when a value is changed.
  */
 @OnlyIn(Dist.CLIENT)
 public class ValueChangedEvent<T> implements IEvent

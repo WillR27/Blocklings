@@ -277,13 +277,13 @@ public class TasksScreen extends TabbedScreen
         taskTypeComboBox.setParent(miscStackPanel);
         taskTypeComboBox.setWidthPercentage(1.0);
         taskTypeComboBox.setMarginTop(3.0);
-        taskTypeComboBox.eventBus.subscribe((BaseControl c, SelectionChangedEvent e) ->
+        taskTypeComboBox.eventBus.subscribe((BaseControl c, SelectionChangedEvent<ComboBoxControl.Item> e) ->
         {
             TaskType type = (TaskType) e.newItem.value;
             task.setType(type);
         });
 
-        for (TaskType taskType : BlocklingTasks.TASK_TYPES)
+        for (TaskType taskType : BlocklingTasks.TASK_TYPES.stream().filter(t -> blockling.getTasks().taskTypeUnlockedMap.get(t)).collect(Collectors.toList()))
         {
             List<IReorderingProcessor> tooltip = new ArrayList<>();
             tooltip.add(taskType.name.copy().withStyle(TextFormatting.GOLD).getVisualOrderText());
@@ -319,6 +319,11 @@ public class TasksScreen extends TabbedScreen
 
             for (Property property : goal.properties)
             {
+                if (!property.isEnabled())
+                {
+                    continue;
+                }
+
                 TextBlockControl nameControl = new TextBlockControl();
                 nameControl.setParent(miscStackPanel);
                 nameControl.setWidthPercentage(1.0);

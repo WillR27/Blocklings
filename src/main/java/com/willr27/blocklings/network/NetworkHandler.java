@@ -9,7 +9,7 @@ import com.willr27.blocklings.entity.blockling.attribute.attributes.numbers.Floa
 import com.willr27.blocklings.entity.blockling.attribute.attributes.numbers.IntAttribute;
 import com.willr27.blocklings.entity.blockling.attribute.attributes.numbers.ModifiableFloatAttribute;
 import com.willr27.blocklings.entity.blockling.attribute.attributes.numbers.ModifiableIntAttribute;
-import com.willr27.blocklings.entity.blockling.goal.config.OrderedItemSet;
+import com.willr27.blocklings.entity.blockling.goal.config.OrderedItemInfoSet;
 import com.willr27.blocklings.entity.blockling.goal.goals.container.BlocklingContainerGoal;
 import com.willr27.blocklings.entity.blockling.task.config.Property;
 import com.willr27.blocklings.network.messages.*;
@@ -86,9 +86,10 @@ public class NetworkHandler
         registerMessage(TaskTypeMessage.class);
         registerMessage(TaskTypeIsUnlockedMessage.class);
 
-        registerMessage(OrderedItemSet.AddItemMessage.class);
-        registerMessage(OrderedItemSet.RemoveItemMessage.class);
-        registerMessage(OrderedItemSet.MoveItemMessage.class);
+        registerMessage(OrderedItemInfoSet.AddItemInfoInfoMessage.class);
+        registerMessage(OrderedItemInfoSet.RemoveItemInfoInfoMessage.class);
+        registerMessage(OrderedItemInfoSet.MoveItemInfoInfoMessage.class);
+        registerMessage(OrderedItemInfoSet.SetItemInfoInfoMessage.class);
         registerMessage(WhitelistAllMessage.class);
         registerMessage(WhitelistIsUnlockedMessage.class);
         registerMessage(WhitelistSingleMessage.class);

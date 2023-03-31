@@ -6,24 +6,27 @@ import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
 import com.willr27.blocklings.client.gui.control.controls.config.ContainerControl;
+import com.willr27.blocklings.client.gui.control.controls.config.ItemsConfigurationControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
 import com.willr27.blocklings.client.gui.control.controls.panels.TabbedPanel;
-import com.willr27.blocklings.client.gui.control.event.events.ParentChangedEvent;
-import com.willr27.blocklings.client.gui.control.event.events.ReorderEvent;
-import com.willr27.blocklings.client.gui.control.event.events.ValueChangedEvent;
+import com.willr27.blocklings.client.gui.control.event.events.*;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
-import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingTargetGoal;
+import com.willr27.blocklings.entity.blockling.goal.config.ItemInfoAddedEvent;
+import com.willr27.blocklings.entity.blockling.goal.config.ItemInfoMovedEvent;
+import com.willr27.blocklings.entity.blockling.goal.config.ItemInfoRemovedEvent;
+import com.willr27.blocklings.entity.blockling.goal.config.OrderedItemInfoSet;
+import com.willr27.blocklings.entity.blockling.skill.skills.GeneralSkills;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
+import com.willr27.blocklings.entity.blockling.task.config.ItemConfigurationTypeProperty;
 import com.willr27.blocklings.network.messages.GoalMessage;
-import com.willr27.blocklings.util.BlockUtil;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import com.willr27.blocklings.util.Version;
-import net.minecraft.block.Block;
+import com.willr27.blocklings.util.event.ValueChangedEvent;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
@@ -42,23 +45,44 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * A base class for handling goals that involve moving to and interacting with containers.
  */
-public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<ContainerInfo>
+public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<ContainerInfo> implements OrderedItemInfoSet.IOrderedItemInfoSetProvider
 {
+    /**
+     * The maximum number of items that can be included in the items list.
+     */
+    public static final int MAX_ITEMS = 32;
+
     /**
      * The maximum number of containers that the blockling can interact with.
      */
-    public static final int MAX_CONTAINERS = 10;
+    public static final int MAX_CONTAINERS = 8;
+
+    /**
+     * The list of items to use as a whitelist.
+     */
+    @Nonnull
+    public final OrderedItemInfoSet itemInfoSet;
 
     /**
      * The list of containers that the blockling can interact with in priority order.
      */
     @Nonnull
     protected final List<ContainerInfo> containerInfos = new ArrayList<>();
+
+    /**
+     * The property used to select the type of item configuration to use.
+     */
+    @Nonnull
+    public final ItemConfigurationTypeProperty itemConfigurationTypeProperty;
+
+    /**
+     * The container control used for the items tab in the configuration screen.
+     */
+    private BaseControl itemsContainer;
 
     /**
      * @param id        the id associated with the goal's task.
@@ -70,6 +94,16 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
         super(id, blockling, tasks);
 
         setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+
+        itemInfoSet = new OrderedItemInfoSet(this);
+
+        properties.add(itemConfigurationTypeProperty = new ItemConfigurationTypeProperty(
+                "35d1e5a5-dfff-4a06-bb71-de1df8823632", this,
+                new BlocklingsTranslationTextComponent("task.property.item_configuration_type.name"),
+                new BlocklingsTranslationTextComponent("task.property.item_configuration_type.desc")));
+
+        itemConfigurationTypeProperty.setEnabled(blockling.getSkills().getSkill(GeneralSkills.ADVANCED_COURIER).isBought());
+        itemConfigurationTypeProperty.onTypeChanged.subscribe((this::recreateItemsConfigurationControl));
     }
 
     @Override
@@ -303,9 +337,21 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
 
     @Nonnull
     @Override
+    public OrderedItemInfoSet getItemSet()
+    {
+        return itemInfoSet;
+    }
+
+    @Nonnull
+    @Override
     public void addConfigTabControls(@Nonnull TabbedPanel tabbedPanel)
     {
         super.addConfigTabControls(tabbedPanel);
+
+        itemsContainer = tabbedPanel.addTab(new BlocklingsTranslationTextComponent("config.items"));
+        itemsContainer.setCanScrollVertically(true);
+
+        recreateItemsConfigurationControl(itemConfigurationTypeProperty.getType());
 
         BaseControl containersContainer = tabbedPanel.addTab(new BlocklingsTranslationTextComponent("config.containers"));
         containersContainer.setCanScrollVertically(true);
@@ -418,6 +464,25 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
         addContainerButton.setParent(addContainerContainer);
         addContainerButton.setHorizontalAlignment(0.5);
         addContainerButton.setMargins(0.0, 1.0, 0.0, 1.0);
+    }
+
+    /**
+     * Recreates the items configuration control.
+     */
+    private void recreateItemsConfigurationControl(@Nonnull ItemConfigurationTypeProperty.Type type)
+    {
+        if (itemsContainer == null)
+        {
+            return;
+        }
+
+        itemsContainer.clearChildren();
+
+        ItemsConfigurationControl itemsConfigurationControl = type.createItemsConfigurationControl(itemInfoSet);
+        itemsConfigurationControl.setParent(itemsContainer);
+        itemsConfigurationControl.setMargins(5.0, 9.0, 5.0, 5.0);
+        itemsConfigurationControl.setMaxItems(MAX_ITEMS);
+        itemsConfigurationControl.setScrollFromDragControl(itemsContainer);
     }
 
     /**

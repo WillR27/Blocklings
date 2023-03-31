@@ -8,6 +8,7 @@ import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -49,11 +50,15 @@ public class FloatRangeProperty extends RangeProperty<Float>
     public void readFromNBT(@Nonnull CompoundNBT propertyTag, @Nonnull Version tagVersion)
     {
         value = propertyTag.getFloat("value");
+
+        super.readFromNBT(propertyTag, tagVersion);
     }
 
     @Override
     public void encode(@Nonnull PacketBuffer buf)
     {
+        super.encode(buf);
+
         buf.writeFloat(min);
         buf.writeFloat(max);
         buf.writeFloat(value);
@@ -62,6 +67,8 @@ public class FloatRangeProperty extends RangeProperty<Float>
     @Override
     public void decode(@Nonnull PacketBuffer buf)
     {
+        super.decode(buf);
+
         min = buf.readFloat();
         max = buf.readFloat();
         value = buf.readFloat();
@@ -79,11 +86,10 @@ public class FloatRangeProperty extends RangeProperty<Float>
             {
                 if (!grabberControl.isPressed())
                 {
-                    List<StringTextComponent> tooltip = GuiUtil.get().split(desc.getString(), 200).stream().map(r -> new StringTextComponent(r)).collect(Collectors.toList());
-                    tooltip.add(0, new StringTextComponent(""));
-                    tooltip.add(0, new StringTextComponent(TextFormatting.GOLD + name.getString()));
+                    List<IReorderingProcessor> tooltip = GuiUtil.get().split(desc.copy().withStyle(TextFormatting.GRAY), 200);
+                    tooltip.add(0, name.copy().withStyle(TextFormatting.WHITE).getVisualOrderText());
 
-                    renderTooltip(matrixStack, mouseX, mouseY, tooltip.stream().map(t -> t.getVisualOrderText()).collect(Collectors.toList()));
+                    renderTooltip(matrixStack, mouseX, mouseY, tooltip);
                 }
             }
 

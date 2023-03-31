@@ -27,6 +27,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -127,7 +128,7 @@ public class FullGuiUtil extends GuiUtil
     @Override
     public List<IReorderingProcessor> split(@Nonnull ITextProperties text, int width)
     {
-        return mc.font.split(text, width);
+        return new ArrayList<>(mc.font.split(text, width));
     }
 
     @Nonnull
