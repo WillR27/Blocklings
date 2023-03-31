@@ -1,10 +1,6 @@
-package com.willr27.blocklings.entity.blockling.goal.config;
+package com.willr27.blocklings.entity.blockling.goal.config.iteminfo;
 
-import com.willr27.blocklings.entity.blockling.goal.config.ItemInfo;
 import com.willr27.blocklings.util.event.IEvent;
-import net.minecraft.item.Item;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 

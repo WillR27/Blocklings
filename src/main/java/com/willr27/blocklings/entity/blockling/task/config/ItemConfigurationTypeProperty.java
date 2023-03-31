@@ -5,7 +5,7 @@ import com.willr27.blocklings.client.gui.control.controls.SingleSelectorStrip;
 import com.willr27.blocklings.client.gui.control.controls.config.ItemsConfigurationControl;
 import com.willr27.blocklings.client.gui.control.event.events.SelectionChangedEvent;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
-import com.willr27.blocklings.entity.blockling.goal.config.OrderedItemInfoSet;
+import com.willr27.blocklings.entity.blockling.goal.config.iteminfo.OrderedItemInfoSet;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import com.willr27.blocklings.util.Version;
 import com.willr27.blocklings.util.event.EventHandler;

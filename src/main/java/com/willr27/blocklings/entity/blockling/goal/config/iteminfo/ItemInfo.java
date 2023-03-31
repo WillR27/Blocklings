@@ -1,4 +1,4 @@
-package com.willr27.blocklings.entity.blockling.goal.config;
+package com.willr27.blocklings.entity.blockling.goal.config.iteminfo;
 
 import com.willr27.blocklings.util.Version;
 import net.minecraft.item.Item;

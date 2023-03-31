@@ -1,17 +1,11 @@
 package com.willr27.blocklings.entity.blockling.goal.goals.container;
 
 import com.willr27.blocklings.Blocklings;
-import com.willr27.blocklings.client.gui.control.BaseControl;
-import com.willr27.blocklings.client.gui.control.controls.config.ItemsConfigurationControl;
-import com.willr27.blocklings.client.gui.control.controls.panels.TabbedPanel;
-import com.willr27.blocklings.client.gui.control.event.events.*;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
-import com.willr27.blocklings.entity.blockling.goal.config.ItemInfo;
-import com.willr27.blocklings.entity.blockling.goal.config.OrderedItemInfoSet;
+import com.willr27.blocklings.entity.blockling.goal.config.iteminfo.ItemInfo;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.task.config.ItemConfigurationTypeProperty;
 import com.willr27.blocklings.inventory.AbstractInventory;
-import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
