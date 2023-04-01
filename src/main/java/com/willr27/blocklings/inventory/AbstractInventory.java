@@ -410,7 +410,7 @@ public abstract class AbstractInventory implements IInventory, IReadWriteNBT
 
             stackToAddCopy.shrink(amountToAdd);
         }
-        else
+        else if (slotStack.isEmpty())
         {
             if (!simulate)
             {
