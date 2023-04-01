@@ -455,31 +455,36 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
      * Adds the given container info to the list and syncs it to the client/server.
      *
      * @param containerInfo the container info.
+     * @param configureInWorld whether to configure the container in the world.
      */
-    public void addContainerInfo(@Nonnull ContainerInfo containerInfo)
+    public void addContainerInfo(@Nonnull ContainerInfo containerInfo, boolean configureInWorld)
     {
-        addContainerInfo(containerInfo, true);
+        addContainerInfo(containerInfo, configureInWorld, true);
     }
 
     /**
      * Adds the given container info to the list.
      *
      * @param containerInfo the container info.
+     * @param configureInWorld whether to configure the container in the world.
      * @param sync whether to sync the container info to the client.
      */
-    public void addContainerInfo(@Nonnull ContainerInfo containerInfo, boolean sync)
+    public void addContainerInfo(@Nonnull ContainerInfo containerInfo, boolean configureInWorld, boolean sync)
     {
         containerInfos.add(containerInfo);
 
+        if (configureInWorld)
+        {
             PlayerEntity player = (PlayerEntity) blockling.getOwner();
             player.getCapability(ContainerConfigureCapability.CAPABILITY).ifPresent(cap ->
             {
                 cap.isConfiguring = true;
             });
+        }
 
         if (sync)
         {
-            new ContainerGoalContainerAddRemoveMessage(blockling, id, containerInfos.size() - 1, true).sync();
+            new ContainerGoalContainerAddRemoveMessage(blockling, id, containerInfos.size() - 1, true, configureInWorld).sync();
             new ContainerGoalContainerMessage(blockling, id, containerInfo, containerInfos.size() - 1).sync();
         }
     }
@@ -506,7 +511,7 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
 
         if (sync)
         {
-            new ContainerGoalContainerAddRemoveMessage(blockling, id, index, false).sync();
+            new ContainerGoalContainerAddRemoveMessage(blockling, id, index, false, false).sync();
         }
     }
 
@@ -693,7 +698,7 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
                 if (isPressed() && !isContainerListFull())
                 {
                     ContainerInfo containerInfo = new ContainerInfo(BlockPos.ZERO, Blocks.AIR, Arrays.asList(Direction.UP, Direction.WEST, Direction.EAST, Direction.SOUTH, Direction.NORTH, Direction.DOWN));
-                    addContainerInfo(containerInfo);
+                    addContainerInfo(containerInfo, !GuiUtil.get().isCrouchKeyDown());
 
                     ContainerControl containerControl = addContainerControl.apply(containerInfo);
 
@@ -755,6 +760,11 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
         private int index;
 
         /**
+         * Whether to configure the container in world.
+         */
+        private boolean configureInWorld;
+
+        /**
          * Empty constructor used ONLY for decoding.
          */
         public ContainerGoalContainerAddRemoveMessage()
@@ -767,12 +777,14 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
          * @param taskId the id of the goal.
          * @param index the index of the container.
          * @param add whether to add or remove the container info.
+         * @param configureInWorld whether to configure the container in world.
          */
-        public ContainerGoalContainerAddRemoveMessage(@Nonnull BlocklingEntity blockling, @Nonnull UUID taskId, int index, boolean add)
+        public ContainerGoalContainerAddRemoveMessage(@Nonnull BlocklingEntity blockling, @Nonnull UUID taskId, int index, boolean add, boolean configureInWorld)
         {
             super(blockling, taskId);
             this.index = index;
             this.add = add;
+            this.configureInWorld = configureInWorld;
         }
 
         @Override
@@ -782,6 +794,7 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
 
             buf.writeBoolean(add);
             buf.writeInt(index);
+            buf.writeBoolean(configureInWorld);
         }
 
         @Override
@@ -791,6 +804,7 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
 
             add = buf.readBoolean();
             index = buf.readInt();
+            configureInWorld = buf.readBoolean();
         }
 
         @Override
@@ -798,7 +812,7 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
         {
             if (add)
             {
-                goal.addContainerInfo(new ContainerInfo(), false);
+                goal.addContainerInfo(new ContainerInfo(), configureInWorld, false);
             }
             else
             {
