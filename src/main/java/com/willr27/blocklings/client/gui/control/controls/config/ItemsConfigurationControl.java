@@ -50,17 +50,24 @@ public abstract class ItemsConfigurationControl extends Control
     public final OrderedItemInfoSet itemInfoSet;
 
     /**
+     * Whether the configuration is for taking items or depositing items.
+     */
+    public final boolean isTakeItems;
+
+    /**
      * The max amount of items.
      */
     private int maxItems = 40;
 
     /**
      * @param itemInfoSet the associated item info set.
+     * @param isTakeItems whether the configuration is for taking items or depositing items.
      */
-    public ItemsConfigurationControl(@Nonnull OrderedItemInfoSet itemInfoSet)
+    public ItemsConfigurationControl(@Nonnull OrderedItemInfoSet itemInfoSet, boolean isTakeItems)
     {
         super();
         this.itemInfoSet = itemInfoSet;
+        this.isTakeItems = isTakeItems;
 
         setWidthPercentage(1.0);
         setFitHeightToContent(true);
@@ -175,10 +182,11 @@ public abstract class ItemsConfigurationControl extends Control
 
         /**
          * @param itemInfoSet the associated item info set.
+         * @param isTakeItems whether the configuration is for taking items or depositing items.
          */
-        public SimpleItemsConfigurationControl(@Nonnull OrderedItemInfoSet itemInfoSet)
+        public SimpleItemsConfigurationControl(@Nonnull OrderedItemInfoSet itemInfoSet, boolean isTakeItems)
         {
-            super(itemInfoSet);
+            super(itemInfoSet, isTakeItems);
 
             setWidthPercentage(1.0);
             setFitHeightToContent(true);
@@ -516,11 +524,12 @@ public abstract class ItemsConfigurationControl extends Control
         private final ItemSearchControl itemSearchControl;
 
         /**
-         * @pram itemInfoSet the item info set.
+         * @param itemInfoSet the item info set.
+         * @param isTakeItems whether the configuration is taking or depositing items.
          */
-        public AdvancedItemsConfigurationControl(@Nonnull OrderedItemInfoSet itemInfoSet)
+        public AdvancedItemsConfigurationControl(@Nonnull OrderedItemInfoSet itemInfoSet, boolean isTakeItems)
         {
-            super(itemInfoSet);
+            super(itemInfoSet, isTakeItems);
 
             setWidthPercentage(1.0);
             setFitHeightToContent(true);
@@ -914,7 +923,7 @@ public abstract class ItemsConfigurationControl extends Control
                 TextBlockControl startText = new TextBlockControl();
                 dropdownGrid.addChild(startText, 0, 0);
                 startText.setWidthPercentage(1.0);
-                startText.setText("Start at");
+                startText.setText(new BlocklingsTranslationTextComponent("config.item.start_at"));
                 startText.setMarginLeft(4.0);
                 startText.setMarginRight(4.0);
                 startText.setMarginTop(4.0);
@@ -933,7 +942,7 @@ public abstract class ItemsConfigurationControl extends Control
                 TextBlockControl startInventoryText = new TextBlockControl();
                 startGrid.addChild(startInventoryText, 0, 0);
                 startInventoryText.setFitWidthToContent(true);
-                startInventoryText.setText(">");
+                startInventoryText.setText(isTakeItems ? "<" : ">");
                 startInventoryText.setMarginLeft(4.0);
                 startInventoryText.setMarginRight(4.0);
                 startInventoryText.setHorizontalAlignment(0.5);
@@ -945,8 +954,8 @@ public abstract class ItemsConfigurationControl extends Control
                     public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
                     {
                         List<IReorderingProcessor> tooltip = new ArrayList<>();
-                        tooltip.add(new BlocklingsTranslationTextComponent("config.item.deposit.inventory_start_amount.name").getVisualOrderText());
-                        tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslationTextComponent("config.item.deposit.inventory_start_amount.desc").withStyle(TextFormatting.GRAY), 200));
+                        tooltip.add(new BlocklingsTranslationTextComponent("config.item.inventory_start_amount.name").getVisualOrderText());
+                        tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslationTextComponent("config.item.inventory_start_amount.desc").withStyle(TextFormatting.GRAY), 200));
 
                         renderTooltip(matrixStack, mouseX, mouseY, tooltip);
                     }
@@ -969,7 +978,7 @@ public abstract class ItemsConfigurationControl extends Control
                 TextBlockControl startContainerText = new TextBlockControl();
                 startGrid.addChild(startContainerText, 0, 2);
                 startContainerText.setFitWidthToContent(true);
-                startContainerText.setText("<");
+                startContainerText.setText(isTakeItems ? ">" : "<");
                 startContainerText.setMarginLeft(4.0);
                 startContainerText.setMarginRight(4.0);
                 startContainerText.setHorizontalAlignment(0.5);
@@ -981,8 +990,8 @@ public abstract class ItemsConfigurationControl extends Control
                     public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
                     {
                         List<IReorderingProcessor> tooltip = new ArrayList<>();
-                        tooltip.add(new BlocklingsTranslationTextComponent("config.item.deposit.container_start_amount.name").getVisualOrderText());
-                        tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslationTextComponent("config.item.deposit.container_start_amount.desc").withStyle(TextFormatting.GRAY), 200));
+                        tooltip.add(new BlocklingsTranslationTextComponent("config.item.container_start_amount.name").getVisualOrderText());
+                        tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslationTextComponent("config.item.container_start_amount.desc").withStyle(TextFormatting.GRAY), 200));
 
                         renderTooltip(matrixStack, mouseX, mouseY, tooltip);
                     }
@@ -1005,7 +1014,7 @@ public abstract class ItemsConfigurationControl extends Control
                 TextBlockControl stopText = new TextBlockControl();
                 dropdownGrid.addChild(stopText, 2, 0);
                 stopText.setWidthPercentage(1.0);
-                stopText.setText("Stop at");
+                stopText.setText(new BlocklingsTranslationTextComponent("config.item.stop_at"));
                 stopText.setMarginLeft(4.0);
                 stopText.setMarginRight(4.0);
                 stopText.setMarginTop(6.0);
@@ -1024,7 +1033,7 @@ public abstract class ItemsConfigurationControl extends Control
                 TextBlockControl stopInventoryText = new TextBlockControl();
                 stopGrid.addChild(stopInventoryText, 0, 0);
                 stopInventoryText.setFitWidthToContent(true);
-                stopInventoryText.setText("<=");
+                stopInventoryText.setText(isTakeItems ? ">=" : "<=");
                 stopInventoryText.setMarginLeft(4.0);
                 stopInventoryText.setMarginRight(4.0);
                 stopInventoryText.setHorizontalAlignment(0.5);
@@ -1036,8 +1045,8 @@ public abstract class ItemsConfigurationControl extends Control
                     public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
                     {
                         List<IReorderingProcessor> tooltip = new ArrayList<>();
-                        tooltip.add(new BlocklingsTranslationTextComponent("config.item.deposit.inventory_stop_amount.name").getVisualOrderText());
-                        tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslationTextComponent("config.item.deposit.inventory_stop_amount.desc").withStyle(TextFormatting.GRAY), 200));
+                        tooltip.add(new BlocklingsTranslationTextComponent("config.item.inventory_stop_amount.name").getVisualOrderText());
+                        tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslationTextComponent("config.item.inventory_stop_amount.desc").withStyle(TextFormatting.GRAY), 200));
 
                         renderTooltip(matrixStack, mouseX, mouseY, tooltip);
                     }
@@ -1060,7 +1069,7 @@ public abstract class ItemsConfigurationControl extends Control
                 TextBlockControl stopContainerText = new TextBlockControl();
                 stopGrid.addChild(stopContainerText, 0, 2);
                 stopContainerText.setFitWidthToContent(true);
-                stopContainerText.setText(">=");
+                stopContainerText.setText(isTakeItems ? "<=" : ">=");
                 stopContainerText.setMarginLeft(4.0);
                 stopContainerText.setMarginRight(4.0);
                 stopContainerText.setHorizontalAlignment(0.5);
@@ -1072,8 +1081,8 @@ public abstract class ItemsConfigurationControl extends Control
                     public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
                     {
                         List<IReorderingProcessor> tooltip = new ArrayList<>();
-                        tooltip.add(new BlocklingsTranslationTextComponent("config.item.deposit.container_start_amount.name").getVisualOrderText());
-                        tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslationTextComponent("config.item.deposit.container_start_amount.desc").withStyle(TextFormatting.GRAY), 200));
+                        tooltip.add(new BlocklingsTranslationTextComponent("config.item.container_start_amount.name").getVisualOrderText());
+                        tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslationTextComponent("config.item.container_start_amount.desc").withStyle(TextFormatting.GRAY), 200));
 
                         renderTooltip(matrixStack, mouseX, mouseY, tooltip);
                     }

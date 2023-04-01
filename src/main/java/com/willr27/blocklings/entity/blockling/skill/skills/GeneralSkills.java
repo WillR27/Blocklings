@@ -128,6 +128,7 @@ public class GeneralSkills
         public void onBuy(@Nonnull Skill skill)
         {
             skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.DEPOSIT_ITEMS, true);
+            skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.TAKE_ITEMS, true);
         }
     };
 

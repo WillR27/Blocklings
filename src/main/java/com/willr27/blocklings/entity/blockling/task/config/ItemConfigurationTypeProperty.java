@@ -144,19 +144,20 @@ public class ItemConfigurationTypeProperty extends Property
 
         /**
          * Creates a new {@link ItemsConfigurationControl} based on the type.
-         * @param itemInfoSet the {@link OrderedItemInfoSet} to use.
          *
+         * @param itemInfoSet the {@link OrderedItemInfoSet} to use.
+         * @param isTakeItems whether the items are being taken or deposited.
          * @return the new {@link ItemsConfigurationControl}.
          */
         @Nonnull
-        public ItemsConfigurationControl createItemsConfigurationControl(@Nonnull OrderedItemInfoSet itemInfoSet)
+        public ItemsConfigurationControl createItemsConfigurationControl(@Nonnull OrderedItemInfoSet itemInfoSet, boolean isTakeItems)
         {
             switch (this)
             {
                 case ADVANCED:
-                    return new ItemsConfigurationControl.AdvancedItemsConfigurationControl(itemInfoSet);
+                    return new ItemsConfigurationControl.AdvancedItemsConfigurationControl(itemInfoSet, isTakeItems);
                 default:
-                    return new ItemsConfigurationControl.SimpleItemsConfigurationControl(itemInfoSet);
+                    return new ItemsConfigurationControl.SimpleItemsConfigurationControl(itemInfoSet, isTakeItems);
             }
         }
 

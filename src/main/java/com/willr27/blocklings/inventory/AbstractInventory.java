@@ -316,20 +316,39 @@ public abstract class AbstractInventory implements IInventory, IReadWriteNBT
         return couldAdd;
     }
 
-    public ItemStack addItem(ItemStack stack, int slot)
+    /**
+     * Adds the given item stack to the inventory.
+     *
+     * @param stack the item stack to add.
+     * @param slot the slot to add the item stack to.
+     * @param simulate whether to simulate the addition.
+     * @return the remainder of the item stack that could not be added.
+     */
+    @Nonnull
+    public ItemStack addItem(@Nonnull ItemStack stack, int slot, boolean simulate)
     {
         ItemStack slotStack = getItem(slot);
+
         if (ItemStack.isSame(stack, slotStack))
         {
             int amountToAdd = stack.getCount();
             amountToAdd = Math.min(amountToAdd, slotStack.getMaxStackSize() - slotStack.getCount());
+
             stack.shrink(amountToAdd);
-            slotStack.grow(amountToAdd);
-            setItem(slot, slotStack);
+
+            if (!simulate)
+            {
+                slotStack.grow(amountToAdd);
+                setItem(slot, slotStack);
+            }
         }
         else
         {
-            setItem(slot, stack.copy());
+            if (!simulate)
+            {
+                setItem(slot, stack.copy());
+            }
+
             stack.shrink(stack.getCount());
         }
 

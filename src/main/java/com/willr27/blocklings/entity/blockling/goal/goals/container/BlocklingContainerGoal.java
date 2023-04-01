@@ -1,6 +1,7 @@
 package com.willr27.blocklings.entity.blockling.goal.goals.container;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.capabilities.ContainerConfigureCapability;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
@@ -28,6 +29,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.PacketBuffer;
@@ -37,6 +40,7 @@ import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -82,6 +86,16 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
     private BaseControl itemsContainer;
 
     /**
+     * The amount of items that can be transferred per second.
+     */
+    private int transferAmount = 1;
+
+    /**
+     * The timer used to determine when to transfer items.
+     */
+    private int transferTimer = 0;
+
+    /**
      * @param id        the id associated with the goal's task.
      * @param blockling the blockling.
      * @param tasks     the blockling tasks.
@@ -116,6 +130,7 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
         }
 
         taskTag.put("container_infos", containerInfosTag);
+        taskTag.put("item_set", itemInfoSet.writeToNBT());
     }
 
     @Override
@@ -135,6 +150,17 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
                 containerInfos.add(containerInfo);
             }
         }
+
+        CompoundNBT itemSetTag = taskTag.getCompound("item_set");
+
+        if (taskTag.contains("item_set"))
+        {
+            itemInfoSet.readFromNBT(itemSetTag, tagVersion);
+        }
+        else
+        {
+            Blocklings.LOGGER.warn("Could not find item set for deposit container goal!");
+        }
     }
 
     @Override
@@ -148,6 +174,8 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
         {
             containerInfos.get(i).encode(buf);
         }
+
+        itemInfoSet.encode(buf);
     }
 
     @Override
@@ -163,6 +191,216 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
             containerInfo.decode(buf);
             containerInfos.add(containerInfo);
         }
+
+        itemInfoSet.decode(buf);
+    }
+
+    @Override
+    protected void tickGoal()
+    {
+        if (transferTimer < 20)
+        {
+            transferTimer++;
+
+            return;
+        }
+
+        if (isInRangeOfPathTargetPos())
+        {
+            boolean depositedAnItem = tryTransferItems(getTarget(), false);
+
+            // If no items were deposited then try other targets before this one again.
+            if (!depositedAnItem)
+            {
+                markTargetBad();
+            }
+        }
+
+        transferTimer = 0;
+    }
+
+    /**
+     * Tries to transfer items to the target container.
+     *
+     * @param containerInfo the container info.
+     * @param simulate whether to simulate the transfer.
+     * @return returns true if an item was transferred.
+     */
+    protected abstract boolean tryTransferItems(@Nonnull ContainerInfo containerInfo, boolean simulate);
+
+    @Override
+    public boolean tryRecalcTarget()
+    {
+        if (!hasItemsToTransfer())
+        {
+            setTarget(null);
+            setPathTargetPos(null, null);
+
+            return false;
+        }
+
+//        for (BlockPos testPos : BlockPos.betweenClosed(blockling.blockPosition().offset(-range, -range, -range), blockling.blockPosition().offset(range, range, range)))
+//        {
+//            TileEntity tileEntity = world.getBlockEntity(testPos);
+//
+//            if (isValidTarget(tileEntity))
+//            {
+//                setTarget(tileEntity);
+//                setPathTargetPos(null, null);
+//
+//                return true;
+//            }
+//        }
+
+        for (ContainerInfo containerInfo : containerInfos)
+        {
+            if (!isInRange(containerInfo.getBlockPos(), getRangeSq()))
+            {
+                continue;
+            }
+
+            if (isValidTarget(containerInfo))
+            {
+                setTarget(containerInfo);
+                setPathTargetPos(null, null);
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    protected boolean recalcPath(boolean force)
+    {
+        setPathTargetPos(getTarget().getBlockPos(), path);
+
+        return true;
+    }
+
+    @Override
+    protected boolean isValidPathTargetPos(@Nonnull BlockPos blockPos)
+    {
+        return true;
+    }
+
+    @Override
+    public float getRangeSq()
+    {
+        return 256.0f;
+    }
+
+    @Override
+    protected void checkForAndHandleInvalidTargets()
+    {
+        if (!isTargetValid())
+        {
+            markTargetBad();
+        }
+    }
+
+    @Override
+    public void markEntireTargetBad()
+    {
+        if (hasTarget())
+        {
+            markTargetBad();
+        }
+    }
+
+    @Override
+    public boolean isValidTarget(@Nullable ContainerInfo containerInfo)
+    {
+        if (containerInfo == null)
+        {
+            return false;
+        }
+
+        if (!containerInfo.isConfigured())
+        {
+            return false;
+        }
+
+        if (badTargets.contains(containerInfo))
+        {
+            return false;
+        }
+
+        if (!tryTransferItems(containerInfo, true))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @return whether there are items available to transfer.
+     */
+    protected abstract boolean hasItemsToTransfer();
+
+    /**
+     * Counts the number of items in the blockling's inventory.
+     *
+     * @param item the item to count.
+     * @return the number of items in the blockling's inventory.
+     */
+    public int countItemsInInventory(@Nonnull Item item)
+    {
+        return blockling.getEquipment().count(new ItemStack(item));
+    }
+
+    /**
+     * @return true if the blockling has the given item in their inventory.
+     */
+    public boolean hasItemInInventory(@Nonnull Item item)
+    {
+        return blockling.getEquipment().has(new ItemStack(item));
+    }
+
+    /**
+     * @param containerItemHandler the container to check.
+     * @param item the item to check for.
+     * @return true if the container has the given item.
+     */
+    public boolean hasItemInContainer(@Nonnull IItemHandler containerItemHandler, @Nonnull Item item)
+    {
+        for (int slot = 0; slot < containerItemHandler.getSlots(); slot++)
+        {
+            ItemStack stack = containerItemHandler.getStackInSlot(slot);
+
+            if (stack.getItem() == item)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Counts the number of items in the container.
+     *
+     * @param containerItemHandler the container to count the items in.
+     * @param item the item to count.
+     * @return the number of items in the container.
+     */
+    public int countItemsInContainer(@Nonnull IItemHandler containerItemHandler, @Nonnull Item item)
+    {
+        int count = 0;
+
+        for (int slot = 0; slot < containerItemHandler.getSlots(); slot++)
+        {
+            ItemStack stack = containerItemHandler.getStackInSlot(slot);
+
+            if (stack.getItem() == item)
+            {
+                count += stack.getCount();
+            }
+        }
+
+        return count;
     }
 
     /**
@@ -339,6 +577,27 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
         return itemInfoSet;
     }
 
+    /**
+     * @return the number of items to transfer every second.
+     */
+    public int getTransferAmount()
+    {
+        return transferAmount;
+    }
+
+    /**
+     * @param transferAmount the number of items to transfer every second.
+     */
+    public void setTransferAmount(int transferAmount)
+    {
+        this.transferAmount = transferAmount;
+    }
+
+    /**
+     * @return whether the goal should take items from the container or deposit them.
+     */
+    public abstract boolean isTakeItems();
+
     @Nonnull
     @Override
     public void addConfigTabControls(@Nonnull TabbedPanel tabbedPanel)
@@ -475,7 +734,7 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
 
         itemsContainer.clearChildren();
 
-        ItemsConfigurationControl itemsConfigurationControl = type.createItemsConfigurationControl(itemInfoSet);
+        ItemsConfigurationControl itemsConfigurationControl = type.createItemsConfigurationControl(itemInfoSet, isTakeItems());
         itemsConfigurationControl.setParent(itemsContainer);
         itemsConfigurationControl.setMargins(5.0, 9.0, 5.0, 5.0);
         itemsConfigurationControl.setMaxItems(MAX_ITEMS);
