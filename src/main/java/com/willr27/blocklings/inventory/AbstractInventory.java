@@ -449,7 +449,18 @@ public abstract class AbstractInventory implements IInventory, IReadWriteNBT
 
         for (int i = 0; i < invSize && !stackToAddCopy.isEmpty(); i++)
         {
-            stackToAddCopy = addItem(stackToAddCopy, i, simulate);
+            if (ItemStack.isSame(stackToAddCopy, getItem(i)))
+            {
+                stackToAddCopy = addItem(stackToAddCopy, i, simulate);
+            }
+        }
+
+        for (int i = 0; i < invSize && !stackToAddCopy.isEmpty(); i++)
+        {
+            if (getItem(i).isEmpty())
+            {
+                stackToAddCopy = addItem(stackToAddCopy, i, simulate);
+            }
         }
 
         return stackToAddCopy;
