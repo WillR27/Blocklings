@@ -40,6 +40,7 @@ import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
@@ -428,21 +429,18 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
     }
 
     /**
-     * @return returns the target tile entity as an inventory, null if the cast fails.
+     * Tries to get the item handler for the given tile entity.
+     *
+     * @param tileEntity the tile entity to get the item handler for.
+     * @param direction the direction to get the item handler for.
+     * @return the item handler, or null if it doesn't exist.
      */
     @Nullable
-    public IInventory targetAsInventory()
+    public IItemHandler getItemHandler(@Nonnull TileEntity tileEntity, @Nonnull Direction direction)
     {
-        return tileEntityAsInventory(targetAsTileEntity());
-    }
-
-    /**
-     * @return returns the given tile entity as an inventory, null if the cast fails.
-     */
-    @Nullable
-    public IInventory tileEntityAsInventory(@Nullable TileEntity tileEntity)
-    {
-        return (IInventory) tileEntity;
+        // We have to use orElse(null) here because the lazy optional doesn't seem to provide a way to use the object
+        // outside ifPresent().
+        return tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(null);
     }
 
     /**

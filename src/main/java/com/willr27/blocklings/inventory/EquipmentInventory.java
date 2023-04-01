@@ -341,63 +341,25 @@ public class EquipmentInventory extends AbstractInventory
         return new SwitchedTools(handSlot, bestSlot);
     }
 
+    @Nonnull
     @Override
-    public ItemStack addItem(@Nonnull ItemStack stack)
+    public ItemStack addItem(@Nonnull ItemStack stackToAdd, int slot, boolean simulate)
     {
-        int maxStackSize = stack.getMaxStackSize();
-
-        for (int i = 0; i < invSize && !stack.isEmpty(); i++)
+        // Only allow tools to be added to the tool slots.
+        if (isToolSlot(slot) && !ToolUtil.isTool(stackToAdd))
         {
-            if (i >= TOOL_MAIN_HAND && i <= TOOL_OFF_HAND)
-            {
-                if (!ToolUtil.isTool(stack))
-                {
-                    continue;
-                }
-            }
-
-            ItemStack slotStack = getItem(i);
-
-            if (ItemStack.isSame(stack, slotStack))
-            {
-                int amountToAdd = stack.getCount();
-                amountToAdd = Math.min(amountToAdd, maxStackSize - slotStack.getCount());
-                stack.shrink(amountToAdd);
-                slotStack.grow(amountToAdd);
-                setItem(i, slotStack);
-            }
+            return stackToAdd;
         }
 
-        for (int i = 0; i < invSize && !stack.isEmpty(); i++)
-        {
-            if (i >= TOOL_MAIN_HAND && i <= TOOL_OFF_HAND)
-            {
-                if (!ToolUtil.isTool(stack))
-                {
-                    continue;
-                }
-            }
-
-            ItemStack slotStack = getItem(i);
-
-            if (slotStack.isEmpty())
-            {
-                setItem(i, stack.copy());
-                stack.setCount(0);
-
-                break;
-            }
-        }
-
-        return stack;
+        return super.addItem(stackToAdd, slot, simulate);
     }
 
     @Override
-    public void setItem(int index, @Nonnull ItemStack stack)
+    public void setItem(int slot, @Nonnull ItemStack stack)
     {
-        super.setItem(index, stack);
+        super.setItem(slot, stack);
 
-        if (index == TOOL_MAIN_HAND || index == TOOL_OFF_HAND)
+        if (isToolSlot(slot))
         {
             updateToolAttributes();
         }
@@ -488,6 +450,15 @@ public class EquipmentInventory extends AbstractInventory
                 }
             }
         }
+    }
+
+    /**
+     * @param slot the slot to check.
+     * @return whether the slot is a tool slot.
+     */
+    public boolean isToolSlot(int slot)
+    {
+        return slot >= TOOL_MAIN_HAND && slot <= TOOL_OFF_HAND;
     }
 
     /**

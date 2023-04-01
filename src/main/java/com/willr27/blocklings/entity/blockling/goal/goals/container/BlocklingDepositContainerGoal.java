@@ -33,9 +33,6 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal
     @Override
     protected boolean tryTransferItems(@Nonnull ContainerInfo containerInfo, boolean simulate)
     {
-        AbstractInventory inv = blockling.getEquipment();
-        int remainingDepositAmount = getTransferAmount();
-
         TileEntity tileEntity = containerAsTileEntity(containerInfo);
 
         if (tileEntity == null)
@@ -43,6 +40,10 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal
             return false;
         }
 
+        AbstractInventory inv = blockling.getEquipment();
+        int remainingDepositAmount = getTransferAmount();
+
+        // Loop through each item and try to take it from the blockling's inventory.
         for (ItemInfo itemInfo : itemInfoSet)
         {
             // If we have deposited all the items we can then stop.
@@ -51,26 +52,44 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal
                 break;
             }
 
-            int startInventoryAmount = itemInfo.getStartInventoryAmount() != null ? itemInfo.getStartInventoryAmount() : 0;
-            int startContainerAmount = itemInfo.getStartContainerAmount() != null ? itemInfo.getStartContainerAmount() : Integer.MAX_VALUE;
-            int stopInventoryAmount = itemInfo.getStopInventoryAmount() != null ? itemInfo.getStopInventoryAmount() : 0;
-            int stopContainerAmount = itemInfo.getStopContainerAmount() != null ? itemInfo.getStopContainerAmount() : Integer.MAX_VALUE;
-
             Item item = itemInfo.getItem();
 
-            // Skip any items that are not in the blockling's inventory.
+            // Skip any items that are not in the container's inventory.
             if (itemConfigurationTypeProperty.getType() == ItemConfigurationTypeProperty.Type.SIMPLE && !hasItemInInventory(item))
             {
                 continue;
             }
 
+            int startInventoryAmount = itemInfo.getStartInventoryAmount() != null ? itemInfo.getStartInventoryAmount() : 0;
+            int startContainerAmount = itemInfo.getStartContainerAmount() != null ? itemInfo.getStartContainerAmount() : Integer.MAX_VALUE;
+            int stopInventoryAmount = itemInfo.getStopInventoryAmount() != null ? itemInfo.getStopInventoryAmount() : 0;
+            int stopContainerAmount = itemInfo.getStopContainerAmount() != null ? itemInfo.getStopContainerAmount() : Integer.MAX_VALUE;
+
+            // Loop through each selected side of the container (in priority order) and try to deposit the item in it.
             for (Direction direction : containerInfo.getSides())
             {
-                IItemHandler itemHandler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(null);
+                IItemHandler itemHandler = getItemHandler(tileEntity, direction);
 
+                // Something has probably gone wrong if the item handler is null, but we have to check.
                 if (itemHandler == null)
                 {
                     return false;
+                }
+
+                ItemStack remainingStack = new ItemStack(item, remainingDepositAmount);
+                int amountOfSpaceInContainerForItem = 0;
+
+                for (int i = 0; i < itemHandler.getSlots() && !remainingStack.isEmpty(); i++)
+                {
+                    ItemStack remainderStack = itemHandler.insertItem(i, remainingStack, true);
+                    amountOfSpaceInContainerForItem += remainingStack.getCount() - remainderStack.getCount();
+                    remainingStack = remainderStack;
+                }
+
+                // If there is no space in the container for the item then continue to the next direction.
+                if (amountOfSpaceInContainerForItem == 0)
+                {
+                    continue;
                 }
 
                 // If we are using the advanced configuration check the item's inventory and container amounts.
@@ -106,28 +125,38 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal
                     break;
                 }
 
-                int startingStackToDepositCount = Math.min(remainingDepositAmount, inv.count(new ItemStack(item)));
-                ItemStack stackToDeposit = new ItemStack(item, startingStackToDepositCount);
+                // Only try to deposit what is needed and the container has room for.
+                int amountToDeposit = Math.min(remainingDepositAmount, amountOfSpaceInContainerForItem);
+                ItemStack stackLeftToDeposit = new ItemStack(item, amountToDeposit);
 
-                // Loop through all slots or until the stack is empty.
-                for (int slot = 0; slot < itemHandler.getSlots() && !stackToDeposit.isEmpty(); slot++)
+                // Try take as many items as possible from the blockling's inventory.
+                ItemStack stackDeposited = inv.takeItem(stackLeftToDeposit, simulate);
+
+                // Calculate the amount of items we have taken.
+                int amountTaken = stackDeposited.getCount();
+
+                // If we have not taken any items then continue to the next direction.
+                if (amountTaken == 0)
                 {
-                    // Try insert as many items as possible and update the stack to be the remainder.
-                    stackToDeposit = itemHandler.insertItem(slot, stackToDeposit, simulate);
+                    continue;
                 }
 
-                int amountDeposited = startingStackToDepositCount - stackToDeposit.getCount();
-
-                // If the count has decreased then at least one item was deposited.
-                if (amountDeposited > 0)
+                // If we are not simulating then add the items to the container's inventory.
+                if (!simulate)
                 {
-                    if (!simulate)
+                    for (int i = 0; i < itemHandler.getSlots() && !stackDeposited.isEmpty(); i++)
                     {
-                        inv.take(new ItemStack(item, amountDeposited));
+                        stackDeposited = itemHandler.insertItem(i, stackDeposited, false);
                     }
-
-                    remainingDepositAmount -= amountDeposited;
                 }
+                else
+                {
+                    // If we are here then we are simulating and have deposited an item so can return true.
+                    return true;
+                }
+
+                // Update the amount of items we have taken.
+                remainingDepositAmount -= amountTaken;
             }
         }
 

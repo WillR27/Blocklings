@@ -228,11 +228,13 @@ public abstract class AbstractInventory implements IInventory, IReadWriteNBT
         return false;
     }
 
+    @Deprecated
     public boolean take(ItemStack stack)
     {
         return take(stack, 0, getContainerSize() - 1);
     }
 
+    @Deprecated
     public boolean take(ItemStack stack, int startIndex, int endIndex)
     {
         if (!has(stack))
@@ -265,6 +267,59 @@ public abstract class AbstractInventory implements IInventory, IReadWriteNBT
         }
 
         return true;
+    }
+
+    /**
+     * Tries to take the given item stack from the given slot. Doesn't modify the given item stack.
+     *
+     * @param stack the item stack to take.
+     * @param slot the slot to take from.
+     * @param simulate whether to simulate the take.
+     * @return the item stack that was taken.
+     */
+    @Nonnull
+    public ItemStack takeItem(@Nonnull ItemStack stack, int slot, boolean simulate)
+    {
+        ItemStack slotStack = getItem(slot);
+
+        if (ItemStack.isSame(slotStack, stack))
+        {
+            int count = Math.min(stack.getCount(), slotStack.getCount());
+
+            if (!simulate)
+            {
+                slotStack.shrink(count);
+            }
+
+            ItemStack taken = stack.copy();
+            taken.setCount(count);
+
+            return taken;
+        }
+
+        return ItemStack.EMPTY;
+    }
+
+    /**
+     * Tries to take the given item stack from the inventory. Doesn't modify the given item stack.
+     *
+     * @param stack the item stack to take.
+     * @param simulate whether to simulate the take.
+     * @return the item stack that was taken.
+     */
+    @Nonnull
+    public ItemStack takeItem(@Nonnull ItemStack stack, boolean simulate)
+    {
+        ItemStack stackCopy = stack.copy();
+
+        for (int i = getContainerSize() - 1; i >= 0 && !stackCopy.isEmpty(); i--)
+        {
+            stackCopy.shrink(takeItem(stackCopy, i, simulate).getCount());
+        }
+
+        stackCopy.setCount(stack.getCount() - stackCopy.getCount());
+
+        return stackCopy;
     }
 
     /**
@@ -319,73 +374,84 @@ public abstract class AbstractInventory implements IInventory, IReadWriteNBT
     /**
      * Adds the given item stack to the inventory.
      *
-     * @param stack the item stack to add.
+     * @param stackToAdd the item stack to add.
+     * @param slot the slot to add the item stack to.
+     * @return the remainder of the item stack that could not be added.
+     */
+    @Nonnull
+    public ItemStack addItem(@Nonnull ItemStack stackToAdd, int slot)
+    {
+        return addItem(stackToAdd, slot, false);
+    }
+
+    /**
+     * Adds the given item stack to the inventory.
+     *
+     * @param stackToAdd the item stack to add.
      * @param slot the slot to add the item stack to.
      * @param simulate whether to simulate the addition.
      * @return the remainder of the item stack that could not be added.
      */
     @Nonnull
-    public ItemStack addItem(@Nonnull ItemStack stack, int slot, boolean simulate)
+    public ItemStack addItem(@Nonnull ItemStack stackToAdd, int slot, boolean simulate)
     {
         ItemStack slotStack = getItem(slot);
+        ItemStack stackToAddCopy = stackToAdd.copy();
 
-        if (ItemStack.isSame(stack, slotStack))
+        if (ItemStack.isSame(stackToAddCopy, slotStack))
         {
-            int amountToAdd = stack.getCount();
+            int amountToAdd = stackToAddCopy.getCount();
             amountToAdd = Math.min(amountToAdd, slotStack.getMaxStackSize() - slotStack.getCount());
-
-            stack.shrink(amountToAdd);
 
             if (!simulate)
             {
                 slotStack.grow(amountToAdd);
-                setItem(slot, slotStack);
             }
+
+            stackToAddCopy.shrink(amountToAdd);
         }
         else
         {
             if (!simulate)
             {
-                setItem(slot, stack.copy());
+                setItem(slot, stackToAddCopy.copy());
             }
 
-            stack.shrink(stack.getCount());
+            stackToAddCopy.shrink(stackToAddCopy.getCount());
         }
 
-        return stack;
+        return stackToAddCopy;
     }
 
-    public ItemStack addItem(ItemStack stack)
+    /**
+     * Adds the given item stack to the inventory.
+     *
+     * @param stackToAdd the item stack to add.
+     * @return the remainder of the item stack that could not be added.
+     */
+    @Nonnull
+    public ItemStack addItem(@Nonnull ItemStack stackToAdd)
     {
-        int maxStackSize = stack.getMaxStackSize();
+        return addItem(stackToAdd, false);
+    }
 
-        for (int i = 0; i < invSize && !stack.isEmpty(); i++)
+    /**
+     * Adds the given item stack to the inventory.
+     *
+     * @param stackToAdd the item stack to add.
+     * @param simulate whether to simulate the addition.
+     * @return the remainder of the item stack that could not be added.
+     */
+    @Nonnull
+    public ItemStack addItem(@Nonnull ItemStack stackToAdd, boolean simulate)
+    {
+        ItemStack stackToAddCopy = stackToAdd.copy();
+
+        for (int i = 0; i < invSize && !stackToAddCopy.isEmpty(); i++)
         {
-            ItemStack slotStack = getItem(i);
-
-            if (ItemStack.isSame(stack, slotStack))
-            {
-                int amountToAdd = stack.getCount();
-                amountToAdd = Math.min(amountToAdd, maxStackSize - slotStack.getCount());
-                stack.shrink(amountToAdd);
-                slotStack.grow(amountToAdd);
-                setItem(i, slotStack);
-            }
+            stackToAddCopy = addItem(stackToAddCopy, i, simulate);
         }
 
-        for (int i = 0; i < invSize && !stack.isEmpty(); i++)
-        {
-            ItemStack slotStack = getItem(i);
-
-            if (slotStack.isEmpty())
-            {
-                setItem(i, stack.copy());
-                stack.setCount(0);
-
-                break;
-            }
-        }
-
-        return stack;
+        return stackToAddCopy;
     }
 }

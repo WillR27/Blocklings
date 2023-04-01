@@ -33,9 +33,6 @@ public class BlocklingTakeContainerGoal extends BlocklingContainerGoal
     @Override
     protected boolean tryTransferItems(@Nonnull ContainerInfo containerInfo, boolean simulate)
     {
-        AbstractInventory inv = blockling.getEquipment();
-        int remainingTakeAmount = getTransferAmount();
-
         TileEntity tileEntity = containerAsTileEntity(containerInfo);
 
         if (tileEntity == null)
@@ -43,6 +40,10 @@ public class BlocklingTakeContainerGoal extends BlocklingContainerGoal
             return false;
         }
 
+        AbstractInventory inv = blockling.getEquipment();
+        int remainingTakeAmount = getTransferAmount();
+
+        // Loop through each item and try to take it from the container.
         for (ItemInfo itemInfo : itemInfoSet)
         {
             // If we have taken all the items we can then stop.
@@ -55,13 +56,30 @@ public class BlocklingTakeContainerGoal extends BlocklingContainerGoal
             int startContainerAmount = itemInfo.getStartContainerAmount() != null ? itemInfo.getStartContainerAmount() : 0;
             int stopInventoryAmount = itemInfo.getStopInventoryAmount() != null ? itemInfo.getStopInventoryAmount() : Integer.MAX_VALUE;
             int stopContainerAmount = itemInfo.getStopContainerAmount() != null ? itemInfo.getStopContainerAmount() : 0;
-
             Item item = itemInfo.getItem();
 
+            ItemStack remainingStack = new ItemStack(item, remainingTakeAmount);
+            int amountOfSpaceInInventoryForItem = remainingStack.getCount() - inv.addItem(remainingStack, true).getCount();
+
+            // If there is no space in the inventory for the item then skip it.
+            if (amountOfSpaceInInventoryForItem == 0)
+            {
+                continue;
+            }
+
+            // Loop through each selected side of the container (in priority order) and try to take the item from it.
             for (Direction direction : containerInfo.getSides())
             {
-                IItemHandler itemHandler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(null);
+                // If there is no space in the inventory for the item then skip it. We need to check again here as we
+                // may have taken some items from the container in the previous loop.
+                if (amountOfSpaceInInventoryForItem == 0)
+                {
+                    continue;
+                }
 
+                IItemHandler itemHandler = getItemHandler(tileEntity, direction);
+
+                // Something has probably gone wrong if the item handler is null, but we have to check.
                 if (itemHandler == null)
                 {
                     return false;
@@ -106,32 +124,42 @@ public class BlocklingTakeContainerGoal extends BlocklingContainerGoal
                     break;
                 }
 
-                int startingStackToTakeCount = Math.min(remainingTakeAmount, countItemsInContainer(itemHandler, item));
-                ItemStack stackToTake = new ItemStack(item, startingStackToTakeCount);
+                // Only try to take what is needed and the blockling has room for.
+                int amountToTake = Math.min(remainingTakeAmount, amountOfSpaceInInventoryForItem);
+                ItemStack stackLeftToTake = new ItemStack(item, amountToTake);
 
-                // Loop through all slots or until the stack is empty.
-                for (int slot = 0; slot < inv.invSize && !stackToTake.isEmpty(); slot++)
+                // Try extract as many items as possible and update the stack to be the remaining stack. Extract first
+                // in case the item handler has special rules that prevent an item being extracted, e.g. a machine that
+                // prevents items being extracted through the top.
+                for (int slot = itemHandler.getSlots() - 1; slot >= 0 && !stackLeftToTake.isEmpty(); slot--)
                 {
-                    // Try insert as many items as possible and update the stack to be the remainder.
-                    stackToTake = inv.addItem(stackToTake, slot, simulate);
+                    // Shrink the stack left to take by the amount extracted.
+                    stackLeftToTake.shrink(itemHandler.extractItem(slot, stackLeftToTake.getCount(), simulate).getCount());
                 }
 
-                int amountTaken = startingStackToTakeCount - stackToTake.getCount();
+                // Calculate the amount of items we have taken.
+                int amountTaken = amountToTake - stackLeftToTake.getCount();
 
-                // If the count has decreased then at least one item was taken.
-                if (amountTaken > 0)
+                // If we have not taken any items then continue to the next direction.
+                if (amountTaken == 0)
                 {
-                    remainingTakeAmount -= amountTaken;
-
-                    if (!simulate)
-                    {
-                        for (int slot = 0; slot < itemHandler.getSlots() && amountTaken > 0; slot++)
-                        {
-                            ItemStack extractedStack = itemHandler.extractItem(slot, amountTaken, false);
-                            amountTaken -= extractedStack.getCount();
-                        }
-                    }
+                    continue;
                 }
+
+                // If we are not simulating then add the items to the blockling's inventory.
+                if (!simulate)
+                {
+                    inv.addItem(new ItemStack(item, amountToTake), false);
+                }
+                else
+                {
+                    // If we are here then we are simulating and have taken an item so can return true.
+                    return true;
+                }
+
+                // Update the amount of items we have taken.
+                remainingTakeAmount -= amountTaken;
+                amountOfSpaceInInventoryForItem -= amountTaken;
             }
         }
 
@@ -154,7 +182,7 @@ public class BlocklingTakeContainerGoal extends BlocklingContainerGoal
 
                 for (Direction direction : containerInfo.getSides())
                 {
-                    IItemHandler itemHandler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(null);
+                    IItemHandler itemHandler = getItemHandler(tileEntity, direction);
 
                     if (itemHandler == null)
                     {

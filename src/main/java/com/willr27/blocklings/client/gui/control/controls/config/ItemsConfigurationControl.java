@@ -1081,8 +1081,8 @@ public abstract class ItemsConfigurationControl extends Control
                     public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
                     {
                         List<IReorderingProcessor> tooltip = new ArrayList<>();
-                        tooltip.add(new BlocklingsTranslationTextComponent("config.item.container_start_amount.name").getVisualOrderText());
-                        tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslationTextComponent("config.item.container_start_amount.desc").withStyle(TextFormatting.GRAY), 200));
+                        tooltip.add(new BlocklingsTranslationTextComponent("config.item.container_stop_amount.name").getVisualOrderText());
+                        tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslationTextComponent("config.item.container_stop_amount.desc").withStyle(TextFormatting.GRAY), 200));
 
                         renderTooltip(matrixStack, mouseX, mouseY, tooltip);
                     }
