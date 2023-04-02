@@ -21,6 +21,7 @@ import com.willr27.blocklings.entity.blockling.goal.config.iteminfo.OrderedItemI
 import com.willr27.blocklings.entity.blockling.skill.skills.GeneralSkills;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.task.config.ItemConfigurationTypeProperty;
+import com.willr27.blocklings.entity.blockling.task.config.range.IntRangeProperty;
 import com.willr27.blocklings.network.messages.GoalMessage;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import com.willr27.blocklings.util.Version;
@@ -82,14 +83,15 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
     public final ItemConfigurationTypeProperty itemConfigurationTypeProperty;
 
     /**
+     * The property used to select the amount of items to transfer per second.
+     */
+    @Nonnull
+    public final IntRangeProperty itemTransferAmount;
+
+    /**
      * The container control used for the items tab in the configuration screen.
      */
     private BaseControl itemsContainer;
-
-    /**
-     * The amount of items that can be transferred per second.
-     */
-    private int transferAmount = 1;
 
     /**
      * The timer used to determine when to transfer items.
@@ -113,9 +115,16 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
                 "35d1e5a5-dfff-4a06-bb71-de1df8823632", this,
                 new BlocklingsTranslationTextComponent("task.property.item_configuration_type.name"),
                 new BlocklingsTranslationTextComponent("task.property.item_configuration_type.desc")));
+        properties.add(itemTransferAmount = new IntRangeProperty(
+                "c858da92-5009-407c-94ae-56b70d91f01a", this,
+                new BlocklingsTranslationTextComponent("task.property.item_transfer_amount.name"),
+                new BlocklingsTranslationTextComponent("task.property.item_transfer_amount.desc"),
+                1, 4, 4));
 
         itemConfigurationTypeProperty.setEnabled(blockling.getSkills().getSkill(GeneralSkills.ADVANCED_COURIER).isBought());
         itemConfigurationTypeProperty.onTypeChanged.subscribe((this::recreateItemsConfigurationControl));
+
+        itemTransferAmount.setEnabled(blockling.getSkills().getSkill(GeneralSkills.FIRST_CLASS).isBought());
     }
 
     @Override
@@ -585,15 +594,7 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
      */
     public int getTransferAmount()
     {
-        return transferAmount;
-    }
-
-    /**
-     * @param transferAmount the number of items to transfer every second.
-     */
-    public void setTransferAmount(int transferAmount)
-    {
-        this.transferAmount = transferAmount;
+        return itemTransferAmount.isEnabled() ? itemTransferAmount.getValue() : itemTransferAmount.getMin();
     }
 
     /**

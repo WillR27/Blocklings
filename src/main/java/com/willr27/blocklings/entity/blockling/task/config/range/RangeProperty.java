@@ -14,16 +14,19 @@ public abstract class RangeProperty<T extends Number> extends Property
     /**
      * The minimum value of the range.
      */
+    @Nonnull
     protected T min;
 
     /**
      * The maximum value of the range.
      */
+    @Nonnull
     protected T max;
 
     /**
      * The current value.
      */
+    @Nonnull
     protected T value;
 
     /**
@@ -35,7 +38,7 @@ public abstract class RangeProperty<T extends Number> extends Property
      * @param max           the maximum value of the range.
      * @param startingValue the range starting value.
      */
-    public RangeProperty(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull ITextComponent name, @Nonnull ITextComponent desc, T min, T max, T startingValue)
+    public RangeProperty(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull ITextComponent name, @Nonnull ITextComponent desc, @Nonnull T min, @Nonnull T max, @Nonnull T startingValue)
     {
         super(id, goal, name, desc);
         this.min = min;
@@ -55,6 +58,7 @@ public abstract class RangeProperty<T extends Number> extends Property
      * @param value the new value.
      * @param sync whether to sync to the client/server.
      */
+    @Nonnull
     public void setValue(T value, boolean sync)
     {
         this.value = value;
@@ -63,5 +67,22 @@ public abstract class RangeProperty<T extends Number> extends Property
         {
             new TaskPropertyMessage(this).sync();
         }
+    }
+
+    /**
+     * @return the minimum value of the range.
+     */
+    public T getMin()
+    {
+        return min;
+    }
+
+    /**
+     * @return the maximum value of the range.
+     */
+    @Nonnull
+    public T getMax()
+    {
+        return max;
     }
 }

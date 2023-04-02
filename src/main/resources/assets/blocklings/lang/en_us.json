@@ -83,6 +83,8 @@
   "blocklings.task.property.item_configuration_type.desc": "The type of item configuration to use.",
   "blocklings.task.property.item_configuration_type.simple": "Simple",
   "blocklings.task.property.item_configuration_type.advanced": "Advanced",
+  "blocklings.task.property.item_transfer_amount.name": "Item transfer amount",
+  "blocklings.task.property.item_transfer_amount.desc": "The amount of items your blockling will transfer each second.",
   "blocklings.task.null.name": "Blank",
   "blocklings.task.null.desc": "Click the configure button to set up this task.",
   "blocklings.task.sit.name": "Sit",
@@ -182,6 +184,8 @@
   "blocklings.skill.general.courier.desc": "Unlocks the \"Deposit Items\" and \"Take Items\" tasks.",
   "blocklings.skill.general.advanced_courier.name": "Advanced Courier",
   "blocklings.skill.general.advanced_courier.desc": "Unlocks the advanced item configuration option for the \"Deposit Items\" and \"Take Items\" tasks.",
+  "blocklings.skill.general.first_class.name": "First Class",
+  "blocklings.skill.general.first_class.desc": "Allows blocklings to transfer up to 4 items per second.",
 
   "blocklings.skill.combat.novice_guard.name": "Novice Guard",
   "blocklings.skill.combat.novice_guard.desc": "Unlocks the \"Attack Owner''s Attacker\" and \"Attack Owner''s Target\" tasks.",
