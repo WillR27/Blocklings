@@ -98,14 +98,12 @@ public class BlocklingDepositContainerGoal extends BlocklingContainerGoal
                     int inventoryAmount = countItemsInInventory(item);
                     int containerAmount = countItemsInContainer(itemHandler, item);
 
-                    // If the task is currently executing then we want to check if the stop amounts have been reached.
-                    if (getState() == State.ACTIVE)
+                    // We always want to check if the stop amounts have been reached.
+                    if (inventoryAmount <= stopInventoryAmount || containerAmount >= stopContainerAmount)
                     {
-                        if (inventoryAmount <= stopInventoryAmount || containerAmount >= stopContainerAmount)
-                        {
-                            continue;
-                        }
+                        continue;
                     }
+
                     // If the task is not currently executing then we want to check if the start amounts have been reached.
                     else
                     {
