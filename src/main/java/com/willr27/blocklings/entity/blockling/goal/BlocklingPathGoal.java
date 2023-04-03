@@ -120,7 +120,7 @@ public abstract class BlocklingPathGoal extends BlocklingGoal
             recalcPath(false);
         }
 
-        if (isStuck() || (isInRangeOfPathTargetPos() && !isValidPathTargetPos(getPathTargetPos())))
+        if (isStuck() || (isInRangeOfPathTargetPos() && (getPathTargetPos() == null || !isValidPathTargetPos(getPathTargetPos()))))
         {
             recalcPath(true);
         }

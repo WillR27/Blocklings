@@ -109,7 +109,7 @@ public class GeneralSkills
     public static final SkillInfo FIND_BLOCKLINGS = new SkillInfo("d28ea410-bd84-4a83-8aeb-0451c00314c3",
             new SkillGeneralInfo(Skill.Type.AI, "general.find_blocklings"),
             new SkillDefaultsInfo(Skill.State.UNLOCKED),
-            new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.TOTAL, 100); }}),
+            new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.TOTAL, 150); }}),
             new SkillGuiInfo(50, -100, SkillGuiInfo.ConnectionType.SINGLE_LONGEST_FIRST, 0xaaaaff, new SkillGuiInfo.SkillIconTexture(Textures.Skills.General.ICONS, 7, 0)))
     {
         @Override

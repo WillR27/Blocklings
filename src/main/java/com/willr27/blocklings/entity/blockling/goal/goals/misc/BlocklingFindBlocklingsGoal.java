@@ -3,10 +3,13 @@ package com.willr27.blocklings.entity.blockling.goal.goals.misc;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
+import com.willr27.blocklings.entity.blockling.task.config.range.IntRangeProperty;
+import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
+import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,6 +24,17 @@ import java.util.UUID;
 public class BlocklingFindBlocklingsGoal extends BlocklingTargetGoal<BlocklingEntity>
 {
     /**
+     * The radius in chunks to search for blocklings.
+     */
+    @Nonnull
+    public final IntRangeProperty chunkRangeProperty;
+
+    /**
+     * The time in ticks when the blockling last jumped.
+     */
+    private int lastJumpTicks = 0;
+
+    /**
      * @param id the id associated with the goal's task.
      * @param blockling the blockling.
      * @param tasks the blockling tasks.
@@ -30,6 +44,12 @@ public class BlocklingFindBlocklingsGoal extends BlocklingTargetGoal<BlocklingEn
         super(id, blockling, tasks);
 
         setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+
+        properties.add(chunkRangeProperty = new IntRangeProperty(
+                "4142fcf1-8af9-4993-bf8d-5369ad58fe8d", this,
+                new BlocklingsTranslationTextComponent("task.property.chunk_range.name"),
+                new BlocklingsTranslationTextComponent("task.property.chunk_range.desc"),
+                1, 6, 3));
     }
 
     @Override
@@ -85,7 +105,7 @@ public class BlocklingFindBlocklingsGoal extends BlocklingTargetGoal<BlocklingEn
         int worldHeight = world.getHeight();
         AxisAlignedBB baseBB = new AxisAlignedBB(0, 0, 0, 16, worldHeight, 16);
 
-        final int chunkRange = 6;
+        final int chunkRange = chunkRangeProperty.getValue();
 
         BlocklingEntity closestBlockling = null;
         double closestDistanceSq = Double.MAX_VALUE;
@@ -119,7 +139,7 @@ public class BlocklingFindBlocklingsGoal extends BlocklingTargetGoal<BlocklingEn
     @Override
     protected void checkForAndHandleInvalidTargets()
     {
-        if (hasTarget() && getTarget().isDeadOrDying())
+        if (!isTargetValid())
         {
             markTargetBad();
         }
@@ -144,6 +164,14 @@ public class BlocklingFindBlocklingsGoal extends BlocklingTargetGoal<BlocklingEn
             {
                 return false;
             }
+            else if (target.isDeadOrDying())
+            {
+                return false;
+            }
+            else if (blockling.distanceToSqr(target) < getRangeSq())
+            {
+                return false;
+            }
         }
 
         return true;
@@ -152,7 +180,15 @@ public class BlocklingFindBlocklingsGoal extends BlocklingTargetGoal<BlocklingEn
     @Override
     protected void tickGoal()
     {
+        if (blockling.tickCount - lastJumpTicks > 100)
+        {
+            if (blockling.getY() + 2 < getTarget().getY())
+            {
+                blockling.setDeltaMovement(blockling.getDeltaMovement().add(0, 0.5, 0));
+            }
 
+            lastJumpTicks = blockling.tickCount;
+        }
     }
 
     @Override
@@ -172,7 +208,7 @@ public class BlocklingFindBlocklingsGoal extends BlocklingTargetGoal<BlocklingEn
     @Override
     public int getRecalcInterval()
     {
-        return 100;
+        return 60;
     }
 
     @Override
@@ -184,6 +220,6 @@ public class BlocklingFindBlocklingsGoal extends BlocklingTargetGoal<BlocklingEn
     @Override
     public float getRangeSq()
     {
-        return 10;
+        return 8;
     }
 }

@@ -45,6 +45,7 @@ import net.minecraft.potion.Effects;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -183,6 +184,8 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
     public BlocklingEntity(@Nonnull EntityType<? extends BlocklingEntity> type, @Nonnull World world)
     {
         super(type, world);
+
+        rotate(Rotation.getRandom(this.getRandom()));
 
         stats.initUpdateCallbacks();
 
@@ -1287,6 +1290,20 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 return false;
             }
 
+            final int radius = 64;
+            List<BlocklingEntity> nearbyBlocklings = world.getEntitiesOfClass(BlocklingEntity.class, new AxisAlignedBB(getOnPos().getX() - radius, 0, getOnPos().getZ() - radius, getOnPos().getX() + radius, world.getHeight(), getOnPos().getZ() + radius));
+
+            // Only allow 3 blocklings per 128 blocks.
+            if (nearbyBlocklings.size() >= 3)
+            {
+                return false;
+            }
+            // If there are less than 3 then make sure they are all different types.
+            else if (nearbyBlocklings.stream().anyMatch(blockling -> blockling.getBlocklingType() == blocklingType))
+            {
+                return false;
+            }
+
             for (BiPredicate<BlocklingEntity, IWorld> predicate : getBlocklingType().spawnPredicates)
             {
                 if (!predicate.test(this, world))
@@ -1295,7 +1312,30 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
                 }
             }
         }
-Log.info(blocklingType.name.getString(), " ", getX(), ", ", getY(), ", ", getZ());
+
+        return true;
+    }
+
+    @Override
+    protected boolean shouldDespawnInPeaceful()
+    {
+        return super.shouldDespawnInPeaceful();
+    }
+
+    @Override
+    public void checkDespawn()
+    {
+        super.checkDespawn();
+    }
+
+    @Override
+    public boolean removeWhenFarAway(double p_213397_1_)
+    {
+        if (isTame())
+        {
+            return false;
+        }
+
         return true;
     }
 

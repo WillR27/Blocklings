@@ -39,7 +39,7 @@ public class BlocklingType
     public static final List<BlocklingType> TYPES = new ArrayList<>();
 
     public static final BlocklingType GRASS = create("grass", 5).addCombatStats(2.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.0f, 1.0f, 2.0f);
-    public static final BlocklingType DIRT = create("dirt", 0).addCombatStats(2.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.0f, 1.0f, 2.0f);
+    public static final BlocklingType DIRT = create("dirt", 1).addCombatStats(2.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.0f, 1.0f, 2.0f);
     public static final BlocklingType OAK_LOG = create("oak_log", 0).addCombatStats(3.0f, 1.0f, 1.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 2.0f, 1.0f);
     public static final BlocklingType BIRCH_LOG = create("birch_log", 0).addCombatStats(3.0f, 1.0f, 1.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 2.0f, 1.0f);
     public static final BlocklingType SPRUCE_LOG = create("spruce_log", 0).addCombatStats(3.0f, 1.0f, 1.5f, 0.0f, 0.0f, 0.0f, 3.0f).addGatheringStats(0.5f, 2.0f, 1.0f);
@@ -134,8 +134,7 @@ public class BlocklingType
         EMERALD.addFoods(Items.EMERALD);
         EMERALD.addFoods(Blocks.EMERALD_ORE, Blocks.EMERALD_BLOCK);
         EMERALD.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, World.OVERWORLD));
-        EMERALD.spawnPredicates.add((blockling, world) -> isInBiome(blockling, world, Biomes.MOUNTAINS, Biomes.MOUNTAIN_EDGE, Biomes.GRAVELLY_MOUNTAINS, Biomes.MODIFIED_GRAVELLY_MOUNTAINS, Biomes.SNOWY_MOUNTAINS, Biomes.SNOWY_TAIGA_MOUNTAINS, Biomes.TAIGA_MOUNTAINS, Biomes.WOODED_MOUNTAINS));
-        EMERALD.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 12, Blocks.EMERALD_ORE));
+        EMERALD.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 16, Blocks.EMERALD_ORE));
 
         DIAMOND.addFoods(Items.DIAMOND);
         DIAMOND.addFoods(Blocks.DIAMOND_ORE, Blocks.DIAMOND_BLOCK);

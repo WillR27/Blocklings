@@ -23,7 +23,7 @@ public class EntityGeneration
     /**
      * Custom entity classification for blocklings.
      */
-    public static final EntityClassification BLOCKLING = EntityClassification.create("BLOCKLING", "blockling", 50, true, true, 128);
+    public static final EntityClassification BLOCKLING = EntityClassification.create("BLOCKLING", "blockling", 64, true, false, 192);
 
     /**
      * Registers entities to be spawned in the world.
@@ -36,7 +36,7 @@ public class EntityGeneration
     @SubscribeEvent
     public static void onBiomeLoad(final BiomeLoadingEvent event)
     {
-        addEntityToAllBiomes(event.getSpawns(), BlocklingsEntityTypes.BLOCKLING.get(), 100, 1, 3);
+        addEntityToAllBiomes(event.getSpawns(), BlocklingsEntityTypes.BLOCKLING.get(), 1, 1, 1);
     }
 
     private static void addEntityToAllBiomesExceptThese(BiomeLoadingEvent event, EntityType<?> type, int weight, int minCount, int maxCount, RegistryKey<Biome>... biomes)

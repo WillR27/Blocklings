@@ -97,10 +97,10 @@ public abstract class BlocklingTargetGoal<T> extends BlocklingPathGoal
 
         boolean recalculatedTarget = false;
 
-        if (isRecalcIntervalExceeded() || !isTargetValid())
+        if (isRecalcIntervalExceeded() || !hasTarget() || !isTargetValid())
         {
             recalculatedTarget = true;
-            lastRecalcTime = blockling.getAge();
+            lastRecalcTime = blockling.tickCount;
 
             if (!tryRecalcTarget())
             {
