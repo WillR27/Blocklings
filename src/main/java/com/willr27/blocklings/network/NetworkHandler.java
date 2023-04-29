@@ -10,6 +10,7 @@ import com.willr27.blocklings.entity.blockling.attribute.attributes.numbers.IntA
 import com.willr27.blocklings.entity.blockling.attribute.attributes.numbers.ModifiableFloatAttribute;
 import com.willr27.blocklings.entity.blockling.attribute.attributes.numbers.ModifiableIntAttribute;
 import com.willr27.blocklings.entity.blockling.goal.config.iteminfo.OrderedItemInfoSet;
+import com.willr27.blocklings.entity.blockling.goal.config.patrol.OrderedPatrolPointList;
 import com.willr27.blocklings.entity.blockling.goal.goals.container.BlocklingContainerGoal;
 import com.willr27.blocklings.entity.blockling.task.config.Property;
 import com.willr27.blocklings.network.messages.*;
@@ -90,6 +91,10 @@ public class NetworkHandler
         registerMessage(OrderedItemInfoSet.RemoveItemInfoInfoMessage.class);
         registerMessage(OrderedItemInfoSet.MoveItemInfoInfoMessage.class);
         registerMessage(OrderedItemInfoSet.SetItemInfoInfoMessage.class);
+        registerMessage(OrderedPatrolPointList.AddPatrolPointMessage.class);
+        registerMessage(OrderedPatrolPointList.RemovePatrolPointMessage.class);
+        registerMessage(OrderedPatrolPointList.MovePatrolPointMessage.class);
+        registerMessage(OrderedPatrolPointList.UpdatePatrolPointMessage.class);
         registerMessage(WhitelistAllMessage.class);
         registerMessage(WhitelistIsUnlockedMessage.class);
         registerMessage(WhitelistSingleMessage.class);

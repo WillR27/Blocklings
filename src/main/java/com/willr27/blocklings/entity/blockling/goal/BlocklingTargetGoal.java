@@ -65,17 +65,26 @@ public abstract class BlocklingTargetGoal<T> extends BlocklingPathGoal
             return false;
         }
 
-        boolean recalculatedTarget = tryRecalcTarget();
+        recalcTarget();
+
+        boolean hasTarget = getTarget() != null;
         lastRecalcTime = blockling.getAge();
 
-        if (!recalculatedTarget || !recalcPath(false) || isStuck())
+        // If we have successfully recalculated the target, recalculate the target position and path.
+        if (hasTarget)
         {
-            if (!recalculatedTarget)
+            recalcPathTargetPosAndPath(false);
+        }
+
+        // If we have no target or cannot path to the target, then mark them as bad and return false.
+        if (!hasTarget || (getPathTarget() != null && isStuck(true)))
+        {
+            // If we simply failed to find a target, then we can clear the bad targets and try again.
+            if (!hasTarget)
             {
                 badTargets.clear();
             }
 
-            markEntireTargetBad();
             markPathTargetPosBad();
             setTarget(null);
 
@@ -97,18 +106,30 @@ public abstract class BlocklingTargetGoal<T> extends BlocklingPathGoal
 
         boolean recalculatedTarget = false;
 
-        if (isRecalcIntervalExceeded() || !hasTarget() || !isTargetValid())
+        // If we have no target, or the target is invalid, or the recalculation interval has been exceeded, then recalculate the target.
+        if (isRecalcIntervalExceeded() || getTarget() == null || !isTargetValid())
         {
+            recalcTarget();
+
             recalculatedTarget = true;
             lastRecalcTime = blockling.tickCount;
 
-            if (!tryRecalcTarget())
+            // If we still have no target, then return false.
+            if (getTarget() == null || !isTargetValid())
             {
                 return false;
             }
         }
 
-        if (hasTarget() && isStuck() && !recalculatedTarget)
+        // For some reason, path finding will occasionally fail to find a (good) path to a valid target (I've seen it only do 2/3 of a path and set the target to the
+        // target block anyway). So attempt to recalculate the path as the blockling might have changed position and this might allow the path to be found.
+        if (getTarget() != null && getPathTarget() != null && isStuck(false) && !recalculatedTarget)
+        {
+            trySetPathTarget(getPathTarget().pos, null);
+        }
+
+        // If we have a target, but are stuck and haven't just recalculated the target, then mark the target as bad and return false.
+        if (getTarget() != null && isStuck(false) && !recalculatedTarget)
         {
             markEntireTargetBad();
             markPathTargetPosBad();
@@ -123,6 +144,8 @@ public abstract class BlocklingTargetGoal<T> extends BlocklingPathGoal
     public void start()
     {
         super.start();
+
+        updateBlocklingsPath();
     }
 
     @Override
@@ -134,11 +157,9 @@ public abstract class BlocklingTargetGoal<T> extends BlocklingPathGoal
     }
 
     /**
-     * Recalculates the current target.
-     *
-     * @return true if a target was found.
+     * Recalculates and sets the current {@link #target}.
      */
-    public abstract boolean tryRecalcTarget();
+    public abstract void recalcTarget();
 
     /**
      * Checks for and handles any invalid targets. This might involve marking the targets as bad
@@ -158,7 +179,7 @@ public abstract class BlocklingTargetGoal<T> extends BlocklingPathGoal
      */
     public void markTargetBad()
     {
-        if (hasTarget())
+        if (getTarget() != null)
         {
             markBad(getTarget());
             setTarget(null);
@@ -207,14 +228,6 @@ public abstract class BlocklingTargetGoal<T> extends BlocklingPathGoal
     }
 
     /**
-     * @return true if the goal currently has a target.
-     */
-    public final boolean hasTarget()
-    {
-        return target != null;
-    }
-
-    /**
      * @return the current target.
      */
     @Nullable
@@ -234,14 +247,6 @@ public abstract class BlocklingTargetGoal<T> extends BlocklingPathGoal
         setPreviousTarget(this.target);
 
         this.target = target;
-    }
-
-    /**
-     * @return true if the goal has a previous target.
-     */
-    public final boolean hasPrevTarget()
-    {
-        return prevTarget != null;
     }
 
     /**

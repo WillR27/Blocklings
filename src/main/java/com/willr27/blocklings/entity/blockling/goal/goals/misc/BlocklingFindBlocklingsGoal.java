@@ -9,7 +9,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
-import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -98,7 +97,7 @@ public class BlocklingFindBlocklingsGoal extends BlocklingTargetGoal<BlocklingEn
     }
 
     @Override
-    public boolean tryRecalcTarget()
+    public void recalcTarget()
     {
         int chunkX = blockling.blockPosition().getX() >> 4;
         int chunkZ = blockling.blockPosition().getZ() >> 4;
@@ -132,8 +131,6 @@ public class BlocklingFindBlocklingsGoal extends BlocklingTargetGoal<BlocklingEn
         }
 
         setTarget(closestBlockling);
-
-        return closestBlockling != null;
     }
 
     @Override
@@ -168,7 +165,7 @@ public class BlocklingFindBlocklingsGoal extends BlocklingTargetGoal<BlocklingEn
             {
                 return false;
             }
-            else if (blockling.distanceToSqr(target) < getRangeSq())
+            else if (blockling.distanceToSqr(target) < getPathTargetRangeSq())
             {
                 return false;
             }
@@ -192,11 +189,9 @@ public class BlocklingFindBlocklingsGoal extends BlocklingTargetGoal<BlocklingEn
     }
 
     @Override
-    protected boolean recalcPath(boolean force)
+    protected void recalcPathTargetPosAndPath(boolean force)
     {
-        setPathTargetPos(getTarget().blockPosition(), null);
-
-        return true;
+        trySetPathTarget(getTarget().blockPosition(), null);
     }
 
     @Override
@@ -218,7 +213,7 @@ public class BlocklingFindBlocklingsGoal extends BlocklingTargetGoal<BlocklingEn
     }
 
     @Override
-    public float getRangeSq()
+    public float getPathTargetRangeSq()
     {
         return 8;
     }

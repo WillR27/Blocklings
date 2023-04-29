@@ -85,7 +85,7 @@ public abstract class BlocklingMeleeAttackGoal extends BlocklingTargetGoal<Livin
     @Override
     public void tickGoal()
     {
-        if (isStuck())
+        if (isStuck(false))
         {
             markEntireTargetBad();
 
@@ -112,25 +112,23 @@ public abstract class BlocklingMeleeAttackGoal extends BlocklingTargetGoal<Livin
     }
 
     @Override
-    protected boolean recalcPath(boolean force)
+    protected void recalcPathTargetPosAndPath(boolean force)
     {
         if (isBadPathTargetPos(getTarget().blockPosition()))
         {
-            setPathTargetPos(null, null);
+            trySetPathTarget(null, null);
 
-            return false;
+            return;
         }
 
         Path path = blockling.getNavigation().createPath(getTarget(), 0);
 
-        if (path != null && BlockUtil.distanceSq(getTarget().blockPosition(), path.getTarget()) > getRangeSq())
+        if (path != null && BlockUtil.distanceSq(getTarget().blockPosition(), path.getTarget()) > getPathTargetRangeSq())
         {
             path = null;
         }
 
-        setPathTargetPos(getTarget().blockPosition(), path);
-
-        return true;
+        trySetPathTarget(getTarget().blockPosition(), path);
     }
 
     /**
@@ -143,7 +141,7 @@ public abstract class BlocklingMeleeAttackGoal extends BlocklingTargetGoal<Livin
     {
         blockling.doHurtTarget(target);
 
-        recalcPath(true);
+        recalcPathTargetPosAndPath(true);
 
         blockling.wasLastAttackHunt = false;
     }
@@ -151,7 +149,7 @@ public abstract class BlocklingMeleeAttackGoal extends BlocklingTargetGoal<Livin
     @Override
     protected void checkForAndHandleInvalidTargets()
     {
-        if (hasTarget() && !isTargetValid())
+        if (getTarget() != null && !isTargetValid())
         {
             markTargetBad();
         }
@@ -160,7 +158,7 @@ public abstract class BlocklingMeleeAttackGoal extends BlocklingTargetGoal<Livin
     @Override
     public void markEntireTargetBad()
     {
-        if (hasTarget())
+        if (getTarget() != null)
         {
             markTargetBad();
         }
@@ -223,7 +221,7 @@ public abstract class BlocklingMeleeAttackGoal extends BlocklingTargetGoal<Livin
      * @return the attack range squared.
      */
     @Override
-    public float getRangeSq()
+    public float getPathTargetRangeSq()
     {
         return 2.5f * 2.5f;
     }
@@ -234,6 +232,6 @@ public abstract class BlocklingMeleeAttackGoal extends BlocklingTargetGoal<Livin
      */
     private boolean isInRange(@Nonnull LivingEntity target)
     {
-        return blockling.distanceToSqr(target.getX(), target.getY() + target.getBbHeight() / 2.0f, target.getZ()) < getRangeSq();
+        return blockling.distanceToSqr(target.getX(), target.getY() + target.getBbHeight() / 2.0f, target.getZ()) < getPathTargetRangeSq();
     }
 }

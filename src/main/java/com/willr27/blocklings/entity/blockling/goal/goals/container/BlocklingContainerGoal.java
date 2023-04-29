@@ -17,6 +17,7 @@ import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingTargetGoal;
+import com.willr27.blocklings.entity.blockling.goal.config.ContainerInfo;
 import com.willr27.blocklings.entity.blockling.goal.config.iteminfo.OrderedItemInfoSet;
 import com.willr27.blocklings.entity.blockling.skill.skills.GeneralSkills;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
@@ -29,7 +30,6 @@ import com.willr27.blocklings.util.event.ValueChangedEvent;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -239,14 +239,14 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
     protected abstract boolean tryTransferItems(@Nonnull ContainerInfo containerInfo, boolean simulate);
 
     @Override
-    public boolean tryRecalcTarget()
+    public void recalcTarget()
     {
         if (!hasItemsToTransfer())
         {
             setTarget(null);
-            setPathTargetPos(null, null);
+            trySetPathTarget(null, null);
 
-            return false;
+            return;
         }
 
 //        for (BlockPos testPos : BlockPos.betweenClosed(blockling.blockPosition().offset(-range, -range, -range), blockling.blockPosition().offset(range, range, range)))
@@ -264,7 +264,7 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
 
         for (ContainerInfo containerInfo : containerInfos)
         {
-            if (!isInRange(containerInfo.getBlockPos(), getRangeSq()))
+            if (!isInRange(containerInfo.getBlockPos(), getPathTargetRangeSq()))
             {
                 continue;
             }
@@ -272,21 +272,19 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
             if (isValidTarget(containerInfo))
             {
                 setTarget(containerInfo);
-                setPathTargetPos(null, null);
+                trySetPathTarget(null, null);
 
-                return true;
+                return;
             }
         }
 
-        return false;
+        setTarget(null);
     }
 
     @Override
-    protected boolean recalcPath(boolean force)
+    protected void recalcPathTargetPosAndPath(boolean force)
     {
-        setPathTargetPos(getTarget().getBlockPos(), path);
-
-        return true;
+        trySetPathTarget(getTarget().getBlockPos(), null);
     }
 
     @Override
@@ -296,7 +294,7 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
     }
 
     @Override
-    public float getRangeSq()
+    public float getPathTargetRangeSq()
     {
         return 256.0f;
     }
@@ -313,7 +311,7 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
     @Override
     public void markEntireTargetBad()
     {
-        if (hasTarget())
+        if (getTarget() != null)
         {
             markTargetBad();
         }

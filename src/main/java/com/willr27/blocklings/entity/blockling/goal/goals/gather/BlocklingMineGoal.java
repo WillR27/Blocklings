@@ -195,33 +195,37 @@ public class BlocklingMineGoal extends BlocklingGatherGoal
     }
 
     @Override
-    public boolean tryRecalcTarget()
+    public void recalcTarget()
     {
-        if (super.tryRecalcTarget())
+        super.recalcTarget();
+
+        if (getTarget() != null)
         {
-            return true;
+            return;
         }
 
         if (veinBlockPositions.isEmpty())
         {
             if (!tryFindVein())
             {
-                return false;
+                setTarget(null);
+
+                return;
             }
 
             Pair<BlockPos, Path> pathToVein = findPathToVein();
 
             if (pathToVein == null)
             {
-                return false;
+                setTarget(null);
+
+                return;
             }
 
-            setPathTargetPos(pathToVein.getFirst(), pathToVein.getSecond());
+            trySetPathTarget(pathToVein.getFirst(), pathToVein.getSecond());
         }
 
         setTarget((BlockPos) veinBlockPositions.toArray()[veinBlockPositions.size() - 1]);
-
-        return true;
     }
 
     @Override
@@ -400,7 +404,7 @@ public class BlocklingMineGoal extends BlocklingGatherGoal
                 continue;
             }
 
-            Path path = EntityUtil.createPathTo(blockling, veinBlockPos, getRangeSq());
+            Path path = PathUtil.createPathTo(blockling, veinBlockPos, getPathTargetRangeSq(), false);
 
             if (path != null)
             {
@@ -424,7 +428,7 @@ public class BlocklingMineGoal extends BlocklingGatherGoal
     }
 
     @Override
-    protected boolean recalcPath(boolean force)
+    protected void recalcPathTargetPosAndPath(boolean force)
     {
         if (force)
         {
@@ -432,16 +436,14 @@ public class BlocklingMineGoal extends BlocklingGatherGoal
 
             if (result != null)
             {
-                setPathTargetPos(result.getFirst(), result.getSecond());
+                trySetPathTarget(result.getFirst(), result.getSecond());
             }
             else
             {
-                setPathTargetPos(null, null);
-
-                return false;
+                trySetPathTarget(null, null);
             }
 
-            return true;
+            return;
         }
 
         // Try to improve our path each recalc by testing different blocks in the vein
@@ -459,24 +461,22 @@ public class BlocklingMineGoal extends BlocklingGatherGoal
                 continue;
             }
 
-            Path path = EntityUtil.createPathTo(blockling, veinBlockPos, getRangeSq());
+            Path path = PathUtil.createPathTo(blockling, veinBlockPos, getPathTargetRangeSq(), false);
 
             if (path != null)
             {
-                if (path.getDistToTarget() < this.path.getDistToTarget())
+                if (getPathTarget() == null || path.getDistToTarget() < getPathTarget().path.getDistToTarget())
                 {
-                    setPathTargetPos(veinBlockPos, path);
+                    trySetPathTarget(veinBlockPos, path);
 
-                    return true;
+                    return;
                 }
             }
 
-            return hasPath();
+            return;
         }
 
         pathTargetPositionsTested.clear();
-
-        return false;
     }
 
     @Override
@@ -486,18 +486,20 @@ public class BlocklingMineGoal extends BlocklingGatherGoal
     }
 
     @Override
-    public void setPathTargetPos(@Nullable BlockPos blockPos, @Nullable Path pathToPos)
+    public boolean trySetPathTarget(@Nullable BlockPos pathTargetPos, @Nullable Path pathToPathTargetPos)
     {
-        super.setPathTargetPos(blockPos, pathToPos);
+        boolean result = super.trySetPathTarget(pathTargetPos, pathToPathTargetPos);
 
-        if (hasPathTargetPos())
+        if (getPathTarget() != null)
         {
-            changeVeinRootTo(getPathTargetPos());
+            changeVeinRootTo(getPathTarget().pos);
         }
+
+        return result;
     }
 
     @Override
-    public float getRangeSq()
+    public float getPathTargetRangeSq()
     {
         return blockling.getStats().miningRangeSq.getValue();
     }

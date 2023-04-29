@@ -30,16 +30,18 @@ public class BlocklingMeleeAttackHuntGoal extends BlocklingMeleeAttackGoal
     }
 
     @Override
-    public boolean tryRecalcTarget()
+    public void recalcTarget()
     {
         if (!blockling.isTame())
         {
-            return false;
+            setTarget(null);
+
+            return;
         }
 
         if (isTargetValid())
         {
-            return true;
+            return;
         }
 
         for (Entity entity : world.getEntities(blockling, new AxisAlignedBB(blockling.position().add(-10.0, -10.0, -10.0), blockling.position().add(10.0, 10.0, 10.0))))
@@ -52,12 +54,12 @@ public class BlocklingMeleeAttackHuntGoal extends BlocklingMeleeAttackGoal
                 {
                     setTarget(livingEntity);
 
-                    return true;
+                    return;
                 }
             }
         }
 
-        return false;
+        setTarget(null);
     }
 
     @Override

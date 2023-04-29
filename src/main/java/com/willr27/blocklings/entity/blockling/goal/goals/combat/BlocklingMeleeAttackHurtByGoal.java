@@ -23,27 +23,31 @@ public class BlocklingMeleeAttackHurtByGoal extends BlocklingMeleeAttackGoal
     }
 
     @Override
-    public boolean tryRecalcTarget()
+    public void recalcTarget()
     {
         if (!blockling.isTame())
         {
-            return false;
+            setTarget(null);
+
+            return;
         }
 
         LivingEntity attacker = blockling.getLastHurtByMob();
 
         if (attacker == null)
         {
-            return false;
+            setTarget(null);
+
+            return;
         }
 
         if (!isValidTarget(attacker))
         {
-            return false;
+            setTarget(null);
+
+            return;
         }
 
         setTarget(attacker);
-
-        return true;
     }
 }

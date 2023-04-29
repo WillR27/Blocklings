@@ -17,7 +17,7 @@ import com.willr27.blocklings.client.gui.texture.Texture;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
-import com.willr27.blocklings.entity.blockling.goal.goals.container.ContainerInfo;
+import com.willr27.blocklings.entity.blockling.goal.config.ContainerInfo;
 import com.willr27.blocklings.util.BlockUtil;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import com.willr27.blocklings.util.event.ValueChangedEvent;
@@ -25,7 +25,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
@@ -33,7 +32,6 @@ import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
@@ -301,14 +299,7 @@ public class ContainerControl extends GridPanel
         dropdownGrid.setDebugName("Dropdown Grid");
         dropdownGrid.setShouldPropagateDrag(false);
 
-        GridPanel locationGrid = new GridPanel()
-        {
-            @Override
-            public void doMeasure(double availableWidth, double availableHeight)
-            {
-                super.doMeasure(availableWidth, availableHeight);
-            }
-        };
+        GridPanel locationGrid = new GridPanel();
         dropdownGrid.addChild(locationGrid, 0, 0);
         locationGrid.setWidthPercentage(1.0);
         locationGrid.setFitHeightToContent(true);
@@ -331,7 +322,7 @@ public class ContainerControl extends GridPanel
         TextBlockControl xLabel = new TextBlockControl();
         xGrid.addChild(xLabel, 0, 0);
         xLabel.setFitWidthToContent(true);
-        xLabel.setText(new StringTextComponent("X:"));
+        xLabel.setText(new StringTextComponent("X"));
         xLabel.setMarginLeft(5.0);
         xLabel.setMarginRight(4.0);
         xLabel.setVerticalAlignment(0.5);
@@ -362,7 +353,7 @@ public class ContainerControl extends GridPanel
         TextBlockControl yLabel = new TextBlockControl();
         yGrid.addChild(yLabel, 0, 0);
         yLabel.setFitWidthToContent(true);
-        yLabel.setText(new StringTextComponent("Y:"));
+        yLabel.setText(new StringTextComponent("Y"));
         yLabel.setMarginLeft(5.0);
         yLabel.setMarginRight(4.0);
         yLabel.setVerticalAlignment(0.5);
@@ -393,7 +384,7 @@ public class ContainerControl extends GridPanel
         TextBlockControl zLabel = new TextBlockControl();
         zGrid.addChild(zLabel, 0, 0);
         zLabel.setFitWidthToContent(true);
-        zLabel.setText(new StringTextComponent("Z:"));
+        zLabel.setText(new StringTextComponent("Z"));
         zLabel.setMarginLeft(5.0);
         zLabel.setMarginRight(4.0);
         zLabel.setVerticalAlignment(0.5);

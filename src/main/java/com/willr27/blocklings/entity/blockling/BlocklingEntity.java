@@ -62,6 +62,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.NetworkHooks;
 import org.jline.utils.Log;
+import org.w3c.dom.Attr;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -222,7 +223,10 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
      */
     public static AttributeModifierMap.MutableAttribute createAttributes()
     {
-        return MobEntity.createMobAttributes().add(Attributes.ATTACK_DAMAGE, 0.0).add(Attributes.ATTACK_SPEED, 0.0);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.ATTACK_DAMAGE, 0.0)
+                .add(Attributes.ATTACK_SPEED, 0.0)
+                .add(Attributes.FOLLOW_RANGE, 48.0); // Follow range determines max pathfinding distance.
     }
 
     @Override
@@ -280,6 +284,9 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         {
             readFromNBT(blocklingTag, ObjectUtil.coalesce(new Version(blocklingTag.getString("blocklings_version")), Blocklings.VERSION));
         }
+
+        // Follow range determines max pathfinding distance. Existing blocklings need this value setting here.
+        getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(48.0);
     }
 
     @Override

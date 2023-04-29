@@ -68,7 +68,7 @@ public abstract class BlocklingGatherGoal extends BlocklingTargetGoal<BlockPos>
     {
         super.stop();
 
-        setPathTargetPos(null, null);
+        trySetPathTarget(null, null);
 
         blockling.getActions().gather.stop();
     }
@@ -79,7 +79,7 @@ public abstract class BlocklingGatherGoal extends BlocklingTargetGoal<BlockPos>
         // Tick to make sure isFinished() is only true for a single tick
         blockling.getActions().gather.tick(0.0f);
 
-        if (isStuck())
+        if (isStuck(false))
         {
             blockling.getActions().gather.stop();
 
@@ -92,18 +92,17 @@ public abstract class BlocklingGatherGoal extends BlocklingTargetGoal<BlockPos>
     }
 
     @Override
-    public boolean tryRecalcTarget()
+    public void recalcTarget()
     {
         if (isTargetValid())
         {
-            return true;
+            return;
         }
         else
         {
             markTargetBad();
+            setTarget(null);
         }
-
-        return false;
     }
 
     /**
@@ -111,7 +110,7 @@ public abstract class BlocklingGatherGoal extends BlocklingTargetGoal<BlockPos>
      */
     protected void tickGather()
     {
-        if (!hasMovedSinceLastRecalc())
+        if (!hasMovedSinceLastPathRecalc())
         {
             blockling.lookAt(EntityAnchorArgument.Type.EYES, new Vector3d(getTarget().getX() + 0.5, getTarget().getY() + 0.5, getTarget().getZ() + 0.5));
         }
@@ -225,6 +224,6 @@ public abstract class BlocklingGatherGoal extends BlocklingTargetGoal<BlockPos>
     @Nullable
     public BlockState getTargetBlockState()
     {
-        return hasTarget() ? world.getBlockState(getTarget()) : null;
+        return getTarget() != null ? world.getBlockState(getTarget()) : null;
     }
 }

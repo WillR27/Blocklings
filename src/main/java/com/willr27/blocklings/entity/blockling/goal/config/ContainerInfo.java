@@ -1,4 +1,4 @@
-package com.willr27.blocklings.entity.blockling.goal.goals.container;
+package com.willr27.blocklings.entity.blockling.goal.config;
 
 import com.willr27.blocklings.util.Version;
 import net.minecraft.block.Block;
@@ -12,7 +12,6 @@ import net.minecraft.util.registry.Registry;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**

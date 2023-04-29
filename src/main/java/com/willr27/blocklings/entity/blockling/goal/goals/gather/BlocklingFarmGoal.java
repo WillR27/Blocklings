@@ -205,47 +205,43 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal
     }
 
     @Override
-    public boolean tryRecalcTarget()
+    public void recalcTarget()
     {
-        if (super.tryRecalcTarget())
+        super.recalcTarget();
+
+        if (getTarget() != null)
         {
-            return true;
+            return;
         }
 
         if (!tryFindCrop())
         {
-            return false;
+            return;
         }
 
         Pair<BlockPos, Path> pathToCrop = findPathToCrop();
 
-        if (pathToCrop == null)
+        if (pathToCrop != null)
         {
-            return false;
+            trySetPathTarget(pathToCrop.getKey(), pathToCrop.getValue());
         }
-
-        setPathTargetPos(pathToCrop.getKey(), pathToCrop.getValue());
-
-        return true;
     }
 
     @Override
-    protected boolean recalcPath(boolean force)
+    protected void recalcPathTargetPosAndPath(boolean force)
     {
         Pair<BlockPos, Path> result = findPathToCrop();
 
         if (result != null)
         {
-            setPathTargetPos(result.getKey(), result.getValue());
+            trySetPathTarget(result.getKey(), result.getValue());
         }
         else
         {
-            setPathTargetPos(null, null);
+            trySetPathTarget(null, null);
 
-            return false;
+            return;
         }
-
-        return true;
     }
 
     /**
@@ -312,7 +308,7 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal
             return null;
         }
 
-        Path path = EntityUtil.createPathTo(blockling, getTarget(), getRangeSq());
+        Path path = PathUtil.createPathTo(blockling, getTarget(), getPathTargetRangeSq(), false);
 
         if (path != null)
         {
@@ -334,7 +330,7 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal
     @Override
     public void markEntireTargetBad()
     {
-        if (hasTarget())
+        if (getTarget() != null)
         {
             markBad(getTarget());
         }
@@ -349,7 +345,7 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal
     @Override
     protected boolean isValidPathTargetPos(@Nonnull BlockPos blockPos)
     {
-        return hasTarget() && getTarget().equals(blockPos);
+        return getTarget() != null && getTarget().equals(blockPos);
     }
 
     @Override
@@ -384,7 +380,7 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal
     }
 
     @Override
-    public float getRangeSq()
+    public float getPathTargetRangeSq()
     {
         return blockling.getStats().farmingRangeSq.getValue();
     }

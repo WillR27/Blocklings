@@ -6,7 +6,6 @@ import net.minecraft.entity.FlyingEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.passive.WaterMobEntity;
-import net.minecraft.pathfinding.Path;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -147,76 +146,5 @@ public class EntityUtil
     public static boolean isInRange(@Nonnull LivingEntity entity, @Nonnull BlockPos blockPos, float rangeSq)
     {
         return (float) BlockUtil.distanceSq(entity.blockPosition(), blockPos) < rangeSq;
-    }
-
-    /**
-     * Creates the closest path to the given block.
-     *
-     * @param entity the entity to create a path for.
-     * @param blockPos the pos to create a path to.
-     * @return the path or null if no path was found.
-     */
-    @Nullable
-    public static Path createPathTo(@Nonnull MobEntity entity, @Nonnull BlockPos blockPos)
-    {
-        return createPathTo(entity, blockPos, 0);
-    }
-
-    /**
-     * Creates a path to the given block.
-     *
-     * @param entity the entity to create a path for.
-     * @param blockPos the pos to create a path to.
-     * @param stopDistanceSq if the distance between the path's target and target block is within this range we can return (0 to just find the closest path).
-     * @return the path or null if no path was found.
-     */
-    @Nullable
-    public static Path createPathTo(@Nonnull MobEntity entity, @Nonnull BlockPos blockPos, float stopDistanceSq)
-    {
-        Path closestPath = null;
-        double closestDistanceSq = Double.MAX_VALUE;
-
-        Path path = entity.getNavigation().createPath(blockPos, 0);
-
-        if (path != null)
-        {
-            closestPath = path;
-            closestDistanceSq = BlockUtil.distanceSq(blockPos, path.getTarget());
-
-            // The block above is the least desirable target position (in most cases).
-            // So, only if we aren't targeting that position should we return now.
-            if (!path.getTarget().equals(blockPos.above()) && closestDistanceSq < stopDistanceSq)
-            {
-                return closestPath;
-            }
-            else if (stopDistanceSq != 0)
-            {
-                closestDistanceSq = stopDistanceSq;
-            }
-        }
-
-        for (BlockPos adjacentPos : BlockUtil.getSurroundingBlockPositions(blockPos))
-        {
-            path = entity.getNavigation().createPath(adjacentPos, 0);
-
-            if (path != null)
-            {
-                double distanceSq = BlockUtil.distanceSq(blockPos, path.getTarget());
-
-                if (distanceSq < closestDistanceSq)
-                {
-                    closestPath = path;
-                    closestDistanceSq = distanceSq;
-
-                    if (closestDistanceSq < stopDistanceSq)
-                    {
-                        return closestPath;
-                    }
-                }
-            }
-        }
-
-        // If we get here with a stop distance > 0 then return null as we didn't find a path within range
-        return stopDistanceSq > 0 ? null : closestPath;
     }
 }

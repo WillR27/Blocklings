@@ -70,6 +70,7 @@ public class StatsScreen extends TabbedScreen
         textFieldControl.setHorizontalContentAlignment(0.5);
         textFieldControl.setMaxTextLength(25);
         textFieldControl.setShouldRenderBackground(false);
+        textFieldControl.setBackgroundColour(0x00000000);
         textFieldControl.eventBus.subscribe((BaseControl control, FocusChangedEvent e) ->
         {
             if (!textFieldControl.getText().trim().isEmpty())

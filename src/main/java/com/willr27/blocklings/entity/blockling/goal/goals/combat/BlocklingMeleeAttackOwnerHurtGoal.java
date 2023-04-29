@@ -23,34 +23,40 @@ public class BlocklingMeleeAttackOwnerHurtGoal extends BlocklingMeleeAttackGoal
     }
 
     @Override
-    public boolean tryRecalcTarget()
+    public void recalcTarget()
     {
         if (!blockling.isTame())
         {
-            return false;
+            setTarget(null);
+
+            return;
         }
 
         LivingEntity owner = blockling.getOwner();
 
         if (owner == null)
         {
-            return false;
+            setTarget(null);
+
+            return;
         }
 
         LivingEntity ownersTarget = owner.getLastHurtMob();
 
         if (ownersTarget == null)
         {
-            return false;
+            setTarget(null);
+
+            return;
         }
 
         if (!isValidTarget(ownersTarget))
         {
-            return false;
+            setTarget(null);
+
+            return;
         }
 
         setTarget(ownersTarget);
-
-        return true;
     }
 }

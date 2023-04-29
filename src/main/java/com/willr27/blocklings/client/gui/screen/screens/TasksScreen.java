@@ -207,6 +207,7 @@ public class TasksScreen extends TabbedScreen
         configNameField.setWidthPercentage(1.0);
         configNameField.setHeight(20.0);
         configNameField.setShouldRenderBackground(false);
+        configNameField.setBackgroundColour(0x00000000);
         configNameField.eventBus.subscribe((BaseControl control, FocusChangedEvent e) ->
         {
             if (!configNameField.isFocused() && currentTask != null)

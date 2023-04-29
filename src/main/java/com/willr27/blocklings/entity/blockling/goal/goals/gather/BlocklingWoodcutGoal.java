@@ -283,33 +283,37 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
     }
 
     @Override
-    public boolean tryRecalcTarget()
+    public void recalcTarget()
     {
-        if (super.tryRecalcTarget())
+        super.recalcTarget();
+
+        if (getTarget() != null)
         {
-            return true;
+            return;
         }
 
         if (tree.logs.isEmpty())
         {
             if (!tryFindTree())
             {
-                return false;
+                setTarget(null);
+
+                return;
             }
 
                 Pair<BlockPos, Path> pathToTree = findPathToTree();
 
             if (pathToTree == null)
             {
-                return false;
+                setTarget(null);
+
+                return;
             }
 
-            setPathTargetPos(pathToTree.getKey(), pathToTree.getValue());
+            trySetPathTarget(pathToTree.getKey(), pathToTree.getValue());
         }
 
         setTarget((BlockPos) tree.logs.toArray()[tree.logs.size() - 1]);
-
-        return true;
     }
 
     @Override
@@ -479,7 +483,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
 //                continue;
 //            }
 
-            Path path = EntityUtil.createPathTo(blockling, logBlockPos, getRangeSq());
+            Path path = PathUtil.createPathTo(blockling, logBlockPos, getPathTargetRangeSq(), false);
 
             if (path != null)
             {
@@ -535,7 +539,7 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
     }
 
     @Override
-    protected boolean recalcPath(boolean force)
+    protected void recalcPathTargetPosAndPath(boolean force)
     {
         if (force)
         {
@@ -543,16 +547,14 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
 
             if (result != null)
             {
-                setPathTargetPos(result.getKey(), result.getValue());
+                trySetPathTarget(result.getKey(), result.getValue());
             }
             else
             {
-                setPathTargetPos(null, null);
-
-                return false;
+                trySetPathTarget(null, null);
             }
 
-            return true;
+            return;
         }
 
         // Try to improve our path each recalc by testing different logs in the tree
@@ -570,24 +572,22 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
                 continue;
             }
 
-            Path path = EntityUtil.createPathTo(blockling, logBlockPos, getRangeSq());
+            Path path = PathUtil.createPathTo(blockling, logBlockPos, getPathTargetRangeSq(), false);
 
             if (path != null)
             {
-                if (path.getDistToTarget() < this.path.getDistToTarget())
+                if (getPathTarget() == null || path.getDistToTarget() < getPathTarget().path.getDistToTarget())
                 {
-                    setPathTargetPos(logBlockPos, path);
+                    trySetPathTarget(logBlockPos, path);
 
-                    return true;
+                    return;
                 }
             }
 
-            return hasPath();
+            return;
         }
 
         pathTargetPositionsTested.clear();
-
-        return false;
     }
 
     @Override
@@ -597,18 +597,20 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
     }
 
     @Override
-    public void setPathTargetPos(@Nullable BlockPos blockPos, @Nullable Path pathToPos)
+    public boolean trySetPathTarget(@Nullable BlockPos pathTargetPos, @Nullable Path pathToPathTargetPos)
     {
-        super.setPathTargetPos(blockPos, pathToPos);
+        boolean result = super.trySetPathTarget(pathTargetPos, pathToPathTargetPos);
 
-        if (hasPathTargetPos())
+        if (getPathTarget() != null)
         {
-            changeTreeRootTo(getPathTargetPos());
+            changeTreeRootTo(getPathTarget().pos);
         }
+
+        return result;
     }
 
     @Override
-    public float getRangeSq()
+    public float getPathTargetRangeSq()
     {
         return blockling.getStats().woodcuttingRangeSq.getValue();
     }
