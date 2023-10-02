@@ -1,8 +1,8 @@
 {
   "entity.blocklings.blockling": "Blockling",
 
-  "item.blocklings.blockling_spawn_egg": "Blockling Spawn Egg",
   "item.blocklings.blockling": "Blockling",
+  "item.blocklings.blockling_spawn_egg": "Blockling Spawn Egg",
   "item.blocklings.blockling_whistle": "Blockling Whistle",
   "item.blocklings.blockling_whistle.location": "Location: ",
 
