@@ -10,6 +10,6 @@ public class BlocklingsCapabilities
      */
     public static void register()
     {
-        ContainerConfigureCapability.register();
+        BlockSelectCapability.register();
     }
 }

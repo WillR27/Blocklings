@@ -118,6 +118,20 @@ public class GeneralSkills
             skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.FIND_BLOCKLINGS, true);
         }
     };
+
+    public static final SkillInfo PATROL = new SkillInfo("04549ea5-6fb8-44d0-97ca-8c599b7aefe7",
+            new SkillGeneralInfo(Skill.Type.AI, "general.patrol"),
+            new SkillDefaultsInfo(Skill.State.UNLOCKED),
+            new SkillRequirementsInfo(new HashMap<BlocklingAttributes.Level, Integer>() {{ put(BlocklingAttributes.Level.TOTAL, 100); }}),
+            new SkillGuiInfo(0, -150, SkillGuiInfo.ConnectionType.SINGLE_LONGEST_FIRST, 0x77ffda, new SkillGuiInfo.SkillIconTexture(Textures.Skills.General.ICONS, 1, 1)))
+    {
+        @Override
+        public void onBuy(@Nonnull Skill skill)
+        {
+            skill.blockling.getTasks().setIsUnlocked(BlocklingTasks.PATROL, true);
+        }
+    };
+
     public static final SkillInfo COURIER = new SkillInfo("077e318e-ed55-4fd4-9639-2344fd4a3e02",
             new SkillGeneralInfo(Skill.Type.AI, "general.courier"),
             new SkillDefaultsInfo(Skill.State.UNLOCKED),
@@ -196,6 +210,7 @@ public class GeneralSkills
         add(group -> new Skill(SPEED_3, group));
         add(group -> new Skill(AUTOSWITCH, group));
         add(group -> new Skill(FIND_BLOCKLINGS, group));
+        add(group -> new Skill(PATROL, group));
         add(group -> new Skill(COURIER, group));
         add(group -> new Skill(ADVANCED_COURIER, group));
         add(group -> new Skill(FIRST_CLASS, group));

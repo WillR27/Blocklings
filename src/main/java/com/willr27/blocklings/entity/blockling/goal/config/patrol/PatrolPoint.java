@@ -42,7 +42,7 @@ public class PatrolPoint implements IReadWriteNBT, ISyncable
     /**
      * The time in ticks that the blockling should wait at this point.
      */
-    private int waitTime = 0;
+    private int waitTime = 20;
 
     @Nonnull
     @Override

@@ -1,5 +1,6 @@
 package com.willr27.blocklings.entity.blockling.goal.config.patrol;
 
+import com.willr27.blocklings.capabilities.BlockSelectCapability;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.task.Task;
 import com.willr27.blocklings.network.messages.GoalMessage;
@@ -193,23 +194,33 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
      */
     public void add(@Nonnull PatrolPoint patrolPoint)
     {
-        add(patrolPoint, true);
+        add(patrolPoint, false, true);
     }
 
     /**
      * Adds a patrol point to the list.
      *
      * @param patrolPoint the patrol point to add.
+     * @param configureInWorld whether to configure the patrol point in the world.
      * @param sync whether to sync to the client/server.
      */
-    public void add(@Nonnull PatrolPoint patrolPoint, boolean sync)
+    public void add(@Nonnull PatrolPoint patrolPoint, boolean configureInWorld, boolean sync)
     {
         patrolPoints.add(patrolPoint);
         patrolPoint.setPatrolPointList(this);
 
+        if (configureInWorld)
+        {
+            PlayerEntity player = (PlayerEntity) provider.getBlockling().getOwner();
+            player.getCapability(BlockSelectCapability.CAPABILITY).ifPresent(cap ->
+            {
+                cap.isSelecting = true;
+            });
+        }
+
         if (sync)
         {
-            new AddPatrolPointMessage(provider, patrolPoint).sync();
+            new AddPatrolPointMessage(provider, patrolPoint, configureInWorld).sync();
         }
     }
 
@@ -291,7 +302,7 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
      */
     public void onDataChanged(@Nonnull PatrolPoint patrolPoint)
     {
-
+        new UpdatePatrolPointMessage(provider, patrolPoints.indexOf(patrolPoint), patrolPoint).sync();
     }
 
     @Override
@@ -383,13 +394,28 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
         private PatrolPoint patrolPoint;
 
         /**
+         * Whether to configure the patrol point in the world.
+         */
+        private boolean configureInWorld;
+
+        /**
+         * Empty constructor used ONLY for decoding.
+         */
+        public AddPatrolPointMessage()
+        {
+            super();
+        }
+
+        /**
          * @param provider the provider.
          * @param patrolPoint the patrol point.
+         * @param configureInWorld whether to configure the patrol point in the world.
          */
-        public AddPatrolPointMessage(@Nonnull IOrderedPatrolPointListProvider provider, @Nonnull PatrolPoint patrolPoint)
+        public AddPatrolPointMessage(@Nonnull IOrderedPatrolPointListProvider provider, @Nonnull PatrolPoint patrolPoint, boolean configureInWorld)
         {
             super(provider.getBlockling(), provider.getTask().id);
             this.patrolPoint = patrolPoint;
+            this.configureInWorld = configureInWorld;
         }
 
         @Override
@@ -398,6 +424,7 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
             super.encode(buf);
 
             patrolPoint.encode(buf);
+            buf.writeBoolean(configureInWorld);
         }
 
         @Override
@@ -407,12 +434,13 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
 
             patrolPoint = new PatrolPoint();
             patrolPoint.decode(buf);
+            configureInWorld = buf.readBoolean();
         }
 
         @Override
         protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling, @Nonnull IOrderedPatrolPointListProvider goal)
         {
-            goal.getOrderedPatrolPointList().add(patrolPoint, false);
+            goal.getOrderedPatrolPointList().add(patrolPoint, configureInWorld, false);
         }
     }
 
@@ -425,6 +453,14 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
          * The index of the patrol point.
          */
         private int index;
+
+        /**
+         * Empty constructor used ONLY for decoding.
+         */
+        public RemovePatrolPointMessage()
+        {
+            super();
+        }
 
         /**
          * @param provider the provider.
@@ -478,6 +514,14 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
          * Whether to insert before or after.
          */
         private boolean before;
+
+        /**
+         * Empty constructor used ONLY for decoding.
+         */
+        public MovePatrolPointMessage()
+        {
+            super();
+        }
 
         /**
          * @param provider the provider.
@@ -534,6 +578,14 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
          * The patrol point.
          */
         protected PatrolPoint patrolPoint;
+
+        /**
+         * Empty constructor used ONLY for decoding.
+         */
+        public UpdatePatrolPointMessage()
+        {
+            super();
+        }
 
         /**
          * @param provider the provider.

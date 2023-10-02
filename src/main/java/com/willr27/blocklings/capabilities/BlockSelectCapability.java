@@ -19,25 +19,25 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * A capability used to configure a container from the world.
+ * A capability used to select a block from the world.
  */
 @Mod.EventBusSubscriber(modid = Blocklings.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class ContainerConfigureCapability
+public class BlockSelectCapability
 {
-    @CapabilityInject(ContainerConfigureCapability.class)
-    public static Capability<ContainerConfigureCapability> CAPABILITY = null;
+    @CapabilityInject(BlockSelectCapability.class)
+    public static Capability<BlockSelectCapability> CAPABILITY = null;
 
     /**
-     * Whether the player is currently configuring a container.
+     * Whether the player is currently selecting a block.
      */
-    public boolean isConfiguring = false;
+    public boolean isSelecting = false;
 
     /**
      * Registers this capability.
      */
     public static void register()
     {
-        CapabilityManager.INSTANCE.register(ContainerConfigureCapability.class, new Storage(), ContainerConfigureCapability::new);
+        CapabilityManager.INSTANCE.register(BlockSelectCapability.class, new Storage(), BlockSelectCapability::new);
     }
 
     @SubscribeEvent
@@ -45,8 +45,8 @@ public class ContainerConfigureCapability
     {
         if (event.getObject() instanceof PlayerEntity)
         {
-            ContainerConfigureCapability.Provider provider = new ContainerConfigureCapability.Provider();
-            event.addCapability(new ResourceLocation(Blocklings.MODID, "container_configure_capability"), provider);
+            BlockSelectCapability.Provider provider = new BlockSelectCapability.Provider();
+            event.addCapability(new ResourceLocation(Blocklings.MODID, "block_select_capability"), provider);
             event.addListener(provider::invalidate);
         }
     }
@@ -60,13 +60,13 @@ public class ContainerConfigureCapability
          * The default instance of this capability.
          */
         @Nonnull
-        private final ContainerConfigureCapability defaultInstance = new ContainerConfigureCapability();
+        private final BlockSelectCapability defaultInstance = new BlockSelectCapability();
 
         /**
          * The lazy optional of this capability.
          */
         @Nonnull
-        private final LazyOptional<ContainerConfigureCapability> lazyOptional = LazyOptional.of(() -> defaultInstance);
+        private final LazyOptional<BlockSelectCapability> lazyOptional = LazyOptional.of(() -> defaultInstance);
 
         /**
          * Invalidates the lazy optional.
@@ -87,17 +87,17 @@ public class ContainerConfigureCapability
     /**
      * Not needed.
      */
-    public static class Storage implements Capability.IStorage<ContainerConfigureCapability>
+    public static class Storage implements Capability.IStorage<BlockSelectCapability>
     {
         @Nullable
         @Override
-        public INBT writeNBT(Capability<ContainerConfigureCapability> capability, ContainerConfigureCapability instance, Direction side)
+        public INBT writeNBT(Capability<BlockSelectCapability> capability, BlockSelectCapability instance, Direction side)
         {
             return null;
         }
 
         @Override
-        public void readNBT(Capability<ContainerConfigureCapability> capability, ContainerConfigureCapability instance, Direction side, INBT nbt)
+        public void readNBT(Capability<BlockSelectCapability> capability, BlockSelectCapability instance, Direction side, INBT nbt)
         {
 
         }

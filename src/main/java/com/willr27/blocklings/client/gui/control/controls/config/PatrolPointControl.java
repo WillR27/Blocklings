@@ -2,9 +2,15 @@ package com.willr27.blocklings.client.gui.control.controls.config;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.willr27.blocklings.Blocklings;
+import com.willr27.blocklings.capabilities.BlockSelectCapability;
+import com.willr27.blocklings.client.gui.BlocklingGuiHandler;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
-import com.willr27.blocklings.client.gui.control.controls.*;
+import com.willr27.blocklings.client.gui.control.controls.IntFieldControl;
+import com.willr27.blocklings.client.gui.control.controls.NullableIntFieldControl;
+import com.willr27.blocklings.client.gui.control.controls.TextBlockControl;
+import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.GridPanel;
 import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
 import com.willr27.blocklings.client.gui.control.event.events.TryDragEvent;
@@ -14,29 +20,62 @@ import com.willr27.blocklings.client.gui.properties.Visibility;
 import com.willr27.blocklings.client.gui.texture.Texture;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
-import com.willr27.blocklings.entity.blockling.goal.config.ContainerInfo;
-import com.willr27.blocklings.entity.blockling.goal.config.patrol.OrderedPatrolPointList;
 import com.willr27.blocklings.entity.blockling.goal.config.patrol.PatrolPoint;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import com.willr27.blocklings.util.event.ValueChangedEvent;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A control for configuring a patrol point.
  */
-@OnlyIn(Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = Blocklings.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class PatrolPointControl extends Control
 {
+    /**
+     * The patrol point control being configured in the world.
+     */
+    @Nullable
+    public static PatrolPointControl currentlyConfiguredPatrolPointControl = null;
+
+    /**
+     * The screen to go back to once the patrol point is configured from the world.
+     */
+    @Nullable
+    public static Screen screenToGoBackTo = null;
+
     /**
      * The patrol point being configured.
      */
     @Nonnull
     public final PatrolPoint patrolPoint;
+
+    /**
+     * The x location field.
+     */
+    @Nonnull
+    private final NullableIntFieldControl xLocation;
+
+    /**
+     * The y location field.
+     */
+    @Nonnull
+    private final NullableIntFieldControl yLocation;
+
+    /**
+     * The z location field.
+     */
+    @Nonnull
+    private final NullableIntFieldControl zLocation;
 
     /**
      * @param patrolPoint the patrol point to display.
@@ -135,7 +174,16 @@ public class PatrolPointControl extends Control
 
         TexturedControl upArrow = new TexturedControl(Textures.Common.ComboBox.UP_ARROW);
         TexturedControl downArrow = new TexturedControl(Textures.Common.ComboBox.DOWN_ARROW);
-        TextBlockControl name = new TextBlockControl();
+        TextBlockControl name = new TextBlockControl()
+        {
+            @Override
+            public void onTick()
+            {
+                super.onTick();
+
+                setText(new BlocklingsTranslationTextComponent("config.patrol.point", 1 + PatrolPointControl.this.getParent().getChildren().indexOf(PatrolPointControl.this)));
+            }
+        };
 
         TexturedControl nameBackground = new TexturedControl(Textures.Common.BAR_RAISED)
         {
@@ -241,7 +289,7 @@ public class PatrolPointControl extends Control
         xLabel.setMarginRight(4.0);
         xLabel.setVerticalAlignment(0.5);
 
-        NullableIntFieldControl xLocation = new NullableIntFieldControl();
+        xLocation = new NullableIntFieldControl();
         xGrid.addChild(xLocation, 0, 1);
         xLocation.setWidthPercentage(1.0);
         xLocation.setText(new StringTextComponent("1000"));
@@ -270,7 +318,7 @@ public class PatrolPointControl extends Control
         yLabel.setMarginRight(4.0);
         yLabel.setVerticalAlignment(0.5);
 
-        NullableIntFieldControl yLocation = new NullableIntFieldControl();
+        yLocation = new NullableIntFieldControl();
         yGrid.addChild(yLocation, 0, 1);
         yLocation.setWidthPercentage(1.0);
         yLocation.setText(new StringTextComponent("1000"));
@@ -299,7 +347,7 @@ public class PatrolPointControl extends Control
         zLabel.setMarginRight(4.0);
         zLabel.setVerticalAlignment(0.5);
 
-        NullableIntFieldControl zLocation = new NullableIntFieldControl();
+        zLocation = new NullableIntFieldControl();
         zGrid.addChild(zLocation, 0, 1);
         zLocation.setWidthPercentage(1.0);
         zLocation.setText(new StringTextComponent("1000"));
@@ -325,14 +373,112 @@ public class PatrolPointControl extends Control
         waitTimeLabel.setText(new BlocklingsTranslationTextComponent("config.patrol.wait_time.name"));
         waitTimeLabel.setMarginBottom(2.0);
 
-        NullableIntFieldControl waitTime = new NullableIntFieldControl();
+        IntFieldControl waitTime = new IntFieldControl();
         waitTimeStackPanel.addChild(waitTime);
         waitTime.setWidthPercentage(1.0);
         waitTime.setValue(patrolPoint.getWaitTime());
         waitTime.setHorizontalContentAlignment(0.5);
+        waitTime.setMinVal(0);
+        waitTime.setMaxVal(120000);
         waitTime.eventBus.subscribe((BaseControl c, ValueChangedEvent<Integer> e) ->
         {
             patrolPoint.setWaitTime(e.newValue);
         });
+    }
+
+    /**
+     * Occurs when the patrol point is selected from the world.
+     *
+     * @param blockPos the block position.
+     */
+    public void onPatrolPointSelectFromWorld(@Nonnull BlockPos blockPos)
+    {
+        patrolPoint.setX(blockPos.getX());
+        patrolPoint.setY(blockPos.getY());
+        patrolPoint.setZ(blockPos.getZ());
+        xLocation.setValue(blockPos.getX());
+        yLocation.setValue(blockPos.getY());
+        zLocation.setValue(blockPos.getZ());
+    }
+
+    /**
+     * Handles the patrol point select event.
+     *
+     * @param player the player.
+     * @param isFinal whether this is the final call from the original event.
+     * @param blockPos the block position.
+     * @return whether the event should be cancelled.
+     */
+    private static boolean handlePatrolPointSelect(@Nonnull PlayerEntity player, boolean isFinal, @Nullable BlockPos blockPos)
+    {
+        if (!player.level.isClientSide())
+        {
+            BlockSelectCapability cap = player.getCapability(BlockSelectCapability.CAPABILITY).orElse(null);
+
+            if (cap != null)
+            {
+                boolean wereConfiguring = cap.isSelecting;
+
+                // This can be called for both hands, so we need to make sure we only stop configuring if we are actually done.
+                if (isFinal)
+                {
+                    cap.isSelecting = false;
+                }
+
+                if (wereConfiguring)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        else if (currentlyConfiguredPatrolPointControl != null)
+        {
+            if (blockPos != null)
+            {
+                currentlyConfiguredPatrolPointControl.onPatrolPointSelectFromWorld(blockPos);
+            }
+            else
+            {
+                currentlyConfiguredPatrolPointControl.patrolPoint.getPatrolPointList().remove(currentlyConfiguredPatrolPointControl.patrolPoint.getPatrolPointList().indexOf(currentlyConfiguredPatrolPointControl.patrolPoint));
+                currentlyConfiguredPatrolPointControl.setParent(null);
+            }
+
+            BlocklingGuiHandler.openScreen(screenToGoBackTo);
+            currentlyConfiguredPatrolPointControl = null;
+            screenToGoBackTo = null;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Handles a player selecting a block when configuring from the UI.
+     */
+    @SubscribeEvent
+    public static void onPlayerContainerSelect(@Nonnull PlayerInteractEvent.RightClickBlock event)
+    {
+        event.setCanceled(handlePatrolPointSelect(event.getPlayer(), event.getHand() == Hand.OFF_HAND, event.getPos()));
+    }
+
+    /**
+     * Handles a player cancelling block selection when configuring from the UI.
+     */
+    @SubscribeEvent
+    public static void onPlayerBlockSelectCancel(@Nonnull PlayerInteractEvent.LeftClickBlock event)
+    {
+        event.setCanceled(handlePatrolPointSelect(event.getPlayer(), true, null));
+    }
+
+    /**
+     * Handles a player cancelling block selection when configuring from the UI.
+     */
+    @SubscribeEvent
+    public static void onPlayerBlockSelectCancel(@Nonnull PlayerInteractEvent.EntityInteract event)
+    {
+        handlePatrolPointSelect(event.getPlayer(), true, null);
     }
 }

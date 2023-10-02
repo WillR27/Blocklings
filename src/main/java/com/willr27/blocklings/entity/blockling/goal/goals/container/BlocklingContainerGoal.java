@@ -2,7 +2,7 @@ package com.willr27.blocklings.entity.blockling.goal.goals.container;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.Blocklings;
-import com.willr27.blocklings.capabilities.ContainerConfigureCapability;
+import com.willr27.blocklings.capabilities.BlockSelectCapability;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
@@ -483,9 +483,9 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
         if (configureInWorld)
         {
             PlayerEntity player = (PlayerEntity) blockling.getOwner();
-            player.getCapability(ContainerConfigureCapability.CAPABILITY).ifPresent(cap ->
+            player.getCapability(BlockSelectCapability.CAPABILITY).ifPresent(cap ->
             {
-                cap.isConfiguring = true;
+                cap.isSelecting = true;
             });
         }
 

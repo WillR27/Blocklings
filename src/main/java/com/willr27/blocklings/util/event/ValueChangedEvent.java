@@ -16,11 +16,13 @@ public class ValueChangedEvent<T> implements IEvent
     /**
      * @param oldValue the old value.
      */
+    @Nullable
     public final T oldValue;
 
     /**
      * @param newValue the new value.
      */
+    @Nullable
     public final T newValue;
 
     /**

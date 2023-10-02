@@ -4,27 +4,24 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
-import com.willr27.blocklings.client.gui.control.controls.config.ContainerControl;
 import com.willr27.blocklings.client.gui.control.controls.config.PatrolPointControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
 import com.willr27.blocklings.client.gui.control.controls.panels.TabbedPanel;
+import com.willr27.blocklings.client.gui.control.event.events.ReorderEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingTargetGoal;
-import com.willr27.blocklings.entity.blockling.goal.config.ContainerInfo;
 import com.willr27.blocklings.entity.blockling.goal.config.patrol.OrderedPatrolPointList;
 import com.willr27.blocklings.entity.blockling.goal.config.patrol.PatrolPoint;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.util.BlockUtil;
 import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
 import com.willr27.blocklings.util.PathUtil;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.pathfinding.Path;
-import net.minecraft.util.Direction;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
@@ -33,7 +30,6 @@ import net.minecraft.util.text.TextFormatting;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -89,34 +85,6 @@ public class BlocklingPatrolGoal extends BlocklingTargetGoal<PatrolPoint> implem
                 setTarget(e.nextPatrolPoint);
             }
         });
-
-        PatrolPoint patrolPoint = new PatrolPoint();
-        patrolPoint.setX(-8);
-        patrolPoint.setY(53);
-        patrolPoint.setZ(9);
-        patrolPoint.setWaitTime(40);
-        patrolPointList.add(patrolPoint, false);
-
-        patrolPoint = new PatrolPoint();
-        patrolPoint.setX(-18);
-        patrolPoint.setY(53);
-        patrolPoint.setZ(-8);
-        patrolPoint.setWaitTime(40);
-        patrolPointList.add(patrolPoint, false);
-
-        patrolPoint = new PatrolPoint();
-        patrolPoint.setX(9);
-        patrolPoint.setY(53);
-        patrolPoint.setZ(-8);
-        patrolPoint.setWaitTime(40);
-        patrolPointList.add(patrolPoint, false);
-
-        patrolPoint = new PatrolPoint();
-        patrolPoint.setX(9);
-        patrolPoint.setY(53);
-        patrolPoint.setZ(9);
-        patrolPoint.setWaitTime(40);
-        patrolPointList.add(patrolPoint, false);
     }
 
     @Override
@@ -400,7 +368,7 @@ public class BlocklingPatrolGoal extends BlocklingTargetGoal<PatrolPoint> implem
     @Override
     public float getPathTargetRangeSq()
     {
-        return 4.0f;
+        return 2.0f;
     }
 
     @Nonnull
@@ -441,6 +409,13 @@ public class BlocklingPatrolGoal extends BlocklingTargetGoal<PatrolPoint> implem
         stackPanel.setMargins(5.0, 9.0, 5.0, 5.0);
         stackPanel.setSpacing(4.0);
         stackPanel.setClipContentsToBounds(false);
+        stackPanel.setScrollFromDragControl(pointsContainer);
+        stackPanel.eventBus.subscribe((BaseControl c, ReorderEvent e) ->
+        {
+            PatrolPoint draggedPatrolPoint = ((PatrolPointControl) e.draggedControl).patrolPoint;
+            PatrolPoint closestPatrolPoint = ((PatrolPointControl) e.closestControl).patrolPoint;
+            getOrderedPatrolPointList().move(getOrderedPatrolPointList().indexOf(draggedPatrolPoint), getOrderedPatrolPointList().indexOf(closestPatrolPoint), e.insertBefore);
+        });
 
         // Add the existing patrol points.
         for (PatrolPoint patrolPoint : patrolPointList)
@@ -488,14 +463,17 @@ public class BlocklingPatrolGoal extends BlocklingTargetGoal<PatrolPoint> implem
                     boolean shouldAddManually = GuiUtil.get().isControlKeyDown();
 
                     PatrolPoint patrolPoint = new PatrolPoint();
-                    patrolPointList.add(patrolPoint, !shouldAddManually);
+                    patrolPointList.add(patrolPoint, !shouldAddManually, true);
+
+                    PatrolPointControl patrolPointControl = new PatrolPointControl(patrolPoint);
+                    stackPanel.insertChildBefore(patrolPointControl, addPointContainer);
 
                     if (!shouldAddManually)
                     {
-                        ContainerControl.currentlyConfiguredContainerControl = containerControl;
-                        ContainerControl.screenToGoBackTo = Minecraft.getInstance().screen;
+                        PatrolPointControl.currentlyConfiguredPatrolPointControl = patrolPointControl;
+                        PatrolPointControl.screenToGoBackTo = Minecraft.getInstance().screen;
                         getScreen().setShouldReallyClose(false);
-                        ContainerControl.screenToGoBackTo.onClose();
+                        PatrolPointControl.screenToGoBackTo.onClose();
                         getScreen().setShouldReallyClose(true);
                     }
 

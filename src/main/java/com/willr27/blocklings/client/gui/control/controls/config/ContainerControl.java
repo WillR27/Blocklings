@@ -3,7 +3,7 @@ package com.willr27.blocklings.client.gui.control.controls.config;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.Blocklings;
-import com.willr27.blocklings.capabilities.ContainerConfigureCapability;
+import com.willr27.blocklings.capabilities.BlockSelectCapability;
 import com.willr27.blocklings.client.gui.BlocklingGuiHandler;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
@@ -49,7 +49,6 @@ import java.util.stream.Collectors;
 /**
  * A control used to configure a container.
  */
-@OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = Blocklings.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ContainerControl extends GridPanel
 {
@@ -589,16 +588,16 @@ public class ContainerControl extends GridPanel
     {
         if (!player.level.isClientSide())
         {
-            ContainerConfigureCapability cap = player.getCapability(ContainerConfigureCapability.CAPABILITY).orElse(null);
+            BlockSelectCapability cap = player.getCapability(BlockSelectCapability.CAPABILITY).orElse(null);
 
             if (cap != null)
             {
-                boolean wereConfiguring = cap.isConfiguring;
+                boolean wereConfiguring = cap.isSelecting;
 
                 // This can be called for both hands, so we need to make sure we only stop configuring if we are actually done.
                 if (isFinal)
                 {
-                    cap.isConfiguring = false;
+                    cap.isSelecting = false;
                 }
 
                 if (wereConfiguring)

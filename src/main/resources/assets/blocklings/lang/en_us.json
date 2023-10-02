@@ -192,6 +192,8 @@
   "blocklings.skill.general.autoswitch.desc": "Your blockling will switch to the best tools they have for their current task.",
   "blocklings.skill.general.find_blocklings.name": "Friend Finder",
   "blocklings.skill.general.find_blocklings.desc": "Unlocks the \"Find Blocklings\" task.",
+  "blocklings.skill.general.patrol.name": "Patrol",
+  "blocklings.skill.general.patrol.desc": "Unlocks the \"Patrol\" task.",
   "blocklings.skill.general.courier.name": "Courier",
   "blocklings.skill.general.courier.desc": "Unlocks the \"Deposit Items\" and \"Take Items\" tasks.",
   "blocklings.skill.general.advanced_courier.name": "Advanced Courier",

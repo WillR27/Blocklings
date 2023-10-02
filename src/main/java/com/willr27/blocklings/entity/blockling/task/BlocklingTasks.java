@@ -53,7 +53,7 @@ public class BlocklingTasks implements IReadWriteNBT
     public static final TaskType DEPOSIT_ITEMS = new TaskType("9e745b46-ecb7-4497-8324-b2da80cf10ef", "deposit_items", false, false, new GoalTexture(11, 0), BlocklingDepositContainerGoal::new);
     public static final TaskType TAKE_ITEMS = new TaskType("bcf20336-6cd0-4540-bba0-e4cd8975ad4c", "take_items", false, false, new GoalTexture(0, 1), BlocklingTakeContainerGoal::new);
     public static final TaskType FIND_BLOCKLINGS = new TaskType("439c8877-ace6-4ffe-be76-d474aecf030f", "find_blocklings", false, false, new GoalTexture(10, 0), BlocklingFindBlocklingsGoal::new);
-    public static final TaskType PATROL = new TaskType("c826c306-1015-4e5d-b5c6-b134b74c1133", "patrol", true, false, new GoalTexture(1, 1), BlocklingPatrolGoal::new);
+    public static final TaskType PATROL = new TaskType("c826c306-1015-4e5d-b5c6-b134b74c1133", "patrol", false, false, new GoalTexture(1, 1), BlocklingPatrolGoal::new);
     public static final TaskType FOLLOW = new TaskType("299ad70d-350b-43da-8f55-ec502ac360bd", "follow", true, false, new GoalTexture(1, 0), BlocklingFollowGoal::new);
     public static final TaskType WANDER = new TaskType("39246a4f-3341-4e99-a3a6-450f9501daeb", "wander", true, true, new GoalTexture(2, 0), BlocklingWanderGoal::new);
     public static final TaskType SIT = new TaskType("d64385ca-9306-4e38-b4ac-5aa8800e5e02", "sit", true, false, new GoalTexture(0, 0), BlocklingSitGoal::new);
