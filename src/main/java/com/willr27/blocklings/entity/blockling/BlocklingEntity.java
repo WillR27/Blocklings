@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.block.BlocklingsBlocks;
 import com.willr27.blocklings.client.gui.BlocklingGuiHandler;
+import com.willr27.blocklings.command.BlocklingsCommands;
 import com.willr27.blocklings.config.BlocklingsConfig;
 import com.willr27.blocklings.entity.blockling.action.BlocklingActions;
 import com.willr27.blocklings.entity.blockling.attribute.BlocklingAttributes;
@@ -42,15 +43,13 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.*;
+import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.util.text.event.HoverEvent;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.IWorld;
@@ -68,6 +67,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 import static com.willr27.blocklings.item.BlocklingsItems.BLOCKLING_WHISTLE;
 
@@ -238,6 +238,26 @@ public class BlocklingEntity extends TameableEntity implements IEntityAdditional
         if (spawnReason == SpawnReason.SPAWN_EGG && entityTag != null)
         {
             readAdditionalSaveData(entityTag);
+        }
+        else
+        {
+            for (UUID playerId : world.players().stream().map(PlayerEntity::getUUID).collect(Collectors.toList()))
+            {
+                if (BlocklingsCommands.debugSpawns.getOrDefault(playerId, false))
+                {
+                    BlockPos blockPos = blockPosition();
+
+                    ITextComponent locationLink = TextComponentUtils.wrapInSquareBrackets(
+                            new TranslationTextComponent("chat.coordinates", blockPos.getX(), blockPos.getY(), blockPos.getZ()))
+                                .withStyle((style) -> style.withColor(TextFormatting.GREEN)
+                                .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ()))
+                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslationTextComponent("chat.coordinates.tooltip"))));
+
+                    ITextComponent text = new BlocklingsTranslationTextComponent("command.debug.spawns.spawn", blocklingType.name.getString()).append(locationLink);
+
+                    world.getPlayerByUUID(playerId).sendMessage(text, Util.NIL_UUID);
+                }
+            }
         }
 
         return super.finalizeSpawn(world, difficultyInstance, spawnReason, entityData, entityTag);

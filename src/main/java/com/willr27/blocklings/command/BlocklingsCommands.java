@@ -3,6 +3,7 @@ package com.willr27.blocklings.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -22,14 +23,13 @@ import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.command.arguments.ArgumentSerializer;
 import net.minecraft.command.arguments.ArgumentTypes;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Util;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -42,6 +42,12 @@ import static net.minecraft.command.Commands.literal;
 @Mod.EventBusSubscriber(modid = Blocklings.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class BlocklingsCommands
 {
+    /**
+     * Whether to show blockling spawn debug information for each player.
+     */
+    @Nonnull
+    public static HashMap<UUID, Boolean> debugSpawns = new HashMap<>();
+
     /**
      * Registers argument types.
      */
@@ -60,7 +66,7 @@ public class BlocklingsCommands
         CommandDispatcher<CommandSource> dispatcher = event.getDispatcher();
 
         dispatcher.register(
-                literal("blockling").requires(source -> source.hasPermission(2)).then(
+                literal("blocklings").requires(source -> source.hasPermission(2)).then(
                         literal("set").then(
                                 literal("type").then(
                                         literal("primary").then(
@@ -76,7 +82,11 @@ public class BlocklingsCommands
                                 literal("xp").then(
                                         argument("level", new BlocklingLevelArgument()).then(
                                                 argument("value", IntegerArgumentType.integer(0))
-                                                        .executes(context -> executeXpCommand(context)))))));
+                                                        .executes(context -> executeXpCommand(context)))))).then(
+                        literal("debug").then(
+                                literal("spawns").then(
+                                        argument("value", BoolArgumentType.bool())
+                                            .executes(context -> executeDebugSpawnsCommand(context))))));
     }
 
     /**
@@ -144,6 +154,36 @@ public class BlocklingsCommands
     }
 
     /**
+     * Executes the debug spawns command.
+     */
+    private static int executeDebugSpawnsCommand(@Nonnull CommandContext<CommandSource> context)
+    {
+        CommandSource source = context.getSource();
+        PlayerEntity player = (PlayerEntity) source.getEntity();
+
+        if (player == null)
+        {
+            return 1;
+        }
+
+        UUID playerId = player.getUUID();
+        boolean enabled = context.getArgument("value", Boolean.class);
+
+        debugSpawns.put(playerId, enabled);
+
+        if (enabled)
+        {
+            player.sendMessage(new BlocklingsTranslationTextComponent("command.debug.spawns.enabled"), Util.NIL_UUID);
+        }
+        else
+        {
+            player.sendMessage(new BlocklingsTranslationTextComponent("command.debug.spawns.disabled"), Util.NIL_UUID);
+        }
+
+        return 0;
+    }
+
+    /**
      * Represents a command argument of a blockling type.
      */
     public static class BlocklingTypeArgument implements ArgumentType<BlocklingType>
@@ -182,7 +222,7 @@ public class BlocklingsCommands
         /**
          * The error to throw if the argument is invalid.
          */
-        public static final DynamicCommandExceptionType ERROR_INVALID_VALUE = new DynamicCommandExceptionType((obj) -> new BlocklingsTranslationTextComponent("argument.level.invalid", obj));
+        public static final DynamicCommandExceptionType ERROR_INVALID_VALUE = new DynamicCommandExceptionType((obj) -> new BlocklingsTranslationTextComponent("command.argument.level.invalid", obj));
 
         @Override
         public Level parse(StringReader stringReader) throws CommandSyntaxException

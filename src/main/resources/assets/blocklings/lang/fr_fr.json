@@ -345,5 +345,8 @@
 
   "blocklings.subtitle.blockling_whistle": "Sifflet pour Blockling",
 
-  "blocklings.argument.level.invalid": "Niveau invalide \"%s\"!"
+  "blocklings.command.debug.spawns.enabled": "Blockling spawn debugging enabled...",
+  "blocklings.command.debug.spawns.disabled": "Blockling spawn debugging disabled...",
+  "blocklings.command.debug.spawns.spawn": "%s blockling spawned at ",
+  "blocklings.command.argument.level.invalid": "Niveau invalide \"%s\"!"
 }
