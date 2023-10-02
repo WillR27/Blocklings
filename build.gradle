@@ -129,8 +129,8 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
     minecraft 'net.minecraftforge:forge:' + minecraft_version + '-' + forge_version
 
-    compileOnly fg.deobf("slimeknights.mantle:Mantle:1.16.5-$mantle_version")
-    compileOnly fg.deobf("slimeknights.tconstruct:TConstruct:1.16.5-$tic_version")
+    compileOnly fg.deobf("slimeknights.mantle:Mantle:$minecraft_version-$mantle_version")
+    compileOnly fg.deobf("slimeknights.tconstruct:TConstruct:$minecraft_version-$tic_version")
 
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
