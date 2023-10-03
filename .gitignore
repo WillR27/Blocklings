@@ -6,7 +6,7 @@
 !**/src/main/**
 !gradlew
 !gradlew.bat
-!build.gradle
+!builda.gradle
 !gradle.properties
 !fields.csv
 !methods.csv

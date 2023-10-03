@@ -92,8 +92,8 @@ public class BlocklingWoodcutGoal extends BlocklingGatherGoal
 
         properties.add(minLeavesToLogRatio = new FloatRangeProperty(
                 "689c67a9-8c02-4eac-afff-bdc4eab861c6", this,
-                new BlocklingsTranslationTextComponent("task.property.min_leaves_to_log_ratio.name"),
-                new BlocklingsTranslationTextComponent("task.property.min_leaves_to_log_ratio.desc"),
+                new BlocklingsTranslatableComponent("task.property.min_leaves_to_log_ratio.name"),
+                new BlocklingsTranslatableComponent("task.property.min_leaves_to_log_ratio.desc"),
                 MIN_MIN_LEAVES_TO_LOGS_RATIO, MAX_MIN_LEAVES_TO_LOGS_RATIO, BlocklingsConfig.COMMON.defaultMinLeavesToLogRatio.get().floatValue()));
 
         setFlags(EnumSet.of(Flag.JUMP, Flag.MOVE));

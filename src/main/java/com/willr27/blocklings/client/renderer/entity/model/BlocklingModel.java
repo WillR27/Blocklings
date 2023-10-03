@@ -1,17 +1,10 @@
 package com.willr27.blocklings.client.renderer.entity.model;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.BlocklingHand;
-import net.minecraft.client.renderer.entity.model.EntityModel;
-import net.minecraft.client.renderer.entity.model.IHasArm;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.entity.EntitySize;
-import net.minecraft.entity.Pose;
-import net.minecraft.util.Hand;
-import net.minecraft.util.HandSide;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -259,17 +252,17 @@ public class BlocklingModel extends EntityModel<BlocklingEntity> implements IHas
     }
 
     @Override
-    public void translateToHand(@Nonnull HandSide hand, @Nonnull MatrixStack matrixStack)
+    public void translateToHand(@Nonnull HumanoidArm arm, @Nonnull PoseStack poseStack)
     {
-        body.translateAndRotate(matrixStack);
+        body.translateAndRotate(poseStack);
 
-        if (hand == HandSide.LEFT)
+        if (arm == HandSide.LEFT)
         {
-            leftArm.translateAndRotate(matrixStack);
+            leftArm.translateAndRotate(poseStack);
         }
         else
         {
-            rightArm.translateAndRotate(matrixStack);
+            rightArm.translateAndRotate(poseStack);
         }
     }
 

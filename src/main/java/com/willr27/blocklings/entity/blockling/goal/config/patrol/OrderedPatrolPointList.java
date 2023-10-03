@@ -9,7 +9,7 @@ import com.willr27.blocklings.util.ISyncable;
 import com.willr27.blocklings.util.Version;
 import com.willr27.blocklings.util.event.EventHandler;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nonnull;
@@ -51,20 +51,20 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
 
     @Nonnull
     @Override
-    public CompoundNBT writeToNBT(@Nonnull CompoundNBT tag)
+    public CompoundTag writeToNBT(@Nonnull CompoundTag tag)
     {
         tag.putInt("size", patrolPoints.size());
 
         for (int i = 0; i < patrolPoints.size(); i++)
         {
-            tag.put("point_" + i, patrolPoints.get(i).writeToNBT(new CompoundNBT()));
+            tag.put("point_" + i, patrolPoints.get(i).writeToNBT(new CompoundTag()));
         }
 
         return tag;
     }
 
     @Override
-    public void readFromNBT(@Nonnull CompoundNBT tag, @Nonnull Version tagVersion)
+    public void readFromNBT(@Nonnull CompoundTag tag, @Nonnull Version tagVersion)
     {
         patrolPoints.clear();
 

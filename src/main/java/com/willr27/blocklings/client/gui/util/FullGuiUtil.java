@@ -113,7 +113,7 @@ public class FullGuiUtil extends GuiUtil
         }
         else
         {
-            return ITextProperties.composite(trim(text, width - mc.font.width("...")), new StringTextComponent("..."));
+            return ITextProperties.composite(trim(text, width - mc.font.width("...")), new TextComponent("..."));
         }
     }
 
@@ -226,7 +226,7 @@ public class FullGuiUtil extends GuiUtil
         entity.yHeadRot = f6;
         RenderSystem.popMatrix();
         matrixStack.popPose();
-        entity.setCustomName(new StringTextComponent(name));
+        entity.setCustomName(new TextComponent(name));
     }
 
     @Override

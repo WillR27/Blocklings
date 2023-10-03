@@ -3,7 +3,7 @@ package com.willr27.blocklings.entity.blockling.goal.config.iteminfo;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
@@ -81,9 +81,9 @@ public class ItemInfo
      *
      * @return the tag for the item info.
      */
-    public CompoundNBT writeToNBT()
+    public CompoundTag writeToNBT()
     {
-        CompoundNBT tag = new CompoundNBT();
+        CompoundTag tag = new CompoundTag();
 
         tag.putString("item", item.getRegistryName().toString());
         if (startInventoryAmount != null) tag.putInt("min_inventory_amount", startInventoryAmount);
@@ -100,7 +100,7 @@ public class ItemInfo
      * @param tag the tag to read from.
      * @param version the version of the tag.
      */
-    public void readFromNBT(@Nonnull CompoundNBT tag, @Nonnull Version version)
+    public void readFromNBT(@Nonnull CompoundTag tag, @Nonnull Version version)
     {
         item = Registry.ITEM.get(new ResourceLocation(tag.getString("item")));
         if (tag.contains("min_inventory_amount")) startInventoryAmount = tag.getInt("min_inventory_amount");

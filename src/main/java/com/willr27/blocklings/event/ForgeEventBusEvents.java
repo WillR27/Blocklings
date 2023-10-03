@@ -8,12 +8,11 @@ import com.willr27.blocklings.item.BlocklingWhistleItem;
 import com.willr27.blocklings.util.BlockUtil;
 import com.willr27.blocklings.util.EntityUtil;
 import com.willr27.blocklings.util.ToolUtil;
-import net.minecraft.entity.EntitySize;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LootingLevelEvent;
@@ -35,8 +34,8 @@ public class ForgeEventBusEvents
     @SubscribeEvent
     public static void onWorldLoad(@Nonnull WorldEvent.Load event)
     {
-        EntityUtil.latestWorld = (World) event.getWorld();
-        BlockUtil.latestWorld = (World) event.getWorld();
+        EntityUtil.latestWorld = (Level) event.getWorld();
+        BlockUtil.latestWorld = (Level) event.getWorld();
 
         BlocklingType.init();
         ToolUtil.init();
@@ -66,7 +65,7 @@ public class ForgeEventBusEvents
 
             scale = blockling.getScale();
 
-            event.setNewSize(new EntitySize(scale * 1.0f, scale * 1.0f, true), true);
+            event.setNewSize(new EntityDimensions(scale * 1.0f, scale * 1.0f, true), true);
         }
     }
 
@@ -108,11 +107,11 @@ public class ForgeEventBusEvents
                 {
                     ItemStack itemStack = blockling.getEquipment().addItem(itemEntity.getItem());
 
-                    if (blockling.getSkills().getSkill(CombatSkills.ANIMAL_HUNTER).isBought() && event.getEntity() instanceof AnimalEntity)
+                    if (blockling.getSkills().getSkill(CombatSkills.ANIMAL_HUNTER).isBought() && event.getEntity() instanceof Animal)
                     {
                         itemStack.setCount(itemStack.getCount() * 2);
                     }
-                    else if (blockling.getSkills().getSkill(CombatSkills.MONSTER_HUNTER).isBought() && event.getEntity() instanceof MonsterEntity)
+                    else if (blockling.getSkills().getSkill(CombatSkills.MONSTER_HUNTER).isBought() && event.getEntity() instanceof Animal)
                     {
                         itemStack.setCount(itemStack.getCount() * 2);
                     }

@@ -10,13 +10,13 @@ import com.willr27.blocklings.entity.blockling.attribute.attributes.EnumAttribut
 import com.willr27.blocklings.entity.blockling.attribute.attributes.numbers.*;
 import com.willr27.blocklings.entity.blockling.skill.info.SkillInfo;
 import com.willr27.blocklings.entity.blockling.skill.skills.*;
-import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import com.willr27.blocklings.util.IReadWriteNBT;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -338,7 +338,7 @@ public class BlocklingAttributes implements IReadWriteNBT
     @Nonnull
     private String skillDisplayNameProvider(@Nonnull SkillInfo skillInfo)
     {
-        return skillInfo.general.name.getString() + " ("+ new BlocklingsTranslationTextComponent("skill.name").getString() +")";
+        return skillInfo.general.name.getString() + " ("+ new BlocklingsTranslatableComponent("skill.name").getString() +")";
     }
 
     @Nonnull
@@ -447,11 +447,11 @@ public class BlocklingAttributes implements IReadWriteNBT
     }
 
     @Override
-    public CompoundNBT writeToNBT(@Nonnull CompoundNBT attributesTag)
+    public CompoundTag writeToNBT(@Nonnull CompoundTag attributesTag)
     {
         for (Attribute<?> attribute : attributes)
         {
-            CompoundNBT attributeTag = new CompoundNBT();
+            CompoundTag attributeTag = new CompoundTag();
 
             attribute.writeToNBT(attributeTag);
 
@@ -462,11 +462,11 @@ public class BlocklingAttributes implements IReadWriteNBT
     }
 
     @Override
-    public void readFromNBT(@Nonnull CompoundNBT attributesTag, @Nonnull Version tagVersion)
+    public void readFromNBT(@Nonnull CompoundTag attributesTag, @Nonnull Version tagVersion)
     {
         for (Attribute<?> attribute : attributes)
         {
-            CompoundNBT attributeTag = (CompoundNBT) attributesTag.get(attribute.id.toString());
+            CompoundTag attributeTag = (CompoundTag) attributesTag.get(attribute.id.toString());
 
             if (attributeTag != null)
             {

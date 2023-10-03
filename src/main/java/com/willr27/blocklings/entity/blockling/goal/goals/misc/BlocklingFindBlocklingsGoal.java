@@ -4,7 +4,7 @@ import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.task.config.range.IntRangeProperty;
-import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -46,8 +46,8 @@ public class BlocklingFindBlocklingsGoal extends BlocklingTargetGoal<BlocklingEn
 
         properties.add(chunkRangeProperty = new IntRangeProperty(
                 "4142fcf1-8af9-4993-bf8d-5369ad58fe8d", this,
-                new BlocklingsTranslationTextComponent("task.property.chunk_range.name"),
-                new BlocklingsTranslationTextComponent("task.property.chunk_range.desc"),
+                new BlocklingsTranslatableComponent("task.property.chunk_range.name"),
+                new BlocklingsTranslatableComponent("task.property.chunk_range.desc"),
                 1, 6, 3));
     }
 

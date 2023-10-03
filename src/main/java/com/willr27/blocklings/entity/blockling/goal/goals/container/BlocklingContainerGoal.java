@@ -24,7 +24,7 @@ import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.task.config.ItemConfigurationTypeProperty;
 import com.willr27.blocklings.entity.blockling.task.config.range.IntRangeProperty;
 import com.willr27.blocklings.network.messages.GoalMessage;
-import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import com.willr27.blocklings.util.Version;
 import com.willr27.blocklings.util.event.ValueChangedEvent;
 import net.minecraft.block.Blocks;
@@ -32,15 +32,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TextComponent;
+import net.minecraft.util.text.ChatFormatting;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -113,12 +113,12 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
 
         properties.add(itemConfigurationTypeProperty = new ItemConfigurationTypeProperty(
                 "35d1e5a5-dfff-4a06-bb71-de1df8823632", this,
-                new BlocklingsTranslationTextComponent("task.property.item_configuration_type.name"),
-                new BlocklingsTranslationTextComponent("task.property.item_configuration_type.desc")));
+                new BlocklingsTranslatableComponent("task.property.item_configuration_type.name"),
+                new BlocklingsTranslatableComponent("task.property.item_configuration_type.desc")));
         properties.add(itemTransferAmount = new IntRangeProperty(
                 "c858da92-5009-407c-94ae-56b70d91f01a", this,
-                new BlocklingsTranslationTextComponent("task.property.item_transfer_amount.name"),
-                new BlocklingsTranslationTextComponent("task.property.item_transfer_amount.desc"),
+                new BlocklingsTranslatableComponent("task.property.item_transfer_amount.name"),
+                new BlocklingsTranslatableComponent("task.property.item_transfer_amount.desc"),
                 1, 4, 4));
 
         itemConfigurationTypeProperty.setEnabled(blockling.getSkills().getSkill(GeneralSkills.ADVANCED_COURIER).isBought());
@@ -128,7 +128,7 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
     }
 
     @Override
-    public void writeToNBT(@Nonnull CompoundNBT taskTag)
+    public void writeToNBT(@Nonnull CompoundTag taskTag)
     {
         super.writeToNBT(taskTag);
 
@@ -144,7 +144,7 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
     }
 
     @Override
-    public void readFromNBT(@Nonnull CompoundNBT taskTag, @Nonnull Version tagVersion)
+    public void readFromNBT(@Nonnull CompoundTag taskTag, @Nonnull Version tagVersion)
     {
         super.readFromNBT(taskTag, tagVersion);
 
@@ -161,7 +161,7 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
             }
         }
 
-        CompoundNBT itemSetTag = taskTag.getCompound("item_set");
+        CompoundTag itemSetTag = taskTag.getCompound("item_set");
 
         if (taskTag.contains("item_set"))
         {
@@ -606,12 +606,12 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
     {
         super.addConfigTabControls(tabbedPanel);
 
-        itemsContainer = tabbedPanel.addTab(new BlocklingsTranslationTextComponent("config.items"));
+        itemsContainer = tabbedPanel.addTab(new BlocklingsTranslatableComponent("config.items"));
         itemsContainer.setCanScrollVertically(true);
 
         recreateItemsConfigurationControl(itemConfigurationTypeProperty.getType());
 
-        BaseControl containersContainer = tabbedPanel.addTab(new BlocklingsTranslationTextComponent("config.containers"));
+        BaseControl containersContainer = tabbedPanel.addTab(new BlocklingsTranslatableComponent("config.containers"));
         containersContainer.setCanScrollVertically(true);
 
         StackPanel stackPanel = new StackPanel();
@@ -684,10 +684,10 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
             public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
             {
                 List<IReorderingProcessor> tooltip = new ArrayList<>();
-                tooltip.add(new BlocklingsTranslationTextComponent("config.container.add").withStyle(isContainerListFull() ? TextFormatting.GRAY : TextFormatting.WHITE).getVisualOrderText());
-                tooltip.add(new BlocklingsTranslationTextComponent("config.container.amount", containerInfos.size(), MAX_CONTAINERS).withStyle(TextFormatting.GRAY).getVisualOrderText());
-                tooltip.add(StringTextComponent.EMPTY.getVisualOrderText());
-                tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslationTextComponent("config.container.add.help", new StringTextComponent(Minecraft.getInstance().options.keyShift.getTranslatedKeyMessage().getString()).withStyle(TextFormatting.ITALIC)).withStyle(TextFormatting.GRAY), 200));
+                tooltip.add(new BlocklingsTranslatableComponent("config.container.add").withStyle(isContainerListFull() ? ChatFormatting.GRAY : ChatFormatting.WHITE).getVisualOrderText());
+                tooltip.add(new BlocklingsTranslatableComponent("config.container.amount", containerInfos.size(), MAX_CONTAINERS).withStyle(ChatFormatting.GRAY).getVisualOrderText());
+                tooltip.add(TextComponent.EMPTY.getVisualOrderText());
+                tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslatableComponent("config.container.add.help", new TextComponent(Minecraft.getInstance().options.keyShift.getTranslatedKeyMessage().getString()).withStyle(ChatFormatting.ITALIC)).withStyle(ChatFormatting.GRAY), 200));
                 renderTooltip(matrixStack, mouseX, mouseY, tooltip);
             }
 

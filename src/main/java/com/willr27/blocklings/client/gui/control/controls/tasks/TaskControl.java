@@ -15,17 +15,15 @@ import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
-import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.task.Task;
-import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TextComponent;
+import net.minecraft.util.text.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -109,7 +107,7 @@ public class TaskControl extends Control
             @Override
             public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
             {
-                renderTooltip(matrixStack, mouseX, mouseY, getPixelScaleX(), getPixelScaleY(), new BlocklingsTranslationTextComponent("task.ui.configure"));
+                renderTooltip(matrixStack, mouseX, mouseY, getPixelScaleX(), getPixelScaleY(), new BlocklingsTranslatableComponent("task.ui.configure"));
             }
 
             @Override
@@ -196,11 +194,11 @@ public class TaskControl extends Control
                 {
                     if (task.getGoal().getState() == BlocklingGoal.State.DISABLED)
                     {
-                        renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent("task.ui.enable"));
+                        renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("task.ui.enable"));
                     }
                     else
                     {
-                        renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent("task.ui.disable"));
+                        renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("task.ui.disable"));
                     }
                 }
             }
@@ -235,7 +233,7 @@ public class TaskControl extends Control
             @Override
             public void onTick()
             {
-                setText(new StringTextComponent(task.getCustomName()));
+                setText(new TextComponent(task.getCustomName()));
             }
 
             @Override
@@ -269,7 +267,7 @@ public class TaskControl extends Control
             @Override
             public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
             {
-                renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent("task.ui.remove"));
+                renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("task.ui.remove"));
             }
 
             @Override
@@ -293,7 +291,7 @@ public class TaskControl extends Control
     public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
     {
         List<IReorderingProcessor> tooltip = new ArrayList<>();
-        tooltip.add(new StringTextComponent(TextFormatting.GOLD + task.getCustomName()).getVisualOrderText());
+        tooltip.add(new TextComponent(ChatFormatting.GOLD + task.getCustomName()).getVisualOrderText());
         tooltip.addAll(GuiUtil.get().split(task.getType().desc, 200).stream().collect(Collectors.toList()));
 
         renderTooltip(matrixStack, mouseX, mouseY, tooltip);

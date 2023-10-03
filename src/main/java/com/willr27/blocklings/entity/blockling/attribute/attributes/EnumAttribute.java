@@ -5,7 +5,7 @@ import com.willr27.blocklings.entity.blockling.attribute.Attribute;
 import com.willr27.blocklings.network.BlocklingMessage;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nonnull;
@@ -44,7 +44,7 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
     }
 
     @Override
-    public CompoundNBT writeToNBT(@Nonnull CompoundNBT attributeTag)
+    public CompoundTag writeToNBT(@Nonnull CompoundTag attributeTag)
     {
         attributeTag.putInt("value", value.ordinal());
 
@@ -52,7 +52,7 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
     }
 
     @Override
-    public void readFromNBT(@Nonnull CompoundNBT attributeTag, @Nonnull Version tagVersion)
+    public void readFromNBT(@Nonnull CompoundTag attributeTag, @Nonnull Version tagVersion)
     {
         super.readFromNBT(attributeTag, tagVersion);
 

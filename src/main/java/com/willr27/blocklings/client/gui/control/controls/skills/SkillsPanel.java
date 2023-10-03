@@ -27,9 +27,9 @@ import com.willr27.blocklings.entity.blockling.skill.Skill;
 import com.willr27.blocklings.entity.blockling.skill.SkillGroup;
 import com.willr27.blocklings.entity.blockling.skill.info.SkillGroupInfo;
 import com.willr27.blocklings.entity.blockling.skill.info.SkillGuiInfo;
-import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import com.willr27.blocklings.util.DoubleUtil;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -681,7 +681,7 @@ public class SkillsPanel extends CanvasPanel
                     }
                     else
                     {
-                        setText(new BlocklingsTranslationTextComponent("skill.unknown"));
+                        setText(new BlocklingsTranslatableComponent("skill.unknown"));
                     }
                 }
             };
@@ -762,7 +762,7 @@ public class SkillsPanel extends CanvasPanel
 
             if (state == Skill.State.LOCKED)
             {
-                name = new BlocklingsTranslationTextComponent("skill.unknown").getString();
+                name = new BlocklingsTranslatableComponent("skill.unknown").getString();
                 description.clear();
                 description.add("...");
             }
@@ -773,7 +773,7 @@ public class SkillsPanel extends CanvasPanel
                 if (levelRequirements.size() > 0)
                 {
                     description.add("");
-                    description.add(new BlocklingsTranslationTextComponent("requirements").getString());
+                    description.add(new BlocklingsTranslatableComponent("requirements").getString());
 
                     if (levelRequirements.size() > 0)
                     {
@@ -782,8 +782,8 @@ public class SkillsPanel extends CanvasPanel
                             int value = levelRequirements.get(level);
                             Attribute<Integer> attribute = skill.blockling.getStats().getLevelAttribute(level);
 
-                            String colour = attribute.getValue() >= value ? "" + TextFormatting.GREEN : "" + TextFormatting.RED;
-                            description.add(colour + attribute.createTranslation("required", value).getString() + " " + TextFormatting.DARK_GRAY + "(" + skill.blockling.getStats().getLevelAttribute(level).getValue() + ")");
+                            String colour = attribute.getValue() >= value ? "" + ChatFormatting.GREEN : "" + ChatFormatting.RED;
+                            description.add(colour + attribute.createTranslation("required", value).getString() + " " + ChatFormatting.DARK_GRAY + "(" + skill.blockling.getStats().getLevelAttribute(level).getValue() + ")");
                         }
                     }
                 }
@@ -793,10 +793,10 @@ public class SkillsPanel extends CanvasPanel
                 if (!conflicts.isEmpty())
                 {
                     description.add("");
-                    description.add(new BlocklingsTranslationTextComponent("conflicts").getString());
+                    description.add(new BlocklingsTranslatableComponent("conflicts").getString());
                     for (Skill conflict : conflicts)
                     {
-                        description.add(TextFormatting.RED + conflict.info.general.name.getString());
+                        description.add(ChatFormatting.RED + conflict.info.general.name.getString());
                     }
                 }
             }
@@ -1185,7 +1185,7 @@ public class SkillsPanel extends CanvasPanel
             yesButton.setWidth(50);
             yesButton.setHeight(20);
             yesButton.setBackgroundColour(randomColour());
-            yesButton.textBlock.setText(new BlocklingsTranslationTextComponent("skill.buy.yes"));
+            yesButton.textBlock.setText(new BlocklingsTranslatableComponent("skill.buy.yes"));
 
             ButtonControl noButton = new ButtonControl()
             {
@@ -1204,7 +1204,7 @@ public class SkillsPanel extends CanvasPanel
             noButton.setWidth(50);
             noButton.setHeight(20);
             noButton.setBackgroundColour(randomColour());
-            noButton.textBlock.setText(new BlocklingsTranslationTextComponent("skill.buy.no"));
+            noButton.textBlock.setText(new BlocklingsTranslatableComponent("skill.buy.no"));
 
             setVisibility(Visibility.COLLAPSED);
         }
@@ -1240,7 +1240,7 @@ public class SkillsPanel extends CanvasPanel
             {
                 messageContainer.clearChildren();
 
-                for (String line : GuiUtil.get().split(new BlocklingsTranslationTextComponent("skill.buy_confirmation", TextFormatting.LIGHT_PURPLE + skill.info.general.name.getString() + TextFormatting.WHITE).getString(), (int) getWidth() - 20))
+                for (String line : GuiUtil.get().split(new BlocklingsTranslatableComponent("skill.buy_confirmation", ChatFormatting.LIGHT_PURPLE + skill.info.general.name.getString() + ChatFormatting.WHITE).getString(), (int) getWidth() - 20))
                 {
                     TextBlockControl textBlock = new TextBlockControl();
                     textBlock.setParent(messageContainer);

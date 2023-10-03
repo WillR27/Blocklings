@@ -5,11 +5,11 @@ import com.willr27.blocklings.entity.blockling.BlocklingType;
 import com.willr27.blocklings.network.Message;
 import com.willr27.blocklings.util.PacketBufferUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -42,7 +42,7 @@ public class SetTypeCommandMessage extends Message
      *
      * @param buf the buffer to encode to.
      */
-    public void encode(@Nonnull PacketBuffer buf)
+    public void encode(@Nonnull FriendlyByteBuf buf)
     {
         PacketBufferUtils.writeString(buf, type);
         buf.writeBoolean(natural);
@@ -54,7 +54,7 @@ public class SetTypeCommandMessage extends Message
      * @param buf the buffer to decode from.
      */
     @Nonnull
-    public static SetTypeCommandMessage decode(@Nonnull PacketBuffer buf)
+    public static SetTypeCommandMessage decode(@Nonnull FriendlyByteBuf buf)
     {
         return new SetTypeCommandMessage(PacketBufferUtils.readString(buf), buf.readBoolean());
     }
@@ -68,7 +68,7 @@ public class SetTypeCommandMessage extends Message
         {
             boolean isClient = context.getDirection() == NetworkDirection.PLAY_TO_CLIENT;
 
-            PlayerEntity player = isClient ? getClientPlayer() : context.getSender();
+            Player player = isClient ? getClientPlayer() : context.getSender();
             Objects.requireNonNull(player, "No player entity found when handling message.");
 
             if (isClient)

@@ -1,6 +1,6 @@
 package com.willr27.blocklings.util;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
 import javax.annotation.Nonnull;
 
@@ -15,9 +15,9 @@ public interface IReadWriteNBT
      * @return the tag the object data was written to.
      */
     @Nonnull
-    default CompoundNBT writeToNBT()
+    default CompoundTag writeToNBT()
     {
-        return writeToNBT(new CompoundNBT());
+        return writeToNBT(new CompoundTag());
     }
 
     /**
@@ -27,7 +27,7 @@ public interface IReadWriteNBT
      * @return the tag the object data was written to (should be the tag that was passed in).
      */
     @Nonnull
-    CompoundNBT writeToNBT(@Nonnull CompoundNBT tag);
+    CompoundTag writeToNBT(@Nonnull CompoundTag tag);
 
     /**
      * Reads the object data from the given tag.
@@ -35,5 +35,5 @@ public interface IReadWriteNBT
      * @param tag the tag to read from.
      * @param tagVersion the tagVersion of the tag (used to perform upgrade operations between versions).
      */
-    void readFromNBT(@Nonnull CompoundNBT tag, @Nonnull Version tagVersion);
+    void readFromNBT(@Nonnull CompoundTag tag, @Nonnull Version tagVersion);
 }

@@ -1,10 +1,10 @@
 package com.willr27.blocklings.network;
 
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -72,7 +72,7 @@ public abstract class BlocklingMessage<T extends BlocklingMessage<T>> extends Me
      *
      * @param buf the buffer to encode to.
      */
-    public void encode(@Nonnull PacketBuffer buf)
+    public void encode(@Nonnull FriendlyByteBuf buf)
     {
         buf.writeInt(blocklingId);
         buf.writeUUID(clientPlayerId);
@@ -84,7 +84,7 @@ public abstract class BlocklingMessage<T extends BlocklingMessage<T>> extends Me
      *
      * @param buf the buffer to decode from.
      */
-    public void decode(@Nonnull PacketBuffer buf)
+    public void decode(@Nonnull FriendlyByteBuf buf)
     {
         blocklingId = buf.readInt();
         clientPlayerId = buf.readUUID();
@@ -104,7 +104,7 @@ public abstract class BlocklingMessage<T extends BlocklingMessage<T>> extends Me
         {
             boolean isClient = context.getDirection() == NetworkDirection.PLAY_TO_CLIENT;
 
-            PlayerEntity player = isClient ? getClientPlayer() : context.getSender();
+            Player player = isClient ? getClientPlayer() : context.getSender();
             Objects.requireNonNull(player, "No player entity found when handling message.");
 
             blockling = (BlocklingEntity) player.level.getEntity(blocklingId);
@@ -134,7 +134,7 @@ public abstract class BlocklingMessage<T extends BlocklingMessage<T>> extends Me
      * @param player the player.
      * @param blockling the blockling.
      */
-    protected abstract void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling);
+    protected abstract void handle(@Nonnull Player player, @Nonnull BlocklingEntity blockling);
 
     /**
      * Sends the message either to the server or all player's clients.
@@ -157,7 +157,7 @@ public abstract class BlocklingMessage<T extends BlocklingMessage<T>> extends Me
      *
      * @param player the player to send the message to.
      */
-    public void sendToClient(PlayerEntity player)
+    public void sendToClient(Player player)
     {
         NetworkHandler.sendToClient(player, this);
     }
@@ -167,7 +167,7 @@ public abstract class BlocklingMessage<T extends BlocklingMessage<T>> extends Me
      *
      * @param playersToIgnore the players to not send the message to.
      */
-    public void sendToAllClients(List<PlayerEntity> playersToIgnore)
+    public void sendToAllClients(List<Player> playersToIgnore)
     {
         NetworkHandler.sendToAllClients(blockling.level, this, playersToIgnore);
     }

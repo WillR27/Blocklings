@@ -7,10 +7,7 @@ import com.willr27.blocklings.entity.blockling.task.Task;
 import com.willr27.blocklings.network.BlocklingMessage;
 import com.willr27.blocklings.util.IReadWriteNBT;
 import com.willr27.blocklings.util.Version;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -68,7 +65,7 @@ public abstract class Property implements IReadWriteNBT
     }
 
     @Override
-    public CompoundNBT writeToNBT(@Nonnull CompoundNBT propertyTag)
+    public CompoundTag writeToNBT(@Nonnull CompoundTag propertyTag)
     {
         propertyTag.putUUID("id", id);
         propertyTag.putBoolean("is_enabled", isEnabled);
@@ -77,7 +74,7 @@ public abstract class Property implements IReadWriteNBT
     }
 
     @Override
-    public void readFromNBT(@Nonnull CompoundNBT propertyTag, @Nonnull Version tagVersion)
+    public void readFromNBT(@Nonnull CompoundTag propertyTag, @Nonnull Version tagVersion)
     {
         setEnabled(propertyTag.getBoolean("is_enabled"), false);
     }

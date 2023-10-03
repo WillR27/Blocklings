@@ -4,26 +4,22 @@ import com.google.common.collect.Multimap;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.BlocklingType;
 import com.willr27.blocklings.interop.TinkersConstructProxy;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.CreatureAttribute;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.SwordItem;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraftforge.common.ToolType;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobType;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -74,9 +70,9 @@ public class ToolUtil
         HOES.clear();
 
         WEAPONS.addAll(findAllWeapons());
-        PICKAXES.addAll(Registry.ITEM.stream().filter(item -> item.getToolTypes(item.getDefaultInstance()).contains(ToolType.PICKAXE)).collect(Collectors.toList()));
-        AXES.addAll(Registry.ITEM.stream().filter(item -> item.getToolTypes(item.getDefaultInstance()).contains(ToolType.AXE)).collect(Collectors.toList()));
-        HOES.addAll(Registry.ITEM.stream().filter(item -> item.getToolTypes(item.getDefaultInstance()).contains(ToolType.HOE)).collect(Collectors.toList()));
+        PICKAXES.addAll(Registry.ITEM.stream().filter(item -> item.isCorrectToolForDrops(item.getDefaultInstance(), Blocks.COAL_ORE.defaultBlockState())).toList());
+        AXES.addAll(Registry.ITEM.stream().filter(item -> item.isCorrectToolForDrops(item.getDefaultInstance(), Blocks.OAK_LOG.defaultBlockState())).toList());
+        HOES.addAll(Registry.ITEM.stream().filter(item -> item.isCorrectToolForDrops(item.getDefaultInstance(), Blocks.HAY_BLOCK.defaultBlockState())).toList());
 
         TOOLS.addAll(WEAPONS);
         TOOLS.addAll(PICKAXES);
@@ -226,7 +222,7 @@ public class ToolUtil
     {
         if (isUseableTool(stack))
         {
-            Multimap<Attribute, AttributeModifier> multimap = stack.getAttributeModifiers(EquipmentSlotType.MAINHAND);
+            Multimap<Attribute, AttributeModifier> multimap = stack.getAttributeModifiers(EquipmentSlot.MAINHAND);
 
             for (Map.Entry<Attribute, AttributeModifier> entry : multimap.entries())
             {
@@ -261,7 +257,7 @@ public class ToolUtil
     {
         if (isUseableTool(stack))
         {
-            Multimap<Attribute, AttributeModifier> multimap = stack.getAttributeModifiers(EquipmentSlotType.MAINHAND);
+            Multimap<Attribute, AttributeModifier> multimap = stack.getAttributeModifiers(EquipmentSlot.MAINHAND);
 
             for (Map.Entry<Attribute, AttributeModifier> entry : multimap.entries())
             {
@@ -283,9 +279,9 @@ public class ToolUtil
     /**
      * @return the additional damage of the given tool from its enchantments on the given creature type.
      */
-    public static float getToolEnchantmentDamage(@Nonnull ItemStack stack, @Nonnull CreatureAttribute creatureAttribute)
+    public static float getToolEnchantmentDamage(@Nonnull ItemStack stack, @Nonnull MobType mobType)
     {
-        return EnchantmentHelper.getDamageBonus(stack, creatureAttribute);
+        return EnchantmentHelper.getDamageBonus(stack, mobType);
     }
 
     /**
@@ -461,25 +457,7 @@ public class ToolUtil
         }
         else
         {
-            ToolType harvestTool = blockState.getHarvestTool();
-
-            if (harvestTool == null)
-            {
-                return true;
-            }
-            else
-            {
-                for (ToolType toolType : stack.getToolTypes())
-                {
-                    if (toolType == harvestTool)
-                    {
-                        if (stack.getHarvestLevel(toolType, null, blockState) >= blockState.getHarvestLevel())
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
+            stack.getItem().isCorrectToolForDrops(stack, blockState);
         }
 
         return false;
@@ -492,11 +470,11 @@ public class ToolUtil
     public static List<Enchantment> findToolEnchantments(@Nonnull ItemStack stack)
     {
         List<Enchantment> enchantments = new ArrayList<>();
-        ListNBT listNBT = stack.getEnchantmentTags();
+        ListTag listNBT = stack.getEnchantmentTags();
 
         for (int i = 0; i < listNBT.size(); i++)
         {
-            CompoundNBT tag = listNBT.getCompound(i);
+            CompoundTag tag = listNBT.getCompound(i);
             ResourceLocation enchantmentResource = ResourceLocation.tryParse(tag.getString("id"));
 
             if (enchantmentResource != null)

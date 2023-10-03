@@ -10,7 +10,7 @@ import com.willr27.blocklings.client.gui.properties.GridDefinition;
 import com.willr27.blocklings.client.gui.texture.Texture;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -188,7 +188,7 @@ public class SingleSelectorStrip<O> extends Control
         @Override
         public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
         {
-            renderTooltip(matrixStack, mouseX, mouseY, new StringTextComponent(option.toString()));
+            renderTooltip(matrixStack, mouseX, mouseY, new TextComponent(option.toString()));
         }
 
         @Override

@@ -7,9 +7,9 @@ import com.willr27.blocklings.network.messages.EquipmentInventoryMessage;
 import com.willr27.blocklings.util.ToolContext;
 import com.willr27.blocklings.util.ToolType;
 import com.willr27.blocklings.util.ToolUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jline.utils.Log;
@@ -45,8 +45,8 @@ public class EquipmentInventory extends AbstractInventory
     @Nonnull
     public BlocklingHand findHandToolEquipped(@Nonnull ToolType toolType)
     {
-        boolean hasInMain = hasToolEquipped(Hand.MAIN_HAND);
-        boolean hasInOff = hasToolEquipped(Hand.OFF_HAND);
+        boolean hasInMain = hasToolEquipped(InteractionHand.MAIN_HAND);
+        boolean hasInOff = hasToolEquipped(InteractionHand.OFF_HAND);
 
         if (hasInMain && hasInOff)
         {
@@ -69,7 +69,7 @@ public class EquipmentInventory extends AbstractInventory
     /**
      * @return true if the blockling has a tool equipped in the given hand.
      */
-    public boolean hasToolEquipped(@Nonnull Hand hand)
+    public boolean hasToolEquipped(@Nonnull InteractionHand hand)
     {
         return ToolUtil.isTool(getHandStack(hand));
     }
@@ -79,13 +79,13 @@ public class EquipmentInventory extends AbstractInventory
      */
     public boolean hasToolEquipped(@Nonnull ToolType toolType)
     {
-        return hasToolEquipped(Hand.MAIN_HAND, toolType) || hasToolEquipped(Hand.OFF_HAND, toolType);
+        return hasToolEquipped(InteractionHand.MAIN_HAND, toolType) || hasToolEquipped(InteractionHand.OFF_HAND, toolType);
     }
 
     /**
      * @return true if the blockling has a tool equipped of the given type in the given hand.
      */
-    public boolean hasToolEquipped(@Nonnull Hand hand, @Nonnull ToolType toolType)
+    public boolean hasToolEquipped(@Nonnull InteractionHand hand, @Nonnull ToolType toolType)
     {
         return toolType.is(getHandStack(hand));
     }
@@ -94,21 +94,21 @@ public class EquipmentInventory extends AbstractInventory
      * @return the stack in the given hand.
      */
     @Nonnull
-    public ItemStack getHandStack(@Nonnull Hand hand)
+    public ItemStack getHandStack(@Nonnull InteractionHand hand)
     {
-        return hand == Hand.MAIN_HAND ? getItem(TOOL_MAIN_HAND) : getItem(TOOL_OFF_HAND);
+        return hand == InteractionHand.MAIN_HAND ? getItem(TOOL_MAIN_HAND) : getItem(TOOL_OFF_HAND);
     }
 
     /**
      * Sets the stack in the given hand.
      */
-    public void setHandStack(@Nonnull Hand hand, @Nonnull ItemStack stack)
+    public void setHandStack(@Nonnull InteractionHand hand, @Nonnull ItemStack stack)
     {
-        if (hand == Hand.MAIN_HAND)
+        if (hand == InteractionHand.MAIN_HAND)
         {
             setItem(TOOL_MAIN_HAND, stack);
         }
-        else if (hand == Hand.OFF_HAND)
+        else if (hand == InteractionHand.OFF_HAND)
         {
             setItem(TOOL_OFF_HAND, stack);
         }
@@ -147,23 +147,23 @@ public class EquipmentInventory extends AbstractInventory
     @Nonnull
     public BlocklingHand findAttackingHand()
     {
-        if (hasUseableWeapon(Hand.MAIN_HAND) && hasUseableWeapon(Hand.OFF_HAND))
+        if (hasUseableWeapon(InteractionHand.MAIN_HAND) && hasUseableWeapon(InteractionHand.OFF_HAND))
         {
             return BlocklingHand.BOTH;
         }
-        else if (hasUseableWeapon(Hand.MAIN_HAND) && !hasUseableWeapon(Hand.OFF_HAND))
+        else if (hasUseableWeapon(InteractionHand.MAIN_HAND) && !hasUseableWeapon(InteractionHand.OFF_HAND))
         {
             return BlocklingHand.MAIN;
         }
-        else if (!hasUseableWeapon(Hand.MAIN_HAND) && hasUseableWeapon(Hand.OFF_HAND))
+        else if (!hasUseableWeapon(InteractionHand.MAIN_HAND) && hasUseableWeapon(InteractionHand.OFF_HAND))
         {
             return BlocklingHand.OFF;
         }
-        else if (hasUseableTool(Hand.MAIN_HAND) && !hasUseableTool(Hand.OFF_HAND))
+        else if (hasUseableTool(InteractionHand.MAIN_HAND) && !hasUseableTool(InteractionHand.OFF_HAND))
         {
             return BlocklingHand.MAIN;
         }
-        else if (!hasUseableTool(Hand.MAIN_HAND) && hasUseableTool(Hand.OFF_HAND))
+        else if (!hasUseableTool(InteractionHand.MAIN_HAND) && hasUseableTool(InteractionHand.OFF_HAND))
         {
             return BlocklingHand.OFF;
         }
@@ -174,7 +174,7 @@ public class EquipmentInventory extends AbstractInventory
     /**
      * @return true if the given hand has a weapon equipped that can currently be used.
      */
-    public boolean hasUseableWeapon(@Nonnull Hand hand)
+    public boolean hasUseableWeapon(@Nonnull InteractionHand hand)
     {
         return hasToolEquipped(hand, ToolType.WEAPON) && ToolUtil.isUseableTool(getHandStack(hand));
     }
@@ -182,7 +182,7 @@ public class EquipmentInventory extends AbstractInventory
     /**
      * @return true if the given hand has a tool equipped that can currently be used.
      */
-    public boolean hasUseableTool(@Nonnull Hand hand)
+    public boolean hasUseableTool(@Nonnull InteractionHand hand)
     {
         return ToolUtil.isUseableTool(getHandStack(hand));
     }
@@ -192,13 +192,13 @@ public class EquipmentInventory extends AbstractInventory
      */
     public boolean canHarvestBlockWithEquippedTools(@Nonnull BlockState blockState)
     {
-        return canHarvestBlockWithEquippedTool(Hand.MAIN_HAND, blockState) || canHarvestBlockWithEquippedTool(Hand.OFF_HAND, blockState);
+        return canHarvestBlockWithEquippedTool(InteractionHand.MAIN_HAND, blockState) || canHarvestBlockWithEquippedTool(InteractionHand.OFF_HAND, blockState);
     }
 
     /**
      * @return true if the blockling can harvest the given block with the current tool in the given hand.
      */
-    public boolean canHarvestBlockWithEquippedTool(@Nonnull Hand hand, @Nonnull BlockState blockState)
+    public boolean canHarvestBlockWithEquippedTool(@Nonnull InteractionHand hand, @Nonnull BlockState blockState)
     {
         return ToolUtil.canToolHarvest(getHandStack(hand), blockState);
     }
@@ -384,40 +384,40 @@ public class EquipmentInventory extends AbstractInventory
         stats.farmingSpeedMainHandModifier.setValue(0.0f, false);
         stats.farmingSpeedOffHandModifier.setValue(0.0f, false);
 
-        if (isAttackingWith(BlocklingHand.MAIN) && hasToolEquipped(Hand.MAIN_HAND))
+        if (isAttackingWith(BlocklingHand.MAIN) && hasToolEquipped(InteractionHand.MAIN_HAND))
         {
             stats.mainHandAttackDamageToolModifier.setValue(ToolUtil.getDefaultToolBaseDamage(blockling.getMainHandItem()), false);
             stats.attackSpeedMainHandModifier.setValue(ToolUtil.getDefaultToolAttackSpeed(blockling.getMainHandItem()), false);
         }
 
-        if (isAttackingWith(BlocklingHand.OFF) && hasToolEquipped(Hand.OFF_HAND))
+        if (isAttackingWith(BlocklingHand.OFF) && hasToolEquipped(InteractionHand.OFF_HAND))
         {
             stats.offHandAttackDamageToolModifier.setValue(ToolUtil.getDefaultToolBaseDamage(blockling.getOffhandItem()), false);
             stats.attackSpeedOffHandModifier.setValue(ToolUtil.getDefaultToolAttackSpeed(blockling.getOffhandItem()), false);
         }
 
-        if (hasToolEquipped(Hand.MAIN_HAND, ToolType.PICKAXE))
+        if (hasToolEquipped(InteractionHand.MAIN_HAND, ToolType.PICKAXE))
         {
             stats.miningSpeedMainHandModifier.setValue(ToolUtil.getDefaultToolMiningSpeed(blockling.getMainHandItem()), false);
         }
-        else if (hasToolEquipped(Hand.MAIN_HAND, ToolType.AXE))
+        else if (hasToolEquipped(InteractionHand.MAIN_HAND, ToolType.AXE))
         {
             stats.woodcuttingSpeedMainHandModifier.setValue(ToolUtil.getDefaultToolWoodcuttingSpeed(blockling.getMainHandItem()), false);
         }
-        else if (hasToolEquipped(Hand.MAIN_HAND, ToolType.HOE))
+        else if (hasToolEquipped(InteractionHand.MAIN_HAND, ToolType.HOE))
         {
             stats.farmingSpeedMainHandModifier.setValue(ToolUtil.getDefaultToolFarmingSpeed(blockling.getMainHandItem()), false);
         }
 
-        if (hasToolEquipped(Hand.OFF_HAND, ToolType.PICKAXE))
+        if (hasToolEquipped(InteractionHand.OFF_HAND, ToolType.PICKAXE))
         {
             stats.miningSpeedOffHandModifier.setValue(ToolUtil.getDefaultToolMiningSpeed(blockling.getOffhandItem()), false);
         }
-        else if (hasToolEquipped(Hand.OFF_HAND, ToolType.AXE))
+        else if (hasToolEquipped(InteractionHand.OFF_HAND, ToolType.AXE))
         {
             stats.woodcuttingSpeedOffHandModifier.setValue(ToolUtil.getDefaultToolWoodcuttingSpeed(blockling.getOffhandItem()), false);
         }
-        else if (hasToolEquipped(Hand.OFF_HAND, ToolType.HOE))
+        else if (hasToolEquipped(InteractionHand.OFF_HAND, ToolType.HOE))
         {
             stats.farmingSpeedOffHandModifier.setValue(ToolUtil.getDefaultToolFarmingSpeed(blockling.getOffhandItem()), false);
         }

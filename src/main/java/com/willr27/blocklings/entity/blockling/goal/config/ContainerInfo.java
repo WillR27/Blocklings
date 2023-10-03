@@ -3,7 +3,7 @@ package com.willr27.blocklings.entity.blockling.goal.config;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -69,9 +69,9 @@ public class ContainerInfo
      * @return the compound tag.
      */
     @Nonnull
-    public CompoundNBT writeToNBT()
+    public CompoundTag writeToNBT()
     {
-        CompoundNBT compound = new CompoundNBT();
+        CompoundTag compound = new CompoundTag();
         compound.putInt("x", getX());
         compound.putInt("y", getY());
         compound.putInt("z", getZ());
@@ -93,7 +93,7 @@ public class ContainerInfo
      * @param tagVersion the version of the tag.
      */
     @Nonnull
-    public void readFromNBT(@Nonnull CompoundNBT containerInfoTag, @Nonnull Version tagVersion)
+    public void readFromNBT(@Nonnull CompoundTag containerInfoTag, @Nonnull Version tagVersion)
     {
         setBlockPos(new BlockPos(containerInfoTag.getInt("x"), containerInfoTag.getInt("y"), containerInfoTag.getInt("z")));
         setBlock(Registry.BLOCK.get(new ResourceLocation(containerInfoTag.getString("block"))));

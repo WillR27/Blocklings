@@ -1,6 +1,6 @@
 package com.willr27.blocklings.util;
 
-import net.minecraft.network.PacketBuffer;
+import io.netty.buffer.ByteBuf;
 
 import javax.annotation.Nonnull;
 
@@ -14,12 +14,12 @@ public interface ISyncable
      *
      * @param buf the buffer to write to.
      */
-    void encode(@Nonnull PacketBuffer buf);
+    void encode(@Nonnull ByteBuf buf);
 
     /**
      * Reads the object's data from the given packet buffer.
      *
      * @param buf the buffer to read from.
      */
-    void decode(@Nonnull PacketBuffer buf);
+    void decode(@Nonnull ByteBuf buf);
 }

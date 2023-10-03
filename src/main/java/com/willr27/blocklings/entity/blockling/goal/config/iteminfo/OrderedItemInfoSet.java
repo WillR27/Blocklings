@@ -8,7 +8,7 @@ import com.willr27.blocklings.network.messages.GoalMessage;
 import com.willr27.blocklings.util.Version;
 import com.willr27.blocklings.util.event.EventBus;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nonnull;
@@ -52,9 +52,9 @@ public class OrderedItemInfoSet implements Iterable<ItemInfo>
      *
      * @return the tag.
      */
-    public CompoundNBT writeToNBT()
+    public CompoundTag writeToNBT()
     {
-        CompoundNBT tag = new CompoundNBT();
+        CompoundTag tag = new CompoundTag();
 
         tag.putInt("size", itemInfos.size());
 
@@ -72,7 +72,7 @@ public class OrderedItemInfoSet implements Iterable<ItemInfo>
      * @param itemSetTag an item set tag.
      * @param version the version of the tag.
      */
-    public void readFromNBT(@Nonnull CompoundNBT itemSetTag, @Nonnull Version version)
+    public void readFromNBT(@Nonnull CompoundTag itemSetTag, @Nonnull Version version)
     {
         itemInfos.clear();
 

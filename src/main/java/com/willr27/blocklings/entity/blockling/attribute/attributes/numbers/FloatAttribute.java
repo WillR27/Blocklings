@@ -3,7 +3,7 @@ package com.willr27.blocklings.entity.blockling.attribute.attributes.numbers;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.attribute.Attribute;
 import com.willr27.blocklings.util.Version;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nonnull;
@@ -31,7 +31,7 @@ public class FloatAttribute extends NumberAttribute<Float>
     }
 
     @Override
-    public CompoundNBT writeToNBT(@Nonnull CompoundNBT attributeTag)
+    public CompoundTag writeToNBT(@Nonnull CompoundTag attributeTag)
     {
         attributeTag.putFloat("value", value);
 
@@ -39,7 +39,7 @@ public class FloatAttribute extends NumberAttribute<Float>
     }
 
     @Override
-    public void readFromNBT(@Nonnull CompoundNBT attributeTag, @Nonnull Version tagVersion)
+    public void readFromNBT(@Nonnull CompoundTag attributeTag, @Nonnull Version tagVersion)
     {
         super.readFromNBT(attributeTag, tagVersion);
 

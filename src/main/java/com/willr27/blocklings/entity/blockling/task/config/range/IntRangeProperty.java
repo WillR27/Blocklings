@@ -6,13 +6,13 @@ import com.willr27.blocklings.client.gui.control.controls.config.IntRangeControl
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.util.Version;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TextComponent;
+import net.minecraft.util.text.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -40,7 +40,7 @@ public class IntRangeProperty extends RangeProperty<Integer>
     }
 
     @Override
-    public CompoundNBT writeToNBT(@Nonnull CompoundNBT propertyTag)
+    public CompoundTag writeToNBT(@Nonnull CompoundTag propertyTag)
     {
         propertyTag.putInt("value", value);
 
@@ -48,7 +48,7 @@ public class IntRangeProperty extends RangeProperty<Integer>
     }
 
     @Override
-    public void readFromNBT(@Nonnull CompoundNBT propertyTag, @Nonnull Version tagVersion)
+    public void readFromNBT(@Nonnull CompoundTag propertyTag, @Nonnull Version tagVersion)
     {
         value = propertyTag.getInt("value");
 
@@ -87,8 +87,8 @@ public class IntRangeProperty extends RangeProperty<Integer>
             {
                 if (!grabberControl.isPressed())
                 {
-                    List<IReorderingProcessor> tooltip = GuiUtil.get().split(desc.copy().withStyle(TextFormatting.GRAY), 200);
-                    tooltip.add(0, name.copy().withStyle(TextFormatting.WHITE).getVisualOrderText());
+                    List<IReorderingProcessor> tooltip = GuiUtil.get().split(desc.copy().withStyle(ChatFormatting.GRAY), 200);
+                    tooltip.add(0, name.copy().withStyle(ChatFormatting.WHITE).getVisualOrderText());
 
                     renderTooltip(matrixStack, mouseX, mouseY, tooltip);
                 }

@@ -1,6 +1,6 @@
 package com.willr27.blocklings.entity.blockling.attribute;
 
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.TranslatableComponent;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -150,5 +150,5 @@ public interface IModifiable<T>
      * @return a translation text component for the attribute.
      */
     @Nonnull
-    TranslationTextComponent createTranslation(@Nonnull String key, @Nonnull Object... objects);
+    TranslatableComponent createTranslation(@Nonnull String key, @Nonnull Object... objects);
 }

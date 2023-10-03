@@ -1,8 +1,8 @@
 package com.willr27.blocklings.util;
 
-import net.minecraft.block.Block;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ public class WorldUtil
      * @return a tree containing all the blocks that make up the tree.
      */
     @Nonnull
-    public static Tree findTreeFromPos(@Nonnull World world, @Nonnull BlockPos blockPos, int maxTreeLogsSize, @Nonnull Predicate<BlockPos> isValidLogPos, @Nonnull Predicate<BlockPos> isValidLeavesPos)
+    public static Tree findTreeFromPos(@Nonnull Level world, @Nonnull BlockPos blockPos, int maxTreeLogsSize, @Nonnull Predicate<BlockPos> isValidLogPos, @Nonnull Predicate<BlockPos> isValidLeavesPos)
     {
         Tree tree = new Tree();
         Block logBlock = world.getBlockState(blockPos).getBlock();

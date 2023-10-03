@@ -2,11 +2,11 @@ package com.willr27.blocklings.sound;
 
 import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.util.BlocklingsResourceLocation;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 public class BlocklingsSounds
 {

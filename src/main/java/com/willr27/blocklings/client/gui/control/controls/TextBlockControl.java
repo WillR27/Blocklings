@@ -10,7 +10,7 @@ import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.LanguageMap;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
@@ -27,7 +27,7 @@ public class TextBlockControl extends Control
      * The text component to render.
      */
     @Nonnull
-    private ITextComponent text = new StringTextComponent("");
+    private ITextComponent text = new TextComponent("");
 
     /**
      * Whether to trim the text to fit the width of the control.
@@ -207,7 +207,7 @@ public class TextBlockControl extends Control
      */
     public void setText(@Nonnull String text)
     {
-        this.text = new StringTextComponent(text);
+        this.text = new TextComponent(text);
     }
 
     /**

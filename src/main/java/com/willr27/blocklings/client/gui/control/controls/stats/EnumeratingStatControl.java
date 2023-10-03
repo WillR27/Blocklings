@@ -3,11 +3,11 @@ package com.willr27.blocklings.client.gui.control.controls.stats;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.controls.EnumeratingControl;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
-import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TextComponent;
+import net.minecraft.util.text.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -45,7 +45,7 @@ public class EnumeratingStatControl extends EnumeratingControl<StatControl>
 
     private List<ITextComponent> prependNameToTooltip(@Nonnull List<ITextComponent> tooltip)
     {
-//        tooltip.add(0, new StringTextComponent("").getVisualOrderText());
+//        tooltip.add(0, new TextComponent("").getVisualOrderText());
         tooltip.add(0, name);
 
         return tooltip;
@@ -67,7 +67,7 @@ public class EnumeratingStatControl extends EnumeratingControl<StatControl>
 
             if (i == getIndexOfCurrentChild())
             {
-                subTooltip.set(0, new StringTextComponent(subTooltip.get(0).getString().substring(0, 2) + TextFormatting.ITALIC + subTooltip.get(0).getString().substring(2)));
+                subTooltip.set(0, new TextComponent(subTooltip.get(0).getString().substring(0, 2) + ChatFormatting.ITALIC + subTooltip.get(0).getString().substring(2)));
             }
 
             if (GuiUtil.get().isCrouchKeyDown())
@@ -82,7 +82,7 @@ public class EnumeratingStatControl extends EnumeratingControl<StatControl>
 
         if (!GuiUtil.get().isCrouchKeyDown())
         {
-            tooltip.add(new StringTextComponent(TextFormatting.DARK_GRAY + "" + TextFormatting.ITALIC + new BlocklingsTranslationTextComponent("gui.more_info", Minecraft.getInstance().options.keyShift.getTranslatedKeyMessage().getString()).getString()));
+            tooltip.add(new TextComponent(ChatFormatting.DARK_GRAY + "" + ChatFormatting.ITALIC + new BlocklingsTranslatableComponent("gui.more_info", Minecraft.getInstance().options.keyShift.getTranslatedKeyMessage().getString()).getString()));
         }
 
         return tooltip;

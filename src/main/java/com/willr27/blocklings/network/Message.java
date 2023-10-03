@@ -1,10 +1,10 @@
 package com.willr27.blocklings.network;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;
@@ -29,7 +29,7 @@ public abstract class Message
      */
     @OnlyIn(Dist.CLIENT)
     @Nonnull
-    protected PlayerEntity getClientPlayer()
+    protected Player getClientPlayer()
     {
         return Minecraft.getInstance().player;
     }

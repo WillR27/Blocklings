@@ -15,7 +15,7 @@ import com.willr27.blocklings.client.gui.control.event.events.input.MouseRelease
 import com.willr27.blocklings.client.gui.properties.GridDefinition;
 import com.willr27.blocklings.client.gui.properties.Visibility;
 import com.willr27.blocklings.client.gui.texture.Textures;
-import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.registry.Registry;
@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
  * A control used to search for and select an item.
@@ -123,7 +122,7 @@ class ItemSearchControl extends GridPanel
 
         tooManyResultsMessage = new TextBlockControl();
         tooManyResultsMessage.setWidthPercentage(1.0);
-        tooManyResultsMessage.setText(new BlocklingsTranslationTextComponent("config.search.too_many_results"));
+        tooManyResultsMessage.setText(new BlocklingsTranslatableComponent("config.search.too_many_results"));
         tooManyResultsMessage.setShouldRenderShadow(false);
         tooManyResultsMessage.setPadding(2.0, 1.0 ,2.0 ,1.0);
         tooManyResultsMessage.setVerticalContentAlignment(0.5);

@@ -2,13 +2,13 @@ package com.willr27.blocklings.entity.blockling.attribute;
 
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.network.BlocklingMessage;
-import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import com.willr27.blocklings.util.IReadWriteNBT;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.TranslatableComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -111,7 +111,7 @@ public abstract class Attribute<T> implements IReadWriteNBT
     }
 
     @Override
-    public CompoundNBT writeToNBT(@Nonnull CompoundNBT attributeTag)
+    public CompoundTag writeToNBT(@Nonnull CompoundTag attributeTag)
     {
         attributeTag.putBoolean("is_enabled", isEnabled);
 
@@ -119,7 +119,7 @@ public abstract class Attribute<T> implements IReadWriteNBT
     }
 
     @Override
-    public void readFromNBT(@Nonnull CompoundNBT attributeTag, @Nonnull Version tagVersion)
+    public void readFromNBT(@Nonnull CompoundTag attributeTag, @Nonnull Version tagVersion)
     {
         isEnabled = attributeTag.getBoolean("is_enabled");
     }
@@ -263,17 +263,17 @@ public abstract class Attribute<T> implements IReadWriteNBT
      * @return a translation text component for the attribute.
      */
     @Nonnull
-    public TranslationTextComponent createTranslation(@Nonnull String key, @Nonnull Object... objects)
+    public TranslatableComponent createTranslation(@Nonnull String key, @Nonnull Object... objects)
     {
-        return new AttributeTranslationTextComponent(this.key + "." + key, objects);
+        return new AttributeTranslatableComponent(this.key + "." + key, objects);
     }
 
     /**
      * Represents a translation text component for an attribute.
      */
-    public static class AttributeTranslationTextComponent extends BlocklingsTranslationTextComponent
+    public static class AttributeTranslatableComponent extends BlocklingsTranslatableComponent
     {
-        public AttributeTranslationTextComponent(String key, Object... objects)
+        public AttributeTranslatableComponent(String key, Object... objects)
         {
             super("attribute." + key, objects);
         }

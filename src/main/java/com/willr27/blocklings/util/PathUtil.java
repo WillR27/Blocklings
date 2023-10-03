@@ -1,8 +1,8 @@
 package com.willr27.blocklings.util;
 
-import net.minecraft.entity.MobEntity;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.level.pathfinder.Path;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,7 +20,7 @@ public class PathUtil
      * @return the path or null if no path was found.
      */
     @Nullable
-    public static Path createPathTo(@Nonnull MobEntity entity, @Nonnull BlockPos blockPos)
+    public static Path createPathTo(@Nonnull Mob entity, @Nonnull BlockPos blockPos)
     {
         return createPathTo(entity, blockPos, 0, false);
     }
@@ -35,7 +35,7 @@ public class PathUtil
      * @return the path or null if no path was found.
      */
     @Nullable
-    public static Path createPathTo(@Nonnull MobEntity entity, @Nonnull BlockPos blockPos, float stopDistanceSq, boolean preferTopBlock)
+    public static Path createPathTo(@Nonnull Mob entity, @Nonnull BlockPos blockPos, float stopDistanceSq, boolean preferTopBlock)
     {
         Path closestPath = null;
         double closestDistanceSq = Double.MAX_VALUE;

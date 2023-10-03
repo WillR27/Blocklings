@@ -21,11 +21,11 @@ public class ModProxies
         {
             for (ModFileScanData.AnnotationData annotationData : modFileScanData.getAnnotations())
             {
-                if (annotationData.getAnnotationType().equals(Type.getType(Proxy.class)))
+                if (annotationData.annotationType().equals(Type.getType(Proxy.class)))
                 {
                     try
                     {
-                        Class proxyClass = Class.forName(annotationData.getClassType().getClassName());
+                        Class proxyClass = Class.forName(annotationData.clazz().getClassName());
                         Proxy proxyAnnotation = (Proxy) proxyClass.getAnnotation(Proxy.class);
 
                         // Derived classes will be picked up by reflections but don't have an explicit annotationData, so they can be ignored here.
@@ -48,7 +48,7 @@ public class ModProxies
                     }
                     catch (Exception ex)
                     {
-                        Blocklings.LOGGER.error(String.format("Failed to create mod proxy for \"%s\" : %s", annotationData.getClassType().getClassName(), ex));
+                        Blocklings.LOGGER.error(String.format("Failed to create mod proxy for \"%s\" : %s", annotationData.clazz().getClassName(), ex));
                     }
                 }
             }

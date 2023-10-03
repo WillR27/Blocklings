@@ -24,15 +24,13 @@ import com.willr27.blocklings.util.PacketBufferUtils;
 import com.willr27.blocklings.util.Version;
 import com.willr27.blocklings.util.event.EventHandler;
 import com.willr27.blocklings.util.event.HandleableEvent;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.GoalSelector;
-import net.minecraft.entity.ai.goal.PrioritizedGoal;
-import net.minecraft.entity.ai.goal.SwimGoal;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.ai.goal.*;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
+import net.minecraftforge.registries.tags.ITag;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -132,19 +130,19 @@ public class BlocklingTasks implements IReadWriteNBT
      */
     public void reapplyGoals()
     {
-        Set<PrioritizedGoal> goals = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, goalSelector, "field_220892_d");
-        Set<PrioritizedGoal> targets = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, targetSelector, "field_220892_d");
-        goals.forEach(PrioritizedGoal::stop);
+        Set<WrappedGoal> goals = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, goalSelector, "field_220892_d");
+        Set<WrappedGoal> targets = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, targetSelector, "field_220892_d");
+        goals.forEach(WrappedGoal::stop);
         goals.clear();
-        targets.forEach(PrioritizedGoal::stop);
+        targets.forEach(WrappedGoal::stop);
         targets.clear();
 
-        Map<Goal.Flag, PrioritizedGoal> goalLockedFlags  = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, goalSelector, "field_220891_c");
-        Map<Goal.Flag, PrioritizedGoal> targetLockedFlags  = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, targetSelector, "field_220891_c");
+        Map<Goal.Flag, WrappedGoal> goalLockedFlags  = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, goalSelector, "field_220891_c");
+        Map<Goal.Flag, WrappedGoal> targetLockedFlags  = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, targetSelector, "field_220891_c");
         goalLockedFlags.clear();
         targetLockedFlags.clear();
 
-        goalSelector.addGoal(0, new SwimGoal(blockling));
+        goalSelector.addGoal(0, new FloatGoal(blockling));
 
         for (Task task : prioritisedTasks)
         {
@@ -166,20 +164,20 @@ public class BlocklingTasks implements IReadWriteNBT
     }
 
     @Override
-    public CompoundNBT writeToNBT(@Nonnull CompoundNBT tasksTag)
+    public CompoundTag writeToNBT(@Nonnull CompoundTag tasksTag)
     {
-        CompoundNBT unlockedTypesTag = new CompoundNBT();
+        CompoundTag unlockedTypesTag = new CompoundTag();
 
         for (TaskType type : taskTypeUnlockedMap.keySet())
         {
             unlockedTypesTag.putBoolean(type.id.toString(), taskTypeUnlockedMap.get(type));
         }
 
-        CompoundNBT taskListTag = new CompoundNBT();
+        CompoundTag taskListTag = new CompoundTag();
 
         for (Task task : prioritisedTasks)
         {
-            CompoundNBT taskTag = new CompoundNBT();
+            CompoundTag taskTag = new CompoundTag();
 
             taskTag.putUUID("type_id", task.getType().id);
             taskTag.putInt("priority", task.getPriority());
@@ -187,14 +185,14 @@ public class BlocklingTasks implements IReadWriteNBT
 
             if (task.isConfigured())
             {
-                CompoundNBT whitelistsTag = new CompoundNBT();
+                CompoundTag whitelistsTag = new CompoundTag();
 
                 for (GoalWhitelist whitelist : task.getGoal().whitelists)
                 {
                     whitelistsTag.put(whitelist.id.toString(), whitelist.writeToNBT());
                 }
 
-                ListNBT propertiesTag = new ListNBT();
+                ListTag propertiesTag = new ListTag();
 
                 for (Property property : task.getGoal().properties)
                 {
@@ -218,9 +216,9 @@ public class BlocklingTasks implements IReadWriteNBT
     }
 
     @Override
-    public void readFromNBT(@Nonnull CompoundNBT tasksTag, @Nonnull Version tagVersion)
+    public void readFromNBT(@Nonnull CompoundTag tasksTag, @Nonnull Version tagVersion)
     {
-        CompoundNBT unlockedTypesTag = (CompoundNBT) tasksTag.get("unlocked_task_types");
+        CompoundTag unlockedTypesTag = (CompoundTag) tasksTag.get("unlocked_task_types");
 
         if (unlockedTypesTag != null)
         {
@@ -230,7 +228,7 @@ public class BlocklingTasks implements IReadWriteNBT
             }
         }
 
-        CompoundNBT taskListTag = (CompoundNBT) tasksTag.get("tasks");
+        CompoundTag taskListTag = (CompoundTag) tasksTag.get("tasks");
 
         if (taskListTag != null)
         {
@@ -241,7 +239,7 @@ public class BlocklingTasks implements IReadWriteNBT
 
             for (String taskIdString : taskListTag.getAllKeys())
             {
-                CompoundNBT taskTag = (CompoundNBT) taskListTag.get(taskIdString);
+                CompoundTag taskTag = (CompoundTag) taskListTag.get(taskIdString);
 
                 UUID taskId = UUID.fromString(taskIdString);
                 TaskType type = getTaskType(taskTag.getUUID("type_id"));
@@ -255,11 +253,11 @@ public class BlocklingTasks implements IReadWriteNBT
 
                 if (task.isConfigured())
                 {
-                    CompoundNBT whitelistsTag = (CompoundNBT) taskTag.get("whitelists");
+                    CompoundTag whitelistsTag = (CompoundTag) taskTag.get("whitelists");
 
                     for (GoalWhitelist whitelist : task.getGoal().whitelists)
                     {
-                        CompoundNBT whitelistTag = (CompoundNBT) whitelistsTag.get(whitelist.id.toString());
+                        CompoundTag whitelistTag = (CompoundTag) whitelistsTag.get(whitelist.id.toString());
 
                         if (whitelistTag != null)
                         {
@@ -267,13 +265,13 @@ public class BlocklingTasks implements IReadWriteNBT
                         }
                     }
 
-                    ListNBT propertiesTag = (ListNBT) taskTag.get("properties");
+                    ListTag propertiesTag = (ListTag) taskTag.get("properties");
 
                     if (propertiesTag != null)
                     {
-                        for (INBT tag : propertiesTag)
+                        for (Tag tag : propertiesTag)
                         {
-                            CompoundNBT propertyTag = (CompoundNBT) tag;
+                            CompoundTag propertyTag = (CompoundTag) tag;
 
                             task.getGoal().properties.stream()
                                     .filter(property -> property.id.equals(propertyTag.getUUID("id")))
@@ -294,7 +292,7 @@ public class BlocklingTasks implements IReadWriteNBT
         }
     }
 
-    public void encode(PacketBuffer buf)
+    public void encode(FriendlyByteBuf buf)
     {
         for (TaskType type : TASK_TYPES)
         {
@@ -328,7 +326,7 @@ public class BlocklingTasks implements IReadWriteNBT
         }
     }
 
-    public void decode(PacketBuffer buf)
+    public void decode(FriendlyByteBuf buf)
     {
         for (TaskType type : TASK_TYPES)
         {

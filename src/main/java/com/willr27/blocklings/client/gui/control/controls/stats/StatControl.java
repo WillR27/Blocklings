@@ -7,7 +7,7 @@ import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
 import com.willr27.blocklings.client.gui.properties.Direction;
 import com.willr27.blocklings.client.gui.texture.Texture;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -81,7 +81,7 @@ public class StatControl extends Control
         valueControl.setFitHeightToContent(true);
         valueControl.setTextColour(0xffffe100);
         valueControl.setVerticalAlignment(0.5);
-        valueControl.setText(new StringTextComponent(valueSupplier.get()));
+        valueControl.setText(new TextComponent(valueSupplier.get()));
         valueControl.useDescenderlessLineHeight();
 
         if (renderValueToLeftOfIcon)
@@ -99,6 +99,6 @@ public class StatControl extends Control
     @Override
     public void onTick()
     {
-        valueControl.setText(new StringTextComponent(valueSupplier.get()));
+        valueControl.setText(new TextComponent(valueSupplier.get()));
     }
 }

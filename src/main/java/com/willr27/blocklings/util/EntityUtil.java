@@ -1,19 +1,19 @@
 package com.willr27.blocklings.util;
 
+import com.mojang.math.Vector3d;
 import com.willr27.blocklings.Blocklings;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.FlyingEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.passive.WaterMobEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.FlyingMob;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.Lazy;
 
 import javax.annotation.Nonnull;
@@ -31,7 +31,7 @@ public class EntityUtil
      * The most recent world to load (used to then lazy load the list of valid attack targets).
      */
     @Nullable
-    public static World latestWorld;
+    public static Level latestWorld;
 
     /**
      * A map of entities that should be deemed attackable by a blockling in game.
@@ -82,7 +82,7 @@ public class EntityUtil
      * @return an instance of the given entity type.
      */
     @Nonnull
-    public static Entity create(@Nonnull ResourceLocation type, @Nonnull World world)
+    public static Entity create(@Nonnull ResourceLocation type, @Nonnull Level world)
     {
         return Objects.requireNonNull(Registry.ENTITY_TYPE.get(type).create(world));
     }
@@ -93,15 +93,15 @@ public class EntityUtil
      */
     public static boolean isValidAttackTarget(@Nonnull Entity entity)
     {
-        if (!(entity instanceof MobEntity))
+        if (!(entity instanceof Mob))
         {
            return false;
         }
-        else if (entity instanceof FlyingEntity)
+        else if (entity instanceof FlyingMob)
         {
             return false;
         }
-        else if (entity instanceof WaterMobEntity)
+        else if (entity instanceof WaterAnimal)
         {
             return false;
         }
@@ -114,7 +114,7 @@ public class EntityUtil
      */
     public static boolean canSee(@Nonnull LivingEntity entity, @Nonnull BlockPos blockPos)
     {
-        Vector3d entityPos = new Vector3d(entity.getX(), entity.getEyeY(), entity.getZ());
+        Vec3 entityPos = new Vec3(entity.getX(), entity.getEyeY(), entity.getZ());
 
         // Check each corner of the block for a more robust result.
         for (double x = 0.05; x < 1.0; x += 0.9)
@@ -123,10 +123,10 @@ public class EntityUtil
             {
                 for (double z = 0.05; z < 1.0; z += 0.9)
                 {
-                    Vector3d targetPos = new Vector3d(blockPos.getX() + x, blockPos.getY() + y, blockPos.getZ() + z);
-                    BlockRayTraceResult result = entity.level.clip(new RayTraceContext(entityPos, targetPos, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.ANY, entity));
+                    Vec3 targetPos = new Vec3(blockPos.getX() + x, blockPos.getY() + y, blockPos.getZ() + z);
+                    BlockHitResult result = entity.level.clip(new ClipContext(entityPos, targetPos, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, entity));
 
-                    if (result.getType() != RayTraceResult.Type.MISS)
+                    if (result.getType() != BlockHitResult.Type.MISS)
                     {
                         if (result.getBlockPos().equals(blockPos))
                         {

@@ -6,13 +6,13 @@ import com.willr27.blocklings.client.gui.control.controls.BlockControl;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
-import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import com.willr27.blocklings.util.event.IEvent;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.math.vector.Vector4f;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
@@ -131,7 +131,7 @@ public class BlockSideSelectionControl extends BlockControl
         matrixStack.scale(scale / 24.0f, scale / 24.0f, 1.0f);
         matrixStack.translate(-GuiUtil.get().getTextWidth(text) / 2.0, -GuiUtil.get().getLineHeight() / 2.0, scale / 2.0 + 1.0 -0.03);
         RenderSystem.enableDepthTest();
-        renderShadowedText(matrixStack, new StringTextComponent(text).getVisualOrderText(), 0, 0, colour);
+        renderShadowedText(matrixStack, new TextComponent(text).getVisualOrderText(), 0, 0, colour);
         RenderSystem.enableCull();
     }
 
@@ -156,22 +156,22 @@ public class BlockSideSelectionControl extends BlockControl
             switch (mouseOverDirection)
             {
                 case NORTH:
-                    renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent("direction.front"));
+                    renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("direction.front"));
                     break;
                 case SOUTH:
-                    renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent("direction.back"));
+                    renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("direction.back"));
                     break;
                 case WEST:
-                    renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent("direction.left"));
+                    renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("direction.left"));
                     break;
                 case EAST:
-                    renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent("direction.right"));
+                    renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("direction.right"));
                     break;
                 case UP:
-                    renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent("direction.top"));
+                    renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("direction.top"));
                     break;
                 case DOWN:
-                    renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslationTextComponent("direction.bottom"));
+                    renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("direction.bottom"));
                     break;
             }
         }

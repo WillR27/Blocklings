@@ -1,7 +1,6 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.*;
@@ -27,15 +26,13 @@ import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.task.Task;
 import com.willr27.blocklings.entity.blockling.task.TaskType;
 import com.willr27.blocklings.entity.blockling.task.config.Property;
-import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TextComponent;
+import net.minecraft.util.text.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -150,8 +147,8 @@ public class TasksScreen extends TabbedScreen
             public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
             {
                 List<IReorderingProcessor> tooltip = new ArrayList<>();
-                tooltip.add(new BlocklingsTranslationTextComponent("task.ui.add").withStyle(blockling.getTasks().isTaskListFull() ? TextFormatting.GRAY : TextFormatting.WHITE).getVisualOrderText());
-                tooltip.add(new BlocklingsTranslationTextComponent("task.ui.task_amount", blockling.getTasks().getPrioritisedTasks().size(), BlocklingTasks.MAX_TASKS).withStyle(TextFormatting.GRAY).getVisualOrderText());
+                tooltip.add(new BlocklingsTranslatableComponent("task.ui.add").withStyle(blockling.getTasks().isTaskListFull() ? ChatFormatting.GRAY : ChatFormatting.WHITE).getVisualOrderText());
+                tooltip.add(new BlocklingsTranslatableComponent("task.ui.task_amount", blockling.getTasks().getPrioritisedTasks().size(), BlocklingTasks.MAX_TASKS).withStyle(ChatFormatting.GRAY).getVisualOrderText());
                 renderTooltip(matrixStack, mouseX, mouseY, tooltip);
             }
 
@@ -259,7 +256,7 @@ public class TasksScreen extends TabbedScreen
     {
         configTabbedPanel.clearTabs();
 
-        BaseControl miscContainer = configTabbedPanel.addTab(new BlocklingsTranslationTextComponent("task.ui.tab.misc"));
+        BaseControl miscContainer = configTabbedPanel.addTab(new BlocklingsTranslatableComponent("task.ui.tab.misc"));
         miscContainer.setPadding(4.0, 10.0, 4.0, 4.0);
         miscContainer.setCanScrollVertically(true);
 
@@ -272,7 +269,7 @@ public class TasksScreen extends TabbedScreen
         TextBlockControl taskTypeTextBlock = new TextBlockControl();
         taskTypeTextBlock.setParent(miscStackPanel);
         taskTypeTextBlock.setWidthPercentage(1.0);
-        taskTypeTextBlock.setText(new BlocklingsTranslationTextComponent("task.ui.task_type").getString());
+        taskTypeTextBlock.setText(new BlocklingsTranslatableComponent("task.ui.task_type").getString());
 
         ComboBoxControl taskTypeComboBox = new ComboBoxControl();
         taskTypeComboBox.setParent(miscStackPanel);
@@ -287,8 +284,8 @@ public class TasksScreen extends TabbedScreen
         for (TaskType taskType : BlocklingTasks.TASK_TYPES.stream().filter(t -> blockling.getTasks().taskTypeUnlockedMap.get(t)).collect(Collectors.toList()))
         {
             List<IReorderingProcessor> tooltip = new ArrayList<>();
-            tooltip.add(taskType.name.copy().withStyle(TextFormatting.GOLD).getVisualOrderText());
-            tooltip.addAll(GuiUtil.get().split(taskType.desc.getString(), 200).stream().map(s -> new StringTextComponent(s).getVisualOrderText()).collect(Collectors.toList()));
+            tooltip.add(taskType.name.copy().withStyle(ChatFormatting.GOLD).getVisualOrderText());
+            tooltip.addAll(GuiUtil.get().split(taskType.desc.getString(), 200).stream().map(s -> new TextComponent(s).getVisualOrderText()).collect(Collectors.toList()));
             ComboBoxControl.Item item = new ComboBoxControl.Item(taskType.name, taskType, taskType.texture.dx(1).dy(1).dWidth(-2).dHeight(-2), tooltip);
 
             if (taskType == task.getType())
@@ -302,7 +299,7 @@ public class TasksScreen extends TabbedScreen
         }
 
         List<IReorderingProcessor> tooltip = new ArrayList<>();
-        tooltip.add(BlocklingTasks.NULL.name.copy().withStyle(TextFormatting.GOLD).getVisualOrderText());
+        tooltip.add(BlocklingTasks.NULL.name.copy().withStyle(ChatFormatting.GOLD).getVisualOrderText());
         ComboBoxControl.Item item = new ComboBoxControl.Item(BlocklingTasks.NULL.name, BlocklingTasks.NULL, BlocklingTasks.NULL.texture.dx(1).dy(1).dWidth(-2).dHeight(-2), tooltip);
 
         if (BlocklingTasks.NULL == task.getType())

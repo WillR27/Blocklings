@@ -6,7 +6,7 @@ import com.willr27.blocklings.client.gui.control.event.events.input.*;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -35,7 +35,7 @@ public class BlocklingsScreen extends Screen
      */
     protected BlocklingsScreen(@Nonnull BlocklingEntity blockling)
     {
-        super(new StringTextComponent(""));
+        super(new TextComponent(""));
         this.blockling = blockling;
     }
 

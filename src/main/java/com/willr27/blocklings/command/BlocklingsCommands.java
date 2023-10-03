@@ -17,7 +17,7 @@ import com.willr27.blocklings.network.NetworkHandler;
 import com.willr27.blocklings.network.messages.SetLevelCommandMessage;
 import com.willr27.blocklings.network.messages.SetTypeCommandMessage;
 import com.willr27.blocklings.network.messages.SetXpCommandMessage;
-import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.command.arguments.ArgumentSerializer;
@@ -173,11 +173,11 @@ public class BlocklingsCommands
 
         if (enabled)
         {
-            player.sendMessage(new BlocklingsTranslationTextComponent("command.debug.spawns.enabled"), Util.NIL_UUID);
+            player.sendMessage(new BlocklingsTranslatableComponent("command.debug.spawns.enabled"), Util.NIL_UUID);
         }
         else
         {
-            player.sendMessage(new BlocklingsTranslationTextComponent("command.debug.spawns.disabled"), Util.NIL_UUID);
+            player.sendMessage(new BlocklingsTranslatableComponent("command.debug.spawns.disabled"), Util.NIL_UUID);
         }
 
         return 0;
@@ -222,7 +222,7 @@ public class BlocklingsCommands
         /**
          * The error to throw if the argument is invalid.
          */
-        public static final DynamicCommandExceptionType ERROR_INVALID_VALUE = new DynamicCommandExceptionType((obj) -> new BlocklingsTranslationTextComponent("command.argument.level.invalid", obj));
+        public static final DynamicCommandExceptionType ERROR_INVALID_VALUE = new DynamicCommandExceptionType((obj) -> new BlocklingsTranslatableComponent("command.argument.level.invalid", obj));
 
         @Override
         public Level parse(StringReader stringReader) throws CommandSyntaxException

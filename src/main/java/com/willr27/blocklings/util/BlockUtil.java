@@ -2,21 +2,19 @@ package com.willr27.blocklings.util;
 
 import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.config.BlocklingsConfig;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
-import net.minecraftforge.common.Tags;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,7 +29,7 @@ public class BlockUtil
      * The most recent world to load (used to then lazy load the list of valid containers).
      */
     @Nullable
-    public static World latestWorld;
+    public static Level latestWorld;
 
     /**
      * The list of blocks that are considered containers.
@@ -59,18 +57,17 @@ public class BlockUtil
 
         for (Block block : Registry.BLOCK)
         {
-//            BlockState currentState = latestWorld.getBlockState(posToReplace);
-            TileEntity tileEntity = block.defaultBlockState().createTileEntity(latestWorld);
-
-            if (tileEntity == null)
+            if (!block.defaultBlockState().hasBlockEntity())
             {
                 continue;
             }
 
+            BlockEntity blockEntity = ((EntityBlock) block).newBlockEntity(posToReplace, block.defaultBlockState());
+
             for (Direction direction : Direction.values())
             {
                 // If the block has an item handler capability, it is considered a container.
-                if (tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).isPresent())
+                if (blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).isPresent())
                 {
                     containers.add(block);
 
@@ -114,7 +111,7 @@ public class BlockUtil
 
         ores.clear();
 
-        for (Block block : Tags.Blocks.ORES.getValues())
+        for (Block block : ORES.get())
         {
             if (excludedBlocks.contains(block.getRegistryName().toString()))
             {
@@ -130,7 +127,7 @@ public class BlockUtil
 
             Block block = Registry.BLOCK.get(new ResourceLocation(entry));
 
-            if (block.is(Blocks.AIR))
+            if (block == Blocks.AIR)
             {
                 warn.run();
 
@@ -288,7 +285,7 @@ public class BlockUtil
             Block leaves = Registry.BLOCK.get(new ResourceLocation(splitTreeString[1]));
             Block sapling = Registry.BLOCK.get(new ResourceLocation(splitTreeString[2]));
 
-            if (log.is(Blocks.AIR) || leaves.is(Blocks.AIR) || sapling.is(Blocks.AIR))
+            if (log == Blocks.AIR || leaves == Blocks.AIR || sapling == Blocks.AIR)
             {
                 warn.run();
 
@@ -490,7 +487,7 @@ public class BlockUtil
 
             Block block = Registry.BLOCK.get(new ResourceLocation(additionalString));
 
-            if (block.is(Blocks.AIR))
+            if (block == Blocks.AIR)
             {
                 warn.run();
 
@@ -552,7 +549,7 @@ public class BlockUtil
      * @param pos the position in the world at which to check.
      * @return true if the block can be placed at the given location.
      */
-    public static boolean canPlaceAt(@Nonnull World world, @Nonnull Block block, @Nonnull BlockPos pos)
+    public static boolean canPlaceAt(@Nonnull Level world, @Nonnull Block block, @Nonnull BlockPos pos)
     {
         return block.canSurvive(block.defaultBlockState(), world, pos);
     }
@@ -573,7 +570,7 @@ public class BlockUtil
      * @param blockPos the block position to test.
      * @return true if all adjacent blocks are solid.
      */
-    public static boolean areAllAdjacentBlocksSolid(@Nonnull World world, @Nonnull BlockPos blockPos)
+    public static boolean areAllAdjacentBlocksSolid(@Nonnull Level world, @Nonnull BlockPos blockPos)
     {
         return !Arrays.stream(getAdjacentBlockPositions(blockPos)).anyMatch(blockPos1 -> !world.getBlockState(blockPos1).getMaterial().isSolid());
     }
@@ -648,6 +645,6 @@ public class BlockUtil
      */
     public static double distanceSq(@Nonnull BlockPos blockPos1, @Nonnull BlockPos blockPos2)
     {
-        return blockPos1.distSqr(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ(), false);
+        return blockPos1.distToCenterSqr(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
     }
 }

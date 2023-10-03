@@ -13,9 +13,9 @@ import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.client.gui.BlocklingGuiHandler;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
-import com.willr27.blocklings.util.BlocklingsTranslationTextComponent;
+import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.TranslatableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -265,7 +265,7 @@ public class TabbedUIControl extends GridPanel
          * The tab name.
          */
         @Nonnull
-        public final TranslationTextComponent name;
+        public final TranslatableComponent name;
 
         /**
          * The gui id for the tab.
@@ -302,7 +302,7 @@ public class TabbedUIControl extends GridPanel
          */
         Tab(@Nonnull String key, int guiId, @Nonnull Texture iconTexture, @Nonnull Texture backgroundTexture, boolean left, int verticalIndex)
         {
-            this.name = new TabTranslationTextComponent(key);
+            this.name = new TabTranslatableComponent(key);
             this.guiId = guiId;
             this.iconTexture = iconTexture;
             this.backgroundTexture = backgroundTexture;
@@ -313,12 +313,12 @@ public class TabbedUIControl extends GridPanel
         /**
          * A translation text component for a tab.
          */
-        public class TabTranslationTextComponent extends BlocklingsTranslationTextComponent
+        public class TabTranslatableComponent extends BlocklingsTranslatableComponent
         {
             /**
              * @param key the key for the translation text component.
              */
-            public TabTranslationTextComponent(@Nonnull String key)
+            public TabTranslatableComponent(@Nonnull String key)
             {
                 super("tab." + key);
             }

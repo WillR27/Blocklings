@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -45,7 +45,7 @@ public class BlocklingsContainerScreen<T extends Container> extends ContainerScr
      */
     protected BlocklingsContainerScreen(@Nonnull BlocklingEntity blockling, @Nonnull T container)
     {
-        super(container, Minecraft.getInstance().player.inventory, new StringTextComponent(""));
+        super(container, Minecraft.getInstance().player.inventory, new TextComponent(""));
         this.blockling = blockling;
         this.player = Minecraft.getInstance().player;
     }

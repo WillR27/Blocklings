@@ -7,7 +7,7 @@ import com.willr27.blocklings.entity.blockling.skill.info.SkillInfo;
 import com.willr27.blocklings.entity.blockling.skill.skills.*;
 import com.willr27.blocklings.util.IReadWriteNBT;
 import com.willr27.blocklings.util.Version;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nonnull;
@@ -104,15 +104,15 @@ public class BlocklingSkills implements IReadWriteNBT
     }
 
     @Override
-    public CompoundNBT writeToNBT(@Nonnull CompoundNBT skillsTag)
+    public CompoundTag writeToNBT(@Nonnull CompoundTag skillsTag)
     {
         for (SkillGroup skillGroup : skillGroups)
         {
-            CompoundNBT groupTag = new CompoundNBT();
+            CompoundTag groupTag = new CompoundTag();
 
             for (Skill skill : skillGroup.getSkills())
             {
-                CompoundNBT skillTag = new CompoundNBT();
+                CompoundTag skillTag = new CompoundTag();
 
                 skillTag.putInt("state", skill.getState().ordinal());
 
@@ -126,11 +126,11 @@ public class BlocklingSkills implements IReadWriteNBT
     }
 
     @Override
-    public void readFromNBT(@Nonnull CompoundNBT skillsTag, @Nonnull Version tagVersion)
+    public void readFromNBT(@Nonnull CompoundTag skillsTag, @Nonnull Version tagVersion)
     {
         for (SkillGroup skillGroup : skillGroups)
         {
-            CompoundNBT groupTag = (CompoundNBT) skillsTag.get(skillGroup.info.id.toString());
+            CompoundTag groupTag = (CompoundTag) skillsTag.get(skillGroup.info.id.toString());
 
             if (groupTag == null)
             {
@@ -139,7 +139,7 @@ public class BlocklingSkills implements IReadWriteNBT
 
             for (Skill skill : skillGroup.getSkills())
             {
-                CompoundNBT skillTag = (CompoundNBT) groupTag.get(skill.info.id.toString());
+                CompoundTag skillTag = (CompoundTag) groupTag.get(skill.info.id.toString());
 
                 if (skillTag == null)
                 {

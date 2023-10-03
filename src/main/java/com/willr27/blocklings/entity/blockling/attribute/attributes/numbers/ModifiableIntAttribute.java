@@ -5,7 +5,7 @@ import com.willr27.blocklings.entity.blockling.attribute.IModifier;
 import com.willr27.blocklings.entity.blockling.attribute.ModifiableAttribute;
 import com.willr27.blocklings.entity.blockling.attribute.Operation;
 import com.willr27.blocklings.util.Version;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nonnull;
@@ -33,7 +33,7 @@ public class ModifiableIntAttribute extends ModifiableNumberAttribute<Integer>
     }
 
     @Override
-    public CompoundNBT writeToNBT(@Nonnull CompoundNBT attributeTag)
+    public CompoundTag writeToNBT(@Nonnull CompoundTag attributeTag)
     {
         attributeTag.putInt("base_value", baseValue);
 
@@ -41,7 +41,7 @@ public class ModifiableIntAttribute extends ModifiableNumberAttribute<Integer>
     }
 
     @Override
-    public void readFromNBT(@Nonnull CompoundNBT attributeTag, @Nonnull Version tagVersion)
+    public void readFromNBT(@Nonnull CompoundTag attributeTag, @Nonnull Version tagVersion)
     {
         super.readFromNBT(attributeTag, tagVersion);
 
