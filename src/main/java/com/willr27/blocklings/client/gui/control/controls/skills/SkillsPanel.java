@@ -1,7 +1,7 @@
 package com.willr27.blocklings.client.gui.control.controls.skills;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.ButtonControl;
@@ -29,7 +29,7 @@ import com.willr27.blocklings.entity.blockling.skill.info.SkillGroupInfo;
 import com.willr27.blocklings.entity.blockling.skill.info.SkillGuiInfo;
 import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import com.willr27.blocklings.util.DoubleUtil;
-import net.minecraft.util.text.ChatFormatting;
+import net.minecraft.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -275,38 +275,38 @@ public class SkillsPanel extends CanvasPanel
                 return;
             }
 
-            RenderSystem.color3f(1.0f, 1.0f, 1.0f);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
-            RenderSystem.defaultAlphaFunc();
+            //RenderSystem.defaultAlphaFunc();
             RenderSystem.enableDepthTest();
 
-            matrixStack.pushPose();
-            matrixStack.translate(0.0f, 0.0f, isDraggingOrAncestor() ? getDraggedControl().getDragZ() : getRenderZ());
+            poseStack.pushPose();
+            poseStack.translate(0.0f, 0.0f, isDraggingOrAncestor() ? getDraggedControl().getDragZ() : getRenderZ());
 
             applyScissor(scissorStack);
-            onRenderUpdate(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
-            onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+            onRenderUpdate(poseStack, scissorStack, mouseX, mouseY, partialTicks);
+            onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
 
-            matrixStack.popPose();
+            poseStack.popPose();
 
             List<PathControl> pathControls = getChildrenCopy().stream().filter(c -> c instanceof PathControl).map(c -> (PathControl)c).collect(Collectors.toList());
 
             for (PathControl child : pathControls)
             {
                 child.shouldRenderHighlight = false;
-                child.forwardRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                child.forwardRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
             }
 
             for (PathControl child : pathControls)
             {
                 child.shouldRenderHighlight = true;
-                child.forwardRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                child.forwardRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
             }
 
             for (BaseControl child : getChildrenCopy().stream().filter(c -> !(c instanceof PathControl)).collect(Collectors.toList()))
             {
-                child.forwardRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                child.forwardRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
             }
 
             undoScissor(scissorStack);
@@ -315,8 +315,8 @@ public class SkillsPanel extends CanvasPanel
         @Override
         protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
         {
-            renderRectangle(matrixStack, getMinPixelX(), getMinPixelY(), (int) (getMaxPixelX() - getMinPixelX()), (int) (getMaxPixelY() - getMinPixelY()), getBackgroundColourInt());
-            renderRectangle(matrixStack, toPixelX(-5.0), toPixelY(-5.0), (int) 10, (int) 10, 0xff00ff00);
+            renderRectangle(poseStack, getMinPixelX(), getMinPixelY(), (int) (getMaxPixelX() - getMinPixelX()), (int) (getMaxPixelY() - getMinPixelY()), getBackgroundColourInt());
+            renderRectangle(poseStack, toPixelX(-5.0), toPixelY(-5.0), (int) 10, (int) 10, 0xff00ff00);
 
             double pixelTileWidth = 16.0 * getChildPixelScaleX();
             double pixelTileHeight = 16.0 * getChildPixelScaleY();
@@ -339,7 +339,7 @@ public class SkillsPanel extends CanvasPanel
                     int y = (int) -Math.floor(pixelDifY / pixelTileHeight) + j;
                     Random random = new Random(new Random(x).nextInt() * new Random(y).nextInt() + bonusRand);
 
-                    renderTexture(matrixStack, skillGroup.info.backgroundTexture.randomTile(random), renderLocationX, renderLocationY, getChildPixelScaleX(), getChildPixelScaleY());
+                    renderTexture(poseStack, skillGroup.info.backgroundTexture.randomTile(random), renderLocationX, renderLocationY, getChildPixelScaleX(), getChildPixelScaleY());
                 }
             }
         }
@@ -570,29 +570,29 @@ public class SkillsPanel extends CanvasPanel
                 @Override
                 protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
                 {
-                    matrixStack.translate(0.0, 0.0, 0.2);
+                    poseStack.translate(0.0, 0.0, 0.2);
 
                     Skill.State state = skill.getState();
                     Color colour = state.colour;
 
                     if (isSelected)
                     {
-                        RenderSystem.color3f(0.8f, 1.0f, 0.8f);
+                        RenderSystem.setShaderColor(0.8f, 1.0f, 0.8f, 1.0f);
                     }
                     else if (skill.hasConflict() && state != Skill.State.LOCKED)
                     {
-                        RenderSystem.color3f(0.8f, 0.6f, 0.6f);
+                        RenderSystem.setShaderColor(0.8f, 0.6f, 0.6f, 1.0f);
                     }
                     else if (state == Skill.State.UNLOCKED && !skill.canBuy())
                     {
-                        RenderSystem.color3f(0.8f, 0.6f, 0.6f);
+                        RenderSystem.setShaderColor(0.8f, 0.6f, 0.6f, 1.0f);
                     }
                     else
                     {
-                        RenderSystem.color3f(colour.getRed() / 255.0f, colour.getGreen() / 255.0f, colour.getBlue() / 255.0f);
+                        RenderSystem.setShaderColor(colour.getRed() / 255.0f, colour.getGreen() / 255.0f, colour.getBlue() / 255.0f, 1.0f);
                     }
 
-                    super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                    super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
                 }
             };
             type.setParent(this);
@@ -604,28 +604,28 @@ public class SkillsPanel extends CanvasPanel
                 @Override
                 protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
                 {
-                    matrixStack.translate(0.0, 0.0, 0.2);
+                    poseStack.translate(0.0, 0.0, 0.2);
 
                     Skill.State state = skill.getState();
 
                     if (state == Skill.State.LOCKED)
                     {
-                        RenderSystem.color3f(0.0f, 0.0f, 0.0f);
+                        RenderSystem.setShaderColor(0.0f, 0.0f, 0.0f, 1.0f);
                     }
                     else if (skill.hasConflict())
                     {
-                        RenderSystem.color3f(0.8f, 0.6f, 0.6f);
+                        RenderSystem.setShaderColor(0.8f, 0.6f, 0.6f, 1.0f);
                     }
                     else if (state == Skill.State.UNLOCKED && !skill.canBuy())
                     {
-                        RenderSystem.color3f(0.8f, 0.6f, 0.6f);
+                        RenderSystem.setShaderColor(0.8f, 0.6f, 0.6f, 1.0f);
                     }
                     else
                     {
-                        RenderSystem.color3f(1.0f, 1.0f, 1.0f);
+                        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                     }
 
-                    super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                    super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
                 }
             };
             icon.setParent(this);
@@ -647,19 +647,19 @@ public class SkillsPanel extends CanvasPanel
                 @Override
                 protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
                 {
-                    super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                    super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
 
                     if (skill.areParentsBought())
                     {
-                        RenderSystem.color3f(skill.info.gui.colour.getRed() / 255.0f, skill.info.gui.colour.getGreen() / 255.0f, skill.info.gui.colour.getBlue() / 255.0f);
+                        RenderSystem.setShaderColor(skill.info.gui.colour.getRed() / 255.0f, skill.info.gui.colour.getGreen() / 255.0f, skill.info.gui.colour.getBlue() / 255.0f, 1.0f);
                     }
                     else
                     {
-                        RenderSystem.color3f(0.5f, 0.5f, 0.5f);
+                        RenderSystem.setShaderColor(0.5f, 0.5f, 0.5f, 1.0f);
                     }
 
-                    renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_NAME_BACKGROUND.width((int) (getWidth() - 2)), 0, getPadding().top);
-                    renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_NAME_BACKGROUND.width(2).dx(Textures.Skills.SKILL_NAME_BACKGROUND.width - 2), getWidth() - 2, getPadding().top);
+                    renderTextureAsBackground(poseStack, Textures.Skills.SKILL_NAME_BACKGROUND.width((int) (getWidth() - 2)), 0, getPadding().top);
+                    renderTextureAsBackground(poseStack, Textures.Skills.SKILL_NAME_BACKGROUND.width(2).dx(Textures.Skills.SKILL_NAME_BACKGROUND.width - 2), getWidth() - 2, getPadding().top);
                 }
             };
             nameBackground.setParent(info);
@@ -696,10 +696,10 @@ public class SkillsPanel extends CanvasPanel
                 @Override
                 protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
                 {
-                    super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                    super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
 
-                    renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_DESC_BACKGROUND.width((int) (getParent().getWidthWithoutPadding() - 2)).height((int) getHeight() + 1).dy(2), 0, getPadding().top);
-                    renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_DESC_BACKGROUND.width(2).height((int) getHeight() + 1).dx(Textures.Skills.SKILL_DESC_BACKGROUND.width - 2).dy(2), getParent().getWidthWithoutPadding() - 2, getPadding().top);
+                    renderTextureAsBackground(poseStack, Textures.Skills.SKILL_DESC_BACKGROUND.width((int) (getParent().getWidthWithoutPadding() - 2)).height((int) getHeight() + 1).dy(2), 0, getPadding().top);
+                    renderTextureAsBackground(poseStack, Textures.Skills.SKILL_DESC_BACKGROUND.width(2).height((int) getHeight() + 1).dx(Textures.Skills.SKILL_DESC_BACKGROUND.width - 2).dy(2), getParent().getWidthWithoutPadding() - 2, getPadding().top);
                 }
             };
             emptyLine.setParent(info);
@@ -714,10 +714,10 @@ public class SkillsPanel extends CanvasPanel
                     @Override
                     protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
                     {
-                        super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                        super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
 
-                        renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_DESC_BACKGROUND.width((int) (getParent().getWidthWithoutPadding() - 2)).height((int) getHeight()).dy(2), 0, getPadding().top);
-                        renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_DESC_BACKGROUND.width(2).height((int) getHeight()).dx(Textures.Skills.SKILL_DESC_BACKGROUND.width - 2).dy(2), getParent().getWidthWithoutPadding() - 2, getPadding().top);
+                        renderTextureAsBackground(poseStack, Textures.Skills.SKILL_DESC_BACKGROUND.width((int) (getParent().getWidthWithoutPadding() - 2)).height((int) getHeight()).dy(2), 0, getPadding().top);
+                        renderTextureAsBackground(poseStack, Textures.Skills.SKILL_DESC_BACKGROUND.width(2).height((int) getHeight()).dx(Textures.Skills.SKILL_DESC_BACKGROUND.width - 2).dy(2), getParent().getWidthWithoutPadding() - 2, getPadding().top);
                     }
                 };
                 line.setParent(info);
@@ -738,10 +738,10 @@ public class SkillsPanel extends CanvasPanel
                 @Override
                 protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
                 {
-                    super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                    super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
 
-                    renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_DESC_BACKGROUND.width((int) (getParent().getWidthWithoutPadding() - 2)).height((int) getHeight()).dy((int) (Textures.Skills.SKILL_DESC_BACKGROUND.height - getHeight())), 0, getPadding().top);
-                    renderTextureAsBackground(matrixStack, Textures.Skills.SKILL_DESC_BACKGROUND.width(2).height((int) getHeight()).dx(Textures.Skills.SKILL_DESC_BACKGROUND.width - 2).dy((int) (Textures.Skills.SKILL_DESC_BACKGROUND.height - getHeight())), getParent().getWidthWithoutPadding() - 2, getPadding().top);
+                    renderTextureAsBackground(poseStack, Textures.Skills.SKILL_DESC_BACKGROUND.width((int) (getParent().getWidthWithoutPadding() - 2)).height((int) getHeight()).dy((int) (Textures.Skills.SKILL_DESC_BACKGROUND.height - getHeight())), 0, getPadding().top);
+                    renderTextureAsBackground(poseStack, Textures.Skills.SKILL_DESC_BACKGROUND.width(2).height((int) getHeight()).dx(Textures.Skills.SKILL_DESC_BACKGROUND.width - 2).dy((int) (Textures.Skills.SKILL_DESC_BACKGROUND.height - getHeight())), getParent().getWidthWithoutPadding() - 2, getPadding().top);
                 }
             };
             endLine.setParent(info);
@@ -939,12 +939,12 @@ public class SkillsPanel extends CanvasPanel
         {
             if (shouldRenderHighlight)
             {
-                renderHighlight(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                renderHighlight(poseStack, scissorStack, mouseX, mouseY, partialTicks);
 
                 return;
             }
 
-            super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+            super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
 
             path = new Path();
 
@@ -1033,11 +1033,11 @@ public class SkillsPanel extends CanvasPanel
                         colour = 0xff444444;
                     }
 
-                    renderRectangle(matrixStack, outerStartX, outerStartY, (int) outerWidth, (int) outerHeight, 0xff000000);
-                    matrixStack.pushPose();
-                    matrixStack.translate(0.0, 0.0, 0.1);
-                    renderRectangle(matrixStack, innerStartX, innerStartY, (int) innerWidth, (int) innerHeight, colour);
-                    matrixStack.popPose();
+                    renderRectangle(poseStack, outerStartX, outerStartY, (int) outerWidth, (int) outerHeight, 0xff000000);
+                    poseStack.pushPose();
+                    poseStack.translate(0.0, 0.0, 0.1);
+                    renderRectangle(poseStack, innerStartX, innerStartY, (int) innerWidth, (int) innerHeight, colour);
+                    poseStack.popPose();
                 }
             }
         }
@@ -1045,7 +1045,7 @@ public class SkillsPanel extends CanvasPanel
         /**
          * Renders the highlight along the path.
          *
-         * @param matrixStack the matrix stack.
+         * @param poseStack the matrix stack.
          * @param scissorStack the scissor stack.
          * @param mouseX the mouse x position.
          * @param mouseY the mouse y position.
@@ -1074,12 +1074,12 @@ public class SkillsPanel extends CanvasPanel
                 colour = 0x555555;
             }
 
-            matrixStack.pushPose();
-            matrixStack.translate(0.0, 0.0, 0.2);
-            renderRectangle(matrixStack, highlightX, highlightY, (int) outerLineWidth, (int) outerLineHeight,0x30000000 + colour);
-            renderRectangle(matrixStack, highlightX, highlightY + innerLineHeight / 2.0, (int) outerLineWidth, (int) (outerLineHeight - innerLineHeight),0x20000000 + colour);
-            renderRectangle(matrixStack, highlightX + innerLineWidth / 2.0, highlightY, (int) (outerLineWidth - innerLineWidth), (int) outerLineHeight,0x20000000 + colour);
-            matrixStack.popPose();
+            poseStack.pushPose();
+            poseStack.translate(0.0, 0.0, 0.2);
+            renderRectangle(poseStack, highlightX, highlightY, (int) outerLineWidth, (int) outerLineHeight,0x30000000 + colour);
+            renderRectangle(poseStack, highlightX, highlightY + innerLineHeight / 2.0, (int) outerLineWidth, (int) (outerLineHeight - innerLineHeight),0x20000000 + colour);
+            renderRectangle(poseStack, highlightX + innerLineWidth / 2.0, highlightY, (int) (outerLineWidth - innerLineWidth), (int) outerLineHeight,0x20000000 + colour);
+            poseStack.popPose();
 
             if (highlightDistanceAlongPath != -1.0)
             {

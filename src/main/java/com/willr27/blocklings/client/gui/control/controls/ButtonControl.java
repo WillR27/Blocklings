@@ -1,7 +1,6 @@
 package com.willr27.blocklings.client.gui.control.controls;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
@@ -39,17 +38,17 @@ public class ButtonControl extends Control
     @Override
     protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
     {
-        super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+        super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
 
         if (isHovered())
         {
-            renderTextureAsBackground(matrixStack, Textures.Common.BUTTON_HOVERED.width((int) (getWidth() - 2)));
-            renderTextureAsBackground(matrixStack, Textures.Common.BUTTON_HOVERED.width(2).dx(Textures.Common.BUTTON_HOVERED.width - 2), getWidth() - 2, 0);
+            renderTextureAsBackground(poseStack, Textures.Common.BUTTON_HOVERED.width((int) (getWidth() - 2)));
+            renderTextureAsBackground(poseStack, Textures.Common.BUTTON_HOVERED.width(2).dx(Textures.Common.BUTTON_HOVERED.width - 2), getWidth() - 2, 0);
         }
         else
         {
-            renderTextureAsBackground(matrixStack, Textures.Common.BUTTON.width((int) (getWidth() - 2)));
-            renderTextureAsBackground(matrixStack, Textures.Common.BUTTON.width(2).dx(Textures.Common.BUTTON.width - 2), getWidth() - 2, 0);
+            renderTextureAsBackground(poseStack, Textures.Common.BUTTON.width((int) (getWidth() - 2)));
+            renderTextureAsBackground(poseStack, Textures.Common.BUTTON.width(2).dx(Textures.Common.BUTTON.width - 2), getWidth() - 2, 0);
         }
     }
 }

@@ -9,6 +9,7 @@ import com.willr27.blocklings.util.Version;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraftforge.api.distmarker.Dist;
@@ -32,7 +33,7 @@ public class FloatRangeProperty extends RangeProperty<Float>
      * @param max           the maximum value of the range.
      * @param startingValue the range starting value.
      */
-    public FloatRangeProperty(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull TextComponent name, @Nonnull TextComponent desc, float min, float max, float startingValue)
+    public FloatRangeProperty(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull Component name, @Nonnull Component desc, float min, float max, float startingValue)
     {
         super(id, goal, name, desc, min, max, startingValue);
     }

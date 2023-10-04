@@ -1,7 +1,7 @@
 package com.willr27.blocklings.client.gui.control.controls.stats;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.TextBlockControl;
 import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
@@ -11,10 +11,8 @@ import com.willr27.blocklings.client.gui.util.Colour;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.attribute.Attribute;
-import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.ChatFormatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -50,9 +48,9 @@ public class HealthBarControl extends Control
             @Override
             public void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
-                RenderSystem.color3f(0.5f, 0.5f, 0.5f);
-                super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
-                RenderSystem.color3f(1.0f, 1.0f, 1.0f);
+                RenderSystem.setShaderColor(0.5f, 0.5f, 0.5f, 1.0f);
+                super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
+                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             }
         };
         backgroundHealthBarControl.setParent(this);
@@ -70,9 +68,9 @@ public class HealthBarControl extends Control
             @Override
             public void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
-                RenderSystem.color3f((float) (1.3f - (Math.ceil(blockling.getHealth()) / blockling.getMaxHealth())), 0.3f + (float) (Math.ceil(blockling.getHealth()) / blockling.getMaxHealth()), 0.1f);
-                super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
-                RenderSystem.color3f(1.0f, 1.0f, 1.0f);
+                RenderSystem.setShaderColor((float) (1.3f - (Math.ceil(blockling.getHealth()) / blockling.getMaxHealth())), 0.3f + (float) (Math.ceil(blockling.getHealth()) / blockling.getMaxHealth()), 0.1f, 1.0f);
+                super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
+                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             }
         };
         colouredHealthBarControl.setParent(this);
@@ -111,7 +109,7 @@ public class HealthBarControl extends Control
         List<TextComponent> tooltip = StatsScreen.createModifiableFloatAttributeTooltip(blockling.getStats().maxHealth, ChatFormatting.DARK_GREEN);
         tooltip.add(0, new TextComponent(ChatFormatting.GOLD + new Attribute.AttributeTranslatableComponent("health.name").getString()));
 
-        renderTooltip(matrixStack, mouseX, mouseY, tooltip.stream().map(TextComponent::getVisualOrderText).collect(Collectors.toList()));
+        renderTooltip(poseStack, mouseX, mouseY, tooltip.stream().map(TextComponent::getVisualOrderText).collect(Collectors.toList()));
     }
 
 }

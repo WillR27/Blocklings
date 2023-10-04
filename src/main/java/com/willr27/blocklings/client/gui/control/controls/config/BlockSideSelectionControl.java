@@ -1,18 +1,18 @@
 package com.willr27.blocklings.client.gui.control.controls.config;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
+import com.mojang.math.Vector4f;
 import com.willr27.blocklings.client.gui.control.controls.BlockControl;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseReleasedEvent;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import com.willr27.blocklings.util.event.IEvent;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.Quaternion;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.math.vector.Vector4f;
-import net.minecraft.util.text.TextComponent;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
@@ -44,7 +44,7 @@ public class BlockSideSelectionControl extends BlockControl
     @Override
     protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
     {
-        super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+        super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
 
         x += (getWidth() / 2) * getScaleX();
         y += (getHeight() / 2) * getScaleY();
@@ -124,26 +124,26 @@ public class BlockSideSelectionControl extends BlockControl
     private void renderTextOnSide(String text, float x, float y, float z, float scale, @Nonnull Quaternion rotation, int colour)
     {
         RenderSystem.disableCull();
-        PoseStack poseStack = new MatrixStack();
-        matrixStack.translate(x, y, z);
-        matrixStack.mulPose(new Quaternion(rotationQuat.i(), -rotationQuat.j(), rotationQuat.k(), -rotationQuat.r()));
-        matrixStack.mulPose(rotation);
-        matrixStack.scale(scale / 24.0f, scale / 24.0f, 1.0f);
-        matrixStack.translate(-GuiUtil.get().getTextWidth(text) / 2.0, -GuiUtil.get().getLineHeight() / 2.0, scale / 2.0 + 1.0 -0.03);
+        PoseStack poseStack = new PoseStack();
+        poseStack.translate(x, y, z);
+        poseStack.mulPose(new Quaternion(rotationQuat.i(), -rotationQuat.j(), rotationQuat.k(), -rotationQuat.r()));
+        poseStack.mulPose(rotation);
+        poseStack.scale(scale / 24.0f, scale / 24.0f, 1.0f);
+        poseStack.translate(-GuiUtil.get().getTextWidth(text) / 2.0, -GuiUtil.get().getLineHeight() / 2.0, scale / 2.0 + 1.0 -0.03);
         RenderSystem.enableDepthTest();
-        renderShadowedText(matrixStack, new TextComponent(text).getVisualOrderText(), 0, 0, colour);
+        renderShadowedText(poseStack, new TextComponent(text).getVisualOrderText(), 0, 0, colour);
         RenderSystem.enableCull();
     }
 
     private void renderRectangleOnSide(float x, float y, float z, float scale, @Nonnull Quaternion rotation, int colour)
     {
-        PoseStack poseStack = new MatrixStack();
-        matrixStack.translate(x, y, z);
-        matrixStack.mulPose(new Quaternion(rotationQuat.i(), -rotationQuat.j(), rotationQuat.k(), -rotationQuat.r()));
-        matrixStack.mulPose(rotation);
-        matrixStack.translate(0.0f, 0.0f, scale / 2 + 0.01);
+        PoseStack poseStack = new PoseStack();
+        poseStack.translate(x, y, z);
+        poseStack.mulPose(new Quaternion(rotationQuat.i(), -rotationQuat.j(), rotationQuat.k(), -rotationQuat.r()));
+        poseStack.mulPose(rotation);
+        poseStack.translate(0.0f, 0.0f, scale / 2 + 0.01);
         RenderSystem.enableDepthTest();
-        renderCenteredRectangle(matrixStack, 0.0, 0.0, scale, scale, colour);
+        renderCenteredRectangle(poseStack, 0.0, 0.0, scale, scale, colour);
     }
 
     @Override
@@ -156,22 +156,22 @@ public class BlockSideSelectionControl extends BlockControl
             switch (mouseOverDirection)
             {
                 case NORTH:
-                    renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("direction.front"));
+                    renderTooltip(poseStack, mouseX, mouseY, new BlocklingsTranslatableComponent("direction.front"));
                     break;
                 case SOUTH:
-                    renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("direction.back"));
+                    renderTooltip(poseStack, mouseX, mouseY, new BlocklingsTranslatableComponent("direction.back"));
                     break;
                 case WEST:
-                    renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("direction.left"));
+                    renderTooltip(poseStack, mouseX, mouseY, new BlocklingsTranslatableComponent("direction.left"));
                     break;
                 case EAST:
-                    renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("direction.right"));
+                    renderTooltip(poseStack, mouseX, mouseY, new BlocklingsTranslatableComponent("direction.right"));
                     break;
                 case UP:
-                    renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("direction.top"));
+                    renderTooltip(poseStack, mouseX, mouseY, new BlocklingsTranslatableComponent("direction.top"));
                     break;
                 case DOWN:
-                    renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("direction.bottom"));
+                    renderTooltip(poseStack, mouseX, mouseY, new BlocklingsTranslatableComponent("direction.bottom"));
                     break;
             }
         }
@@ -214,11 +214,11 @@ public class BlockSideSelectionControl extends BlockControl
         double cubeDiagFromCenterToCorner = Math.sqrt(widthSquared + widthSquared + widthSquared);
         int z = (int) (getRenderZ() + cubeDiagFromCenterToCorner);
 
-        MatrixStack pointMatrixStack = new MatrixStack();
-        pointMatrixStack.translate(x, y, z);
-        pointMatrixStack.mulPose(new Quaternion(rotationQuat.i(), -rotationQuat.j(), rotationQuat.k(), -rotationQuat.r()));
-        MatrixStack normalMatrixStack = new MatrixStack();
-        normalMatrixStack.mulPose(new Quaternion(rotationQuat.i(), -rotationQuat.j(), rotationQuat.k(), -rotationQuat.r()));
+        PoseStack pointPoseStack = new PoseStack();
+        pointPoseStack.translate(x, y, z);
+        pointPoseStack.mulPose(new Quaternion(rotationQuat.i(), -rotationQuat.j(), rotationQuat.k(), -rotationQuat.r()));
+        PoseStack normalPoseStack = new PoseStack();
+        normalPoseStack.mulPose(new Quaternion(rotationQuat.i(), -rotationQuat.j(), rotationQuat.k(), -rotationQuat.r()));
 
         Vector4f frontPlanePoint = new Vector4f(0, 0, scale/2.0f, 1);
         Vector4f frontPlaneNormal = new Vector4f(0, 0, 1, 1);
@@ -232,18 +232,18 @@ public class BlockSideSelectionControl extends BlockControl
         Vector4f leftPlaneNormal = new Vector4f(-1, 0, 0, 1);
         Vector4f rightPlanePoint = new Vector4f(scale/2.0f, 0, 0, 1);
         Vector4f rightPlaneNormal = new Vector4f(1, 0, 0, 1);
-        frontPlanePoint.transform(pointMatrixStack.last().pose());
-        frontPlaneNormal.transform(normalMatrixStack.last().pose());
-        backPlanePoint.transform(pointMatrixStack.last().pose());
-        backPlaneNormal.transform(normalMatrixStack.last().pose());
-        topPlanePoint.transform(pointMatrixStack.last().pose());
-        topPlaneNormal.transform(normalMatrixStack.last().pose());
-        bottomPlanePoint.transform(pointMatrixStack.last().pose());
-        bottomPlaneNormal.transform(normalMatrixStack.last().pose());
-        leftPlanePoint.transform(pointMatrixStack.last().pose());
-        leftPlaneNormal.transform(normalMatrixStack.last().pose());
-        rightPlanePoint.transform(pointMatrixStack.last().pose());
-        rightPlaneNormal.transform(normalMatrixStack.last().pose());
+        frontPlanePoint.transform(pointPoseStack.last().pose());
+        frontPlaneNormal.transform(normalPoseStack.last().pose());
+        backPlanePoint.transform(pointPoseStack.last().pose());
+        backPlaneNormal.transform(normalPoseStack.last().pose());
+        topPlanePoint.transform(pointPoseStack.last().pose());
+        topPlaneNormal.transform(normalPoseStack.last().pose());
+        bottomPlanePoint.transform(pointPoseStack.last().pose());
+        bottomPlaneNormal.transform(normalPoseStack.last().pose());
+        leftPlanePoint.transform(pointPoseStack.last().pose());
+        leftPlaneNormal.transform(normalPoseStack.last().pose());
+        rightPlanePoint.transform(pointPoseStack.last().pose());
+        rightPlaneNormal.transform(normalPoseStack.last().pose());
 
         float step = scale / 100.0f;
         float max = (float) cubeDiagFromCenterToCorner + z;

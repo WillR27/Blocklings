@@ -1,6 +1,6 @@
 package com.willr27.blocklings.client.gui.control.controls.config;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.TextFieldControl;
@@ -121,8 +121,8 @@ public abstract class RangeControl<T extends Number> extends Control
             @Override
             public void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
-                renderTextureAsBackground(matrixStack, getBackgroundTexture().width((int) (getWidth() - 1)));
-                renderTextureAsBackground(matrixStack, getBackgroundTexture().width(1).dx(255), getWidth() - 1, 0);
+                renderTextureAsBackground(poseStack, getBackgroundTexture().width((int) (getWidth() - 1)));
+                renderTextureAsBackground(poseStack, getBackgroundTexture().width(1).dx(255), getWidth() - 1, 0);
             }
 
             @Override
@@ -158,15 +158,15 @@ public abstract class RangeControl<T extends Number> extends Control
             @Override
             protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
-                super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
 
                 if (isPressed() && getPressedBackgroundTexture() != null)
                 {
-                    renderTextureAsBackground(matrixStack, getPressedBackgroundTexture());
+                    renderTextureAsBackground(poseStack, getPressedBackgroundTexture());
                 }
                 else
                 {
-                    renderTextureAsBackground(matrixStack, getBackgroundTexture());
+                    renderTextureAsBackground(poseStack, getBackgroundTexture());
                 }
             }
 

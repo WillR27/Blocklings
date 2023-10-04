@@ -1,7 +1,7 @@
 package com.willr27.blocklings.client.gui.control.controls.config;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.NullableIntFieldControl;
@@ -24,10 +24,10 @@ import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.entity.blockling.goal.config.iteminfo.*;
 import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import com.willr27.blocklings.util.event.ValueChangedEvent;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.ChatFormatting;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.text.ChatFormatting;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -222,11 +222,11 @@ public abstract class ItemsConfigurationControl extends Control
                 {
                     if (itemsPanel.getChildren().size() - 1 > getMaxItems())
                     {
-                        renderTextureAsBackground(matrixStack, getBackgroundTexture());
+                        renderTextureAsBackground(poseStack, getBackgroundTexture());
                     }
                     else
                     {
-                        super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                        super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
                     }
                 }
 
@@ -236,7 +236,7 @@ public abstract class ItemsConfigurationControl extends Control
                     List<FormattedCharSequence> tooltip = new ArrayList<>();
                     tooltip.add(new BlocklingsTranslatableComponent("config.item.add").withStyle(itemsPanel.getChildren().size() - 1 > getMaxItems() ? ChatFormatting.GRAY : ChatFormatting.WHITE).getVisualOrderText());
                     tooltip.add(new BlocklingsTranslatableComponent("config.item.amount", itemsPanel.getChildren().size() - 2, getMaxItems()).withStyle(ChatFormatting.GRAY).getVisualOrderText());
-                    renderTooltip(matrixStack, mouseX, mouseY, tooltip);
+                    renderTooltip(poseStack, mouseX, mouseY, tooltip);
                 }
 
                 @Override
@@ -263,11 +263,11 @@ public abstract class ItemsConfigurationControl extends Control
                 {
                     if (itemsPanel.getChildren().size() - 1 > getMaxItems())
                     {
-                        renderTextureAsBackground(matrixStack, Textures.Common.PLUS_ICON_DISABLED);
+                        renderTextureAsBackground(poseStack, Textures.Common.PLUS_ICON_DISABLED);
                     }
                     else
                     {
-                        super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                        super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
                     }
                 }
             };
@@ -435,12 +435,12 @@ public abstract class ItemsConfigurationControl extends Control
                     @Override
                     protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
                     {
-                        super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                        super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
                     }
                     @Override
                     public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
                     {
-                        renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("config.item.remove", new ItemStack(itemInfo.getItem()).getHoverName().getString()));
+                        renderTooltip(poseStack, mouseX, mouseY, new BlocklingsTranslatableComponent("config.item.remove", new ItemStack(itemInfo.getItem()).getHoverName().getString()));
                     }
 
                     @Override
@@ -568,11 +568,11 @@ public abstract class ItemsConfigurationControl extends Control
                 {
                     if (itemsPanel.getChildren().size() - 1 > getMaxItems())
                     {
-                        renderTextureAsBackground(matrixStack, Textures.Common.PLUS_ICON_DISABLED);
+                        renderTextureAsBackground(poseStack, Textures.Common.PLUS_ICON_DISABLED);
                     }
                     else
                     {
-                        super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                        super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
                     }
                 }
 
@@ -582,7 +582,7 @@ public abstract class ItemsConfigurationControl extends Control
                     List<FormattedCharSequence> tooltip = new ArrayList<>();
                     tooltip.add(new BlocklingsTranslatableComponent("config.item.add").withStyle(itemsPanel.getChildren().size() - 1 > getMaxItems() ? ChatFormatting.GRAY : ChatFormatting.WHITE).getVisualOrderText());
                     tooltip.add(new BlocklingsTranslatableComponent("config.item.amount", itemsPanel.getChildren().size() - 2, getMaxItems()).withStyle(ChatFormatting.GRAY).getVisualOrderText());
-                    renderTooltip(matrixStack, mouseX, mouseY, tooltip);
+                    renderTooltip(poseStack, mouseX, mouseY, tooltip);
                 }
 
                 @Override
@@ -766,7 +766,7 @@ public abstract class ItemsConfigurationControl extends Control
                     @Override
                     public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
                     {
-                        renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("config.item.remove", new ItemStack(itemInfo.getItem()).getHoverName().getString()));
+                        renderTooltip(poseStack, mouseX, mouseY, new BlocklingsTranslatableComponent("config.item.remove", new ItemStack(itemInfo.getItem()).getHoverName().getString()));
                     }
 
                     @Override
@@ -826,12 +826,12 @@ public abstract class ItemsConfigurationControl extends Control
 
                         for (int i = 0; i < getHeight(); i += texture.height)
                         {
-                            renderTextureAsBackground(matrixStack, texture, 0, i);
-                            renderTextureAsBackground(matrixStack, endTexture, getWidth() - 2, i);
+                            renderTextureAsBackground(poseStack, texture, 0, i);
+                            renderTextureAsBackground(poseStack, endTexture, getWidth() - 2, i);
                         }
 
-                        renderTextureAsBackground(matrixStack, texture.dy(18).height(1), 0, getHeight() - 1);
-                        renderRectangleAsBackground(matrixStack, 0x33000000, 1.0, 0.0, (int) (getWidth() - 2), (int) (getHeight() - 1));
+                        renderTextureAsBackground(poseStack, texture.dy(18).height(1), 0, getHeight() - 1);
+                        renderRectangleAsBackground(poseStack, 0x33000000, 1.0, 0.0, (int) (getWidth() - 2), (int) (getHeight() - 1));
                     }
                 };
 
@@ -846,19 +846,19 @@ public abstract class ItemsConfigurationControl extends Control
                     {
                         if (isHovered() && getDraggedControl() == null)
                         {
-                            RenderSystem.color3f(0.7f, 0.9f, 1.0f);
+                            RenderSystem.setShaderColor(0.7f, 0.9f, 1.0f, 1.0f);
                         }
 
                         Texture texture = getBackgroundTexture();
 
-                        renderTextureAsBackground(matrixStack, texture.dx(1).width((int) (getWidth() - 2)));
-                        renderTextureAsBackground(matrixStack, texture.x(texture.width - 2).width(2), getWidth() - 2, 0);
+                        renderTextureAsBackground(poseStack, texture.dx(1).width((int) (getWidth() - 2)));
+                        renderTextureAsBackground(poseStack, texture.x(texture.width - 2).width(2), getWidth() - 2, 0);
                     }
 
                     @Override
                     public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
                     {
-                        renderTooltip(matrixStack, mouseX, mouseY, name.getText());
+                        renderTooltip(poseStack, mouseX, mouseY, name.getText());
                     }
 
                     @Override
@@ -957,7 +957,7 @@ public abstract class ItemsConfigurationControl extends Control
                         tooltip.add(new BlocklingsTranslatableComponent("config.item.inventory_start_amount.name").getVisualOrderText());
                         tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslatableComponent("config.item.inventory_start_amount.desc").withStyle(ChatFormatting.GRAY), 200));
 
-                        renderTooltip(matrixStack, mouseX, mouseY, tooltip);
+                        renderTooltip(poseStack, mouseX, mouseY, tooltip);
                     }
                 };
                 startGrid.addChild(startInventoryField, 0, 1);
@@ -993,7 +993,7 @@ public abstract class ItemsConfigurationControl extends Control
                         tooltip.add(new BlocklingsTranslatableComponent("config.item.container_start_amount.name").getVisualOrderText());
                         tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslatableComponent("config.item.container_start_amount.desc").withStyle(ChatFormatting.GRAY), 200));
 
-                        renderTooltip(matrixStack, mouseX, mouseY, tooltip);
+                        renderTooltip(poseStack, mouseX, mouseY, tooltip);
                     }
                 };
                 startGrid.addChild(startContainerField, 0, 3);
@@ -1048,7 +1048,7 @@ public abstract class ItemsConfigurationControl extends Control
                         tooltip.add(new BlocklingsTranslatableComponent("config.item.inventory_stop_amount.name").getVisualOrderText());
                         tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslatableComponent("config.item.inventory_stop_amount.desc").withStyle(ChatFormatting.GRAY), 200));
 
-                        renderTooltip(matrixStack, mouseX, mouseY, tooltip);
+                        renderTooltip(poseStack, mouseX, mouseY, tooltip);
                     }
                 };
                 stopGrid.addChild(stopInventoryField, 0, 1);
@@ -1084,7 +1084,7 @@ public abstract class ItemsConfigurationControl extends Control
                         tooltip.add(new BlocklingsTranslatableComponent("config.item.container_stop_amount.name").getVisualOrderText());
                         tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslatableComponent("config.item.container_stop_amount.desc").withStyle(ChatFormatting.GRAY), 200));
 
-                        renderTooltip(matrixStack, mouseX, mouseY, tooltip);
+                        renderTooltip(poseStack, mouseX, mouseY, tooltip);
                     }
                 };
                 stopGrid.addChild(stopContainerField, 0, 3);

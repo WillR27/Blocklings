@@ -876,7 +876,7 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
         }
 
         @Override
-        protected void handle(@Nonnull FriendlyByteBuf player, @Nonnull BlocklingEntity blockling, @Nonnull BlocklingContainerGoal goal)
+        protected void handle(@Nonnull Player player, @Nonnull BlocklingEntity blockling, @Nonnull BlocklingContainerGoal goal)
         {
             goal.setContainerInfo(index, containerInfo, false);
         }

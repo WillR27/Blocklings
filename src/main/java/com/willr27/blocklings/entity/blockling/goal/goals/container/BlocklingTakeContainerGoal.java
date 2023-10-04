@@ -6,6 +6,9 @@ import com.willr27.blocklings.entity.blockling.goal.config.iteminfo.ItemInfo;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.task.config.ItemConfigurationTypeProperty;
 import com.willr27.blocklings.inventory.AbstractInventory;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.IItemHandler;
 
@@ -168,7 +171,7 @@ public class BlocklingTakeContainerGoal extends BlocklingContainerGoal
         {
             for (ContainerInfo containerInfo : containerInfos)
             {
-                TileEntity tileEntity = containerAsTileEntity(containerInfo);
+                BlockEntity tileEntity = containerAsTileEntity(containerInfo);
 
                 if (tileEntity == null)
                 {

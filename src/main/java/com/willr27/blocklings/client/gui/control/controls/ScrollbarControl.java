@@ -1,7 +1,7 @@
 package com.willr27.blocklings.client.gui.control.controls;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseClickedEvent;
@@ -86,17 +86,17 @@ public class ScrollbarControl extends Control
                 {
                     if (isPressed() && getPressedBackgroundTexture() != null)
                     {
-                        renderTextureAsBackground(matrixStack, getPressedBackgroundTexture());
+                        renderTextureAsBackground(poseStack, getPressedBackgroundTexture());
                     }
                     else
                     {
-                        renderTextureAsBackground(matrixStack, getBackgroundTexture());
+                        renderTextureAsBackground(poseStack, getBackgroundTexture());
                     }
                 }
                 else
                 {
-                    RenderSystem.color3f(0.7f, 0.7f, 0.7f);
-                    renderTextureAsBackground(matrixStack, getBackgroundTexture());
+                    RenderSystem.setShaderColor(0.7f, 0.7f, 0.7f, 1.0f);
+                    renderTextureAsBackground(poseStack, getBackgroundTexture());
                 }
             }
         };

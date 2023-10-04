@@ -1,7 +1,7 @@
 package com.willr27.blocklings.client.gui.control.controls;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.panels.GridPanel;
 import com.willr27.blocklings.client.gui.control.event.events.SelectionChangedEvent;
@@ -10,7 +10,7 @@ import com.willr27.blocklings.client.gui.properties.GridDefinition;
 import com.willr27.blocklings.client.gui.texture.Texture;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
-import net.minecraft.util.text.TextComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -170,25 +170,25 @@ public class SingleSelectorStrip<O> extends Control
 
             if (isHovered())
             {
-                RenderSystem.color3f(0.7f, 0.9f, 1.0f);
+                RenderSystem.setShaderColor(0.7f, 0.9f, 1.0f, 1.0f);
             }
 
-            renderTextureAsBackground(matrixStack, texture);
+            renderTextureAsBackground(poseStack, texture);
 
             if (isLast())
             {
-                renderTextureAsBackground(matrixStack, texture.x(texture.width - 2).width(2), getWidth() - 2, 0);
+                renderTextureAsBackground(poseStack, texture.x(texture.width - 2).width(2), getWidth() - 2, 0);
             }
             else
             {
-                renderTextureAsBackground(matrixStack, texture.x(texture.width - 2).width(1), getWidth() - 1, 0);
+                renderTextureAsBackground(poseStack, texture.x(texture.width - 2).width(1), getWidth() - 1, 0);
             }
         }
 
         @Override
         public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
         {
-            renderTooltip(matrixStack, mouseX, mouseY, new TextComponent(option.toString()));
+            renderTooltip(poseStack, mouseX, mouseY, new TextComponent(option.toString()));
         }
 
         @Override

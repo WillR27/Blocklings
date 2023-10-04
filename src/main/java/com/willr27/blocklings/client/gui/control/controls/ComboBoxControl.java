@@ -1,7 +1,7 @@
 package com.willr27.blocklings.client.gui.control.controls;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.panels.GridPanel;
@@ -15,8 +15,9 @@ import com.willr27.blocklings.client.gui.properties.Visibility;
 import com.willr27.blocklings.client.gui.texture.Texture;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -275,14 +276,14 @@ public class ComboBoxControl extends StackPanel
                 {
                     if (getParent() == getHoveredControl())
                     {
-                        RenderSystem.color3f(0.7f, 0.9f, 1.0f);
+                        RenderSystem.setShaderColor(0.7f, 0.9f, 1.0f, 1.0f);
                     }
 
                     int borderSize = Textures.Common.ComboBox.BORDER_SIZE;
-                    renderTextureAsBackground(matrixStack, getBackgroundTexture().width((int) (getWidth() - borderSize)));
-                    renderTextureAsBackground(matrixStack, getBackgroundTexture().width(borderSize).dx(getBackgroundTexture().width - borderSize), getWidth() - borderSize, 0);
+                    renderTextureAsBackground(poseStack, getBackgroundTexture().width((int) (getWidth() - borderSize)));
+                    renderTextureAsBackground(poseStack, getBackgroundTexture().width(borderSize).dx(getBackgroundTexture().width - borderSize), getWidth() - borderSize, 0);
 
-                    RenderSystem.color3f(1.0f, 1.0f, 1.0f);
+                    RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 }
 
                 @Override
@@ -340,7 +341,7 @@ public class ComboBoxControl extends StackPanel
         {
             if (item.tooltip != null)
             {
-                renderTooltip(matrixStack, mouseX, mouseY, item.tooltip);
+                renderTooltip(poseStack, mouseX, mouseY, item.tooltip);
             }
         }
 
@@ -424,7 +425,7 @@ public class ComboBoxControl extends StackPanel
          * The name of the item.
          */
         @Nonnull
-        public final TextComponent name;
+        public final Component name;
 
         /**
          * The value of the item.
@@ -458,7 +459,7 @@ public class ComboBoxControl extends StackPanel
          * @param value the value of the item.
          * @param iconTexture the optional icon texture of the item.
          */
-        public Item(@Nonnull TextComponent name, @Nonnull Object value, @Nullable Texture iconTexture)
+        public Item(@Nonnull Component name, @Nonnull Object value, @Nullable Texture iconTexture)
         {
             this(name, value, iconTexture, null);
         }
@@ -468,7 +469,7 @@ public class ComboBoxControl extends StackPanel
          * @param value the value of the item.
          * @param tooltip the optional tooltip of the item.
          */
-        public Item(@Nonnull TextComponent name, @Nonnull Object value, @Nullable List<FormattedCharSequence> tooltip)
+        public Item(@Nonnull Component name, @Nonnull Object value, @Nullable List<FormattedCharSequence> tooltip)
         {
             this(name, value, null, tooltip);
         }
@@ -479,7 +480,7 @@ public class ComboBoxControl extends StackPanel
          * @param iconTexture the optional icon texture of the item.
          * @param tooltip the optional tooltip of the item.
          */
-        public Item(@Nonnull TextComponent name, @Nonnull Object value, @Nullable Texture iconTexture, @Nullable List<FormattedCharSequence> tooltip)
+        public Item(@Nonnull Component name, @Nonnull Object value, @Nullable Texture iconTexture, @Nullable List<FormattedCharSequence> tooltip)
         {
             this.name = name;
             this.value = value;

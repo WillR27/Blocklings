@@ -1,6 +1,6 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.EntityControl;
 import com.willr27.blocklings.client.gui.control.controls.TabbedUIControl;
@@ -8,7 +8,7 @@ import com.willr27.blocklings.client.gui.containers.EquipmentContainer;
 import com.willr27.blocklings.client.gui.control.controls.panels.CanvasPanel;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -48,9 +48,9 @@ public class EquipmentScreen extends TabbedContainerScreen<EquipmentContainer>
             @Override
             protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
-                if (blockling.getEquipment().hasToolEquipped(Hand.MAIN_HAND))
+                if (blockling.getEquipment().hasToolEquipped(InteractionHand.MAIN_HAND))
                 {
-                    super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                    super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
                 }
             }
         };
@@ -66,9 +66,9 @@ public class EquipmentScreen extends TabbedContainerScreen<EquipmentContainer>
             @Override
             protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
-                if (blockling.getEquipment().hasToolEquipped(Hand.OFF_HAND))
+                if (blockling.getEquipment().hasToolEquipped(InteractionHand.OFF_HAND))
                 {
-                    super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                    super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
                 }
             }
         };

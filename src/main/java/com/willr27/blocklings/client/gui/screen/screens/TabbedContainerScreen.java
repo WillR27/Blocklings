@@ -7,7 +7,7 @@ import com.willr27.blocklings.client.gui.control.event.events.input.MouseRelease
 import com.willr27.blocklings.client.gui.control.event.events.input.MouseScrolledEvent;
 import com.willr27.blocklings.client.gui.screen.BlocklingsContainerScreen;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
-import net.minecraft.inventory.container.Container;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -17,7 +17,7 @@ import javax.annotation.Nonnull;
  * A base screen for all tabbed blockling screens.
  */
 @OnlyIn(Dist.CLIENT)
-public abstract class TabbedContainerScreen<T extends Container> extends BlocklingsContainerScreen<T>
+public abstract class TabbedContainerScreen<T extends AbstractContainerMenu> extends BlocklingsContainerScreen<T>
 {
     /**
      * The tabbed UI control.

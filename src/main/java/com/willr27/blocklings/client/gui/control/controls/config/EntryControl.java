@@ -1,7 +1,7 @@
 package com.willr27.blocklings.client.gui.control.controls.config;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.EntityControl;
 import com.willr27.blocklings.client.gui.control.controls.ItemControl;
@@ -10,13 +10,13 @@ import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.entity.blockling.goal.config.whitelist.GoalWhitelist;
 import com.willr27.blocklings.entity.blockling.goal.config.whitelist.Whitelist;
 import com.willr27.blocklings.util.EntityUtil;
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -65,7 +65,7 @@ public class EntryControl extends Control
                 @Override
                 protected void onRenderUpdate(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
                 {
-                    super.onRenderUpdate(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                    super.onRenderUpdate(poseStack, scissorStack, mouseX, mouseY, partialTicks);
 
                     setLookX((float) (-25 + (getPixelX() + getPixelWidth() / 2.0) / getGuiScale()));
                     setLookY((float) (25 + (getPixelY() + getPixelHeight() / 2.0) / getGuiScale()));
@@ -114,22 +114,22 @@ public class EntryControl extends Control
     {
         if (entry.getValue())
         {
-            RenderSystem.color3f(0.4f, 0.8f, 0.4f);
-            renderTextureAsBackground(matrixStack, ENTRY_SELECTED);
+            RenderSystem.setShaderColor(0.4f, 0.8f, 0.4f, 1.0f);
+            renderTextureAsBackground(poseStack, ENTRY_SELECTED);
         }
         else
         {
-            RenderSystem.color3f(0.8f, 0.3f, 0.3f);
-            renderTextureAsBackground(matrixStack, ENTRY_UNSELECTED);
+            RenderSystem.setShaderColor(0.8f, 0.3f, 0.3f, 1.0f);
+            renderTextureAsBackground(poseStack, ENTRY_UNSELECTED);
         }
 
         if (entry.getValue())
         {
-            RenderSystem.color3f(1.0f, 1.0f, 1.0f);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         }
         else
         {
-            RenderSystem.color3f(0.5f, 0.5f, 0.5f);
+            RenderSystem.setShaderColor(0.5f, 0.5f, 0.5f, 1.0f);
         }
     }
 
@@ -139,17 +139,17 @@ public class EntryControl extends Control
         if (whitelist.type == Whitelist.Type.BLOCK)
         {
             Block block = Registry.BLOCK.get(entry.getKey());
-            renderTooltip(matrixStack, mouseX, mouseY, block.getName());
+            renderTooltip(poseStack, mouseX, mouseY, block.getName());
         }
         else if (whitelist.type == Whitelist.Type.ITEM)
         {
             Item item = Registry.ITEM.get(entry.getKey());
-            renderTooltip(matrixStack, mouseX, mouseY, item.getName(item.getDefaultInstance()));
+            renderTooltip(poseStack, mouseX, mouseY, item.getName(item.getDefaultInstance()));
         }
         else if (whitelist.type == Whitelist.Type.ENTITY)
         {
             Entity ent = EntityUtil.create(entry.getKey(), whitelist.blockling.level);
-            renderTooltip(matrixStack, mouseX, mouseY, ent.getName());
+            renderTooltip(poseStack, mouseX, mouseY, ent.getName());
         }
     }
 

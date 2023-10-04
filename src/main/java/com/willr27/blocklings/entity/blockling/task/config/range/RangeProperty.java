@@ -2,6 +2,7 @@ package com.willr27.blocklings.entity.blockling.task.config.range;
 
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.entity.blockling.task.config.Property;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 
 import javax.annotation.Nonnull;
@@ -38,7 +39,7 @@ public abstract class RangeProperty<T extends Number> extends Property
      * @param max           the maximum value of the range.
      * @param startingValue the range starting value.
      */
-    public RangeProperty(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull TextComponent name, @Nonnull TextComponent desc, @Nonnull T min, @Nonnull T max, @Nonnull T startingValue)
+    public RangeProperty(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull Component name, @Nonnull Component desc, @Nonnull T min, @Nonnull T max, @Nonnull T startingValue)
     {
         super(id, goal, name, desc);
         this.min = min;

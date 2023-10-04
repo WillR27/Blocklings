@@ -1,6 +1,6 @@
 package com.willr27.blocklings.client.gui.control.controls;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.panels.GridPanel;
 import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
@@ -15,7 +15,7 @@ import com.willr27.blocklings.client.gui.BlocklingGuiHandler;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.TranslatableComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -203,28 +203,28 @@ public class TabbedUIControl extends GridPanel
         @Override
         protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
         {
-            matrixStack.pushPose();
+            poseStack.pushPose();
 
             if (isSelected())
             {
-                matrixStack.translate(0.0, 0.0, 0.5);
+                poseStack.translate(0.0, 0.0, 0.5);
 
-                renderTextureAsBackground(matrixStack, selectedBackgroundTexture);
-                renderTextureAsBackground(matrixStack, tab.iconTexture, tab.left ? 6 : 4, 3);
+                renderTextureAsBackground(poseStack, selectedBackgroundTexture);
+                renderTextureAsBackground(poseStack, tab.iconTexture, tab.left ? 6 : 4, 3);
             }
             else
             {
-                renderTextureAsBackground(matrixStack, unselectedBackgroundTexture, tab.left ? 4 : 3, 0);
-                renderTextureAsBackground(matrixStack, tab.iconTexture, tab.left ? 7 : 3, 3);
+                renderTextureAsBackground(poseStack, unselectedBackgroundTexture, tab.left ? 4 : 3, 0);
+                renderTextureAsBackground(poseStack, tab.iconTexture, tab.left ? 7 : 3, 3);
             }
 
-            matrixStack.popPose();
+            poseStack.popPose();
         }
 
         @Override
         public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
         {
-            renderTooltip(matrixStack, mouseX, mouseY, getPixelScaleX(), getPixelScaleY(), tab.name);
+            renderTooltip(poseStack, mouseX, mouseY, getPixelScaleX(), getPixelScaleY(), tab.name);
         }
 
         @Override

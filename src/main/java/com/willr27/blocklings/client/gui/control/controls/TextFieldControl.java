@@ -1,7 +1,8 @@
 package com.willr27.blocklings.client.gui.control.controls;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix4f;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.event.events.SizeChangedEvent;
@@ -10,19 +11,17 @@ import com.willr27.blocklings.client.gui.control.event.events.input.*;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.TextComponent;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 
 /**
- * A wrapper around a {@link TextFieldWidget}
+ * A wrapper around a {@link EditBox}
  */
 @OnlyIn(Dist.CLIENT)
 public class TextFieldControl extends Control
@@ -33,10 +32,10 @@ public class TextFieldControl extends Control
     private boolean shouldRenderBackground = true;
 
     /**
-     * The underlying {@link TextFieldWidget};
+     * The underlying {@link EditBox};
      */
     @Nonnull
-    protected final TextFieldWidget textFieldWidget = new TextFieldWidget(Minecraft.getInstance().font, 0, 0, 100, GuiUtil.get().getLineHeight() - 1, new TextComponent("message?"));
+    protected final EditBox textFieldWidget = new EditBox(Minecraft.getInstance().font, 0, 0, 100, GuiUtil.get().getLineHeight() - 1, new TextComponent("message?"));
 
     /**
      * The amount to offset the text field's x position by.
@@ -110,11 +109,11 @@ public class TextFieldControl extends Control
         // This would be better done using events, but there aren't currently events for when pixel sizes and positions change.
         recalcTextFieldWidget();
 
-        super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+        super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
 
         if (shouldRenderBackground())
         {
-            renderRectangleAsBackground(matrixStack, getBackgroundColourInt(), 1, 1, (int) (getWidth() - 2), (int) (getHeight() - 2));
+            renderRectangleAsBackground(poseStack, getBackgroundColourInt(), 1, 1, (int) (getWidth() - 2), (int) (getHeight() - 2));
         }
 
         float z = isDraggingOrAncestor() ? (float) getDraggedControl().getDragZ() : (float) getRenderZ();
@@ -123,29 +122,29 @@ public class TextFieldControl extends Control
         {
             // For some reason we can't just access the values in the matrix.
             // So we have to get the z translation via reflection. Nice.
-            z = ObfuscationReflectionHelper.getPrivateValue(Matrix4f.class, matrixStack.last().pose(), "m23");
+            z = ObfuscationReflectionHelper.getPrivateValue(Matrix4f.class, poseStack.last().pose(), "m23");
         }
         catch (Exception ex)
         {
 //            Blocklings.LOGGER.warn(ex.toString());
         }
 
-        MatrixStack textFieldMatrixStack = new MatrixStack();
-        textFieldMatrixStack.translate(textFieldXRemainder, textFieldYRemainder, z);
-        textFieldWidget.renderButton(textFieldMatrixStack, (int) Math.round(mouseX), (int) Math.round(mouseY), partialTicks);
+        PoseStack textFieldPoseStack = new PoseStack();
+        textFieldPoseStack.translate(textFieldXRemainder, textFieldYRemainder, z);
+        textFieldWidget.renderButton(textFieldPoseStack, (int) Math.round(mouseX), (int) Math.round(mouseY), partialTicks);
         RenderSystem.enableDepthTest();
 
         // Reset the color to white so that the rest of the GUI renders properly.
         // The text field renders a blue highlight which can cascade into other controls.
-        RenderSystem.color3f(1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         if (shouldRenderBackground)
         {
             int borderColour = isFocused() ? getBorderFocusedColour() : getBorderColour();
-            renderRectangleAsBackground(matrixStack, borderColour, 0, 0, 1, getHeight());
-            renderRectangleAsBackground(matrixStack, borderColour, getWidth() - 1, 0, 1, getHeight());
-            renderRectangleAsBackground(matrixStack, borderColour, 0, 0, getWidth(), 1);
-            renderRectangleAsBackground(matrixStack, borderColour, 0, getHeight() - 1, getWidth(), 1);
+            renderRectangleAsBackground(poseStack, borderColour, 0, 0, 1, getHeight());
+            renderRectangleAsBackground(poseStack, borderColour, getWidth() - 1, 0, 1, getHeight());
+            renderRectangleAsBackground(poseStack, borderColour, 0, 0, getWidth(), 1);
+            renderRectangleAsBackground(poseStack, borderColour, 0, getHeight() - 1, getWidth(), 1);
         }
     }
 

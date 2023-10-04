@@ -1,21 +1,13 @@
 package com.willr27.blocklings.client.gui.util;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.texture.Texture;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.FormattedText;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -169,7 +161,7 @@ public abstract class GuiUtil
     /**
      * Renders shadowed text.
      *
-     * @param matrixStack the matrix stack.
+     * @param poseStack the pose stack.
      * @param text the text to render.
      * @param x the x position to render the text at.
      * @param y the y position to render the text at.
@@ -180,7 +172,7 @@ public abstract class GuiUtil
     /**
      * Renders shadowed text.
      *
-     * @param matrixStack the matrix stack.
+     * @param poseStack the pose stack.
      * @param text the text to render.
      * @param x the x position to render the text at.
      * @param y the y position to render the text at.
@@ -205,7 +197,7 @@ public abstract class GuiUtil
     /**
      * Renders an entity on the screen.
      *
-     * @param matrixStack the matrix stack.
+     * @param poseStack the pose stack.
      * @param entity the entity to render.
      * @param screenX the screen x position to render the entity at (0 is center of entity).
      * @param screenY the screen y position to render the entity at (0 is feet level).
@@ -219,7 +211,7 @@ public abstract class GuiUtil
     /**
      * Renders an item stack on the screen.
      *
-     * @param matrixStack the matrix stack.
+     * @param poseStack the pose stack.
      * @param stack the item stack to render.
      * @param x the screen x position to render the item stack at.
      * @param y the screen y position to render the item stack at.

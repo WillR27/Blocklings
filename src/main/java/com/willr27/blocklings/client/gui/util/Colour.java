@@ -112,7 +112,7 @@ public class Colour
      */
     public void apply()
     {
-        RenderSystem.color4f(r, g, b, a);
+        RenderSystem.setShaderColor(r, g, b, a);
     }
 
     /**

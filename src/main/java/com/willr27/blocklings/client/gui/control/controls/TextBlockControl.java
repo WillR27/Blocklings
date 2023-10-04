@@ -1,19 +1,19 @@
 package com.willr27.blocklings.client.gui.control.controls;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix4f;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.util.DoubleUtil;
+import net.minecraft.locale.Language;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.LanguageMap;
-import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 import javax.annotation.Nonnull;
 
@@ -27,7 +27,7 @@ public class TextBlockControl extends Control
      * The text component to render.
      */
     @Nonnull
-    private TextComponent text = new TextComponent("");
+    private Component text = new TextComponent("");
 
     /**
      * Whether to trim the text to fit the width of the control.
@@ -109,7 +109,7 @@ public class TextBlockControl extends Control
     @Override
     public void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
     {
-        super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+        super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
 
         double screenWidth = getPixelWidthWithoutPadding() / getGuiScale();
         double screenHeight = getPixelHeightWithoutPadding() / getGuiScale();
@@ -128,24 +128,24 @@ public class TextBlockControl extends Control
         {
             // For some reason we can't just access the values in the matrix.
             // So we have to get the z translation via reflection. Nice.
-            z = ObfuscationReflectionHelper.getPrivateValue(Matrix4f.class, matrixStack.last().pose(), "m23");
+            z = ObfuscationReflectionHelper.getPrivateValue(Matrix4f.class, poseStack.last().pose(), "m23");
         }
         catch (Exception ex)
         {
 //            Blocklings.LOGGER.warn(ex.toString());
         }
 
-        PoseStack poseStack2 = new MatrixStack();
-        matrixStack2.translate(x, y, z);
-        matrixStack2.scale((float) getScaleX(), (float) getScaleY(), 1.0f);
+        PoseStack poseStack2 = new PoseStack();
+        poseStack2.translate(x, y, z);
+        poseStack2.scale((float) getScaleX(), (float) getScaleY(), 1.0f);
 
         if (shouldRenderShadow())
         {
-            renderShadowedText(matrixStack2, getTextToRender(), getTextColour());
+            renderShadowedText(poseStack2, getTextToRender(), getTextColour());
         }
         else
         {
-            renderText(matrixStack2, getTextToRender(), getTextColour());
+            renderText(poseStack2, getTextToRender(), getTextColour());
         }
     }
 
@@ -176,7 +176,7 @@ public class TextBlockControl extends Control
 
         if (shouldTrimText())
         {
-            textToRender = LanguageMap.getInstance().getVisualOrder(GuiUtil.get().trimWithEllipsis(getText(), (int) Math.round(getWidthWithoutPadding())));
+            textToRender = Language.getInstance().getVisualOrder(GuiUtil.get().trimWithEllipsis(getText(), (int) Math.round(getWidthWithoutPadding())));
         }
 
         return textToRender;
@@ -195,7 +195,7 @@ public class TextBlockControl extends Control
      * @return the text to render.
      */
     @Nonnull
-    public TextComponent getText()
+    public Component getText()
     {
         return text;
     }
@@ -215,7 +215,7 @@ public class TextBlockControl extends Control
      *
      * @param text the text to render.
      */
-    public void setText(@Nonnull TextComponent text)
+    public void setText(@Nonnull Component text)
     {
         this.text = text;
     }

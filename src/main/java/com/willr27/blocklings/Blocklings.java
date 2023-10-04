@@ -75,7 +75,6 @@ public class Blocklings
         ModProxies.init();
         NetworkHandler.init();
         BlocklingsCommands.init();
-        BlocklingsCapabilities.register();
 
         event.enqueueWork(EntityGeneration::init);
     }

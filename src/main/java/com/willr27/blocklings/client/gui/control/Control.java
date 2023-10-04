@@ -1,7 +1,7 @@
 package com.willr27.blocklings.client.gui.control;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.event.events.TryDragEvent;
 import com.willr27.blocklings.client.gui.control.event.events.TryHoverEvent;
 import com.willr27.blocklings.client.gui.control.event.events.input.*;
@@ -14,12 +14,11 @@ import com.willr27.blocklings.client.gui.util.ScissorBounds;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.jline.utils.Log;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -329,25 +328,24 @@ public class Control extends BaseControl
         }
 
         Colour colour = getForegroundColour();
-        RenderSystem.color4f(colour.getR(), colour.getG(), colour.getB(), colour.getA());
+        RenderSystem.setShaderColor(colour.getR(), colour.getG(), colour.getB(), colour.getA());
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.defaultAlphaFunc();
         RenderSystem.enableDepthTest();
 
-        matrixStack.pushPose();
-        matrixStack.translate(0.0f, 0.0f, isDraggingOrAncestor() ? getDraggedControl().getDragZ() : getRenderZ());
+        poseStack.pushPose();
+        poseStack.translate(0.0f, 0.0f, isDraggingOrAncestor() ? getDraggedControl().getDragZ() : getRenderZ());
 
         applyScissor(scissorStack);
-        onRenderUpdate(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
-        onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+        onRenderUpdate(poseStack, scissorStack, mouseX, mouseY, partialTicks);
+        onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
 
         for (BaseControl child : getChildrenCopy())
         {
-            child.forwardRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+            child.forwardRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
         }
 
-        matrixStack.popPose();
+        poseStack.popPose();
 
         undoScissor(scissorStack);
     }
@@ -361,11 +359,11 @@ public class Control extends BaseControl
     @Override
     protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
     {
-//        if (!(this instanceof ScreenControl)) renderRectangle(matrixStack, getPixelX(), getPixelY(), (int) getPixelWidth(), (int) getPixelHeight(), 0xff000000);
-//        matrixStack.pushPose();
-//        matrixStack.translate(0.0f, 0.0f, 1.0f);
-        renderRectangle(matrixStack, getPixelX() + getPixelPadding().left, getPixelY() + getPixelPadding().top, (int) getPixelWidthWithoutPadding(), (int) getPixelHeightWithoutPadding(), getBackgroundColourInt());
-//        matrixStack.popPose();
+//        if (!(this instanceof ScreenControl)) renderRectangle(poseStack, getPixelX(), getPixelY(), (int) getPixelWidth(), (int) getPixelHeight(), 0xff000000);
+//        poseStack.pushPose();
+//        poseStack.translate(0.0f, 0.0f, 1.0f);
+        renderRectangle(poseStack, getPixelX() + getPixelPadding().left, getPixelY() + getPixelPadding().top, (int) getPixelWidthWithoutPadding(), (int) getPixelHeightWithoutPadding(), getBackgroundColourInt());
+//        poseStack.popPose();
     }
 
     @Override
@@ -376,68 +374,68 @@ public class Control extends BaseControl
 
     protected void renderRectangleAsBackground(@Nonnull PoseStack poseStack, int colour)
     {
-        renderRectangle(matrixStack, (int) getPixelX(), (int) getPixelY(), (int) getPixelWidth(), (int) getPixelHeight(), colour);
+        renderRectangle(poseStack, (int) getPixelX(), (int) getPixelY(), (int) getPixelWidth(), (int) getPixelHeight(), colour);
     }
 
     protected void renderRectangleAsBackground(@Nonnull PoseStack poseStack, int colour, double dx, double dy, double width, double height)
     {
-        renderRectangle(matrixStack, (int) getPixelX() + dx * getPixelScaleX(), (int) getPixelY() + dy * getPixelScaleY(), (int) (width * getPixelScaleX()), (int) (height * getPixelScaleY()), colour);
+        renderRectangle(poseStack, (int) getPixelX() + dx * getPixelScaleX(), (int) getPixelY() + dy * getPixelScaleY(), (int) (width * getPixelScaleX()), (int) (height * getPixelScaleY()), colour);
     }
 
     protected void renderBackgroundColour(@Nonnull PoseStack poseStack)
     {
-        renderRectangleAsBackground(matrixStack, getBackgroundColourInt());
+        renderRectangleAsBackground(poseStack, getBackgroundColourInt());
     }
 
     protected void renderTextureAsBackground(@Nonnull PoseStack poseStack, @Nonnull Texture texture)
     {
-        renderTexture(matrixStack, texture, getPixelX(), getPixelY(), getPixelScaleX(), getPixelScaleY());
+        renderTexture(poseStack, texture, getPixelX(), getPixelY(), getPixelScaleX(), getPixelScaleY());
     }
 
     protected void renderTextureAsBackground(@Nonnull PoseStack poseStack, @Nonnull Texture texture, double dx, double dy)
     {
-        renderTexture(matrixStack, texture, getPixelX() + dx * getPixelScaleX(), getPixelY() + dy * getPixelScaleX(), getPixelScaleX(), getPixelScaleY());
+        renderTexture(poseStack, texture, getPixelX() + dx * getPixelScaleX(), getPixelY() + dy * getPixelScaleX(), getPixelScaleX(), getPixelScaleY());
     }
 
     /**
      * Renders a tooltip at the mouse position.
      *
-     * @param matrixStack the matrix stack.
+     * @param poseStack the matrix stack.
      * @param mouseX the mouse x position.
      * @param mouseY the mouse y position.
      * @param tooltip the tooltip to render.
      */
-    public void renderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, @Nonnull TextComponent tooltip)
+    public void renderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, @Nonnull Component tooltip)
     {
         List<FormattedCharSequence> tooltip2 = new ArrayList<>();
         tooltip2.add(tooltip.getVisualOrderText());
-        renderTooltip(matrixStack, mouseX, mouseY, getPixelScaleX(), getPixelScaleY(), tooltip2);
+        renderTooltip(poseStack, mouseX, mouseY, getPixelScaleX(), getPixelScaleY(), tooltip2);
     }
 
     /**
      * Renders a tooltip at the mouse position.
      *
-     * @param matrixStack the matrix stack.
+     * @param poseStack the matrix stack.
      * @param tooltip the tooltip to render.
      * @param mouseX the mouse x position.
      * @param mouseY the mouse y position.
      */
-    public void renderTooltip(@Nonnull PoseStack poseStack, @Nonnull List<? extends TextComponent> tooltip, double mouseX, double mouseY)
+    public void renderTooltip(@Nonnull PoseStack poseStack, @Nonnull List<? extends Component> tooltip, double mouseX, double mouseY)
     {
-        Minecraft.getInstance().screen.renderTooltip(matrixStack, tooltip.stream().map(t -> t.getVisualOrderText()).collect(Collectors.toList()), (int) (mouseX / getPixelScaleX()), (int) (mouseY / getPixelScaleY()));
+        Minecraft.getInstance().screen.renderTooltip(poseStack, tooltip.stream().map(Component::getVisualOrderText).collect(Collectors.toList()), (int) (mouseX / getPixelScaleX()), (int) (mouseY / getPixelScaleY()));
     }
 
     /**
      * Renders a tooltip at the mouse position.
      *
-     * @param matrixStack the matrix stack.
+     * @param poseStack the matrix stack.
      * @param mouseX the mouse x position.
      * @param mouseY the mouse y position.
      * @param tooltip the tooltip to render.
      */
     public void renderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, @Nonnull List<FormattedCharSequence> tooltip)
     {
-        Minecraft.getInstance().screen.renderTooltip(matrixStack, tooltip, (int) (mouseX / getPixelScaleX()), (int) (mouseY / getPixelScaleY()));
+        Minecraft.getInstance().screen.renderTooltip(poseStack, tooltip, (int) (mouseX / getPixelScaleX()), (int) (mouseY / getPixelScaleY()));
     }
 
     /**

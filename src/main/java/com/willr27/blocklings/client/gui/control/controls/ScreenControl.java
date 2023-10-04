@@ -1,7 +1,7 @@
 package com.willr27.blocklings.client.gui.control.controls;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.event.events.FocusChangedEvent;
@@ -12,7 +12,6 @@ import com.willr27.blocklings.client.gui.screen.BlocklingsContainerScreen;
 import com.willr27.blocklings.client.gui.screen.BlocklingsScreen;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -189,7 +188,7 @@ public class ScreenControl extends Control
     }
 
     /**
-     * Mimics {@link Screen#render(MatrixStack, int, int, float)}.
+     * Mimics {@link Screen#render(PoseStack, int, int, float)}.
      */
     public void render(@Nonnull PoseStack poseStack, int screenMouseX, int screenMouseY, float partialTicks)
     {
@@ -216,22 +215,22 @@ public class ScreenControl extends Control
 
         measureAndArrange();
 
-        matrixStack.pushPose();
-        matrixStack.scale(1.0f / guiScale, 1.0f / guiScale, 1.0f);
+        poseStack.pushPose();
+        poseStack.scale(1.0f / guiScale, 1.0f / guiScale, 1.0f);
 
-        forwardRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+        forwardRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
 
-        matrixStack.popPose();
+        poseStack.popPose();
 
         if (getHoveredControl() != null && getDraggedControl() == null)
         {
-            matrixStack.pushPose();
-            matrixStack.scale((float) getHoveredControl().getScaleX(), (float) getHoveredControl().getScaleY(), 1.0f);
+            poseStack.pushPose();
+            poseStack.scale((float) getHoveredControl().getScaleX(), (float) getHoveredControl().getScaleY(), 1.0f);
 
             RenderSystem.enableDepthTest();
-            getHoveredControl().onRenderTooltip(matrixStack, mouseX, mouseY, partialTicks);
+            getHoveredControl().onRenderTooltip(poseStack, mouseX, mouseY, partialTicks);
 
-            matrixStack.popPose();
+            poseStack.popPose();
         }
     }
 

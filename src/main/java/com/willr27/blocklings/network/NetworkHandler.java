@@ -15,6 +15,7 @@ import com.willr27.blocklings.entity.blockling.goal.goals.container.BlocklingCon
 import com.willr27.blocklings.entity.blockling.task.config.Property;
 import com.willr27.blocklings.network.messages.*;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -110,7 +111,7 @@ public class NetworkHandler
      */
     public static <T extends BlocklingMessage<T>> void registerMessage(@Nonnull Class<T> messageType)
     {
-        Function<ByteBuf, T> decoder = (buf) ->
+        Function<FriendlyByteBuf, T> decoder = (buf) ->
         {
             try
             {

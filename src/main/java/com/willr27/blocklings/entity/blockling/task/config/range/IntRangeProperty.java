@@ -33,7 +33,7 @@ public class IntRangeProperty extends RangeProperty<Integer>
      * @param max           the maximum value of the range.
      * @param startingValue the range starting value.
      */
-    public IntRangeProperty(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull TextComponent name, @Nonnull TextComponent desc, int min, int max, int startingValue)
+    public IntRangeProperty(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull Component name, @Nonnull Component desc, int min, int max, int startingValue)
     {
         super(id, goal, name, desc, min, max, startingValue);
     }

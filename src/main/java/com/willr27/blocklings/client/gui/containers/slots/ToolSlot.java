@@ -1,9 +1,9 @@
 package com.willr27.blocklings.client.gui.containers.slots;
 
 import com.willr27.blocklings.util.ToolUtil;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.Container;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
@@ -18,7 +18,7 @@ public class ToolSlot extends Slot
      * @param x x location in the gui.
      * @param y y location in the gui.
      */
-    public ToolSlot(@Nonnull IInventory inventory, int inventoryIndex, int x, int y)
+    public ToolSlot(@Nonnull Container inventory, int inventoryIndex, int x, int y)
     {
         super(inventory, inventoryIndex, x, y);
     }

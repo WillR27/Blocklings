@@ -9,6 +9,7 @@ import com.willr27.blocklings.util.IReadWriteNBT;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
@@ -40,13 +41,13 @@ public abstract class Property implements IReadWriteNBT
      * The name of the property.
      */
     @Nonnull
-    public final TextComponent name;
+    public final Component name;
 
     /**
      * The description of the property.
      */
     @Nonnull
-    public final TextComponent desc;
+    public final Component desc;
 
     /**
      * Whether the property is enabled.
@@ -59,7 +60,7 @@ public abstract class Property implements IReadWriteNBT
      * @param name the name of the property.
      * @param desc the description of the property.
      */
-    public Property(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull TextComponent name, @Nonnull TextComponent desc)
+    public Property(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull Component name, @Nonnull Component desc)
     {
         this.id = UUID.fromString(id);
         this.goal = goal;

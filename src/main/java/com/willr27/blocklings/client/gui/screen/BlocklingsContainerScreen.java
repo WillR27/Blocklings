@@ -1,15 +1,17 @@
 package com.willr27.blocklings.client.gui.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.controls.ScreenControl;
 import com.willr27.blocklings.client.gui.control.event.events.input.*;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.util.text.TextComponent;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.ContainerScreen;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -19,7 +21,7 @@ import javax.annotation.Nonnull;
  * A base screen to provide an adapter for {@link ContainerScreen}.
  */
 @OnlyIn(Dist.CLIENT)
-public class BlocklingsContainerScreen<T extends Container> extends ContainerScreen<T>
+public class BlocklingsContainerScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T>
 {
     /**
      * The blockling associated with the screen.
@@ -31,7 +33,7 @@ public class BlocklingsContainerScreen<T extends Container> extends ContainerScr
      * The player.
      */
     @Nonnull
-    private final PlayerEntity player;
+    private final Player player;
 
     /**
      * The root control that contains all the sub controls on the screen.
@@ -45,7 +47,7 @@ public class BlocklingsContainerScreen<T extends Container> extends ContainerScr
      */
     protected BlocklingsContainerScreen(@Nonnull BlocklingEntity blockling, @Nonnull T container)
     {
-        super(container, Minecraft.getInstance().player.inventory, new TextComponent(""));
+        super(container, Minecraft.getInstance().player.getInventory(), new TextComponent(""));
         this.blockling = blockling;
         this.player = Minecraft.getInstance().player;
     }
@@ -70,15 +72,15 @@ public class BlocklingsContainerScreen<T extends Container> extends ContainerScr
     }
 
     @Override
-    public void tick()
+    public void containerTick()
     {
         screenControl.forwardTick();
 
-        super.tick();
+        super.containerTick();
     }
 
     @Override
-    protected void renderBg(MatrixStack p_230450_1_, float p_230450_2_, int p_230450_3_, int p_230450_4_)
+    protected void renderBg(PoseStack p_230450_1_, float p_230450_2_, int p_230450_3_, int p_230450_4_)
     {
 
     }
@@ -86,11 +88,11 @@ public class BlocklingsContainerScreen<T extends Container> extends ContainerScr
     @Override
     public void render(@Nonnull PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
     {
-        screenControl.render(matrixStack, mouseX, mouseY, partialTicks);
+        screenControl.render(poseStack, mouseX, mouseY, partialTicks);
 
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
+        super.render(poseStack, mouseX, mouseY, partialTicks);
 
-        renderTooltip(matrixStack, mouseX, mouseY);
+        renderTooltip(poseStack, mouseX, mouseY);
     }
 
     @Override

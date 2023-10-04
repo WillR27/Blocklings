@@ -1,6 +1,6 @@
 package com.willr27.blocklings.client.gui.control.controls.stats;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.TextBlockControl;
 import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
@@ -13,9 +13,9 @@ import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.attribute.Attribute;
 import com.willr27.blocklings.entity.blockling.attribute.BlocklingAttributes;
 import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -117,7 +117,7 @@ public class XpBarControl extends Control
         tooltip.add(new TextComponent(ChatFormatting.GRAY + new BlocklingsTranslatableComponent("gui.current_level", ChatFormatting.WHITE, level.getValue()).getString()).getVisualOrderText());
         tooltip.add(new TextComponent(ChatFormatting.GRAY + new BlocklingsTranslatableComponent("gui.xp_required", ChatFormatting.WHITE, blockling.getStats().getLevelXpAttribute(this.level).getValue(), BlocklingAttributes.getXpForLevel(level.getValue())).getString()).getVisualOrderText());
 
-        renderTooltip(matrixStack, mouseX, mouseY, getPixelScaleX(), getPixelScaleY(), tooltip);
+        renderTooltip(poseStack, mouseX, mouseY, getPixelScaleX(), getPixelScaleY(), tooltip);
     }
 
     /**
@@ -162,7 +162,7 @@ public class XpBarControl extends Control
             int iconToRender = (int) (((float) (blockling.getStats().getLevelAttribute(level).getValue() + (current ? 0 : 1)) / BlocklingAttributes.Level.MAX) * (Textures.Stats.LevelIconsTexture.NUMBER_OF_ICONS - 1));
 
             int iconSize = Textures.Stats.LevelIconsTexture.ICON_SIZE;
-            renderTextureAsBackground(matrixStack, iconsTexture.dx(iconToRender * iconSize).width(iconSize));
+            renderTextureAsBackground(poseStack, iconsTexture.dx(iconToRender * iconSize).width(iconSize));
         }
     }
 }

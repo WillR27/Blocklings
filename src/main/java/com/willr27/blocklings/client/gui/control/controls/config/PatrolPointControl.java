@@ -1,7 +1,7 @@
 package com.willr27.blocklings.client.gui.control.controls.config;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.capabilities.BlockSelectCapability;
 import com.willr27.blocklings.client.gui.BlocklingGuiHandler;
@@ -23,11 +23,11 @@ import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.entity.blockling.goal.config.patrol.PatrolPoint;
 import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import com.willr27.blocklings.util.event.ValueChangedEvent;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -113,7 +113,7 @@ public class PatrolPointControl extends Control
             @Override
             public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
             {
-                renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("config.patrol.remove"));
+                renderTooltip(poseStack, mouseX, mouseY, new BlocklingsTranslatableComponent("config.patrol.remove"));
             }
 
             @Override
@@ -163,12 +163,12 @@ public class PatrolPointControl extends Control
 
                 for (int i = 0; i < getHeight(); i += texture.height)
                 {
-                    renderTextureAsBackground(matrixStack, texture, 0, i);
-                    renderTextureAsBackground(matrixStack, endTexture, getWidth() - 2, i);
+                    renderTextureAsBackground(poseStack, texture, 0, i);
+                    renderTextureAsBackground(poseStack, endTexture, getWidth() - 2, i);
                 }
 
-                renderTextureAsBackground(matrixStack, texture.dy(18).height(1), 0, getHeight() - 1);
-                renderRectangleAsBackground(matrixStack, 0x33000000, 1.0, 0.0, (int) (getWidth() - 2), (int) (getHeight() - 1));
+                renderTextureAsBackground(poseStack, texture.dy(18).height(1), 0, getHeight() - 1);
+                renderRectangleAsBackground(poseStack, 0x33000000, 1.0, 0.0, (int) (getWidth() - 2), (int) (getHeight() - 1));
             }
         };
 
@@ -192,19 +192,19 @@ public class PatrolPointControl extends Control
             {
                 if (isHovered() && getDraggedControl() == null)
                 {
-                    RenderSystem.color3f(0.7f, 0.9f, 1.0f);
+                    RenderSystem.setShaderColor(0.7f, 0.9f, 1.0f, 1.0f);
                 }
 
                 Texture texture = getBackgroundTexture();
 
-                renderTextureAsBackground(matrixStack, texture.dx(1).width((int) (getWidth() - 2)));
-                renderTextureAsBackground(matrixStack, texture.x(texture.width - 2).width(2), getWidth() - 2, 0);
+                renderTextureAsBackground(poseStack, texture.dx(1).width((int) (getWidth() - 2)));
+                renderTextureAsBackground(poseStack, texture.x(texture.width - 2).width(2), getWidth() - 2, 0);
             }
 
             @Override
             public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
             {
-                renderTooltip(matrixStack, mouseX, mouseY, name.getText());
+                renderTooltip(poseStack, mouseX, mouseY, name.getText());
             }
 
             @Override
@@ -409,7 +409,7 @@ public class PatrolPointControl extends Control
      * @param blockPos the block position.
      * @return whether the event should be cancelled.
      */
-    private static boolean handlePatrolPointSelect(@Nonnull PlayerEntity player, boolean isFinal, @Nullable BlockPos blockPos)
+    private static boolean handlePatrolPointSelect(@Nonnull Player player, boolean isFinal, @Nullable BlockPos blockPos)
     {
         if (!player.level.isClientSide())
         {
@@ -461,7 +461,7 @@ public class PatrolPointControl extends Control
     @SubscribeEvent
     public static void onPlayerContainerSelect(@Nonnull PlayerInteractEvent.RightClickBlock event)
     {
-        event.setCanceled(handlePatrolPointSelect(event.getPlayer(), event.getHand() == Hand.OFF_HAND, event.getPos()));
+        event.setCanceled(handlePatrolPointSelect(event.getPlayer(), event.getHand() == InteractionHand.OFF_HAND, event.getPos()));
     }
 
     /**

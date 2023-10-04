@@ -1,43 +1,26 @@
 package com.willr27.blocklings.client.gui.util;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import com.willr27.blocklings.client.gui.texture.Texture;
-import net.minecraft.block.Block;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Quaternion;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.text.*;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -205,13 +188,14 @@ public class FullGuiUtil extends GuiUtil
         entity.setCustomName(null);
         float f = (float)Math.atan((double)((screenX - screenMouseX) / 40.0F));
         float f1 = (float)Math.atan((double)((screenY - screenMouseY) / 40.0F));
-        RenderSystem.pushMatrix();
-        RenderSystem.translatef((float)screenX, (float)screenY, 1050.0F);
-        RenderSystem.scalef(1.0F, 1.0F, -1.0F);
-        matrixStack.pushPose();
-        matrixStack.translate(0.0D, 0.0D, 1000.0D);
+//        RenderSystem.pushMatrix();
+        poseStack.pushPose();
+        poseStack.translate((float)screenX, (float)screenY, 1050.0F);
+        poseStack.scale(1.0F, 1.0F, -1.0F);
+        poseStack.pushPose();
+        poseStack.translate(0.0D, 0.0D, 1000.0D);
         float scale2 = scaleToBoundingBox ? 16.0f / Math.max(entity.getBbWidth(), entity.getBbHeight()) : 16.0f;
-        matrixStack.scale((scale * scale2), (scale * scale2), (scale * scale2));
+        poseStack.scale((scale * scale2), (scale * scale2), (scale * scale2));
         Quaternion quaternion = Vector3f.ZP.rotationDegrees(180.0F);
         Quaternion quaternion1 = Vector3f.XP.rotationDegrees(f1 * 20.0F);
         quaternion.mul(quaternion1);
@@ -231,9 +215,9 @@ public class FullGuiUtil extends GuiUtil
         entityrenderermanager.overrideCameraOrientation(quaternion1);
         entityrenderermanager.setRenderShadow(false);
         RenderSystem.disableDepthTest();
-        RenderTypeBuffer.Impl irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
+        MultiBufferSource.BufferSource irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
         RenderSystem.runAsFancy(() -> {
-            entityrenderermanager.render(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, matrixStack, irendertypebuffer$impl, 15728880);
+            entityrenderermanager.render(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, poseStack, irendertypebuffer$impl, 15728880);
         });
         irendertypebuffer$impl.endBatch();
         entityrenderermanager.setRenderShadow(true);
@@ -242,7 +226,7 @@ public class FullGuiUtil extends GuiUtil
         entity.setXRot(f4);
         entity.yHeadRotO = f5;
         entity.yHeadRot = f6;
-        RenderSystem.popMatrix();
+        poseStack.popPose();
         poseStack.popPose();
         entity.setCustomName(new TextComponent(name));
     }
@@ -251,34 +235,34 @@ public class FullGuiUtil extends GuiUtil
     public void renderItemStack(@Nonnull PoseStack poseStack, @Nonnull ItemStack stack, int x, int y, double z, float scale)
     {
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-        RenderSystem.pushMatrix();
+//        RenderSystem.pushMatrix();
+        poseStack.pushPose();
         Minecraft.getInstance().textureManager.bindForSetup(TextureAtlas.LOCATION_BLOCKS);
         Minecraft.getInstance().textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
-        RenderSystem.enableRescaleNormal();
-        RenderSystem.enableAlphaTest();
-        RenderSystem.defaultAlphaFunc();
+        //RenderSystem.enableRescaleNormal();
+        //RenderSystem.enableAlphaTest();
+        //RenderSystem.defaultAlphaFunc();
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 //        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.translatef((float)x, (float)y, (float) z + 7.0f);
-        RenderSystem.scalef(1.0F, -1.0F, 1.0F);
-        RenderSystem.scalef(scale, scale, scale);
-        PoseStack poseStack = new PoseStack();
-        IRenderTypeBuffer.Impl irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
-        boolean flag = !itemRenderer.getModel(stack, null, null).usesBlockLight();
+        poseStack.translate((float)x, (float)y, (float) z + 7.0f);
+        poseStack.scale(1.0F, -1.0F, 1.0F);
+        poseStack.scale(scale, scale, scale);
+        MultiBufferSource.BufferSource irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
+        boolean flag = !itemRenderer.getModel(stack, null, null, 0).usesBlockLight();
         if (flag) {
-            RenderHelper.setupForFlatItems();
+            Lighting.setupForFlatItems();
         }
 
-        itemRenderer.render(stack, ItemTransforms.TransformType.GUI, false, poseStack, irendertypebuffer$impl, 15728880, OverlayTexture.NO_OVERLAY, itemRenderer.getModel(stack, null, null));
+        itemRenderer.render(stack, ItemTransforms.TransformType.GUI, false, poseStack, irendertypebuffer$impl, 15728880, OverlayTexture.NO_OVERLAY, itemRenderer.getModel(stack, null, null, 0));
         irendertypebuffer$impl.endBatch();
         RenderSystem.enableDepthTest();
         if (flag) {
-            RenderHelper.setupFor3DItems();
+            Lighting.setupFor3DItems();
         }
 
-        RenderSystem.disableAlphaTest();
-        RenderSystem.disableRescaleNormal();
-        RenderSystem.popMatrix();
+        //RenderSystem.disableAlphaTest();
+        //RenderSystem.disableRescaleNormal();
+        poseStack.popPose();
     }
 }

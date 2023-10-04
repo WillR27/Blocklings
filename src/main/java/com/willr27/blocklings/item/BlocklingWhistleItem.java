@@ -20,6 +20,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.entity.TransientEntitySectionManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
@@ -206,9 +207,8 @@ public class BlocklingWhistleItem extends Item
     {
         if (stack.hasTag() && stack.getTag().contains(BLOCKLING_UUID_KEY))
         {
-            Int2ObjectMap<Entity> entitiesById = ObfuscationReflectionHelper.getPrivateValue(ClientLevel.class, world, "field_217429_b");
-
-            Entity blockling = entitiesById.values().stream().filter(e -> e.getUUID().equals(stack.getTag().getUUID(BLOCKLING_UUID_KEY))).findFirst().orElse(null);
+            TransientEntitySectionManager<Entity> entitiesById = ObfuscationReflectionHelper.getPrivateValue(ClientLevel.class, world, "f_171631_");
+            Entity blockling = entitiesById.getEntityGetter().get(stack.getTag().getUUID(BLOCKLING_UUID_KEY));
 
             return (BlocklingEntity) blockling;
         }

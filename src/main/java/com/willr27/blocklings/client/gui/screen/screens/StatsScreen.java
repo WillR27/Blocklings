@@ -1,6 +1,6 @@
 package com.willr27.blocklings.client.gui.screen.screens;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.EntityControl;
@@ -26,11 +26,11 @@ import com.willr27.blocklings.entity.blockling.attribute.IModifier;
 import com.willr27.blocklings.entity.blockling.attribute.Operation;
 import com.willr27.blocklings.item.BlocklingsItems;
 import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -79,7 +79,7 @@ public class StatsScreen extends TabbedScreen
             }
             else
             {
-                TextComponent name = BlocklingsItems.BLOCKLING.get().getName(BlocklingsItems.BLOCKLING.get().getDefaultInstance());
+                Component name = BlocklingsItems.BLOCKLING.get().getName(BlocklingsItems.BLOCKLING.get().getDefaultInstance());
                 blockling.setCustomName(new TextComponent(name.getString()), true);
                 textFieldControl.setText(name.getString());
             }
@@ -226,7 +226,7 @@ public class StatsScreen extends TabbedScreen
                     tooltip.add(new TextComponent(ChatFormatting.DARK_GRAY + "" + ChatFormatting.ITALIC + new BlocklingsTranslatableComponent("gui.more_info", Minecraft.getInstance().options.keyShift.getTranslatedKeyMessage().getString()).getString()).getVisualOrderText());
                 }
 
-                renderTooltip(matrixStack, mouseX, mouseY, getPixelScaleX(), getPixelScaleY(), tooltip);
+                renderTooltip(poseStack, mouseX, mouseY, getPixelScaleX(), getPixelScaleY(), tooltip);
             }
         };
         entityControl.setParent(statsContainer);

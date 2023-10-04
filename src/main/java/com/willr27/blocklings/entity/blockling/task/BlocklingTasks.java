@@ -130,15 +130,15 @@ public class BlocklingTasks implements IReadWriteNBT
      */
     public void reapplyGoals()
     {
-        Set<WrappedGoal> goals = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, goalSelector, "field_220892_d");
-        Set<WrappedGoal> targets = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, targetSelector, "field_220892_d");
+        Set<WrappedGoal> goals = goalSelector.getAvailableGoals();
+        Set<WrappedGoal> targets = targetSelector.getAvailableGoals();
         goals.forEach(WrappedGoal::stop);
         goals.clear();
         targets.forEach(WrappedGoal::stop);
         targets.clear();
 
-        Map<Goal.Flag, WrappedGoal> goalLockedFlags  = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, goalSelector, "field_220891_c");
-        Map<Goal.Flag, WrappedGoal> targetLockedFlags  = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, targetSelector, "field_220891_c");
+        Map<Goal.Flag, WrappedGoal> goalLockedFlags  = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, goalSelector, "f_25344_");
+        Map<Goal.Flag, WrappedGoal> targetLockedFlags  = ObfuscationReflectionHelper.getPrivateValue(GoalSelector.class, targetSelector, "f_25344_");
         goalLockedFlags.clear();
         targetLockedFlags.clear();
 

@@ -1,5 +1,6 @@
 package com.willr27.blocklings.entity.blockling.goal.goals.misc;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
@@ -19,8 +20,11 @@ import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.util.BlockUtil;
 import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import com.willr27.blocklings.util.PathUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.level.pathfinder.Path;
 
 import javax.annotation.Nonnull;
@@ -432,11 +436,11 @@ public class BlocklingPatrolGoal extends BlocklingTargetGoal<PatrolPoint> implem
             {
                 if (isPatrolPointListFull())
                 {
-                    renderTextureAsBackground(matrixStack, Textures.Common.PLUS_ICON_DISABLED);
+                    renderTextureAsBackground(poseStack, Textures.Common.PLUS_ICON_DISABLED);
                 }
                 else
                 {
-                    super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+                    super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
                 }
             }
 
@@ -448,7 +452,7 @@ public class BlocklingPatrolGoal extends BlocklingTargetGoal<PatrolPoint> implem
                 tooltip.add(new BlocklingsTranslatableComponent("config.patrol.amount", getOrderedPatrolPointList().size(), MAX_PATROL_POINTS).withStyle(ChatFormatting.GRAY).getVisualOrderText());
                 tooltip.add(TextComponent.EMPTY.getVisualOrderText());
                 tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslatableComponent("config.patrol.add.help", new TextComponent(Minecraft.getInstance().options.keyShift.getTranslatedKeyMessage().getString()).withStyle(ChatFormatting.ITALIC)).withStyle(ChatFormatting.GRAY), 200));
-                renderTooltip(matrixStack, mouseX, mouseY, tooltip);
+                renderTooltip(poseStack, mouseX, mouseY, tooltip);
             }
 
             @Override

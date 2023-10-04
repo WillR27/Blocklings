@@ -1039,7 +1039,7 @@ public class BlocklingEntity extends TamableAnimal implements IEntityAdditionalS
 
                                 BlocklingWhistleItem.onBlocklingDestroyed(this);
 
-                                remove();
+                                remove(RemovalReason.DISCARDED);
 
                                 if (!player.getAbilities().instabuild)
                                 {

@@ -1,10 +1,10 @@
 package com.willr27.blocklings.client.gui.control.controls;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -61,7 +61,7 @@ public class EntityControl extends Control
     @Override
     public void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
     {
-        super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+        super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
 
         double minDimension = Math.min(getWidth() * getScaleX(), getHeight() * getScaleY());
         double scale = getEntityScale() * minDimension / 16.0f;
@@ -70,7 +70,7 @@ public class EntityControl extends Control
         float lookX = getLookX() != null ? getLookX() : (float) (mouseX / getGuiScale());
         float lookY = getLookY() != null ? getLookY() : (float) (mouseY / getGuiScale());
 
-        GuiUtil.get().renderEntityOnScreen(new MatrixStack(), entity, (int) x, (int) y, lookX, lookY, (float) scale, shouldScaleToBoundingBox());
+        GuiUtil.get().renderEntityOnScreen(new PoseStack(), entity, (int) x, (int) y, lookX, lookY, (float) scale, shouldScaleToBoundingBox());
     }
 
     /**

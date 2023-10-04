@@ -1,7 +1,7 @@
 package com.willr27.blocklings.client.gui.control.controls.panels;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.TextBlockControl;
@@ -12,7 +12,8 @@ import com.willr27.blocklings.client.gui.texture.Texture;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.ScissorBounds;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
-import net.minecraft.util.text.TextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -115,7 +116,7 @@ public class TabbedPanel extends Control
      * @return the tab's content container.
      */
     @Nonnull
-    public BaseControl addTab(@Nonnull TextComponent name)
+    public BaseControl addTab(@Nonnull Component name)
     {
         TabControl tab = new TabControl(name);
         tabContainer.addChild(tab);
@@ -265,7 +266,7 @@ public class TabbedPanel extends Control
          * The tab's name.
          */
         @Nonnull
-        public TextComponent name;
+        public Component name;
 
         /**
          * The tab background texture.
@@ -282,7 +283,7 @@ public class TabbedPanel extends Control
         /**
          * @param name the tab's name.
          */
-        public TabControl(@Nonnull TextComponent name)
+        public TabControl(@Nonnull Component name)
         {
             super();
             this.name = name;
@@ -307,31 +308,31 @@ public class TabbedPanel extends Control
 
             if (isFirst() && isLast())
             {
-                renderTextureAsBackground(matrixStack, backgroundTexture.dx(Textures.Common.Tab.EDGE_WIDTH).width((int) getWidth()));
+                renderTextureAsBackground(poseStack, backgroundTexture.dx(Textures.Common.Tab.EDGE_WIDTH).width((int) getWidth()));
             }
             else if (isFirst())
             {
-                renderTextureAsBackground(matrixStack, backgroundTexture.dx((int) (backgroundTexture.width - getWidth())).width((int) getWidth()));
+                renderTextureAsBackground(poseStack, backgroundTexture.dx((int) (backgroundTexture.width - getWidth())).width((int) getWidth()));
             }
             else if (isLast())
             {
-                renderTextureAsBackground(matrixStack, backgroundTexture.width((int) getWidth()));
+                renderTextureAsBackground(poseStack, backgroundTexture.width((int) getWidth()));
             }
             else
             {
-                renderTextureAsBackground(matrixStack, backgroundTexture.width((int) getWidth() - Textures.Common.Tab.EDGE_WIDTH));
-                renderTextureAsBackground(matrixStack, backgroundTexture.dx(backgroundTexture.width - Textures.Common.Tab.EDGE_WIDTH).width(Textures.Common.Tab.EDGE_WIDTH), (int) (getWidth() - Textures.Common.Tab.EDGE_WIDTH), 0);
+                renderTextureAsBackground(poseStack, backgroundTexture.width((int) getWidth() - Textures.Common.Tab.EDGE_WIDTH));
+                renderTextureAsBackground(poseStack, backgroundTexture.dx(backgroundTexture.width - Textures.Common.Tab.EDGE_WIDTH).width(Textures.Common.Tab.EDGE_WIDTH), (int) (getWidth() - Textures.Common.Tab.EDGE_WIDTH), 0);
             }
 
             RenderSystem.enableDepthTest();
 
-            super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
+            super.onRender(poseStack, scissorStack, mouseX, mouseY, partialTicks);
         }
 
         @Override
         public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
         {
-            renderTooltip(matrixStack, mouseX, mouseY, name);
+            renderTooltip(poseStack, mouseX, mouseY, name);
         }
 
         @Override

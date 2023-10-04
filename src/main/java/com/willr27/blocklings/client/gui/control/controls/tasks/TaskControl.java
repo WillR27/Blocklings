@@ -1,7 +1,7 @@
 package com.willr27.blocklings.client.gui.control.controls.tasks;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.TextBlockControl;
 import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
@@ -17,16 +17,15 @@ import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.entity.blockling.task.Task;
 import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Represents a task.
@@ -101,13 +100,13 @@ public class TaskControl extends Control
             @Override
             public void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
-                renderTextureAsBackground(matrixStack, iconTexture);
+                renderTextureAsBackground(poseStack, iconTexture);
             }
 
             @Override
             public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
             {
-                renderTooltip(matrixStack, mouseX, mouseY, getPixelScaleX(), getPixelScaleY(), new BlocklingsTranslatableComponent("task.ui.configure"));
+                renderTooltip(poseStack, mouseX, mouseY, getPixelScaleX(), getPixelScaleY(), new BlocklingsTranslatableComponent("task.ui.configure"));
             }
 
             @Override
@@ -132,7 +131,7 @@ public class TaskControl extends Control
             @Override
             public void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
-                renderTextureAsBackground(matrixStack, Textures.Tasks.TASK_NAME_BACKGROUND);
+                renderTextureAsBackground(poseStack, Textures.Tasks.TASK_NAME_BACKGROUND);
             }
 
             @Override
@@ -159,32 +158,32 @@ public class TaskControl extends Control
                 {
                     if (task.getGoal().getState() == BlocklingGoal.State.DISABLED)
                     {
-                        RenderSystem.color3f(1.0f, 0.0f, 0.0f);
+                        RenderSystem.setShaderColor(1.0f, 0.0f, 0.0f, 1.0f);
                     }
                     else if (task.getGoal().getState() == BlocklingGoal.State.IDLE)
                     {
-                        RenderSystem.color3f(1.0f, 0.8f, 0.0f);
+                        RenderSystem.setShaderColor(.0f, 0.8f, 0.0f, 1.0f);
                     }
                     if (task.getGoal().getState() == BlocklingGoal.State.ACTIVE)
                     {
-                        RenderSystem.color3f(0.0f, 0.7f, 0.0f);
+                        RenderSystem.setShaderColor(0.0f, 0.7f, 0.0f, 1.0f);
                     }
                 }
                 else
                 {
-                    RenderSystem.color3f(0.6f, 0.6f, 0.6f);
+                    RenderSystem.setShaderColor(0.6f, 0.6f, 0.6f, 1.0f);
                 }
 
                 if (task.isConfigured() && task.getGoal().getState() == BlocklingGoal.State.DISABLED)
                 {
-                    renderTextureAsBackground(matrixStack, getPressedBackgroundTexture());
+                    renderTextureAsBackground(poseStack, getPressedBackgroundTexture());
                 }
                 else
                 {
-                    renderTextureAsBackground(matrixStack, getBackgroundTexture());
+                    renderTextureAsBackground(poseStack, getBackgroundTexture());
                 }
 
-                RenderSystem.color3f(1.0f, 1.0f, 1.0f);
+                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             }
 
             @Override
@@ -194,11 +193,11 @@ public class TaskControl extends Control
                 {
                     if (task.getGoal().getState() == BlocklingGoal.State.DISABLED)
                     {
-                        renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("task.ui.enable"));
+                        renderTooltip(poseStack, mouseX, mouseY, new BlocklingsTranslatableComponent("task.ui.enable"));
                     }
                     else
                     {
-                        renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("task.ui.disable"));
+                        renderTooltip(poseStack, mouseX, mouseY, new BlocklingsTranslatableComponent("task.ui.disable"));
                     }
                 }
             }
@@ -256,18 +255,18 @@ public class TaskControl extends Control
             {
                 if (isPressed() && !isDragging() && getPressedBackgroundTexture() != null)
                 {
-                    renderTextureAsBackground(matrixStack, getPressedBackgroundTexture(), 4, 4);
+                    renderTextureAsBackground(poseStack, getPressedBackgroundTexture(), 4, 4);
                 }
                 else
                 {
-                    renderTextureAsBackground(matrixStack, getBackgroundTexture(), 4, 4);
+                    renderTextureAsBackground(poseStack, getBackgroundTexture(), 4, 4);
                 }
             }
 
             @Override
             public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
             {
-                renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("task.ui.remove"));
+                renderTooltip(poseStack, mouseX, mouseY, new BlocklingsTranslatableComponent("task.ui.remove"));
             }
 
             @Override
@@ -292,8 +291,8 @@ public class TaskControl extends Control
     {
         List<FormattedCharSequence> tooltip = new ArrayList<>();
         tooltip.add(new TextComponent(ChatFormatting.GOLD + task.getCustomName()).getVisualOrderText());
-        tooltip.addAll(GuiUtil.get().split(task.getType().desc, 200).stream().collect(Collectors.toList()));
+        tooltip.addAll(GuiUtil.get().split(task.getType().desc, 200).stream().toList());
 
-        renderTooltip(matrixStack, mouseX, mouseY, tooltip);
+        renderTooltip(poseStack, mouseX, mouseY, tooltip);
     }
 }

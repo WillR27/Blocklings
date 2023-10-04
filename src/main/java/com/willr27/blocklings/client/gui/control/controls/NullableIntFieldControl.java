@@ -1,11 +1,11 @@
 package com.willr27.blocklings.client.gui.control.controls;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.event.events.TextChangedEvent;
 import com.willr27.blocklings.util.event.ValueChangedEvent;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
-import net.minecraft.util.text.TextComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -42,7 +42,7 @@ public class NullableIntFieldControl extends TextFieldControl
     {
         if (isTextTrimmed())
         {
-            renderTooltip(matrixStack, mouseX, mouseY, new TextComponent(getText()));
+            renderTooltip(poseStack, mouseX, mouseY, new TextComponent(getText()));
         }
     }
 

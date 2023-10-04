@@ -3,18 +3,20 @@ package com.willr27.blocklings.client.gui.containers;
 import com.willr27.blocklings.client.gui.containers.slots.ToolSlot;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.inventory.EquipmentInventory;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.IContainerListener;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.inventory.ContainerListener;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
 /**
  * The container for the blockling's equipment.
  */
-public class EquipmentContainer extends Container
+public class EquipmentContainer extends AbstractContainerMenu
 {
     /**
      * The starting x location of the player's slots.
@@ -37,14 +39,14 @@ public class EquipmentContainer extends Container
      * @param player the player opening the container.
      * @param blockling the blockling.
      */
-    public EquipmentContainer(int windowId, @Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
+    public EquipmentContainer(int windowId, @Nonnull Player player, @Nonnull BlocklingEntity blockling)
     {
         super(null, windowId);
         this.blockling = blockling;
 
         if (!player.level.isClientSide)
         {
-            addSlotListener((IContainerListener) player);
+            ((ServerPlayer) player).initMenu(this);
         }
 
         EquipmentInventory blocklingInv = blockling.getEquipment();
@@ -64,24 +66,24 @@ public class EquipmentContainer extends Container
         {
             for (int j = 0; j < 9; j++)
             {
-                addSlot(new Slot(player.inventory, j + i * 9 + 9, PLAYER_INV_X + (j * 18), PLAYER_INV_Y + (i * 18)));
+                addSlot(new Slot(player.getInventory(), j + i * 9 + 9, PLAYER_INV_X + (j * 18), PLAYER_INV_Y + (i * 18)));
             }
         }
         for (int i = 0; i < 9; i++)
         {
-            addSlot(new Slot(player.inventory, i, PLAYER_INV_X + (i * 18), PLAYER_INV_Y + 58));
+            addSlot(new Slot(player.getInventory(), i, PLAYER_INV_X + (i * 18), PLAYER_INV_Y + 58));
         }
     }
 
     @Override
-    public boolean stillValid(@Nonnull PlayerEntity player)
+    public boolean stillValid(@Nonnull Player player)
     {
         return true;
     }
 
     @Override
     @Nonnull
-    public ItemStack quickMoveStack(@Nonnull PlayerEntity player, int clickedSlotIndex)
+    public ItemStack quickMoveStack(@Nonnull Player player, int clickedSlotIndex)
     {
         Slot clickedSlot = this.slots.get(clickedSlotIndex);
 
