@@ -1,15 +1,13 @@
 package com.willr27.blocklings.capabilities;
 
 import com.willr27.blocklings.Blocklings;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.INBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -24,7 +22,6 @@ import javax.annotation.Nullable;
 @Mod.EventBusSubscriber(modid = Blocklings.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class BlockSelectCapability
 {
-    @CapabilityInject(BlockSelectCapability.class)
     public static Capability<BlockSelectCapability> CAPABILITY = null;
 
     /**
@@ -32,18 +29,16 @@ public class BlockSelectCapability
      */
     public boolean isSelecting = false;
 
-    /**
-     * Registers this capability.
-     */
-    public static void register()
+    @SubscribeEvent
+    public void registerCaps(@Nonnull RegisterCapabilitiesEvent event)
     {
-        CapabilityManager.INSTANCE.register(BlockSelectCapability.class, new Storage(), BlockSelectCapability::new);
+        event.register(BlockSelectCapability.class);
     }
 
     @SubscribeEvent
     public static void attachCapabilities(@Nonnull AttachCapabilitiesEvent<Entity> event)
     {
-        if (event.getObject() instanceof PlayerEntity)
+        if (event.getObject() instanceof Player)
         {
             BlockSelectCapability.Provider provider = new BlockSelectCapability.Provider();
             event.addCapability(new ResourceLocation(Blocklings.MODID, "block_select_capability"), provider);
@@ -81,25 +76,6 @@ public class BlockSelectCapability
         public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side)
         {
             return lazyOptional.cast();
-        }
-    }
-
-    /**
-     * Not needed.
-     */
-    public static class Storage implements Capability.IStorage<BlockSelectCapability>
-    {
-        @Nullable
-        @Override
-        public INBT writeNBT(Capability<BlockSelectCapability> capability, BlockSelectCapability instance, Direction side)
-        {
-            return null;
-        }
-
-        @Override
-        public void readNBT(Capability<BlockSelectCapability> capability, BlockSelectCapability instance, Direction side, INBT nbt)
-        {
-
         }
     }
 }

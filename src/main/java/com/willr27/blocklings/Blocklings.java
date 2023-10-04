@@ -1,7 +1,6 @@
 package com.willr27.blocklings;
 
 import com.willr27.blocklings.block.BlocklingsBlocks;
-import com.willr27.blocklings.capabilities.BlocklingsCapabilities;
 import com.willr27.blocklings.client.renderer.entity.BlocklingRenderer;
 import com.willr27.blocklings.command.BlocklingsCommands;
 import com.willr27.blocklings.config.BlocklingsConfig;
