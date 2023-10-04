@@ -1,12 +1,12 @@
 package com.willr27.blocklings.client.gui.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.controls.ScreenControl;
 import com.willr27.blocklings.client.gui.control.event.events.input.*;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.text.TextComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -69,7 +69,7 @@ public class BlocklingsScreen extends Screen
     @Override
     public void render(@Nonnull PoseStack poseStack, int mouseX, int mouseY, float partialTicks)
     {
-        screenControl.render(matrixStack, mouseX, mouseY, partialTicks);
+        screenControl.render(poseStack, mouseX, mouseY, partialTicks);
     }
 
     @Override

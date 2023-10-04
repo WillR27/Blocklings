@@ -6,7 +6,7 @@ import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.util.DoubleUtil;
-import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.LanguageMap;
@@ -170,9 +170,9 @@ public class TextBlockControl extends Control
     /**
      * @return gets the text to render (e.g. might be trimmed to fit).
      */
-    public IReorderingProcessor getTextToRender()
+    public FormattedCharSequence getTextToRender()
     {
-        IReorderingProcessor textToRender = text.getVisualOrderText();
+        FormattedCharSequence textToRender = text.getVisualOrderText();
 
         if (shouldTrimText())
         {

@@ -26,7 +26,7 @@ import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import com.willr27.blocklings.util.event.ValueChangedEvent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.text.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -233,7 +233,7 @@ public abstract class ItemsConfigurationControl extends Control
                 @Override
                 public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
                 {
-                    List<IReorderingProcessor> tooltip = new ArrayList<>();
+                    List<FormattedCharSequence> tooltip = new ArrayList<>();
                     tooltip.add(new BlocklingsTranslatableComponent("config.item.add").withStyle(itemsPanel.getChildren().size() - 1 > getMaxItems() ? ChatFormatting.GRAY : ChatFormatting.WHITE).getVisualOrderText());
                     tooltip.add(new BlocklingsTranslatableComponent("config.item.amount", itemsPanel.getChildren().size() - 2, getMaxItems()).withStyle(ChatFormatting.GRAY).getVisualOrderText());
                     renderTooltip(matrixStack, mouseX, mouseY, tooltip);
@@ -579,7 +579,7 @@ public abstract class ItemsConfigurationControl extends Control
                 @Override
                 public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
                 {
-                    List<IReorderingProcessor> tooltip = new ArrayList<>();
+                    List<FormattedCharSequence> tooltip = new ArrayList<>();
                     tooltip.add(new BlocklingsTranslatableComponent("config.item.add").withStyle(itemsPanel.getChildren().size() - 1 > getMaxItems() ? ChatFormatting.GRAY : ChatFormatting.WHITE).getVisualOrderText());
                     tooltip.add(new BlocklingsTranslatableComponent("config.item.amount", itemsPanel.getChildren().size() - 2, getMaxItems()).withStyle(ChatFormatting.GRAY).getVisualOrderText());
                     renderTooltip(matrixStack, mouseX, mouseY, tooltip);
@@ -953,7 +953,7 @@ public abstract class ItemsConfigurationControl extends Control
                     @Override
                     public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
                     {
-                        List<IReorderingProcessor> tooltip = new ArrayList<>();
+                        List<FormattedCharSequence> tooltip = new ArrayList<>();
                         tooltip.add(new BlocklingsTranslatableComponent("config.item.inventory_start_amount.name").getVisualOrderText());
                         tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslatableComponent("config.item.inventory_start_amount.desc").withStyle(ChatFormatting.GRAY), 200));
 
@@ -989,7 +989,7 @@ public abstract class ItemsConfigurationControl extends Control
                     @Override
                     public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
                     {
-                        List<IReorderingProcessor> tooltip = new ArrayList<>();
+                        List<FormattedCharSequence> tooltip = new ArrayList<>();
                         tooltip.add(new BlocklingsTranslatableComponent("config.item.container_start_amount.name").getVisualOrderText());
                         tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslatableComponent("config.item.container_start_amount.desc").withStyle(ChatFormatting.GRAY), 200));
 
@@ -1044,7 +1044,7 @@ public abstract class ItemsConfigurationControl extends Control
                     @Override
                     public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
                     {
-                        List<IReorderingProcessor> tooltip = new ArrayList<>();
+                        List<FormattedCharSequence> tooltip = new ArrayList<>();
                         tooltip.add(new BlocklingsTranslatableComponent("config.item.inventory_stop_amount.name").getVisualOrderText());
                         tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslatableComponent("config.item.inventory_stop_amount.desc").withStyle(ChatFormatting.GRAY), 200));
 
@@ -1080,7 +1080,7 @@ public abstract class ItemsConfigurationControl extends Control
                     @Override
                     public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
                     {
-                        List<IReorderingProcessor> tooltip = new ArrayList<>();
+                        List<FormattedCharSequence> tooltip = new ArrayList<>();
                         tooltip.add(new BlocklingsTranslatableComponent("config.item.container_stop_amount.name").getVisualOrderText());
                         tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslatableComponent("config.item.container_stop_amount.desc").withStyle(ChatFormatting.GRAY), 200));
 

@@ -1,14 +1,13 @@
 package com.willr27.blocklings.client.gui.util;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.texture.Texture;
-import net.minecraft.block.Block;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextProperties;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -54,7 +53,7 @@ public class TestGuiUtil extends GuiUtil
     }
 
     @Override
-    public boolean isKeyDown(@Nonnull KeyBinding key)
+    public boolean isKeyDown(@Nonnull KeyMapping key)
     {
         return false;
     }
@@ -85,21 +84,21 @@ public class TestGuiUtil extends GuiUtil
 
     @Nonnull
     @Override
-    public ITextProperties trimWithEllipsis(@Nonnull ITextProperties text, int width)
+    public FormattedText trimWithEllipsis(@Nonnull FormattedText text, int width)
     {
         return text;
     }
 
     @Nonnull
     @Override
-    public ITextProperties trim(@Nonnull ITextProperties text, int width)
+    public FormattedText trim(@Nonnull FormattedText text, int width)
     {
         return text;
     }
 
     @Nonnull
     @Override
-    public List<IReorderingProcessor> split(@Nonnull ITextProperties text, int width)
+    public List<FormattedCharSequence> split(@Nonnull FormattedText text, int width)
     {
         return new ArrayList<>();
     }
@@ -118,7 +117,7 @@ public class TestGuiUtil extends GuiUtil
     }
 
     @Override
-    public int getTextWidth(@Nonnull IReorderingProcessor text)
+    public int getTextWidth(@Nonnull FormattedCharSequence text)
     {
         return 0;
     }
@@ -130,13 +129,13 @@ public class TestGuiUtil extends GuiUtil
     }
 
     @Override
-    public void renderShadowedText(@Nonnull PoseStack poseStack, @Nonnull IReorderingProcessor text, int x, int y, int color)
+    public void renderShadowedText(@Nonnull PoseStack poseStack, @Nonnull FormattedCharSequence text, int x, int y, int color)
     {
 
     }
 
     @Override
-    public void renderText(@Nonnull PoseStack poseStack, @Nonnull IReorderingProcessor text, int x, int y, int color)
+    public void renderText(@Nonnull PoseStack poseStack, @Nonnull FormattedCharSequence text, int x, int y, int color)
     {
 
     }

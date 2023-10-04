@@ -1,17 +1,23 @@
 package com.willr27.blocklings.client.gui.util;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.texture.Texture;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextProperties;
+import net.minecraft.util.text.FormattedText;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
@@ -81,7 +87,7 @@ public abstract class GuiUtil
     /**
      * @return whether the given key is currently pressed.
      */
-    public abstract boolean isKeyDown(@Nonnull KeyBinding key);
+    public abstract boolean isKeyDown(@Nonnull KeyMapping key);
 
     /**
      * @return whether the control key is currently pressed.
@@ -113,7 +119,7 @@ public abstract class GuiUtil
      * @return the trimmed text.
      */
     @Nonnull
-    public abstract ITextProperties trimWithEllipsis(@Nonnull ITextProperties text, int width);
+    public abstract FormattedText trimWithEllipsis(@Nonnull FormattedText text, int width);
 
     /**
      * Trims the given text to fit within the given width.
@@ -123,7 +129,7 @@ public abstract class GuiUtil
      * @return the trimmed text.
      */
     @Nonnull
-    public abstract ITextProperties trim(@Nonnull ITextProperties text, int width);
+    public abstract FormattedText trim(@Nonnull FormattedText text, int width);
 
     /**
      * Trims the given text to fit within the given width.
@@ -153,7 +159,7 @@ public abstract class GuiUtil
     /**
      * @return the width of the given text.
      */
-    public abstract int getTextWidth(@Nonnull IReorderingProcessor text);
+    public abstract int getTextWidth(@Nonnull FormattedCharSequence text);
 
     /**
      * @return the line height of the current font renderer.
@@ -169,7 +175,7 @@ public abstract class GuiUtil
      * @param y the y position to render the text at.
      * @param color the color to render the text in.
      */
-    public abstract void renderShadowedText(@Nonnull PoseStack poseStack, @Nonnull IReorderingProcessor text, int x, int y, int color);
+    public abstract void renderShadowedText(@Nonnull PoseStack poseStack, @Nonnull FormattedCharSequence text, int x, int y, int color);
 
     /**
      * Renders shadowed text.
@@ -180,7 +186,7 @@ public abstract class GuiUtil
      * @param y the y position to render the text at.
      * @param color the color to render the text in.
      */
-    public abstract void renderText(@Nonnull PoseStack poseStack, @Nonnull IReorderingProcessor text, int x, int y, int color);
+    public abstract void renderText(@Nonnull PoseStack poseStack, @Nonnull FormattedCharSequence text, int x, int y, int color);
 
     /**
      * Binds the given texture.
@@ -234,7 +240,7 @@ public abstract class GuiUtil
 
     public static void scissor(float x, float y, int width, int height)
     {
-        MainWindow window = Minecraft.getInstance().getWindow();
+        Window window = Minecraft.getInstance().getWindow();
         float scale = 1.0f;
 
         int scissorX = (int) (x * scale);

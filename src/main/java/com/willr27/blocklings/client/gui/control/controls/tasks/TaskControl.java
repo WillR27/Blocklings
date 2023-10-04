@@ -17,7 +17,7 @@ import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.entity.blockling.task.Task;
 import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
-import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
@@ -290,7 +290,7 @@ public class TaskControl extends Control
     @Override
     public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
     {
-        List<IReorderingProcessor> tooltip = new ArrayList<>();
+        List<FormattedCharSequence> tooltip = new ArrayList<>();
         tooltip.add(new TextComponent(ChatFormatting.GOLD + task.getCustomName()).getVisualOrderText());
         tooltip.addAll(GuiUtil.get().split(task.getType().desc, 200).stream().collect(Collectors.toList()));
 

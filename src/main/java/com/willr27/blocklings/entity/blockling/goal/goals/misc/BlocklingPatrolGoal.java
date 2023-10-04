@@ -443,7 +443,7 @@ public class BlocklingPatrolGoal extends BlocklingTargetGoal<PatrolPoint> implem
             @Override
             public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
             {
-                List<IReorderingProcessor> tooltip = new ArrayList<>();
+                List<FormattedCharSequence> tooltip = new ArrayList<>();
                 tooltip.add(new BlocklingsTranslatableComponent("config.patrol.add").withStyle(isPatrolPointListFull() ? ChatFormatting.GRAY : ChatFormatting.WHITE).getVisualOrderText());
                 tooltip.add(new BlocklingsTranslatableComponent("config.patrol.amount", getOrderedPatrolPointList().size(), MAX_PATROL_POINTS).withStyle(ChatFormatting.GRAY).getVisualOrderText());
                 tooltip.add(TextComponent.EMPTY.getVisualOrderText());

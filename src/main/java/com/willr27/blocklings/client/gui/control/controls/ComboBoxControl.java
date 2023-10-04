@@ -15,7 +15,7 @@ import com.willr27.blocklings.client.gui.properties.Visibility;
 import com.willr27.blocklings.client.gui.texture.Texture;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
-import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -442,7 +442,7 @@ public class ComboBoxControl extends StackPanel
          * The tooltip of the item.
          */
         @Nullable
-        public final List<IReorderingProcessor> tooltip;
+        public final List<FormattedCharSequence> tooltip;
 
         /**
          * @param name the name of the item.
@@ -468,7 +468,7 @@ public class ComboBoxControl extends StackPanel
          * @param value the value of the item.
          * @param tooltip the optional tooltip of the item.
          */
-        public Item(@Nonnull TextComponent name, @Nonnull Object value, @Nullable List<IReorderingProcessor> tooltip)
+        public Item(@Nonnull TextComponent name, @Nonnull Object value, @Nullable List<FormattedCharSequence> tooltip)
         {
             this(name, value, null, tooltip);
         }
@@ -479,7 +479,7 @@ public class ComboBoxControl extends StackPanel
          * @param iconTexture the optional icon texture of the item.
          * @param tooltip the optional tooltip of the item.
          */
-        public Item(@Nonnull TextComponent name, @Nonnull Object value, @Nullable Texture iconTexture, @Nullable List<IReorderingProcessor> tooltip)
+        public Item(@Nonnull TextComponent name, @Nonnull Object value, @Nullable Texture iconTexture, @Nullable List<FormattedCharSequence> tooltip)
         {
             this.name = name;
             this.value = value;

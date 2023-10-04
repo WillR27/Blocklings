@@ -11,7 +11,7 @@ import com.willr27.blocklings.client.gui.util.Colour;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.attribute.Attribute;
-import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.ChatFormatting;

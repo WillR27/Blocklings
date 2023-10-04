@@ -29,7 +29,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3f;
@@ -434,7 +434,7 @@ public class ContainerControl extends GridPanel
                     }
                 }
 
-                List<IReorderingProcessor> tooltip = new ArrayList<>();
+                List<FormattedCharSequence> tooltip = new ArrayList<>();
                 tooltip.add(name.withStyle(ChatFormatting.WHITE).getVisualOrderText());
                 tooltip.addAll(GuiUtil.get().split(new BlocklingsTranslatableComponent("config.container.side_priority.desc").withStyle(ChatFormatting.GRAY), 200));
 

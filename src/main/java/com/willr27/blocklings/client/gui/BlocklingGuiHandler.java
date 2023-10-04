@@ -9,11 +9,12 @@ import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.skill.BlocklingSkills;
 import com.willr27.blocklings.network.BlocklingMessage;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -81,7 +82,7 @@ public class BlocklingGuiHandler
      *
      * @param player the player opening the gui.
      */
-    public void openGui(@Nonnull PlayerEntity player)
+    public void openGui(@Nonnull Player player)
     {
         openGui(recentGuiId, -1, player);
     }
@@ -93,7 +94,7 @@ public class BlocklingGuiHandler
      * @param guiId the gui id of the gui to open.
      * @param player the player opening the gui.
      */
-    public void openGui(int guiId, @Nonnull PlayerEntity player)
+    public void openGui(int guiId, @Nonnull Player player)
     {
         openGui(guiId, -1, player);
     }
@@ -106,7 +107,7 @@ public class BlocklingGuiHandler
      * @param windowId the window id for the container if there is one.
      * @param player the player opening the gui.
      */
-    private void openGui(int guiId, int windowId, @Nonnull PlayerEntity player)
+    private void openGui(int guiId, int windowId, @Nonnull Player player)
     {
         if (!blockling.level.isClientSide())
         {
@@ -114,12 +115,12 @@ public class BlocklingGuiHandler
             recentGuiId = guiId;
 
             // Find the next window id
-            ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
+            ServerPlayer serverPlayer = (ServerPlayer) player;
             serverPlayer.nextContainerCounter();
             windowId = serverPlayer.containerCounter;
 
             // Create the container for this gui id
-            Container container = createContainer(guiId, windowId, player);
+            AbstractContainerMenu container = createContainer(guiId, windowId, player);
 
             // If there is a container set the player container to it
             if (container != null)
@@ -144,7 +145,7 @@ public class BlocklingGuiHandler
             }
 
             // If we have a window id then we know the server has sent the request, so we can go ahead and open the container/screen
-            Container container = createContainer(guiId, windowId, player);
+            AbstractContainerMenu container = createContainer(guiId, windowId, player);
 
             // If there is a container set the player container to it
             if (container != null)
@@ -164,7 +165,7 @@ public class BlocklingGuiHandler
      * @param container the container associated with the screen.
      */
     @OnlyIn(Dist.CLIENT)
-    private void openScreen(int guiId, @Nonnull PlayerEntity player, @Nullable Container container)
+    private void openScreen(int guiId, @Nonnull Player player, @Nullable AbstractContainerMenu container)
     {
         // Create the screen for this gui id
         Screen screen = createScreen(guiId, container, player);
@@ -189,7 +190,7 @@ public class BlocklingGuiHandler
      * @return the container or null if the gui does not have a container or the gui id is not recognised.
      */
     @Nullable
-    private Container createContainer(int guiId, int windowId, @Nonnull PlayerEntity player)
+    private AbstractContainerMenu createContainer(int guiId, int windowId, @Nonnull Player player)
     {
         switch (guiId)
         {
@@ -210,7 +211,7 @@ public class BlocklingGuiHandler
      */
     @OnlyIn(Dist.CLIENT)
     @Nullable
-    private Screen createScreen(int guiId, @Nullable Container container, @Nonnull PlayerEntity player)
+    private Screen createScreen(int guiId, @Nullable AbstractContainerMenu container, @Nonnull Player player)
     {
         switch (guiId)
         {
@@ -277,7 +278,7 @@ public class BlocklingGuiHandler
         }
 
         @Override
-        public void encode(@Nonnull PacketBuffer buf)
+        public void encode(@Nonnull FriendlyByteBuf buf)
         {
             super.encode(buf);
 
@@ -287,7 +288,7 @@ public class BlocklingGuiHandler
         }
 
         @Override
-        public void decode(@Nonnull PacketBuffer buf)
+        public void decode(@Nonnull FriendlyByteBuf buf)
         {
             super.decode(buf);
 
@@ -297,7 +298,7 @@ public class BlocklingGuiHandler
         }
 
         @Override
-        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
+        protected void handle(@Nonnull Player player, @Nonnull BlocklingEntity blockling)
         {
             if (blockling.level.isClientSide())
             {
@@ -305,7 +306,7 @@ public class BlocklingGuiHandler
             }
             else
             {
-                PlayerEntity targetedPlayer = blockling.level.players().stream().filter(serverPlayer -> serverPlayer.getUUID().equals(playerId)).findFirst().orElse(null);
+                Player targetedPlayer = blockling.level.players().stream().filter(serverPlayer -> serverPlayer.getUUID().equals(playerId)).findFirst().orElse(null);
 
                 if (targetedPlayer != null)
                 {

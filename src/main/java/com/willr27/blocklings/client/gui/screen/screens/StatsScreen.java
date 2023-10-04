@@ -27,7 +27,7 @@ import com.willr27.blocklings.entity.blockling.attribute.Operation;
 import com.willr27.blocklings.item.BlocklingsItems;
 import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.ChatFormatting;
@@ -189,7 +189,7 @@ public class StatsScreen extends TabbedScreen
             @Override
             public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
             {
-                List<IReorderingProcessor> tooltip = new ArrayList<>();
+                List<FormattedCharSequence> tooltip = new ArrayList<>();
 
                 tooltip.add(new TextComponent(ChatFormatting.GOLD + blockling.getCustomName().getString()).getVisualOrderText());
                 tooltip.add(new TextComponent(ChatFormatting.GRAY + new BlocklingsTranslatableComponent("type.natural.name").getString() + ChatFormatting.WHITE + blockling.getNaturalBlocklingType().name.getString()).getVisualOrderText());

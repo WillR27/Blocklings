@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -120,7 +120,7 @@ public abstract class GuiControl extends AbstractGui
      * @param text the text to render.
      * @param colour the colour of the text.
      */
-    protected void renderShadowedText(@Nonnull PoseStack poseStack, @Nonnull IReorderingProcessor text, int colour)
+    protected void renderShadowedText(@Nonnull PoseStack poseStack, @Nonnull FormattedCharSequence text, int colour)
     {
         GuiUtil.get().renderShadowedText(matrixStack, text, 0, 0, colour);
         RenderSystem.enableAlphaTest();
@@ -133,7 +133,7 @@ public abstract class GuiControl extends AbstractGui
      * @param text the text to render.
      * @param colour the colour of the text.
      */
-    protected void renderShadowedText(@Nonnull PoseStack poseStack, @Nonnull IReorderingProcessor text, int x, int y, int colour)
+    protected void renderShadowedText(@Nonnull PoseStack poseStack, @Nonnull FormattedCharSequence text, int x, int y, int colour)
     {
         GuiUtil.get().renderShadowedText(matrixStack, text, x, y, colour);
         RenderSystem.enableAlphaTest();
@@ -146,7 +146,7 @@ public abstract class GuiControl extends AbstractGui
      * @param text the text to render.
      * @param colour the colour of the text.
      */
-    protected void renderText(@Nonnull PoseStack poseStack, @Nonnull IReorderingProcessor text, int colour)
+    protected void renderText(@Nonnull PoseStack poseStack, @Nonnull FormattedCharSequence text, int colour)
     {
         GuiUtil.get().renderText(matrixStack, text, 0, 0, colour);
         RenderSystem.enableAlphaTest();
@@ -164,7 +164,7 @@ public abstract class GuiControl extends AbstractGui
      */
     public void renderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, double pixelScaleX, double pixelScaleY, @Nonnull TextComponent tooltip)
     {
-        List<IReorderingProcessor> tooltip2 = new ArrayList<>();
+        List<FormattedCharSequence> tooltip2 = new ArrayList<>();
         tooltip2.add(tooltip.getVisualOrderText());
         renderTooltip(matrixStack, mouseX, mouseY, pixelScaleX, pixelScaleY, tooltip2);
     }
@@ -179,7 +179,7 @@ public abstract class GuiControl extends AbstractGui
      * @param pixelScaleY the y pixel scale.
      * @param tooltip the tooltip to render.
      */
-    public void renderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, double pixelScaleX, double pixelScaleY, @Nonnull List<IReorderingProcessor> tooltip)
+    public void renderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, double pixelScaleX, double pixelScaleY, @Nonnull List<FormattedCharSequence> tooltip)
     {
         Minecraft.getInstance().screen.renderTooltip(matrixStack, tooltip, (int) (mouseX / pixelScaleX), (int) (mouseY / pixelScaleY));
     }

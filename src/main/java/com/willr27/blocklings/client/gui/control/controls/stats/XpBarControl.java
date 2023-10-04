@@ -13,7 +13,7 @@ import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.attribute.Attribute;
 import com.willr27.blocklings.entity.blockling.attribute.BlocklingAttributes;
 import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
-import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
@@ -112,7 +112,7 @@ public class XpBarControl extends Control
     {
         Attribute<Integer> level = blockling.getStats().getLevelAttribute(this.level);
 
-        List<IReorderingProcessor> tooltip = new ArrayList<>();
+        List<FormattedCharSequence> tooltip = new ArrayList<>();
         tooltip.add(new TextComponent(ChatFormatting.GOLD + blockling.getStats().getLevelAttribute(this.level).displayStringNameSupplier.get()).getVisualOrderText());
         tooltip.add(new TextComponent(ChatFormatting.GRAY + new BlocklingsTranslatableComponent("gui.current_level", ChatFormatting.WHITE, level.getValue()).getString()).getVisualOrderText());
         tooltip.add(new TextComponent(ChatFormatting.GRAY + new BlocklingsTranslatableComponent("gui.xp_required", ChatFormatting.WHITE, blockling.getStats().getLevelXpAttribute(this.level).getValue(), BlocklingAttributes.getXpForLevel(level.getValue())).getString()).getVisualOrderText());

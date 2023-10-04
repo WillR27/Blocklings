@@ -2,29 +2,44 @@ package com.willr27.blocklings.client.gui.util;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import com.willr27.blocklings.client.gui.texture.Texture;
 import net.minecraft.block.Block;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.*;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
@@ -73,11 +88,11 @@ public class FullGuiUtil extends GuiUtil
     @Override
     public boolean isKeyDown(int key)
     {
-        return InputMappings.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), key);
+        return InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), key);
     }
 
     @Override
-    public boolean isKeyDown(@Nonnull KeyBinding key)
+    public boolean isKeyDown(@Nonnull KeyMapping key)
     {
         return isKeyDown(key.getKey().getValue());
     }
@@ -108,7 +123,7 @@ public class FullGuiUtil extends GuiUtil
 
     @Nonnull
     @Override
-    public ITextProperties trimWithEllipsis(@Nonnull ITextProperties text, int width)
+    public FormattedText trimWithEllipsis(@Nonnull FormattedText text, int width)
     {
         if (text.getString().equals(trim(text, width).getString()))
         {
@@ -116,13 +131,13 @@ public class FullGuiUtil extends GuiUtil
         }
         else
         {
-            return ITextProperties.composite(trim(text, width - mc.font.width("...")), new TextComponent("..."));
+            return FormattedText.composite(trim(text, width - mc.font.width("...")), new TextComponent("..."));
         }
     }
 
     @Nonnull
     @Override
-    public ITextProperties trim(@Nonnull ITextProperties text, int width)
+    public FormattedText trim(@Nonnull FormattedText text, int width)
     {
         return Minecraft.getInstance().font.substrByWidth(text, width);
     }
@@ -148,7 +163,7 @@ public class FullGuiUtil extends GuiUtil
     }
 
     @Override
-    public int getTextWidth(@Nonnull IReorderingProcessor text)
+    public int getTextWidth(@Nonnull FormattedCharSequence text)
     {
         return mc.font.width(text);
     }
@@ -160,21 +175,21 @@ public class FullGuiUtil extends GuiUtil
     }
 
     @Override
-    public void renderShadowedText(@Nonnull PoseStack poseStack, @Nonnull IReorderingProcessor text, int x, int y, int color)
+    public void renderShadowedText(@Nonnull PoseStack poseStack, @Nonnull FormattedCharSequence text, int x, int y, int color)
     {
-        mc.font.drawShadow(matrixStack, text, x, y, color);
+        mc.font.drawShadow(poseStack, text, x, y, color);
     }
 
     @Override
-    public void renderText(@Nonnull PoseStack poseStack, @Nonnull IReorderingProcessor text, int x, int y, int color)
+    public void renderText(@Nonnull PoseStack poseStack, @Nonnull FormattedCharSequence text, int x, int y, int color)
     {
-        mc.font.draw(matrixStack, text, x, y, color);
+        mc.font.draw(poseStack, text, x, y, color);
     }
 
     @Override
     public void bindTexture(@Nonnull ResourceLocation texture)
     {
-        mc.getTextureManager().bind(texture);
+        mc.getTextureManager().bindForSetup(texture);
     }
 
     @Override
@@ -200,35 +215,35 @@ public class FullGuiUtil extends GuiUtil
         Quaternion quaternion = Vector3f.ZP.rotationDegrees(180.0F);
         Quaternion quaternion1 = Vector3f.XP.rotationDegrees(f1 * 20.0F);
         quaternion.mul(quaternion1);
-        matrixStack.mulPose(quaternion);
+        poseStack.mulPose(quaternion);
         float f2 = entity.yBodyRot;
-        float f3 = entity.yRot;
-        float f4 = entity.xRot;
+        float f3 = entity.getYRot();
+        float f4 = entity.getXRot();
         float f5 = entity.yHeadRotO;
         float f6 = entity.yHeadRot;
         entity.yBodyRot = 180.0F + f * 20.0F;
-        entity.yRot = 180.0F + f * 40.0F;
-        entity.xRot = -f1 * 20.0F;
-        entity.yHeadRot = entity.yRot;
-        entity.yHeadRotO = entity.yRot;
-        EntityRendererManager entityrenderermanager = Minecraft.getInstance().getEntityRenderDispatcher();
+        entity.setYBodyRot(180.0F + f * 40.0F);
+        entity.setXRot(-f1 * 20.0F);
+        entity.yHeadRot = entity.getYRot();
+        entity.yHeadRotO = entity.getYRot();
+        EntityRenderDispatcher entityrenderermanager = Minecraft.getInstance().getEntityRenderDispatcher();
         quaternion1.conj();
         entityrenderermanager.overrideCameraOrientation(quaternion1);
         entityrenderermanager.setRenderShadow(false);
         RenderSystem.disableDepthTest();
-        IRenderTypeBuffer.Impl irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
+        RenderTypeBuffer.Impl irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
         RenderSystem.runAsFancy(() -> {
             entityrenderermanager.render(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, matrixStack, irendertypebuffer$impl, 15728880);
         });
         irendertypebuffer$impl.endBatch();
         entityrenderermanager.setRenderShadow(true);
         entity.yBodyRot = f2;
-        entity.yRot = f3;
-        entity.xRot = f4;
+        entity.setYRot(f3);
+        entity.setXRot(f4);
         entity.yHeadRotO = f5;
         entity.yHeadRot = f6;
         RenderSystem.popMatrix();
-        matrixStack.popPose();
+        poseStack.popPose();
         entity.setCustomName(new TextComponent(name));
     }
 
@@ -237,8 +252,8 @@ public class FullGuiUtil extends GuiUtil
     {
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         RenderSystem.pushMatrix();
-        Minecraft.getInstance().textureManager.bind(AtlasTexture.LOCATION_BLOCKS);
-        Minecraft.getInstance().textureManager.getTexture(AtlasTexture.LOCATION_BLOCKS).setFilter(false, false);
+        Minecraft.getInstance().textureManager.bindForSetup(TextureAtlas.LOCATION_BLOCKS);
+        Minecraft.getInstance().textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
         RenderSystem.enableRescaleNormal();
         RenderSystem.enableAlphaTest();
         RenderSystem.defaultAlphaFunc();
@@ -248,14 +263,14 @@ public class FullGuiUtil extends GuiUtil
         RenderSystem.translatef((float)x, (float)y, (float) z + 7.0f);
         RenderSystem.scalef(1.0F, -1.0F, 1.0F);
         RenderSystem.scalef(scale, scale, scale);
-        MatrixStack matrixstack = new MatrixStack();
+        PoseStack poseStack = new PoseStack();
         IRenderTypeBuffer.Impl irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
         boolean flag = !itemRenderer.getModel(stack, null, null).usesBlockLight();
         if (flag) {
             RenderHelper.setupForFlatItems();
         }
 
-        itemRenderer.render(stack, ItemCameraTransforms.TransformType.GUI, false, matrixstack, irendertypebuffer$impl, 15728880, OverlayTexture.NO_OVERLAY, itemRenderer.getModel(stack, null, null));
+        itemRenderer.render(stack, ItemTransforms.TransformType.GUI, false, poseStack, irendertypebuffer$impl, 15728880, OverlayTexture.NO_OVERLAY, itemRenderer.getModel(stack, null, null));
         irendertypebuffer$impl.endBatch();
         RenderSystem.enableDepthTest();
         if (flag) {
