@@ -201,7 +201,7 @@ public class TabbedUIControl extends GridPanel
         }
 
         @Override
-        protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+        protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
         {
             matrixStack.pushPose();
 
@@ -222,7 +222,7 @@ public class TabbedUIControl extends GridPanel
         }
 
         @Override
-        public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+        public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
         {
             renderTooltip(matrixStack, mouseX, mouseY, getPixelScaleX(), getPixelScaleY(), tab.name);
         }

@@ -130,13 +130,13 @@ public class TestGuiUtil extends GuiUtil
     }
 
     @Override
-    public void renderShadowedText(@Nonnull MatrixStack matrixStack, @Nonnull IReorderingProcessor text, int x, int y, int color)
+    public void renderShadowedText(@Nonnull PoseStack poseStack, @Nonnull IReorderingProcessor text, int x, int y, int color)
     {
 
     }
 
     @Override
-    public void renderText(@Nonnull MatrixStack matrixStack, @Nonnull IReorderingProcessor text, int x, int y, int color)
+    public void renderText(@Nonnull PoseStack poseStack, @Nonnull IReorderingProcessor text, int x, int y, int color)
     {
 
     }
@@ -154,13 +154,13 @@ public class TestGuiUtil extends GuiUtil
     }
 
     @Override
-    public void renderEntityOnScreen(@Nullable MatrixStack matrixStack, @Nullable LivingEntity entity, int screenX, int screenY, float screenMouseX, float screenMouseY, float scale, boolean scaleToBoundingBox)
+    public void renderEntityOnScreen(@Nullable PoseStack poseStack, @Nullable LivingEntity entity, int screenX, int screenY, float screenMouseX, float screenMouseY, float scale, boolean scaleToBoundingBox)
     {
 
     }
 
     @Override
-    public void renderItemStack(@Nonnull MatrixStack matrixStack, @Nonnull ItemStack stack, int x, int y, double z, float scale)
+    public void renderItemStack(@Nonnull PoseStack poseStack, @Nonnull ItemStack stack, int x, int y, double z, float scale)
     {
 
     }

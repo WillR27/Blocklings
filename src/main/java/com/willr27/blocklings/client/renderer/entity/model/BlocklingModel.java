@@ -239,7 +239,7 @@ public class BlocklingModel extends EntityModel<BlocklingEntity> implements IHas
     }
 
     @Override
-    public void renderToBuffer(@Nonnull MatrixStack matrixStack, @Nonnull IVertexBuilder buffer, int packedLight, int packedOverlay, float r, float g, float b, float a)
+    public void renderToBuffer(@Nonnull PoseStack poseStack, @Nonnull IVertexBuilder buffer, int packedLight, int packedOverlay, float r, float g, float b, float a)
     {
         matrixStack.pushPose();
         matrixStack.translate(0.0, 1.501, 0.0); // There is a random 1.501 translation in render that messes up scales

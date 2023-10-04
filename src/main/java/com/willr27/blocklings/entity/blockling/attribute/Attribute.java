@@ -5,11 +5,11 @@ import com.willr27.blocklings.network.BlocklingMessage;
 import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import com.willr27.blocklings.util.IReadWriteNBT;
 import com.willr27.blocklings.util.Version;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.TranslatableComponent;
-import net.minecraft.world.World;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -50,7 +50,7 @@ public abstract class Attribute<T> implements IReadWriteNBT
      * The world the associated blockling is in.
      */
     @Nonnull
-    public final World world;
+    public final Level world;
 
     /**
      * The function used to provide the string representation of the value.
@@ -129,7 +129,7 @@ public abstract class Attribute<T> implements IReadWriteNBT
      *
      * @param buf the buffer to write to.
      */
-    public void encode(@Nonnull PacketBuffer buf)
+    public void encode(@Nonnull FriendlyByteBuf buf)
     {
         buf.writeBoolean(isEnabled);
     }
@@ -139,7 +139,7 @@ public abstract class Attribute<T> implements IReadWriteNBT
      *
      * @param buf the buffer to read from.
      */
-    public void decode(@Nonnull PacketBuffer buf)
+    public void decode(@Nonnull FriendlyByteBuf buf)
     {
         isEnabled = buf.readBoolean();
     }
@@ -315,7 +315,7 @@ public abstract class Attribute<T> implements IReadWriteNBT
         }
 
         @Override
-        public void encode(@Nonnull PacketBuffer buf)
+        public void encode(@Nonnull FriendlyByteBuf buf)
         {
             super.encode(buf);
 
@@ -324,7 +324,7 @@ public abstract class Attribute<T> implements IReadWriteNBT
         }
 
         @Override
-        public void decode(@Nonnull PacketBuffer buf)
+        public void decode(@Nonnull FriendlyByteBuf buf)
         {
             super.decode(buf);
 
@@ -333,7 +333,7 @@ public abstract class Attribute<T> implements IReadWriteNBT
         }
 
         @Override
-        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
+        protected void handle(@Nonnull Player player, @Nonnull BlocklingEntity blockling)
         {
             blockling.getStats().attributes.get(index).setIsEnabled(isEnabled, false);
         }
@@ -375,7 +375,7 @@ public abstract class Attribute<T> implements IReadWriteNBT
         }
 
         @Override
-        public void encode(@Nonnull PacketBuffer buf)
+        public void encode(@Nonnull FriendlyByteBuf buf)
         {
             super.encode(buf);
 
@@ -389,10 +389,10 @@ public abstract class Attribute<T> implements IReadWriteNBT
          *
          * @param buf the buffer to write to.
          */
-        protected abstract void encodeValue(@Nonnull PacketBuffer buf);
+        protected abstract void encodeValue(@Nonnull FriendlyByteBuf buf);
 
         @Override
-        public void decode(@Nonnull PacketBuffer buf)
+        public void decode(@Nonnull FriendlyByteBuf buf)
         {
             super.decode(buf);
 
@@ -406,10 +406,10 @@ public abstract class Attribute<T> implements IReadWriteNBT
          *
          * @param buf the buffer to read from.
          */
-        protected abstract void decodeValue(@Nonnull PacketBuffer buf);
+        protected abstract void decodeValue(@Nonnull FriendlyByteBuf buf);
 
         @Override
-        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
+        protected void handle(@Nonnull Player player, @Nonnull BlocklingEntity blockling)
         {
             ((Attribute<T>) blockling.getStats().attributes.get(index)).setValue(value, false);
         }

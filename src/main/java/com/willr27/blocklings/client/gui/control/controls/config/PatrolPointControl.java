@@ -111,7 +111,7 @@ public class PatrolPointControl extends Control
         Control crossBackground = new Control()
         {
             @Override
-            public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+            public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
             {
                 renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("config.patrol.remove"));
             }
@@ -156,7 +156,7 @@ public class PatrolPointControl extends Control
         GridPanel dropdownGrid = new GridPanel()
         {
             @Override
-            protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+            protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
                 Texture texture = Textures.Common.BAR_FLAT.dy(1).dHeight(-2).width((int) getWidth());
                 Texture endTexture = Textures.Common.BAR_FLAT.dy(1).dHeight(-2).width(2).x(Textures.Common.BAR_FLAT.width - 2);
@@ -188,7 +188,7 @@ public class PatrolPointControl extends Control
         TexturedControl nameBackground = new TexturedControl(Textures.Common.BAR_RAISED)
         {
             @Override
-            protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+            protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
                 if (isHovered() && getDraggedControl() == null)
                 {
@@ -202,7 +202,7 @@ public class PatrolPointControl extends Control
             }
 
             @Override
-            public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+            public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
             {
                 renderTooltip(matrixStack, mouseX, mouseY, name.getText());
             }

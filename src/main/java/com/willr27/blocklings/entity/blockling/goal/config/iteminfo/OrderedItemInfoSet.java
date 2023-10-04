@@ -7,9 +7,9 @@ import com.willr27.blocklings.network.BlocklingMessage;
 import com.willr27.blocklings.network.messages.GoalMessage;
 import com.willr27.blocklings.util.Version;
 import com.willr27.blocklings.util.event.EventBus;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -91,7 +91,7 @@ public class OrderedItemInfoSet implements Iterable<ItemInfo>
      *
      * @param buf the buffer to write to.
      */
-    public void encode(@Nonnull PacketBuffer buf)
+    public void encode(@Nonnull FriendlyByteBuf buf)
     {
         buf.writeInt(itemInfos.size());
 
@@ -106,7 +106,7 @@ public class OrderedItemInfoSet implements Iterable<ItemInfo>
      *
      * @param buf the buffer to read from.
      */
-    public void decode(@Nonnull PacketBuffer buf)
+    public void decode(@Nonnull FriendlyByteBuf buf)
     {
         itemInfos.clear();
 
@@ -357,7 +357,7 @@ public class OrderedItemInfoSet implements Iterable<ItemInfo>
         }
 
         @Override
-        public void encode(@Nonnull PacketBuffer buf)
+        public void encode(@Nonnull FriendlyByteBuf buf)
         {
             super.encode(buf);
 
@@ -365,7 +365,7 @@ public class OrderedItemInfoSet implements Iterable<ItemInfo>
         }
 
         @Override
-        public void decode(@Nonnull PacketBuffer buf)
+        public void decode(@Nonnull FriendlyByteBuf buf)
         {
             super.decode(buf);
 
@@ -374,7 +374,7 @@ public class OrderedItemInfoSet implements Iterable<ItemInfo>
         }
 
         @Override
-        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling, @Nonnull IOrderedItemInfoSetProvider goal)
+        protected void handle(@Nonnull Player player, @Nonnull BlocklingEntity blockling, @Nonnull IOrderedItemInfoSetProvider goal)
         {
             handle(player, blockling, ((IOrderedItemInfoSetProvider) goal).getItemSet());
         }
@@ -386,7 +386,7 @@ public class OrderedItemInfoSet implements Iterable<ItemInfo>
          * @param blockling the blockling.
          * @param itemInfoSet the item info set.
          */
-        protected abstract void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling, @Nonnull OrderedItemInfoSet itemInfoSet);
+        protected abstract void handle(@Nonnull Player player, @Nonnull BlocklingEntity blockling, @Nonnull OrderedItemInfoSet itemInfoSet);
     }
 
     /**
@@ -419,7 +419,7 @@ public class OrderedItemInfoSet implements Iterable<ItemInfo>
         }
 
         @Override
-        public void encode(@Nonnull PacketBuffer buf)
+        public void encode(@Nonnull FriendlyByteBuf buf)
         {
             super.encode(buf);
 
@@ -427,7 +427,7 @@ public class OrderedItemInfoSet implements Iterable<ItemInfo>
         }
 
         @Override
-        public void decode(@Nonnull PacketBuffer buf)
+        public void decode(@Nonnull FriendlyByteBuf buf)
         {
             super.decode(buf);
 
@@ -435,7 +435,7 @@ public class OrderedItemInfoSet implements Iterable<ItemInfo>
         }
 
         @Override
-        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling, @Nonnull OrderedItemInfoSet itemInfoSet)
+        protected void handle(@Nonnull Player player, @Nonnull BlocklingEntity blockling, @Nonnull OrderedItemInfoSet itemInfoSet)
         {
             itemInfoSet.add(itemInfo, addFirst, false);
         }
@@ -464,7 +464,7 @@ public class OrderedItemInfoSet implements Iterable<ItemInfo>
         }
 
         @Override
-        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling, @Nonnull OrderedItemInfoSet itemInfoSet)
+        protected void handle(@Nonnull Player player, @Nonnull BlocklingEntity blockling, @Nonnull OrderedItemInfoSet itemInfoSet)
         {
             itemInfoSet.remove(itemInfo, false);
         }
@@ -507,7 +507,7 @@ public class OrderedItemInfoSet implements Iterable<ItemInfo>
         }
 
         @Override
-        public void encode(@Nonnull PacketBuffer buf)
+        public void encode(@Nonnull FriendlyByteBuf buf)
         {
             super.encode(buf);
 
@@ -516,7 +516,7 @@ public class OrderedItemInfoSet implements Iterable<ItemInfo>
         }
 
         @Override
-        public void decode(@Nonnull PacketBuffer buf)
+        public void decode(@Nonnull FriendlyByteBuf buf)
         {
             super.decode(buf);
 
@@ -526,7 +526,7 @@ public class OrderedItemInfoSet implements Iterable<ItemInfo>
         }
 
         @Override
-        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling, @Nonnull OrderedItemInfoSet itemInfoSet)
+        protected void handle(@Nonnull Player player, @Nonnull BlocklingEntity blockling, @Nonnull OrderedItemInfoSet itemInfoSet)
         {
             if (before)
             {
@@ -568,7 +568,7 @@ public class OrderedItemInfoSet implements Iterable<ItemInfo>
         }
 
         @Override
-        public void encode(@Nonnull PacketBuffer buf)
+        public void encode(@Nonnull FriendlyByteBuf buf)
         {
             super.encode(buf);
 
@@ -576,7 +576,7 @@ public class OrderedItemInfoSet implements Iterable<ItemInfo>
         }
 
         @Override
-        public void decode(@Nonnull PacketBuffer buf)
+        public void decode(@Nonnull FriendlyByteBuf buf)
         {
             super.decode(buf);
 
@@ -584,7 +584,7 @@ public class OrderedItemInfoSet implements Iterable<ItemInfo>
         }
 
         @Override
-        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling, @Nonnull OrderedItemInfoSet itemInfoSet)
+        protected void handle(@Nonnull Player player, @Nonnull BlocklingEntity blockling, @Nonnull OrderedItemInfoSet itemInfoSet)
         {
             itemInfoSet.set(index, itemInfo, false);
         }

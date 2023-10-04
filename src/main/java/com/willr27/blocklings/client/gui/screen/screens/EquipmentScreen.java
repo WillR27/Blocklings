@@ -46,7 +46,7 @@ public class EquipmentScreen extends TabbedContainerScreen<EquipmentContainer>
         Control leftSlotControl = new Control()
         {
             @Override
-            protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+            protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
                 if (blockling.getEquipment().hasToolEquipped(Hand.MAIN_HAND))
                 {
@@ -64,7 +64,7 @@ public class EquipmentScreen extends TabbedContainerScreen<EquipmentContainer>
         Control rightSlotControl = new Control()
         {
             @Override
-            protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+            protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
                 if (blockling.getEquipment().hasToolEquipped(Hand.OFF_HAND))
                 {

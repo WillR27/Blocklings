@@ -99,13 +99,13 @@ public class TaskControl extends Control
             }
 
             @Override
-            public void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+            public void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
                 renderTextureAsBackground(matrixStack, iconTexture);
             }
 
             @Override
-            public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+            public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
             {
                 renderTooltip(matrixStack, mouseX, mouseY, getPixelScaleX(), getPixelScaleY(), new BlocklingsTranslatableComponent("task.ui.configure"));
             }
@@ -130,7 +130,7 @@ public class TaskControl extends Control
         GridPanel taskNameBackgroundGrid = new GridPanel()
         {
             @Override
-            public void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+            public void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
                 renderTextureAsBackground(matrixStack, Textures.Tasks.TASK_NAME_BACKGROUND);
             }
@@ -153,7 +153,7 @@ public class TaskControl extends Control
         Control stateIconControl = new TexturedControl(Textures.Common.NODE_UNPRESSED, Textures.Common.NODE_PRESSED)
         {
             @Override
-            public void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+            public void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
                 if (task.isConfigured())
                 {
@@ -188,7 +188,7 @@ public class TaskControl extends Control
             }
 
             @Override
-            public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+            public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
             {
                 if (task.isConfigured())
                 {
@@ -252,7 +252,7 @@ public class TaskControl extends Control
         Control removeControl = new TexturedControl(Textures.Tasks.TASK_REMOVE_ICON)
         {
             @Override
-            protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+            protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
                 if (isPressed() && !isDragging() && getPressedBackgroundTexture() != null)
                 {
@@ -265,7 +265,7 @@ public class TaskControl extends Control
             }
 
             @Override
-            public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+            public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
             {
                 renderTooltip(matrixStack, mouseX, mouseY, new BlocklingsTranslatableComponent("task.ui.remove"));
             }
@@ -288,7 +288,7 @@ public class TaskControl extends Control
     }
 
     @Override
-    public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+    public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
     {
         List<IReorderingProcessor> tooltip = new ArrayList<>();
         tooltip.add(new TextComponent(ChatFormatting.GOLD + task.getCustomName()).getVisualOrderText());

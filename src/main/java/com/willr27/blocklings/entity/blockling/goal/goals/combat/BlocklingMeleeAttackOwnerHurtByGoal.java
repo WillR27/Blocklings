@@ -2,7 +2,7 @@ package com.willr27.blocklings.entity.blockling.goal.goals.combat;
 
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;

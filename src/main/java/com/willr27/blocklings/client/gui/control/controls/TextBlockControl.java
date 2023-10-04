@@ -8,7 +8,7 @@ import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.util.DoubleUtil;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.LanguageMap;
 import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -27,7 +27,7 @@ public class TextBlockControl extends Control
      * The text component to render.
      */
     @Nonnull
-    private ITextComponent text = new TextComponent("");
+    private TextComponent text = new TextComponent("");
 
     /**
      * Whether to trim the text to fit the width of the control.
@@ -107,7 +107,7 @@ public class TextBlockControl extends Control
     }
 
     @Override
-    public void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+    public void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
     {
         super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
 
@@ -135,7 +135,7 @@ public class TextBlockControl extends Control
 //            Blocklings.LOGGER.warn(ex.toString());
         }
 
-        MatrixStack matrixStack2 = new MatrixStack();
+        PoseStack poseStack2 = new MatrixStack();
         matrixStack2.translate(x, y, z);
         matrixStack2.scale((float) getScaleX(), (float) getScaleY(), 1.0f);
 
@@ -195,7 +195,7 @@ public class TextBlockControl extends Control
      * @return the text to render.
      */
     @Nonnull
-    public ITextComponent getText()
+    public TextComponent getText()
     {
         return text;
     }
@@ -215,7 +215,7 @@ public class TextBlockControl extends Control
      *
      * @param text the text to render.
      */
-    public void setText(@Nonnull ITextComponent text)
+    public void setText(@Nonnull TextComponent text)
     {
         this.text = text;
     }

@@ -201,7 +201,7 @@ class ItemSearchControl extends GridPanel
             ItemControl itemControl = new ItemControl()
             {
                 @Override
-                public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+                public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
                 {
                     renderTooltip(matrixStack, mouseX, mouseY, getItemStack().getHoverName());
                 }

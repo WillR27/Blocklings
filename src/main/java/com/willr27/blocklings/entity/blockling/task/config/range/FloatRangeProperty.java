@@ -1,17 +1,16 @@
 package com.willr27.blocklings.entity.blockling.task.config.range;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.controls.config.FloatRangeControl;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.util.Version;
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.ChatFormatting;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -33,7 +32,7 @@ public class FloatRangeProperty extends RangeProperty<Float>
      * @param max           the maximum value of the range.
      * @param startingValue the range starting value.
      */
-    public FloatRangeProperty(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull ITextComponent name, @Nonnull ITextComponent desc, float min, float max, float startingValue)
+    public FloatRangeProperty(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull TextComponent name, @Nonnull TextComponent desc, float min, float max, float startingValue)
     {
         super(id, goal, name, desc, min, max, startingValue);
     }
@@ -55,7 +54,7 @@ public class FloatRangeProperty extends RangeProperty<Float>
     }
 
     @Override
-    public void encode(@Nonnull PacketBuffer buf)
+    public void encode(@Nonnull FriendlyByteBuf buf)
     {
         super.encode(buf);
 
@@ -65,7 +64,7 @@ public class FloatRangeProperty extends RangeProperty<Float>
     }
 
     @Override
-    public void decode(@Nonnull PacketBuffer buf)
+    public void decode(@Nonnull FriendlyByteBuf buf)
     {
         super.decode(buf);
 
@@ -82,14 +81,14 @@ public class FloatRangeProperty extends RangeProperty<Float>
         FloatRangeControl range = new FloatRangeControl(min, max, value)
         {
             @Override
-            public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+            public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
             {
                 if (!grabberControl.isPressed())
                 {
-                    List<IReorderingProcessor> tooltip = GuiUtil.get().split(desc.copy().withStyle(ChatFormatting.GRAY), 200);
+                    List<FormattedCharSequence> tooltip = GuiUtil.get().split(desc.copy().withStyle(ChatFormatting.GRAY), 200);
                     tooltip.add(0, name.copy().withStyle(ChatFormatting.WHITE).getVisualOrderText());
 
-                    renderTooltip(matrixStack, mouseX, mouseY, tooltip);
+                    renderTooltip(poseStack, mouseX, mouseY, tooltip);
                 }
             }
 

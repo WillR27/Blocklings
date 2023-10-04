@@ -17,6 +17,9 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Quaternion;
@@ -126,7 +129,7 @@ public class FullGuiUtil extends GuiUtil
 
     @Nonnull
     @Override
-    public List<IReorderingProcessor> split(@Nonnull ITextProperties text, int width)
+    public List<FormattedCharSequence> split(@Nonnull FormattedText text, int width)
     {
         return new ArrayList<>(mc.font.split(text, width));
     }
@@ -157,13 +160,13 @@ public class FullGuiUtil extends GuiUtil
     }
 
     @Override
-    public void renderShadowedText(@Nonnull MatrixStack matrixStack, @Nonnull IReorderingProcessor text, int x, int y, int color)
+    public void renderShadowedText(@Nonnull PoseStack poseStack, @Nonnull IReorderingProcessor text, int x, int y, int color)
     {
         mc.font.drawShadow(matrixStack, text, x, y, color);
     }
 
     @Override
-    public void renderText(@Nonnull MatrixStack matrixStack, @Nonnull IReorderingProcessor text, int x, int y, int color)
+    public void renderText(@Nonnull PoseStack poseStack, @Nonnull IReorderingProcessor text, int x, int y, int color)
     {
         mc.font.draw(matrixStack, text, x, y, color);
     }
@@ -181,7 +184,7 @@ public class FullGuiUtil extends GuiUtil
     }
 
     @Override
-    public void renderEntityOnScreen(@Nonnull MatrixStack matrixStack, @Nonnull LivingEntity entity, int screenX, int screenY, float screenMouseX, float screenMouseY, float scale, boolean scaleToBoundingBox)
+    public void renderEntityOnScreen(@Nonnull PoseStack poseStack, @Nonnull LivingEntity entity, int screenX, int screenY, float screenMouseX, float screenMouseY, float scale, boolean scaleToBoundingBox)
     {
         String name = entity.getCustomName() != null ? entity.getCustomName().getString() : null;
         entity.setCustomName(null);
@@ -230,7 +233,7 @@ public class FullGuiUtil extends GuiUtil
     }
 
     @Override
-    public void renderItemStack(@Nonnull MatrixStack matrixStack, @Nonnull ItemStack stack, int x, int y, double z, float scale)
+    public void renderItemStack(@Nonnull PoseStack poseStack, @Nonnull ItemStack stack, int x, int y, double z, float scale)
     {
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         RenderSystem.pushMatrix();

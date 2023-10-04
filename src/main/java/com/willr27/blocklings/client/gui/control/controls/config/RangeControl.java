@@ -119,7 +119,7 @@ public abstract class RangeControl<T extends Number> extends Control
         Control sliderControl = new TexturedControl(Textures.Common.SLIDER_BAR)
         {
             @Override
-            public void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+            public void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
                 renderTextureAsBackground(matrixStack, getBackgroundTexture().width((int) (getWidth() - 1)));
                 renderTextureAsBackground(matrixStack, getBackgroundTexture().width(1).dx(255), getWidth() - 1, 0);
@@ -143,7 +143,7 @@ public abstract class RangeControl<T extends Number> extends Control
         grabberControl = new TexturedControl(Textures.Common.NODE_UNPRESSED, Textures.Common.NODE_PRESSED)
         {
             @Override
-            protected void onRenderUpdate(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+            protected void onRenderUpdate(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
                 if (isDragging())
                 {
@@ -156,7 +156,7 @@ public abstract class RangeControl<T extends Number> extends Control
             }
 
             @Override
-            protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+            protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
                 super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
 

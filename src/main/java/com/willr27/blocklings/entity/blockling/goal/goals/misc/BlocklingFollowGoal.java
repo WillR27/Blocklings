@@ -5,9 +5,9 @@ import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.task.config.range.IntRangeProperty;
 import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.pathfinding.PathNavigator;
-import net.minecraft.pathfinding.PathNodeType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
@@ -39,7 +39,7 @@ public class BlocklingFollowGoal extends BlocklingGoal
      * The navigator used for pathing.
      */
     @Nonnull
-    private final PathNavigator navigation;
+    private final PathNavigation navigation;
 
     /**
      * The owner of the blockling.
@@ -135,8 +135,8 @@ public class BlocklingFollowGoal extends BlocklingGoal
         super.start();
 
         timeToRecalcPath = 0;
-        oldWaterCost = blockling.getPathfindingMalus(PathNodeType.WATER);
-        blockling.setPathfindingMalus(PathNodeType.WATER, 0.0f);
+        oldWaterCost = blockling.getPathfindingMalus(BlockPathTypes.WATER);
+        blockling.setPathfindingMalus(BlockPathTypes.WATER, 0.0f);
     }
 
     @Override
@@ -146,7 +146,7 @@ public class BlocklingFollowGoal extends BlocklingGoal
 
         owner = null;
         navigation.stop();
-        blockling.setPathfindingMalus(PathNodeType.WATER, oldWaterCost);
+        blockling.setPathfindingMalus(BlockPathTypes.WATER, oldWaterCost);
     }
 
     @Override

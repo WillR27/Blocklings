@@ -7,12 +7,12 @@ import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.goal.config.whitelist.GoalWhitelist;
 import com.willr27.blocklings.entity.blockling.goal.config.whitelist.Whitelist;
 import com.willr27.blocklings.util.*;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CropsBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.Path;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -64,7 +64,7 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal
         seedWhitelist.setIsUnlocked(blockling.getSkills().getSkill(FarmingSkills.SEED_WHITELIST).isBought(), false);
         BlockUtil.CROPS.get().forEach(crop ->
         {
-            if (crop instanceof CropsBlock)
+            if (crop instanceof CropBlock)
             {
                 seedWhitelist.put(crop.getCloneItemStack(world, null, crop.defaultBlockState()).getItem().getRegistryName(), true);
             }
@@ -144,9 +144,9 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal
 
                     ItemStack seedStack = ItemStack.EMPTY;
 
-                    if (blockling.getSkills().getSkill(FarmingSkills.REPLANTER).isBought() && targetBlock instanceof CropsBlock)
+                    if (blockling.getSkills().getSkill(FarmingSkills.REPLANTER).isBought() && targetBlock instanceof CropBlock)
                     {
-                        CropsBlock cropsBlock = (CropsBlock) targetBlock;
+                        CropBlock cropsBlock = (CropBlock) targetBlock;
                         seedStack = cropsBlock.getCloneItemStack(world, targetPos, targetBlockState);
                     }
 
@@ -172,9 +172,9 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal
 
                                 ItemStack seedStack2 = ItemStack.EMPTY;
 
-                                if (blockling.getSkills().getSkill(FarmingSkills.REPLANTER).isBought() && surroundingBlock instanceof CropsBlock)
+                                if (blockling.getSkills().getSkill(FarmingSkills.REPLANTER).isBought() && surroundingBlock instanceof CropBlock)
                                 {
-                                    CropsBlock cropsBlock = (CropsBlock) surroundingBlock;
+                                    CropBlock cropsBlock = (CropBlock) surroundingBlock;
                                     seedStack2 = cropsBlock.getCloneItemStack(world, surroundingPos, surroundingBlockState);
                                 }
 
@@ -359,9 +359,9 @@ public class BlocklingFarmGoal extends BlocklingGatherGoal
         BlockState blockState = world.getBlockState(target);
         Block block = blockState.getBlock();
 
-        if (block instanceof CropsBlock)
+        if (block instanceof CropBlock)
         {
-            CropsBlock cropsBlock = (CropsBlock) block;
+            CropBlock cropsBlock = (CropBlock) block;
 
             if (!cropsBlock.isMaxAge(blockState))
             {

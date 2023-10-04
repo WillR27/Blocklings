@@ -8,12 +8,12 @@ import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.goal.config.whitelist.GoalWhitelist;
 import com.willr27.blocklings.entity.blockling.goal.config.whitelist.Whitelist;
 import com.willr27.blocklings.util.*;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.item.ItemStack;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.Path;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

@@ -3,11 +3,11 @@ package com.willr27.blocklings.entity.blockling.goal.goals.combat;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.BlocklingHand;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;
@@ -44,7 +44,7 @@ public class BlocklingMeleeAttackHuntGoal extends BlocklingMeleeAttackGoal
             return;
         }
 
-        for (Entity entity : world.getEntities(blockling, new AxisAlignedBB(blockling.position().add(-10.0, -10.0, -10.0), blockling.position().add(10.0, 10.0, 10.0))))
+        for (Entity entity : world.getEntities(blockling, new AABB(blockling.position().add(-10.0, -10.0, -10.0), blockling.position().add(10.0, 10.0, 10.0))))
         {
             if (entity instanceof LivingEntity)
             {

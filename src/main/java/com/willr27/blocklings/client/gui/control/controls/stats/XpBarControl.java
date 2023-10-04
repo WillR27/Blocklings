@@ -108,7 +108,7 @@ public class XpBarControl extends Control
     }
 
     @Override
-    public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+    public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
     {
         Attribute<Integer> level = blockling.getStats().getLevelAttribute(this.level);
 
@@ -157,7 +157,7 @@ public class XpBarControl extends Control
         }
 
         @Override
-        public void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+        public void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
         {
             int iconToRender = (int) (((float) (blockling.getStats().getLevelAttribute(level).getValue() + (current ? 0 : 1)) / BlocklingAttributes.Level.MAX) * (Textures.Stats.LevelIconsTexture.NUMBER_OF_ICONS - 1));
 

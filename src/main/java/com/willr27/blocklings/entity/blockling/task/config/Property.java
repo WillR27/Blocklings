@@ -8,6 +8,9 @@ import com.willr27.blocklings.network.BlocklingMessage;
 import com.willr27.blocklings.util.IReadWriteNBT;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -37,13 +40,13 @@ public abstract class Property implements IReadWriteNBT
      * The name of the property.
      */
     @Nonnull
-    public final ITextComponent name;
+    public final TextComponent name;
 
     /**
      * The description of the property.
      */
     @Nonnull
-    public final ITextComponent desc;
+    public final TextComponent desc;
 
     /**
      * Whether the property is enabled.
@@ -56,7 +59,7 @@ public abstract class Property implements IReadWriteNBT
      * @param name the name of the property.
      * @param desc the description of the property.
      */
-    public Property(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull ITextComponent name, @Nonnull ITextComponent desc)
+    public Property(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull TextComponent name, @Nonnull TextComponent desc)
     {
         this.id = UUID.fromString(id);
         this.goal = goal;
@@ -84,7 +87,7 @@ public abstract class Property implements IReadWriteNBT
      *
      * @param buf the buffer to encode to.
      */
-    public void encode(@Nonnull PacketBuffer buf)
+    public void encode(@Nonnull FriendlyByteBuf buf)
     {
         buf.writeBoolean(isEnabled);
     }
@@ -94,7 +97,7 @@ public abstract class Property implements IReadWriteNBT
      *
      * @param buf the buffer to decode from.
      */
-    public void decode(@Nonnull PacketBuffer buf)
+    public void decode(@Nonnull FriendlyByteBuf buf)
     {
         setEnabled(buf.readBoolean(), false);
     }
@@ -149,7 +152,7 @@ public abstract class Property implements IReadWriteNBT
          * The remaining buffer used to pass to the property to decode.
          */
         @Nullable
-        private PacketBuffer buf;
+        private FriendlyByteBuf buf;
 
         /**
          * The property (could be null on the receiving end if the client and server are no synced).
@@ -186,7 +189,7 @@ public abstract class Property implements IReadWriteNBT
         }
 
         @Override
-        public void encode(@Nonnull PacketBuffer buf)
+        public void encode(@Nonnull FriendlyByteBuf buf)
         {
             super.encode(buf);
 
@@ -197,7 +200,7 @@ public abstract class Property implements IReadWriteNBT
         }
 
         @Override
-        public void decode(@Nonnull PacketBuffer buf)
+        public void decode(@Nonnull FriendlyByteBuf buf)
         {
             super.decode(buf);
 
@@ -208,7 +211,7 @@ public abstract class Property implements IReadWriteNBT
         }
 
         @Override
-        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
+        protected void handle(@Nonnull Player player, @Nonnull BlocklingEntity blockling)
         {
             Task task = blockling.getTasks().getTask(taskId);
 

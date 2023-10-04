@@ -44,7 +44,7 @@ public class ScrollbarControl extends Control
         grabber = new TexturedControl(Textures.Common.Scrollbar.GRABBER_UNPRESSED, Textures.Common.Scrollbar.GRABBER_PRESSED)
         {
             @Override
-            protected void onRenderUpdate(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+            protected void onRenderUpdate(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
                 if (getAttachedControl() != null)
                 {
@@ -80,7 +80,7 @@ public class ScrollbarControl extends Control
             }
 
             @Override
-            protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+            protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
                 if (isInteractive())
                 {

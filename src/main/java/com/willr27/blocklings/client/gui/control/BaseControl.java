@@ -217,10 +217,10 @@ public abstract class BaseControl extends GuiControl
     public abstract void forwardTick();
     public abstract void onTick();
 
-    public abstract void forwardRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks);
-    protected abstract void onRenderUpdate(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks);
-    protected abstract void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks);
-    public abstract void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks);
+    public abstract void forwardRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks);
+    protected abstract void onRenderUpdate(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks);
+    protected abstract void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks);
+    public abstract void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks);
 
     public abstract void forwardHover(@Nonnull TryHoverEvent e);
     public abstract void onHoverEnter();

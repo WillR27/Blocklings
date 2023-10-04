@@ -1,14 +1,14 @@
 package com.willr27.blocklings.client.gui.texture;
 
 import com.willr27.blocklings.util.BlocklingsResourceLocation;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import java.util.Random;
 
-import static net.minecraft.client.gui.widget.Widget.WIDGETS_LOCATION;
+import static net.minecraft.client.gui.components.AbstractWidget.WIDGETS_LOCATION;
 
 /**
  * A collection of all gui textures used.

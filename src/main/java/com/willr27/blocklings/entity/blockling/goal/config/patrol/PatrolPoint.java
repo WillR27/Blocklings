@@ -3,9 +3,9 @@ package com.willr27.blocklings.entity.blockling.goal.config.patrol;
 import com.willr27.blocklings.util.IReadWriteNBT;
 import com.willr27.blocklings.util.ISyncable;
 import com.willr27.blocklings.util.Version;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -66,7 +66,7 @@ public class PatrolPoint implements IReadWriteNBT, ISyncable
     }
 
     @Override
-    public void encode(@Nonnull PacketBuffer buf)
+    public void encode(@Nonnull FriendlyByteBuf buf)
     {
         buf.writeBoolean(x != null);
         if (x != null) buf.writeInt(x);
@@ -78,7 +78,7 @@ public class PatrolPoint implements IReadWriteNBT, ISyncable
     }
 
     @Override
-    public void decode(@Nonnull PacketBuffer buf)
+    public void decode(@Nonnull FriendlyByteBuf buf)
     {
         x = buf.readBoolean() ? buf.readInt() : null;
         y = buf.readBoolean() ? buf.readInt() : null;

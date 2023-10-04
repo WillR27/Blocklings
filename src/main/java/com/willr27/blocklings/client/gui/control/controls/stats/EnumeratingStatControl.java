@@ -5,7 +5,7 @@ import com.willr27.blocklings.client.gui.control.controls.EnumeratingControl;
 import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
@@ -26,24 +26,24 @@ public class EnumeratingStatControl extends EnumeratingControl<StatControl>
      * The name of the enumerating control to display in the tooltip.
      */
     @Nonnull
-    private final ITextComponent name;
+    private final TextComponent name;
 
     /**
      * @param name the name of the enumerating control to display in the tooltip.
      */
-    public EnumeratingStatControl(@Nonnull ITextComponent name)
+    public EnumeratingStatControl(@Nonnull TextComponent name)
     {
         super();
         this.name = name;
     }
 
     @Override
-    public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+    public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
     {
         renderTooltip(matrixStack, mouseX, mouseY, getPixelScaleX(), getPixelScaleY(), prependNameToTooltip(combineTooltips()).stream().map(t -> t.getVisualOrderText()).collect(Collectors.toList()));
     }
 
-    private List<ITextComponent> prependNameToTooltip(@Nonnull List<ITextComponent> tooltip)
+    private List<TextComponent> prependNameToTooltip(@Nonnull List<TextComponent> tooltip)
     {
 //        tooltip.add(0, new TextComponent("").getVisualOrderText());
         tooltip.add(0, name);
@@ -52,9 +52,9 @@ public class EnumeratingStatControl extends EnumeratingControl<StatControl>
     }
 
     @Nonnull
-    private List<ITextComponent> combineTooltips()
+    private List<TextComponent> combineTooltips()
     {
-        List<ITextComponent> tooltip = new ArrayList<>();
+        List<TextComponent> tooltip = new ArrayList<>();
 
         for (int i = 0; i < displayConditions.size(); i++)
         {
@@ -63,7 +63,7 @@ public class EnumeratingStatControl extends EnumeratingControl<StatControl>
                 continue;
             }
 
-            List<ITextComponent> subTooltip = controls.get(i).tooltipSupplier.get();
+            List<TextComponent> subTooltip = controls.get(i).tooltipSupplier.get();
 
             if (i == getIndexOfCurrentChild())
             {

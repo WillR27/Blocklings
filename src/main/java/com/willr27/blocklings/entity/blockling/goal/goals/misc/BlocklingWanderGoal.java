@@ -3,8 +3,8 @@ package com.willr27.blocklings.entity.blockling.goal.goals.misc;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.goal.BlocklingGoal;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
@@ -19,7 +19,7 @@ public class BlocklingWanderGoal extends BlocklingGoal
      * The instance of the vanilla wander goal.
      */
     @Nonnull
-    private final WaterAvoidingRandomWalkingGoal vanillaWanderGoal;
+    private final WaterAvoidingRandomStrollGoal vanillaWanderGoal;
 
     /**
      * @param id the id associated with the goal's task.
@@ -30,7 +30,7 @@ public class BlocklingWanderGoal extends BlocklingGoal
     {
         super(id, blockling, tasks);
 
-        vanillaWanderGoal = new WaterAvoidingRandomWalkingGoal(blockling, 1.0);
+        vanillaWanderGoal = new WaterAvoidingRandomStrollGoal(blockling, 1.0);
 
         setFlags(EnumSet.of(Goal.Flag.JUMP, Goal.Flag.MOVE));
     }

@@ -1,12 +1,12 @@
 package com.willr27.blocklings.entity.blockling.goal.config.iteminfo;
 
 import com.willr27.blocklings.util.Version;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -114,7 +114,7 @@ public class ItemInfo
      *
      * @param buffer the packet buffer to write to.
      */
-    public void encode(@Nonnull PacketBuffer buffer)
+    public void encode(@Nonnull FriendlyByteBuf buffer)
     {
         buffer.writeResourceLocation(item.getRegistryName());
         buffer.writeBoolean(startInventoryAmount != null);
@@ -132,7 +132,7 @@ public class ItemInfo
      *
      * @param buffer the packet buffer to read from.
      */
-    public void decode(@Nonnull PacketBuffer buffer)
+    public void decode(@Nonnull FriendlyByteBuf buffer)
     {
         item = Registry.ITEM.get(buffer.readResourceLocation());
         if (buffer.readBoolean()) startInventoryAmount = buffer.readInt();

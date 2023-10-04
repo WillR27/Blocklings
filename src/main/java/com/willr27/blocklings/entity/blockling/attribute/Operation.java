@@ -1,6 +1,6 @@
 package com.willr27.blocklings.entity.blockling.attribute;
 
-import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 import javax.annotation.Nonnull;
 

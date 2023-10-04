@@ -6,7 +6,7 @@ import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
 import com.willr27.blocklings.client.gui.properties.Direction;
 import com.willr27.blocklings.client.gui.texture.Texture;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -31,7 +31,7 @@ public class StatControl extends Control
      * Supplies the stat's tooltip to display.
      */
     @Nonnull
-    public final Supplier<List<ITextComponent>> tooltipSupplier;
+    public final Supplier<List<TextComponent>> tooltipSupplier;
 
     /**
      * Whether to render the value on the left of the icon or the right.
@@ -56,7 +56,7 @@ public class StatControl extends Control
      * @param tooltipSupplier the stat's tooltip supplier.
      * @param renderValueToLeftOfIcon whether to render the value on the left of the icon or the right.
      */
-    public StatControl(@Nonnull Texture iconTexture, @Nonnull Supplier<String> valueSupplier, @Nonnull Supplier<List<ITextComponent>> tooltipSupplier, boolean renderValueToLeftOfIcon)
+    public StatControl(@Nonnull Texture iconTexture, @Nonnull Supplier<String> valueSupplier, @Nonnull Supplier<List<TextComponent>> tooltipSupplier, boolean renderValueToLeftOfIcon)
     {
         super();
         this.valueSupplier = valueSupplier;

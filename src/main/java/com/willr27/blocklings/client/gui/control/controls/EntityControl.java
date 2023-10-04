@@ -59,7 +59,7 @@ public class EntityControl extends Control
     private boolean scaleToBoundingBox = true;
 
     @Override
-    public void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+    public void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
     {
         super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
 

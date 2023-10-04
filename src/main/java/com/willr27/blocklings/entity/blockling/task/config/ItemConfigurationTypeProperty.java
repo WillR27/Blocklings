@@ -11,8 +11,8 @@ import com.willr27.blocklings.util.Version;
 import com.willr27.blocklings.util.event.EventHandler;
 import com.willr27.blocklings.util.event.IEvent;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TextComponent;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -39,7 +39,7 @@ public class ItemConfigurationTypeProperty extends Property
      * @param name the name of the property.
      * @param desc the description of the property.
      */
-    public ItemConfigurationTypeProperty(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull ITextComponent name, @Nonnull ITextComponent desc)
+    public ItemConfigurationTypeProperty(@Nonnull String id, @Nonnull BlocklingGoal goal, @Nonnull TextComponent name, @Nonnull TextComponent desc)
     {
         super(id, goal, name, desc);
     }
@@ -61,7 +61,7 @@ public class ItemConfigurationTypeProperty extends Property
     }
 
     @Override
-    public void encode(@Nonnull PacketBuffer buf)
+    public void encode(@Nonnull FriendlyByteBuf buf)
     {
         super.encode(buf);
 
@@ -69,7 +69,7 @@ public class ItemConfigurationTypeProperty extends Property
     }
 
     @Override
-    public void decode(@Nonnull PacketBuffer buf)
+    public void decode(@Nonnull FriendlyByteBuf buf)
     {
         super.decode(buf);
 

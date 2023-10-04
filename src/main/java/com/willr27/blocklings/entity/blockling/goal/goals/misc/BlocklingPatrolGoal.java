@@ -1,6 +1,5 @@
 package com.willr27.blocklings.entity.blockling.goal.goals.misc;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.willr27.blocklings.client.gui.control.BaseControl;
 import com.willr27.blocklings.client.gui.control.Control;
 import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
@@ -21,11 +20,8 @@ import com.willr27.blocklings.util.BlockUtil;
 import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import com.willr27.blocklings.util.PathUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.pathfinder.Path;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -432,7 +428,7 @@ public class BlocklingPatrolGoal extends BlocklingTargetGoal<PatrolPoint> implem
         TexturedControl addContainerButton = new TexturedControl(Textures.Common.PLUS_ICON)
         {
             @Override
-            protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+            protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
                 if (isPatrolPointListFull())
                 {
@@ -445,7 +441,7 @@ public class BlocklingPatrolGoal extends BlocklingTargetGoal<PatrolPoint> implem
             }
 
             @Override
-            public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+            public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
             {
                 List<IReorderingProcessor> tooltip = new ArrayList<>();
                 tooltip.add(new BlocklingsTranslatableComponent("config.patrol.add").withStyle(isPatrolPointListFull() ? ChatFormatting.GRAY : ChatFormatting.WHITE).getVisualOrderText());

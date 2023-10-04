@@ -42,7 +42,7 @@ public class BlockSideSelectionControl extends BlockControl
     }
 
     @Override
-    protected void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+    protected void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
     {
         super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
 
@@ -124,7 +124,7 @@ public class BlockSideSelectionControl extends BlockControl
     private void renderTextOnSide(String text, float x, float y, float z, float scale, @Nonnull Quaternion rotation, int colour)
     {
         RenderSystem.disableCull();
-        MatrixStack matrixStack = new MatrixStack();
+        PoseStack poseStack = new MatrixStack();
         matrixStack.translate(x, y, z);
         matrixStack.mulPose(new Quaternion(rotationQuat.i(), -rotationQuat.j(), rotationQuat.k(), -rotationQuat.r()));
         matrixStack.mulPose(rotation);
@@ -137,7 +137,7 @@ public class BlockSideSelectionControl extends BlockControl
 
     private void renderRectangleOnSide(float x, float y, float z, float scale, @Nonnull Quaternion rotation, int colour)
     {
-        MatrixStack matrixStack = new MatrixStack();
+        PoseStack poseStack = new MatrixStack();
         matrixStack.translate(x, y, z);
         matrixStack.mulPose(new Quaternion(rotationQuat.i(), -rotationQuat.j(), rotationQuat.k(), -rotationQuat.r()));
         matrixStack.mulPose(rotation);
@@ -147,7 +147,7 @@ public class BlockSideSelectionControl extends BlockControl
     }
 
     @Override
-    public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+    public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
     {
         Direction mouseOverDirection = getDirectionMouseIsOver();
 

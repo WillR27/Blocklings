@@ -8,7 +8,7 @@ import com.willr27.blocklings.entity.blockling.skill.skills.*;
 import com.willr27.blocklings.util.IReadWriteNBT;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -156,7 +156,7 @@ public class BlocklingSkills implements IReadWriteNBT
      *
      * @param buf the buffer to write to.
      */
-    public void encode(@Nonnull PacketBuffer buf)
+    public void encode(@Nonnull FriendlyByteBuf buf)
     {
         for (SkillGroup skillGroup : skillGroups)
         {
@@ -172,7 +172,7 @@ public class BlocklingSkills implements IReadWriteNBT
      *
      * @param buf the buffer to read from.
      */
-    public void decode(@Nonnull PacketBuffer buf)
+    public void decode(@Nonnull FriendlyByteBuf buf)
     {
         for (SkillGroup skillGroup : skillGroups)
         {

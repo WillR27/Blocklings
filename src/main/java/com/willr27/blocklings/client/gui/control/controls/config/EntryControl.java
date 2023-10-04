@@ -63,7 +63,7 @@ public class EntryControl extends Control
             EntityControl entityControl = new EntityControl()
             {
                 @Override
-                protected void onRenderUpdate(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+                protected void onRenderUpdate(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
                 {
                     super.onRenderUpdate(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
 
@@ -110,7 +110,7 @@ public class EntryControl extends Control
     }
 
     @Override
-    public void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+    public void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
     {
         if (entry.getValue())
         {
@@ -134,7 +134,7 @@ public class EntryControl extends Control
     }
 
     @Override
-    public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+    public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
     {
         if (whitelist.type == Whitelist.Type.BLOCK)
         {

@@ -4,9 +4,9 @@ import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.attribute.Attribute;
 import com.willr27.blocklings.network.BlocklingMessage;
 import com.willr27.blocklings.util.Version;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,7 +60,7 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
     }
 
     @Override
-    public void encode(@Nonnull PacketBuffer buf)
+    public void encode(@Nonnull FriendlyByteBuf buf)
     {
         super.encode(buf);
 
@@ -68,7 +68,7 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
     }
 
     @Override
-    public void decode(@Nonnull PacketBuffer buf)
+    public void decode(@Nonnull FriendlyByteBuf buf)
     {
         super.decode(buf);
 
@@ -132,7 +132,7 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
         }
 
         @Override
-        public void encode(@Nonnull PacketBuffer buf)
+        public void encode(@Nonnull FriendlyByteBuf buf)
         {
             super.encode(buf);
 
@@ -141,7 +141,7 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
         }
 
         @Override
-        public void decode(@Nonnull PacketBuffer buf)
+        public void decode(@Nonnull FriendlyByteBuf buf)
         {
             super.decode(buf);
 
@@ -150,7 +150,7 @@ public class EnumAttribute<T extends Enum<?>> extends Attribute<T>
         }
 
         @Override
-        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
+        protected void handle(@Nonnull Player player, @Nonnull BlocklingEntity blockling)
         {
             EnumAttribute<T> attribute = (EnumAttribute<T>) blockling.getStats().attributes.get(index);
             attribute.setValue(attribute.ordinalConverter.apply(ordinal), false);

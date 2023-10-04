@@ -12,7 +12,7 @@ import com.willr27.blocklings.client.gui.util.ScissorStack;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.attribute.Attribute;
 import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
@@ -48,7 +48,7 @@ public class HealthBarControl extends Control
         TexturedControl backgroundHealthBarControl = new TexturedControl(Textures.Stats.HEALTH_BAR)
         {
             @Override
-            public void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+            public void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
                 RenderSystem.color3f(0.5f, 0.5f, 0.5f);
                 super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
@@ -68,7 +68,7 @@ public class HealthBarControl extends Control
             }
 
             @Override
-            public void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+            public void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
             {
                 RenderSystem.color3f((float) (1.3f - (Math.ceil(blockling.getHealth()) / blockling.getMaxHealth())), 0.3f + (float) (Math.ceil(blockling.getHealth()) / blockling.getMaxHealth()), 0.1f);
                 super.onRender(matrixStack, scissorStack, mouseX, mouseY, partialTicks);
@@ -106,12 +106,12 @@ public class HealthBarControl extends Control
     }
 
     @Override
-    public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+    public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
     {
-        List<ITextComponent> tooltip = StatsScreen.createModifiableFloatAttributeTooltip(blockling.getStats().maxHealth, ChatFormatting.DARK_GREEN);
+        List<TextComponent> tooltip = StatsScreen.createModifiableFloatAttributeTooltip(blockling.getStats().maxHealth, ChatFormatting.DARK_GREEN);
         tooltip.add(0, new TextComponent(ChatFormatting.GOLD + new Attribute.AttributeTranslatableComponent("health.name").getString()));
 
-        renderTooltip(matrixStack, mouseX, mouseY, tooltip.stream().map(ITextComponent::getVisualOrderText).collect(Collectors.toList()));
+        renderTooltip(matrixStack, mouseX, mouseY, tooltip.stream().map(TextComponent::getVisualOrderText).collect(Collectors.toList()));
     }
 
 }

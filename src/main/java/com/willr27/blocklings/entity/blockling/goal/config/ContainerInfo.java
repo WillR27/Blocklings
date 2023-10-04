@@ -1,14 +1,14 @@
 package com.willr27.blocklings.entity.blockling.goal.config;
 
 import com.willr27.blocklings.util.Version;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -110,7 +110,7 @@ public class ContainerInfo
      *
      * @param buf the buffer to write to.
      */
-    public void encode(@Nonnull PacketBuffer buf)
+    public void encode(@Nonnull FriendlyByteBuf buf)
     {
         buf.writeBlockPos(blockPos);
         buf.writeRegistryId(block);
@@ -129,7 +129,7 @@ public class ContainerInfo
      * @return the container info.
      */
     @Nonnull
-    public void decode(@Nonnull PacketBuffer buf)
+    public void decode(@Nonnull FriendlyByteBuf buf)
     {
         setBlockPos(buf.readBlockPos());
         setBlock(buf.readRegistryId());

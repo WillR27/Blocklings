@@ -1,6 +1,5 @@
 package com.willr27.blocklings.util;
 
-
 import net.minecraft.network.chat.TranslatableComponent;
 
 public class BlocklingsTranslatableComponent extends TranslatableComponent

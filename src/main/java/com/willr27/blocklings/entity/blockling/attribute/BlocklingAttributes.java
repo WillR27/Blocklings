@@ -13,12 +13,12 @@ import com.willr27.blocklings.entity.blockling.skill.skills.*;
 import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import com.willr27.blocklings.util.IReadWriteNBT;
 import com.willr27.blocklings.util.Version;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.World;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -161,7 +161,7 @@ public class BlocklingAttributes implements IReadWriteNBT
      * The world the associated blockling is in.
      */
     @Nonnull
-    public final World world;
+    public final net.minecraft.world.level.Level world;
 
     /**
      * @param blockling the associated blockling.
@@ -314,9 +314,9 @@ public class BlocklingAttributes implements IReadWriteNBT
      * @param vanillaAttribute the vanilla attribute to update.
      * @param modifier the modifier to apply to the vanilla attribute.
      */
-    public void applyVanillaModifier(@Nonnull net.minecraft.entity.ai.attributes.Attribute vanillaAttribute, @Nonnull FloatAttributeModifier modifier)
+    public void applyVanillaModifier(@Nonnull net.minecraft.world.entity.ai.attributes.Attribute vanillaAttribute, @Nonnull FloatAttributeModifier modifier)
     {
-        ModifiableAttributeInstance attributeInstance = blockling.getAttribute(vanillaAttribute);
+        AttributeInstance attributeInstance = blockling.getAttribute(vanillaAttribute);
 
         // Remove the modifier it exists as you can't just set the value again.
         attributeInstance.removeModifier(modifier.id);
@@ -482,7 +482,7 @@ public class BlocklingAttributes implements IReadWriteNBT
      *
      * @param buf the buffer to write to.
      */
-    public void encode(@Nonnull PacketBuffer buf)
+    public void encode(@Nonnull FriendlyByteBuf buf)
     {
         for (Attribute<?> attribute : attributes)
         {
@@ -495,7 +495,7 @@ public class BlocklingAttributes implements IReadWriteNBT
      *
      * @param buf the buffer to read from.
      */
-    public void decode(@Nonnull PacketBuffer buf)
+    public void decode(@Nonnull FriendlyByteBuf buf)
     {
         for (Attribute<?> attribute : attributes)
         {

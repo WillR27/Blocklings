@@ -9,7 +9,13 @@ import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import com.willr27.blocklings.util.IReadWriteNBT;
 import com.willr27.blocklings.util.PacketBufferUtils;
 import com.willr27.blocklings.util.Version;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
@@ -82,7 +88,7 @@ public class GoalWhitelist extends Whitelist<ResourceLocation> implements IReadW
         }
     }
 
-    public void encode(PacketBuffer buf)
+    public void encode(FriendlyByteBuf buf)
     {
         buf.writeBoolean(isUnlocked);
         buf.writeInt(size());
@@ -94,7 +100,7 @@ public class GoalWhitelist extends Whitelist<ResourceLocation> implements IReadW
         }
     }
 
-    public void decode(PacketBuffer buf)
+    public void decode(FriendlyByteBuf buf)
     {
         setIsUnlocked(buf.readBoolean(), false);
 

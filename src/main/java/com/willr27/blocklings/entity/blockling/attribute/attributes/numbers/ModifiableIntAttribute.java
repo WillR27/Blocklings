@@ -6,7 +6,7 @@ import com.willr27.blocklings.entity.blockling.attribute.ModifiableAttribute;
 import com.willr27.blocklings.entity.blockling.attribute.Operation;
 import com.willr27.blocklings.util.Version;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import javax.annotation.Nonnull;
 import java.util.function.Function;
@@ -49,7 +49,7 @@ public class ModifiableIntAttribute extends ModifiableNumberAttribute<Integer>
     }
 
     @Override
-    public void encode(@Nonnull PacketBuffer buf)
+    public void encode(@Nonnull FriendlyByteBuf buf)
     {
         super.encode(buf);
 
@@ -57,7 +57,7 @@ public class ModifiableIntAttribute extends ModifiableNumberAttribute<Integer>
     }
 
     @Override
-    public void decode(@Nonnull PacketBuffer buf)
+    public void decode(@Nonnull FriendlyByteBuf buf)
     {
         super.decode(buf);
 
@@ -156,13 +156,13 @@ public class ModifiableIntAttribute extends ModifiableNumberAttribute<Integer>
         }
 
         @Override
-        protected void encodeValue(@Nonnull PacketBuffer buf)
+        protected void encodeValue(@Nonnull FriendlyByteBuf buf)
         {
             buf.writeInt(value);
         }
 
         @Override
-        protected void decodeValue(@Nonnull PacketBuffer buf)
+        protected void decodeValue(@Nonnull FriendlyByteBuf buf)
         {
             value = buf.readInt();
         }

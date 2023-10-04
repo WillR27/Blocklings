@@ -16,7 +16,7 @@ import com.willr27.blocklings.client.gui.texture.Texture;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -271,7 +271,7 @@ public class ComboBoxControl extends StackPanel
             backgroundControl = new TexturedControl(Textures.Common.ComboBox.UNSELECTED_BACKGROUND)
             {
                 @Override
-                public void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+                public void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
                 {
                     if (getParent() == getHoveredControl())
                     {
@@ -336,7 +336,7 @@ public class ComboBoxControl extends StackPanel
         }
 
         @Override
-        public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+        public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
         {
             if (item.tooltip != null)
             {
@@ -424,7 +424,7 @@ public class ComboBoxControl extends StackPanel
          * The name of the item.
          */
         @Nonnull
-        public final ITextComponent name;
+        public final TextComponent name;
 
         /**
          * The value of the item.
@@ -448,7 +448,7 @@ public class ComboBoxControl extends StackPanel
          * @param name the name of the item.
          * @param value the value of the item.
          */
-        public Item(@Nonnull ITextComponent name, @Nonnull Object value)
+        public Item(@Nonnull TextComponent name, @Nonnull Object value)
         {
             this(name, value, null, null);
         }
@@ -458,7 +458,7 @@ public class ComboBoxControl extends StackPanel
          * @param value the value of the item.
          * @param iconTexture the optional icon texture of the item.
          */
-        public Item(@Nonnull ITextComponent name, @Nonnull Object value, @Nullable Texture iconTexture)
+        public Item(@Nonnull TextComponent name, @Nonnull Object value, @Nullable Texture iconTexture)
         {
             this(name, value, iconTexture, null);
         }
@@ -468,7 +468,7 @@ public class ComboBoxControl extends StackPanel
          * @param value the value of the item.
          * @param tooltip the optional tooltip of the item.
          */
-        public Item(@Nonnull ITextComponent name, @Nonnull Object value, @Nullable List<IReorderingProcessor> tooltip)
+        public Item(@Nonnull TextComponent name, @Nonnull Object value, @Nullable List<IReorderingProcessor> tooltip)
         {
             this(name, value, null, tooltip);
         }
@@ -479,7 +479,7 @@ public class ComboBoxControl extends StackPanel
          * @param iconTexture the optional icon texture of the item.
          * @param tooltip the optional tooltip of the item.
          */
-        public Item(@Nonnull ITextComponent name, @Nonnull Object value, @Nullable Texture iconTexture, @Nullable List<IReorderingProcessor> tooltip)
+        public Item(@Nonnull TextComponent name, @Nonnull Object value, @Nullable Texture iconTexture, @Nullable List<IReorderingProcessor> tooltip)
         {
             this.name = name;
             this.value = value;

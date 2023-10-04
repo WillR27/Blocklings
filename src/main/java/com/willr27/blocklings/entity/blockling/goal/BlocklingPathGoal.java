@@ -4,8 +4,8 @@ import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.util.BlockUtil;
 import com.willr27.blocklings.util.PathUtil;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.pathfinder.Path;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

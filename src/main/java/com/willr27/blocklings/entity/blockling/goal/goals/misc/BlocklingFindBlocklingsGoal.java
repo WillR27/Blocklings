@@ -5,10 +5,9 @@ import com.willr27.blocklings.entity.blockling.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.entity.blockling.task.config.range.IntRangeProperty;
 import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -102,7 +101,7 @@ public class BlocklingFindBlocklingsGoal extends BlocklingTargetGoal<BlocklingEn
         int chunkX = blockling.blockPosition().getX() >> 4;
         int chunkZ = blockling.blockPosition().getZ() >> 4;
         int worldHeight = world.getHeight();
-        AxisAlignedBB baseBB = new AxisAlignedBB(0, 0, 0, 16, worldHeight, 16);
+        AABB baseBB = new AABB(0, 0, 0, 16, worldHeight, 16);
 
         final int chunkRange = chunkRangeProperty.getValue();
 
@@ -113,9 +112,7 @@ public class BlocklingFindBlocklingsGoal extends BlocklingTargetGoal<BlocklingEn
         {
             for (int j = chunkZ - chunkRange; j < chunkZ + chunkRange; j++)
             {
-                Chunk chunk = world.getChunk(i, j);
-                List<BlocklingEntity> blocklingsInChunk = new ArrayList<>();
-                chunk.getEntitiesOfClass(BlocklingEntity.class, baseBB.move(i * 16, 0, j * 16), blocklingsInChunk, this::isValidTarget);
+                List<BlocklingEntity> blocklingsInChunk = world.getEntitiesOfClass(BlocklingEntity.class, baseBB.move(i * 16, 0, j * 16), this::isValidTarget);
 
                 for (BlocklingEntity chunkBlockling : blocklingsInChunk)
                 {

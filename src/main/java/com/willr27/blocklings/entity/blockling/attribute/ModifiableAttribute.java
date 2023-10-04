@@ -3,7 +3,7 @@ package com.willr27.blocklings.entity.blockling.attribute;
 import com.willr27.blocklings.Blocklings;
 import com.willr27.blocklings.entity.blockling.BlocklingEntity;
 import com.willr27.blocklings.network.BlocklingMessage;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -182,7 +182,7 @@ public abstract class ModifiableAttribute<T> extends Attribute<T> implements IMo
         }
 
         @Override
-        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling)
+        protected void handle(@Nonnull Player player, @Nonnull BlocklingEntity blockling)
         {
             ((ModifiableAttribute<T>) blockling.getStats().attributes.get(index)).setBaseValue(value, false);
         }

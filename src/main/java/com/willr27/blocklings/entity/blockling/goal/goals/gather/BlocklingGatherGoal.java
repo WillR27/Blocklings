@@ -8,12 +8,12 @@ import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
 import com.willr27.blocklings.util.ToolContext;
 import com.willr27.blocklings.util.ToolType;
 import com.willr27.blocklings.util.ToolUtil;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.command.arguments.EntityAnchorArgument;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -112,7 +112,7 @@ public abstract class BlocklingGatherGoal extends BlocklingTargetGoal<BlockPos>
     {
         if (!hasMovedSinceLastPathRecalc())
         {
-            blockling.lookAt(EntityAnchorArgument.Type.EYES, new Vector3d(getTarget().getX() + 0.5, getTarget().getY() + 0.5, getTarget().getZ() + 0.5));
+            blockling.lookAt(EntityAnchorArgument.Anchor.EYES, new Vec3(getTarget().getX() + 0.5, getTarget().getY() + 0.5, getTarget().getZ() + 0.5));
         }
 
         if (blockling.getSkills().getSkill(GeneralSkills.AUTOSWITCH).isBought())

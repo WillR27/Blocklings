@@ -28,7 +28,7 @@ import com.willr27.blocklings.item.BlocklingsItems;
 import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
@@ -79,7 +79,7 @@ public class StatsScreen extends TabbedScreen
             }
             else
             {
-                ITextComponent name = BlocklingsItems.BLOCKLING.get().getName(BlocklingsItems.BLOCKLING.get().getDefaultInstance());
+                TextComponent name = BlocklingsItems.BLOCKLING.get().getName(BlocklingsItems.BLOCKLING.get().getDefaultInstance());
                 blockling.setCustomName(new TextComponent(name.getString()), true);
                 textFieldControl.setText(name.getString());
             }
@@ -187,7 +187,7 @@ public class StatsScreen extends TabbedScreen
         EntityControl entityControl = new EntityControl()
         {
             @Override
-            public void onRenderTooltip(@Nonnull MatrixStack matrixStack, double mouseX, double mouseY, float partialTicks)
+            public void onRenderTooltip(@Nonnull PoseStack poseStack, double mouseX, double mouseY, float partialTicks)
             {
                 List<IReorderingProcessor> tooltip = new ArrayList<>();
 
@@ -270,9 +270,9 @@ public class StatsScreen extends TabbedScreen
      * @return the tooltip.
      */
     @Nonnull
-    public static List<ITextComponent> createModifiableFloatAttributeTooltip(@Nonnull IModifiable<Float> attribute, @Nonnull ChatFormatting colour)
+    public static List<TextComponent> createModifiableFloatAttributeTooltip(@Nonnull IModifiable<Float> attribute, @Nonnull ChatFormatting colour)
     {
-        List<ITextComponent> tooltip = new ArrayList<>();
+        List<TextComponent> tooltip = new ArrayList<>();
 
         tooltip.add(new TextComponent(colour + attribute.getDisplayStringValueFunction().apply(attribute.getValue()) + " " + ChatFormatting.GRAY + attribute.createTranslation("name").getString()));
 
@@ -288,7 +288,7 @@ public class StatsScreen extends TabbedScreen
      * @param attribute the modifiable attribute.
      * @param depth the current depth in terms of modifiers on modifiers.
      */
-    public static void appendModifiableFloatAttributeToTooltip(@Nonnull List<ITextComponent> tooltip, @Nonnull IModifiable<Float> attribute, int depth)
+    public static void appendModifiableFloatAttributeToTooltip(@Nonnull List<TextComponent> tooltip, @Nonnull IModifiable<Float> attribute, int depth)
     {
         for (IModifier<Float> modifier : attribute.getModifiers())
         {

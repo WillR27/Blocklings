@@ -8,9 +8,9 @@ import com.willr27.blocklings.util.IReadWriteNBT;
 import com.willr27.blocklings.util.ISyncable;
 import com.willr27.blocklings.util.Version;
 import com.willr27.blocklings.util.event.EventHandler;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -79,7 +79,7 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
     }
 
     @Override
-    public void encode(@Nonnull PacketBuffer buf)
+    public void encode(@Nonnull FriendlyByteBuf buf)
     {
         buf.writeInt(patrolPoints.size());
 
@@ -90,7 +90,7 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
     }
 
     @Override
-    public void decode(@Nonnull PacketBuffer buf)
+    public void decode(@Nonnull FriendlyByteBuf buf)
     {
         patrolPoints.clear();
 
@@ -211,7 +211,7 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
 
         if (configureInWorld)
         {
-            PlayerEntity player = (PlayerEntity) provider.getBlockling().getOwner();
+            Player player = (Player) provider.getBlockling().getOwner();
             player.getCapability(BlockSelectCapability.CAPABILITY).ifPresent(cap ->
             {
                 cap.isSelecting = true;
@@ -419,7 +419,7 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
         }
 
         @Override
-        public void encode(@Nonnull PacketBuffer buf)
+        public void encode(@Nonnull FriendlyByteBuf buf)
         {
             super.encode(buf);
 
@@ -428,7 +428,7 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
         }
 
         @Override
-        public void decode(@Nonnull PacketBuffer buf)
+        public void decode(@Nonnull FriendlyByteBuf buf)
         {
             super.decode(buf);
 
@@ -438,7 +438,7 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
         }
 
         @Override
-        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling, @Nonnull IOrderedPatrolPointListProvider goal)
+        protected void handle(@Nonnull Player player, @Nonnull BlocklingEntity blockling, @Nonnull IOrderedPatrolPointListProvider goal)
         {
             goal.getOrderedPatrolPointList().add(patrolPoint, configureInWorld, false);
         }
@@ -473,7 +473,7 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
         }
 
         @Override
-        public void encode(@Nonnull PacketBuffer buf)
+        public void encode(@Nonnull FriendlyByteBuf buf)
         {
             super.encode(buf);
 
@@ -481,7 +481,7 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
         }
 
         @Override
-        public void decode(@Nonnull PacketBuffer buf)
+        public void decode(@Nonnull FriendlyByteBuf buf)
         {
             super.decode(buf);
 
@@ -489,7 +489,7 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
         }
 
         @Override
-        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling, @Nonnull IOrderedPatrolPointListProvider goal)
+        protected void handle(@Nonnull Player player, @Nonnull BlocklingEntity blockling, @Nonnull IOrderedPatrolPointListProvider goal)
         {
             goal.getOrderedPatrolPointList().remove(index, false);
         }
@@ -538,7 +538,7 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
         }
 
         @Override
-        public void encode(@Nonnull PacketBuffer buf)
+        public void encode(@Nonnull FriendlyByteBuf buf)
         {
             super.encode(buf);
 
@@ -548,7 +548,7 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
         }
 
         @Override
-        public void decode(@Nonnull PacketBuffer buf)
+        public void decode(@Nonnull FriendlyByteBuf buf)
         {
             super.decode(buf);
 
@@ -558,7 +558,7 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
         }
 
         @Override
-        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling, @Nonnull IOrderedPatrolPointListProvider goal)
+        protected void handle(@Nonnull Player player, @Nonnull BlocklingEntity blockling, @Nonnull IOrderedPatrolPointListProvider goal)
         {
             goal.getOrderedPatrolPointList().move(index, moveIndex, before, false);
         }
@@ -600,7 +600,7 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
         }
 
         @Override
-        public void encode(@Nonnull PacketBuffer buf)
+        public void encode(@Nonnull FriendlyByteBuf buf)
         {
             super.encode(buf);
 
@@ -609,7 +609,7 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
         }
 
         @Override
-        public void decode(@Nonnull PacketBuffer buf)
+        public void decode(@Nonnull FriendlyByteBuf buf)
         {
             super.decode(buf);
 
@@ -619,7 +619,7 @@ public class OrderedPatrolPointList implements Iterable<PatrolPoint>, IReadWrite
         }
 
         @Override
-        protected void handle(@Nonnull PlayerEntity player, @Nonnull BlocklingEntity blockling, @Nonnull IOrderedPatrolPointListProvider goal)
+        protected void handle(@Nonnull Player player, @Nonnull BlocklingEntity blockling, @Nonnull IOrderedPatrolPointListProvider goal)
         {
             goal.getOrderedPatrolPointList().set(index, patrolPoint, false);
         }

@@ -12,7 +12,7 @@ import com.willr27.blocklings.client.gui.util.ScissorStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -105,7 +105,7 @@ public class TextFieldControl extends Control
     }
 
     @Override
-    public void onRender(@Nonnull MatrixStack matrixStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
+    public void onRender(@Nonnull PoseStack poseStack, @Nonnull ScissorStack scissorStack, double mouseX, double mouseY, float partialTicks)
     {
         // This would be better done using events, but there aren't currently events for when pixel sizes and positions change.
         recalcTextFieldWidget();
@@ -281,7 +281,7 @@ public class TextFieldControl extends Control
         eventBus.post(this, new TextChangedEvent(oldText, text));
     }
 
-    public void setText(@Nonnull ITextComponent text)
+    public void setText(@Nonnull TextComponent text)
     {
         setText(text.getString());
     }

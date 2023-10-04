@@ -1,9 +1,9 @@
 package com.willr27.blocklings.entity.blockling.goal;
 
 import com.willr27.blocklings.util.BlockUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ public class BlockChunk
      *
      */
     @Nonnull
-    private World world;
+    private Level world;
 
     /**
      * The map of the positions and the block states at the time of construction.
@@ -36,7 +36,7 @@ public class BlockChunk
      * @param centerPos the block pos in the center of the 3x3 area.
      * @param world the world the block is in.
      */
-    public BlockChunk(@Nonnull BlockPos centerPos, @Nonnull World world)
+    public BlockChunk(@Nonnull BlockPos centerPos, @Nonnull Level world)
     {
         this.centerPos = centerPos;
         this.world = world;
