@@ -136,7 +136,7 @@ public class BlocklingPatrolGoal extends BlocklingTargetGoal<PatrolPoint> implem
             return;
         }
 
-        boolean loop = false;
+        boolean loop = true;
 
         if (successfullyWaitedAtLastPatrolPoint)
         {
@@ -151,17 +151,17 @@ public class BlocklingPatrolGoal extends BlocklingTargetGoal<PatrolPoint> implem
                 boolean wasLastPatrolPoint = indexOfPatrolPoint == patrolPointList.size() - 1;
                 boolean foundValidPatrolPoint = false;
 
-                if (wasFirstPatrolPoint)
-                {
-                    traverseFowards = true;
-                }
-                else if (wasLastPatrolPoint)
-                {
-                    traverseFowards = false;
-                }
-
                 if (!loop)
                 {
+                    if (wasFirstPatrolPoint)
+                    {
+                        traverseFowards = true;
+                    }
+                    else if (wasLastPatrolPoint)
+                    {
+                        traverseFowards = false;
+                    }
+
                     if (traverseFowards)
                     {
                         amountToIterate = patrolPointList.size() - indexOfPatrolPoint - 1;

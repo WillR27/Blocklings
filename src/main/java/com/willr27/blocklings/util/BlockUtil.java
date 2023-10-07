@@ -656,6 +656,6 @@ public class BlockUtil
      */
     public static double distanceSq(@Nonnull BlockPos blockPos1, @Nonnull BlockPos blockPos2)
     {
-        return blockPos1.distToCenterSqr(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
+        return blockPos1.distToLowCornerSqr(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
     }
 }
