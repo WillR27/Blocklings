@@ -2,6 +2,7 @@ package com.willr27.blocklings;
 
 import com.willr27.blocklings.block.BlocklingsBlocks;
 import com.willr27.blocklings.client.renderer.entity.BlocklingRenderer;
+import com.willr27.blocklings.client.renderer.entity.model.BlocklingModel;
 import com.willr27.blocklings.command.BlocklingsCommands;
 import com.willr27.blocklings.config.BlocklingsConfig;
 import com.willr27.blocklings.entity.BlocklingsEntityTypes;
@@ -61,6 +62,7 @@ public class Blocklings
         modEventBus.addListener(this::setupCommon);
         modEventBus.addListener(this::setupClient);
         modEventBus.addListener(this::registerRenderers);
+        modEventBus.addListener(this::registerLayerDefinitions);
 
         MinecraftForge.EVENT_BUS.register(this);
 
@@ -90,5 +92,10 @@ public class Blocklings
     public void registerRenderers(EntityRenderersEvent.RegisterRenderers e)
     {
         e.registerEntityRenderer(BlocklingsEntityTypes.BLOCKLING.get(), BlocklingRenderer::new);
+    }
+
+    public void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions e)
+    {
+        e.registerLayerDefinition(BlocklingModel.LAYER_LOCATION, BlocklingModel::createBodyLayer);
     }
 }

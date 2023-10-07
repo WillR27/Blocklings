@@ -22,7 +22,7 @@ public class BlocklingRenderer extends MobRenderer<BlocklingEntity, BlocklingMod
      */
     public BlocklingRenderer(EntityRendererProvider.Context context)
     {
-        super(context, new BlocklingModel(), 1.0f);
+        super(context, new BlocklingModel(context.bakeLayer(BlocklingModel.LAYER_LOCATION)), 1.0f);
 
         addLayer(new BlocklingHeldItemLayer(this));
     }
