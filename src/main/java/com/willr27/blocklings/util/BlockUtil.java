@@ -64,6 +64,11 @@ public class BlockUtil
 
             BlockEntity blockEntity = ((EntityBlock) block).newBlockEntity(posToReplace, block.defaultBlockState());
 
+            if (blockEntity == null)
+            {
+                continue;
+            }
+
             for (Direction direction : Direction.values())
             {
                 // If the block has an item handler capability, it is considered a container.

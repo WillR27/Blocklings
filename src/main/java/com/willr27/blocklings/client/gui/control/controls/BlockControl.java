@@ -1,14 +1,17 @@
 package com.willr27.blocklings.client.gui.control.controls;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import com.willr27.blocklings.client.gui.control.Control;
+import com.willr27.blocklings.client.gui.util.GuiUtil;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -144,15 +147,15 @@ public class BlockControl extends Control
 
         Minecraft.getInstance().textureManager.bindForSetup(TextureAtlas.LOCATION_BLOCKS);
         Minecraft.getInstance().textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
-        //RenderSystem.enableRescaleNormal();
-        //RenderSystem.enableAlphaTest();
-        //RenderSystem.defaultAlphaFunc();
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        poseStack.pushPose();
-        poseStack.translate(x, y, z);
-        poseStack.scale(1.0F, -1.0F, 1.0F);
-        poseStack.scale(scale, scale, scale);
+
+        PoseStack modelViewStack = RenderSystem.getModelViewStack();
+        modelViewStack.pushPose();
+        modelViewStack.translate(x, y, z);
+        modelViewStack.scale(1.0F, -1.0F, 1.0F);
+        modelViewStack.scale(scale, scale, scale);
+        RenderSystem.applyModelViewMatrix();
 
         PoseStack blockPoseStack = new PoseStack();
         blockPoseStack.translate(extraX, -extraY, 0.0);
@@ -161,14 +164,12 @@ public class BlockControl extends Control
         blockPoseStack.translate(-0.5f, -0.5f, -0.5f);
 
         BlockRenderDispatcher blockRenderer = Minecraft.getInstance().getBlockRenderer();
-        MultiBufferSource.BufferSource irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
-        blockRenderer.renderSingleBlock(getBlockState(), blockPoseStack, irendertypebuffer$impl, 15728880, OverlayTexture.NO_OVERLAY);
-        irendertypebuffer$impl.endBatch();
+        MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
+        blockRenderer.renderSingleBlock(getBlockState(), blockPoseStack, buffer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+        buffer.endBatch();
 
-        //RenderSystem.disableAlphaTest();
-        //RenderSystem.disableRescaleNormal();
-
-        poseStack.popPose();
+        modelViewStack.popPose();
+        RenderSystem.applyModelViewMatrix();
 
         previousMouseX = mouseX;
         previousMouseY = mouseY;

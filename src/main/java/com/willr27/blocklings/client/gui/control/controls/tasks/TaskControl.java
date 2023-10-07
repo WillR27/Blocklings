@@ -156,15 +156,17 @@ public class TaskControl extends Control
             {
                 if (task.isConfigured())
                 {
-                    if (task.getGoal().getState() == BlocklingGoal.State.DISABLED)
+                    BlocklingGoal.State state = task.getGoal().getState();
+
+                    if (state == BlocklingGoal.State.DISABLED)
                     {
                         RenderSystem.setShaderColor(1.0f, 0.0f, 0.0f, 1.0f);
                     }
-                    else if (task.getGoal().getState() == BlocklingGoal.State.IDLE)
+                    else if (state == BlocklingGoal.State.IDLE)
                     {
-                        RenderSystem.setShaderColor(.0f, 0.8f, 0.0f, 1.0f);
+                        RenderSystem.setShaderColor(1.0f, 0.8f, 0.0f, 1.0f);
                     }
-                    if (task.getGoal().getState() == BlocklingGoal.State.ACTIVE)
+                    if (state == BlocklingGoal.State.ACTIVE)
                     {
                         RenderSystem.setShaderColor(0.0f, 0.7f, 0.0f, 1.0f);
                     }

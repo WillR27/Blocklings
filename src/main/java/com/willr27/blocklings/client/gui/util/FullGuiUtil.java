@@ -10,18 +10,22 @@ import com.mojang.math.Vector3f;
 import com.willr27.blocklings.client.gui.texture.Texture;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -172,7 +176,7 @@ public class FullGuiUtil extends GuiUtil
     @Override
     public void bindTexture(@Nonnull ResourceLocation texture)
     {
-        mc.getTextureManager().bindForSetup(texture);
+        RenderSystem.setShaderTexture(0, texture);
     }
 
     @Override
@@ -182,87 +186,86 @@ public class FullGuiUtil extends GuiUtil
     }
 
     @Override
-    public void renderEntityOnScreen(@Nonnull PoseStack poseStack, @Nonnull LivingEntity entity, int screenX, int screenY, float screenMouseX, float screenMouseY, float scale, boolean scaleToBoundingBox)
+    public void renderEntityOnScreen(@Nonnull PoseStack poseSack, @Nonnull LivingEntity entity, int screenX, int screenY, float screenMouseX, float screenMouseY, float scale, boolean scaleToBoundingBox)
     {
-        String name = entity.getCustomName() != null ? entity.getCustomName().getString() : null;
-        entity.setCustomName(null);
         float f = (float)Math.atan((double)((screenX - screenMouseX) / 40.0F));
         float f1 = (float)Math.atan((double)((screenY - screenMouseY) / 40.0F));
-//        RenderSystem.pushMatrix();
-        poseStack.pushPose();
-        poseStack.translate((float)screenX, (float)screenY, 1050.0F);
-        poseStack.scale(1.0F, 1.0F, -1.0F);
-        poseStack.pushPose();
-        poseStack.translate(0.0D, 0.0D, 1000.0D);
+        PoseStack posestack = RenderSystem.getModelViewStack();
+        posestack.pushPose();
+        posestack.translate((double)screenX, (double)screenY, 1050.0D);
+        posestack.scale(1.0F, 1.0F, -1.0F);
+        RenderSystem.applyModelViewMatrix();
+        PoseStack posestack1 = new PoseStack();
+        posestack1.translate(0.0D, 0.0D, 1000.0D);
         float scale2 = scaleToBoundingBox ? 16.0f / Math.max(entity.getBbWidth(), entity.getBbHeight()) : 16.0f;
-        poseStack.scale((scale * scale2), (scale * scale2), (scale * scale2));
+        posestack1.scale((scale * scale2), (scale * scale2), (scale * scale2));
         Quaternion quaternion = Vector3f.ZP.rotationDegrees(180.0F);
         Quaternion quaternion1 = Vector3f.XP.rotationDegrees(f1 * 20.0F);
         quaternion.mul(quaternion1);
-        poseStack.mulPose(quaternion);
+        posestack1.mulPose(quaternion);
         float f2 = entity.yBodyRot;
         float f3 = entity.getYRot();
         float f4 = entity.getXRot();
         float f5 = entity.yHeadRotO;
         float f6 = entity.yHeadRot;
         entity.yBodyRot = 180.0F + f * 20.0F;
-        entity.setYBodyRot(180.0F + f * 40.0F);
+        entity.setYRot(180.0F + f * 40.0F);
         entity.setXRot(-f1 * 20.0F);
         entity.yHeadRot = entity.getYRot();
         entity.yHeadRotO = entity.getYRot();
-        EntityRenderDispatcher entityrenderermanager = Minecraft.getInstance().getEntityRenderDispatcher();
+        Lighting.setupForEntityInInventory();
+        EntityRenderDispatcher entityrenderdispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
         quaternion1.conj();
-        entityrenderermanager.overrideCameraOrientation(quaternion1);
-        entityrenderermanager.setRenderShadow(false);
-        RenderSystem.disableDepthTest();
-        MultiBufferSource.BufferSource irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
+        entityrenderdispatcher.overrideCameraOrientation(quaternion1);
+        entityrenderdispatcher.setRenderShadow(false);
+        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
         RenderSystem.runAsFancy(() -> {
-            entityrenderermanager.render(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, poseStack, irendertypebuffer$impl, 15728880);
+            entityrenderdispatcher.render(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, posestack1, multibuffersource$buffersource, 15728880);
         });
-        irendertypebuffer$impl.endBatch();
-        entityrenderermanager.setRenderShadow(true);
+        multibuffersource$buffersource.endBatch();
+        entityrenderdispatcher.setRenderShadow(true);
         entity.yBodyRot = f2;
         entity.setYRot(f3);
         entity.setXRot(f4);
         entity.yHeadRotO = f5;
         entity.yHeadRot = f6;
-        poseStack.popPose();
-        poseStack.popPose();
-        entity.setCustomName(new TextComponent(name));
+        posestack.popPose();
+        RenderSystem.applyModelViewMatrix();
+        Lighting.setupFor3DItems();
     }
 
     @Override
     public void renderItemStack(@Nonnull PoseStack poseStack, @Nonnull ItemStack stack, int x, int y, double z, float scale)
     {
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-//        RenderSystem.pushMatrix();
-        poseStack.pushPose();
-        Minecraft.getInstance().textureManager.bindForSetup(TextureAtlas.LOCATION_BLOCKS);
+        BakedModel model = itemRenderer.getModel(stack, null, null, 0);
+
         Minecraft.getInstance().textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
-        //RenderSystem.enableRescaleNormal();
-        //RenderSystem.enableAlphaTest();
-        //RenderSystem.defaultAlphaFunc();
+        RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-//        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        poseStack.translate((float)x, (float)y, (float) z + 7.0f);
-        poseStack.scale(1.0F, -1.0F, 1.0F);
-        poseStack.scale(scale, scale, scale);
-        MultiBufferSource.BufferSource irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
-        boolean flag = !itemRenderer.getModel(stack, null, null, 0).usesBlockLight();
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        PoseStack posestack = RenderSystem.getModelViewStack();
+        posestack.pushPose();
+        posestack.translate((double)x, (double)y, (double)(7.0F));
+        posestack.scale(1.0F, -1.0F, 1.0F);
+        posestack.scale(16.0F, 16.0F, 16.0F);
+        RenderSystem.applyModelViewMatrix();
+        PoseStack posestack1 = new PoseStack();
+        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
+        boolean flag = !model.usesBlockLight();
         if (flag) {
             Lighting.setupForFlatItems();
         }
 
-        itemRenderer.render(stack, ItemTransforms.TransformType.GUI, false, poseStack, irendertypebuffer$impl, 15728880, OverlayTexture.NO_OVERLAY, itemRenderer.getModel(stack, null, null, 0));
-        irendertypebuffer$impl.endBatch();
+        itemRenderer.render(stack, ItemTransforms.TransformType.GUI, false, posestack1, multibuffersource$buffersource, 15728880, OverlayTexture.NO_OVERLAY, model);
+        multibuffersource$buffersource.endBatch();
         RenderSystem.enableDepthTest();
         if (flag) {
             Lighting.setupFor3DItems();
         }
 
-        //RenderSystem.disableAlphaTest();
-        //RenderSystem.disableRescaleNormal();
-        poseStack.popPose();
+        posestack.popPose();
+        RenderSystem.applyModelViewMatrix();
     }
 }
