@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.items.CapabilityItemHandler;
 
@@ -116,8 +117,13 @@ public class BlockUtil
 
         ores.clear();
 
-        for (Block block : ORES.get())
+        for (Block block : Registry.BLOCK.stream().toList())
         {
+            if (!block.defaultBlockState().is(Tags.Blocks.ORES))
+            {
+                continue;
+            }
+
             if (excludedBlocks.contains(block.getRegistryName().toString()))
             {
                 continue;

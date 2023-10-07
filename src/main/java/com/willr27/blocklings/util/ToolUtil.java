@@ -457,10 +457,8 @@ public class ToolUtil
         }
         else
         {
-            stack.getItem().isCorrectToolForDrops(stack, blockState);
+           return stack.getItem().isCorrectToolForDrops(stack, blockState);
         }
-
-        return false;
     }
 
     /**

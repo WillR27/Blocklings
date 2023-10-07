@@ -249,7 +249,7 @@ public class FullGuiUtil extends GuiUtil
         posestack.pushPose();
         posestack.translate((double)x, (double)y, (double)(7.0F));
         posestack.scale(1.0F, -1.0F, 1.0F);
-        posestack.scale(16.0F, 16.0F, 16.0F);
+        posestack.scale(scale, scale, scale);
         RenderSystem.applyModelViewMatrix();
         PoseStack posestack1 = new PoseStack();
         MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
