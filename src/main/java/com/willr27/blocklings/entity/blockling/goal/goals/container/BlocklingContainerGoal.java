@@ -272,7 +272,7 @@ public abstract class BlocklingContainerGoal extends BlocklingTargetGoal<Contain
             if (isValidTarget(containerInfo))
             {
                 setTarget(containerInfo);
-                trySetPathTarget(null, null);
+                recalcPathTargetPosAndPath(true);
 
                 return;
             }
