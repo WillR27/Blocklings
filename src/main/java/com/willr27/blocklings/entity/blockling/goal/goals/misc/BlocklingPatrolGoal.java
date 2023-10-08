@@ -17,12 +17,17 @@ import com.willr27.blocklings.entity.blockling.goal.BlocklingTargetGoal;
 import com.willr27.blocklings.entity.blockling.goal.config.patrol.OrderedPatrolPointList;
 import com.willr27.blocklings.entity.blockling.goal.config.patrol.PatrolPoint;
 import com.willr27.blocklings.entity.blockling.task.BlocklingTasks;
+import com.willr27.blocklings.entity.blockling.task.config.ItemConfigurationTypeProperty;
+import com.willr27.blocklings.entity.blockling.task.config.PatrolTypeProperty;
 import com.willr27.blocklings.util.BlockUtil;
 import com.willr27.blocklings.util.BlocklingsTranslatableComponent;
 import com.willr27.blocklings.util.PathUtil;
+import com.willr27.blocklings.util.Version;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.level.pathfinder.Path;
@@ -46,6 +51,8 @@ public class BlocklingPatrolGoal extends BlocklingTargetGoal<PatrolPoint> implem
     @Nonnull
     public final OrderedPatrolPointList patrolPointList;
 
+    public final PatrolTypeProperty patrolTypeProperty;
+
     /**
      * The time in ticks that the blockling has waited at the current patrol point.
      */
@@ -68,6 +75,11 @@ public class BlocklingPatrolGoal extends BlocklingTargetGoal<PatrolPoint> implem
     private boolean traverseFowards = true;
 
     /**
+     * Whether the patrol points should loop.
+     */
+    private boolean loop = false;
+
+    /**
      * @param id        the id associated with the goal's task.
      * @param blockling the blockling.
      * @param tasks     the blockling tasks.
@@ -77,7 +89,6 @@ public class BlocklingPatrolGoal extends BlocklingTargetGoal<PatrolPoint> implem
         super(id, blockling, tasks);
 
         patrolPointList = new OrderedPatrolPointList(this);
-
         patrolPointList.onPatrolPointRemoved.subscribe((e) ->
         {
             if (getTarget() == e.removedPatrolPoint)
@@ -85,12 +96,67 @@ public class BlocklingPatrolGoal extends BlocklingTargetGoal<PatrolPoint> implem
                 setTarget(e.nextPatrolPoint);
             }
         });
+
+        properties.add(patrolTypeProperty = new PatrolTypeProperty(
+                "76608784-b6eb-4291-9f0a-1efb989eb4fd", this,
+                new BlocklingsTranslatableComponent("task.property.patrol_type.name"),
+                new BlocklingsTranslatableComponent("task.property.patrol_type.desc")
+        ));
+
+        patrolTypeProperty.onTypeChanged.subscribe((e) ->
+        {
+            loop = e == PatrolTypeProperty.Type.LOOP;
+        });
+    }
+
+    @Override
+    public void writeToNBT(@Nonnull CompoundTag taskTag)
+    {
+        super.writeToNBT(taskTag);
+
+        CompoundTag patrolPointListTag = new CompoundTag();
+        patrolPointList.writeToNBT(patrolPointListTag);
+        taskTag.put("patrol_point_list", patrolPointListTag);
+    }
+
+    @Override
+    public void readFromNBT(@Nonnull CompoundTag taskTag, @Nonnull Version tagVersion)
+    {
+        super.readFromNBT(taskTag, tagVersion);
+
+        CompoundTag patrolPointListTag = taskTag.getCompound("patrol_point_list");
+
+        if (patrolTypeProperty != null)
+        {
+            patrolPointList.readFromNBT(patrolPointListTag, tagVersion);
+        }
+    }
+
+    @Override
+    public void encode(@Nonnull FriendlyByteBuf buf)
+    {
+        super.encode(buf);
+
+        patrolPointList.encode(buf);
+    }
+
+    @Override
+    public void decode(@Nonnull FriendlyByteBuf buf)
+    {
+        super.decode(buf);
+
+        patrolPointList.decode(buf);
     }
 
     @Override
     public boolean canUse()
     {
         if (!super.canUse())
+        {
+            return false;
+        }
+
+        if (patrolPointList.isEmpty())
         {
             return false;
         }
@@ -102,6 +168,11 @@ public class BlocklingPatrolGoal extends BlocklingTargetGoal<PatrolPoint> implem
     public boolean canContinueToUse()
     {
         if (!super.canContinueToUse())
+        {
+            return false;
+        }
+
+        if (patrolPointList.isEmpty())
         {
             return false;
         }
@@ -135,8 +206,6 @@ public class BlocklingPatrolGoal extends BlocklingTargetGoal<PatrolPoint> implem
         {
             return;
         }
-
-        boolean loop = true;
 
         if (successfullyWaitedAtLastPatrolPoint)
         {
