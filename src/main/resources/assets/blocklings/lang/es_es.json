@@ -87,6 +87,8 @@
   "blocklings.task.property.item_configuration_type.advanced": "Advanced",
   "blocklings.task.property.item_transfer_amount.name": "Item transfer amount",
   "blocklings.task.property.item_transfer_amount.desc": "The amount of items your blockling will transfer each second.",
+  "blocklings.task.property.patrol_type.retrace": "Retrace",
+  "blocklings.task.property.patrol_type.loop": "Loop",
   "blocklings.task.null.name": "Vacío",
   "blocklings.task.null.desc": "Haz clic en el botón de configuración para configurar esta tarea.",
   "blocklings.task.sit.name": "Sentarse",
