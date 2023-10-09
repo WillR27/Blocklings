@@ -128,7 +128,7 @@ public class TextBlockControl extends Control
         {
             // For some reason we can't just access the values in the matrix.
             // So we have to get the z translation via reflection. Nice.
-            z = ObfuscationReflectionHelper.getPrivateValue(Matrix4f.class, poseStack.last().pose(), "m23");
+            z = ObfuscationReflectionHelper.getPrivateValue(Matrix4f.class, poseStack.last().pose(), "f_27614_");
         }
         catch (Exception ex)
         {

@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
@@ -188,6 +189,8 @@ public class FullGuiUtil extends GuiUtil
     @Override
     public void renderEntityOnScreen(@Nonnull PoseStack poseSack, @Nonnull LivingEntity entity, int screenX, int screenY, float screenMouseX, float screenMouseY, float scale, boolean scaleToBoundingBox)
     {
+        Component name = entity.getCustomName();
+        entity.setCustomName(null);
         float f = (float)Math.atan((double)((screenX - screenMouseX) / 40.0F));
         float f1 = (float)Math.atan((double)((screenY - screenMouseY) / 40.0F));
         PoseStack posestack = RenderSystem.getModelViewStack();
@@ -232,6 +235,7 @@ public class FullGuiUtil extends GuiUtil
         posestack.popPose();
         RenderSystem.applyModelViewMatrix();
         Lighting.setupFor3DItems();
+        entity.setCustomName(name);
     }
 
     @Override

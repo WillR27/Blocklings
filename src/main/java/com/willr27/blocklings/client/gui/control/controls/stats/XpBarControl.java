@@ -6,6 +6,7 @@ import com.willr27.blocklings.client.gui.control.controls.TextBlockControl;
 import com.willr27.blocklings.client.gui.control.controls.TexturedControl;
 import com.willr27.blocklings.client.gui.control.controls.panels.StackPanel;
 import com.willr27.blocklings.client.gui.properties.Direction;
+import com.willr27.blocklings.client.gui.properties.Visibility;
 import com.willr27.blocklings.client.gui.texture.Texture;
 import com.willr27.blocklings.client.gui.texture.Textures;
 import com.willr27.blocklings.client.gui.util.ScissorStack;
@@ -84,6 +85,7 @@ public class XpBarControl extends Control
         };
         xpBarForegroundControl.setParent(xpBarControl);
         xpBarForegroundControl.onTick();
+        xpBarForegroundControl.setFitWidthToContent(false);
 
         LevelIconControl rightIconControl = new LevelIconControl(false);
         rightIconControl.setParent(stackPanel);
