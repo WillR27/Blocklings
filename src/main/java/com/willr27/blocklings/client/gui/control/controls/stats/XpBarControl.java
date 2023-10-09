@@ -84,6 +84,7 @@ public class XpBarControl extends Control
         };
         xpBarForegroundControl.setParent(xpBarControl);
         xpBarForegroundControl.onTick();
+        xpBarForegroundControl.setFitWidthToContent(false);
 
         LevelIconControl rightIconControl = new LevelIconControl(false);
         rightIconControl.setParent(stackPanel);
