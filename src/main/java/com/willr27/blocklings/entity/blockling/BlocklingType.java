@@ -118,27 +118,27 @@ public class BlocklingType
         QUARTZ.addFoods(Items.QUARTZ);
         QUARTZ.addFoods(Blocks.NETHER_QUARTZ_ORE, Blocks.QUARTZ_BLOCK);
         QUARTZ.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, Level.NETHER));
-        QUARTZ.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.NETHER_QUARTZ_ORE));
+        QUARTZ.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 6, Blocks.NETHER_QUARTZ_ORE));
 
         LAPIS.addFoods(Items.LAPIS_LAZULI);
         LAPIS.addFoods(Blocks.LAPIS_ORE, Blocks.LAPIS_BLOCK);
         LAPIS.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, Level.OVERWORLD));
-        LAPIS.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 12, Blocks.LAPIS_ORE));
+        LAPIS.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 6, Blocks.LAPIS_ORE, Blocks.DEEPSLATE_LAPIS_ORE));
 
         GOLD.addFoods(Items.GOLD_INGOT);
         GOLD.addFoods(Blocks.GOLD_ORE, Blocks.GOLD_BLOCK);
         GOLD.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, Level.OVERWORLD));
-        GOLD.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 12, Blocks.GOLD_ORE));
+        GOLD.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 6, Blocks.GOLD_ORE, Blocks.DEEPSLATE_GOLD_ORE, Blocks.NETHER_GOLD_ORE));
 
         EMERALD.addFoods(Items.EMERALD);
         EMERALD.addFoods(Blocks.EMERALD_ORE, Blocks.EMERALD_BLOCK);
         EMERALD.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, Level.OVERWORLD));
-        EMERALD.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 16, Blocks.EMERALD_ORE));
+        EMERALD.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 12, Blocks.EMERALD_ORE, Blocks.DEEPSLATE_EMERALD_ORE));
 
         DIAMOND.addFoods(Items.DIAMOND);
         DIAMOND.addFoods(Blocks.DIAMOND_ORE, Blocks.DIAMOND_BLOCK);
         DIAMOND.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, Level.OVERWORLD));
-        DIAMOND.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 12, Blocks.DIAMOND_ORE));
+        DIAMOND.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 6, Blocks.DIAMOND_ORE, Blocks.DEEPSLATE_DIAMOND_ORE));
 
         NETHERITE.addFoods(Items.NETHERITE_SCRAP, Items.NETHERITE_INGOT);
         NETHERITE.addFoods(Blocks.ANCIENT_DEBRIS, Blocks.NETHERITE_BLOCK);
@@ -147,7 +147,7 @@ public class BlocklingType
 
         OBSIDIAN.addFoods(Blocks.OBSIDIAN);
         OBSIDIAN.spawnPredicates.add((blockling, world) -> isInWorld(blockling, world, Level.OVERWORLD));
-        OBSIDIAN.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 16, Blocks.OBSIDIAN));
+        OBSIDIAN.spawnPredicates.add((blockling, world) -> blockNearbyIs(blockling, world, 8, Blocks.OBSIDIAN, Blocks.LAVA));
 
         GLOWSTONE.addFoods(Items.GLOWSTONE_DUST);
         GLOWSTONE.addFoods(Blocks.GLOWSTONE);
